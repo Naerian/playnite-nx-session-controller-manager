@@ -18,6 +18,10 @@ namespace ControllerSessionManager.Controllers
 
         public bool IsEnabled { get; set; }
 
+        public string ConnectionType { get; set; }
+
+        public string BatteryLevel { get; set; }
+
         public DateTime LastSeenUtc { get; set; }
 
         public DateTime? LastInputUtc { get; set; }
@@ -28,4 +32,3 @@ namespace ControllerSessionManager.Controllers
         }
     }
 }
-

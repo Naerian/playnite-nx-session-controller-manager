@@ -21,5 +21,34 @@
     <sys:String x:Key="LOCCSM_Connected">Conectado</sys:String>
     <sys:String x:Key="LOCCSM_Disconnected">Desconectado</sys:String>
     <sys:String x:Key="LOCCSM_StatusFormat">{0} · {1} conectados</sys:String>
+    <sys:String x:Key="LOCCSM_TabOverview">Resumen</sys:String>
+    <sys:String x:Key="LOCCSM_XInputProvider">Proveedor XInput</sys:String>
+    <sys:String x:Key="LOCCSM_PrimaryController">Mando principal</sys:String>
+    <sys:String x:Key="LOCCSM_LastRefresh">Última actualización</sys:String>
+    <sys:String x:Key="LOCCSM_ProviderActive">Activo · mando detectado</sys:String>
+    <sys:String x:Key="LOCCSM_ProviderReady">Preparado · esperando un mando</sys:String>
+    <sys:String x:Key="LOCCSM_TabControllers">Mandos</sys:String>
+    <sys:String x:Key="LOCCSM_ControllersHelp">Mandos visibles actualmente para los proveedores de Windows activados.</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerName">Mando</sys:String>
+    <sys:String x:Key="LOCCSM_Connection">Conexión</sys:String>
+    <sys:String x:Key="LOCCSM_Battery">Batería</sys:String>
+    <sys:String x:Key="LOCCSM_TabGeneral">General</sys:String>
+    <sys:String x:Key="LOCCSM_GeneralHelp">Configura la monitorización ligera mientras Playnite está abierto.</sys:String>
+    <sys:String x:Key="LOCCSM_ReconciliationHelp">Frecuencia de comprobación del inventario alternativo de Playnite. XInput utiliza un monitor independiente más rápido.</sys:String>
+    <sys:String x:Key="LOCCSM_Seconds">segundos</sys:String>
+    <sys:String x:Key="LOCCSM_TabAdvanced">Avanzado</sys:String>
+    <sys:String x:Key="LOCCSM_AdvancedHelp">Diagnóstico y funciones preliminares para pruebas y resolución de problemas.</sys:String>
+    <sys:String x:Key="LOCCSM_FoundationTitle">Estado del desarrollo</sys:String>
+    <sys:String x:Key="LOCCSM_TabAbout">Acerca de</sys:String>
+    <sys:String x:Key="LOCCSM_Version011">Versión 0.1.1</sys:String>
+    <sys:String x:Key="LOCCSM_AboutPurpose">Gestión de sesiones de mandos estilo consola para Playnite</sys:String>
+    <sys:String x:Key="LOCCSM_AboutDescription">Monitoriza los mandos conectados y prepara el seguimiento del mando activo, la protección ante desconexiones, la pausa segura, la batería y un overlay externo durante el juego.</sys:String>
+    <sys:String x:Key="LOCCSM_Unknown">Desconocido</sys:String>
+    <sys:String x:Key="LOCCSM_ValueWired">Cable</sys:String>
+    <sys:String x:Key="LOCCSM_ValueWireless">Inalámbrico</sys:String>
+    <sys:String x:Key="LOCCSM_ValueUnknown">Desconocido</sys:String>
+    <sys:String x:Key="LOCCSM_ValueEmpty">Agotada</sys:String>
+    <sys:String x:Key="LOCCSM_ValueLow">Baja</sys:String>
+    <sys:String x:Key="LOCCSM_ValueMedium">Media</sys:String>
+    <sys:String x:Key="LOCCSM_ValueFull">Completa</sys:String>
 </ResourceDictionary>
-

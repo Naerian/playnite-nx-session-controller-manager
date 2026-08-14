@@ -40,7 +40,7 @@ foreach ($fileName in $expectedFiles) {
 
 $assemblyPath = Join-Path $root "bin\$Configuration\ControllerSessionManager.dll"
 $assemblyName = [Reflection.AssemblyName]::GetAssemblyName($assemblyPath)
-if ($assemblyName.Version.ToString() -ne "0.1.0.0") {
+if ($assemblyName.Version.ToString() -ne "0.1.1.0") {
     throw "Unexpected assembly version: $($assemblyName.Version)"
 }
 

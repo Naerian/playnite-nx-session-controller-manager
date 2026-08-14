@@ -18,10 +18,15 @@ namespace ControllerSessionManager.PlayniteIntegration
     {
         private readonly ILogger logger;
         private readonly ControllerManager controllerManager;
+        private readonly XInputProvider xInputProvider;
         private readonly DispatcherTimer reconciliationTimer;
+        private readonly DispatcherTimer xInputTimer;
         private ResourceDictionary englishFallbackResources;
         private ControllerSessionManagerSettings settings;
         private bool disposed;
+        private bool playniteBridgeAvailable = true;
+        private bool playniteBridgeWarningLogged;
+        private string lastXInputSignature;
         private Guid? activeGameId;
 
         public override Guid Id
@@ -38,8 +43,11 @@ namespace ControllerSessionManager.PlayniteIntegration
             logger = LogManager.GetLogger();
             controllerManager = new ControllerManager();
             controllerManager.SnapshotChanged += OnManagerSnapshotChanged;
+            xInputProvider = new XInputProvider();
             reconciliationTimer = new DispatcherTimer(DispatcherPriority.Background);
             reconciliationTimer.Tick += OnReconciliationTimerTick;
+            xInputTimer = new DispatcherTimer(DispatcherPriority.Background);
+            xInputTimer.Tick += OnXInputTimerTick;
             Theme = new ControllerThemeApi();
 
             Properties = new GenericPluginProperties { HasSettings = true };
@@ -62,7 +70,7 @@ namespace ControllerSessionManager.PlayniteIntegration
 
             settings = new ControllerSessionManagerSettings(this);
             ApplySettings();
-            logger.Info("Controller Session Manager 0.1.0 initialized.");
+            logger.Info("Controller Session Manager 0.1.1 initialized.");
         }
 
         public string Loc(string key)
@@ -88,9 +96,25 @@ namespace ControllerSessionManager.PlayniteIntegration
                 return;
             }
 
+            PollXInput();
+
+            if (!playniteBridgeAvailable)
+            {
+                return;
+            }
+
             try
             {
                 controllerManager.Reconcile(PlayniteApi.GetConnectedControllers());
+            }
+            catch (NullReferenceException ex)
+            {
+                playniteBridgeAvailable = false;
+                if (!playniteBridgeWarningLogged)
+                {
+                    playniteBridgeWarningLogged = true;
+                    logger.Warn(ex, "Playnite controller enumeration is unavailable in this application mode. XInput monitoring remains active.");
+                }
             }
             catch (Exception ex)
             {
@@ -101,6 +125,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         public void ApplySettings()
         {
             reconciliationTimer.Stop();
+            xInputTimer.Stop();
             if (settings == null || !settings.EnableMonitoring || disposed)
             {
                 UpdateThemeApi();
@@ -110,6 +135,8 @@ namespace ControllerSessionManager.PlayniteIntegration
             var seconds = Math.Max(2, Math.Min(60, settings.ReconciliationIntervalSeconds));
             reconciliationTimer.Interval = TimeSpan.FromSeconds(seconds);
             reconciliationTimer.Start();
+            xInputTimer.Interval = TimeSpan.FromMilliseconds(250);
+            xInputTimer.Start();
             RefreshControllers();
         }
 
@@ -222,6 +249,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             disposed = true;
             StopMonitoring();
             reconciliationTimer.Tick -= OnReconciliationTimerTick;
+            xInputTimer.Tick -= OnXInputTimerTick;
             controllerManager.SnapshotChanged -= OnManagerSnapshotChanged;
             base.Dispose();
         }
@@ -243,6 +271,31 @@ namespace ControllerSessionManager.PlayniteIntegration
         private void OnReconciliationTimerTick(object sender, EventArgs args)
         {
             RefreshControllers();
+        }
+
+        private void OnXInputTimerTick(object sender, EventArgs args)
+        {
+            PollXInput();
+        }
+
+        private void PollXInput()
+        {
+            if (disposed || settings == null || !settings.EnableMonitoring)
+            {
+                return;
+            }
+
+            var observations = xInputProvider.Poll();
+            var signature = string.Join("|", observations.Select(a => string.Format(
+                "{0}:{1}:{2}:{3}:{4}", a.ControllerId, a.IsConnected, a.ConnectionType,
+                a.BatteryLevel, a.LastInputUtc.HasValue ? a.LastInputUtc.Value.Ticks : 0)));
+            if (signature == lastXInputSignature)
+            {
+                return;
+            }
+
+            lastXInputSignature = signature;
+            controllerManager.ReconcileProvider(XInputProvider.ProviderId, observations);
         }
 
         private void OnManagerSnapshotChanged(object sender, EventArgs args)
@@ -296,6 +349,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                     controller.IsConnected ? Loc("LOCCSM_Connected") : Loc("LOCCSM_Disconnected")));
                 text.AppendLine(string.Format("  {0}: {1}", Loc("LOCCSM_Provider"), controller.ProviderId));
                 text.AppendLine(string.Format("  Instance: {0}", controller.ProviderInstanceId));
+                text.AppendLine(string.Format("  {0}: {1}", Loc("LOCCSM_Connection"), controller.ConnectionType));
+                text.AppendLine(string.Format("  {0}: {1}", Loc("LOCCSM_Battery"), controller.BatteryLevel));
                 if (controller.LastInputUtc.HasValue)
                 {
                     text.AppendLine(string.Format("  {0}: {1}", Loc("LOCCSM_LastInput"),
@@ -309,6 +364,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private void StopMonitoring()
         {
             reconciliationTimer.Stop();
+            xInputTimer.Stop();
             activeGameId = null;
         }
 
@@ -371,4 +427,3 @@ namespace ControllerSessionManager.PlayniteIntegration
         }
     }
 }
-

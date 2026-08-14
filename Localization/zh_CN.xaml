@@ -21,5 +21,34 @@
     <sys:String x:Key="LOCCSM_Connected">已连接</sys:String>
     <sys:String x:Key="LOCCSM_Disconnected">已断开</sys:String>
     <sys:String x:Key="LOCCSM_StatusFormat">{0} · 已连接 {1} 个</sys:String>
+    <sys:String x:Key="LOCCSM_TabOverview">概览</sys:String>
+    <sys:String x:Key="LOCCSM_XInputProvider">XInput 提供程序</sys:String>
+    <sys:String x:Key="LOCCSM_PrimaryController">主控制器</sys:String>
+    <sys:String x:Key="LOCCSM_LastRefresh">上次刷新</sys:String>
+    <sys:String x:Key="LOCCSM_ProviderActive">已启用</sys:String>
+    <sys:String x:Key="LOCCSM_ProviderReady">就绪</sys:String>
+    <sys:String x:Key="LOCCSM_TabControllers">控制器</sys:String>
+    <sys:String x:Key="LOCCSM_ControllersHelp">通过 XInput 和 Playnite 实时检测到的控制器。</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerName">控制器</sys:String>
+    <sys:String x:Key="LOCCSM_Connection">连接</sys:String>
+    <sys:String x:Key="LOCCSM_Battery">电池</sys:String>
+    <sys:String x:Key="LOCCSM_TabGeneral">常规</sys:String>
+    <sys:String x:Key="LOCCSM_GeneralHelp">配置监控和定期验证。</sys:String>
+    <sys:String x:Key="LOCCSM_ReconciliationHelp">通过 Playnite 进行辅助验证的间隔。</sys:String>
+    <sys:String x:Key="LOCCSM_Seconds">秒</sys:String>
+    <sys:String x:Key="LOCCSM_TabAdvanced">高级</sys:String>
+    <sys:String x:Key="LOCCSM_AdvancedHelp">诊断和开发中功能的状态。</sys:String>
+    <sys:String x:Key="LOCCSM_FoundationTitle">开发状态</sys:String>
+    <sys:String x:Key="LOCCSM_TabAbout">关于</sys:String>
+    <sys:String x:Key="LOCCSM_Version011">版本 0.1.1</sys:String>
+    <sys:String x:Key="LOCCSM_AboutPurpose">为 Playnite 会话提供可靠的控制器监控。</sys:String>
+    <sys:String x:Key="LOCCSM_AboutDescription">无需依赖 Playnite 控制器桥接，即可检测连接、断开连接和 XInput 活动。</sys:String>
+    <sys:String x:Key="LOCCSM_Unknown">未知</sys:String>
+    <sys:String x:Key="LOCCSM_ValueWired">有线</sys:String>
+    <sys:String x:Key="LOCCSM_ValueWireless">无线</sys:String>
+    <sys:String x:Key="LOCCSM_ValueUnknown">未知</sys:String>
+    <sys:String x:Key="LOCCSM_ValueEmpty">电量耗尽</sys:String>
+    <sys:String x:Key="LOCCSM_ValueLow">低</sys:String>
+    <sys:String x:Key="LOCCSM_ValueMedium">中</sys:String>
+    <sys:String x:Key="LOCCSM_ValueFull">充足</sys:String>
 </ResourceDictionary>
-

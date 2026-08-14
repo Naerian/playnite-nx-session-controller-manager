@@ -21,5 +21,34 @@
     <sys:String x:Key="LOCCSM_Connected">Bağlı</sys:String>
     <sys:String x:Key="LOCCSM_Disconnected">Bağlantı kesildi</sys:String>
     <sys:String x:Key="LOCCSM_StatusFormat">{0} · {1} bağlı</sys:String>
+    <sys:String x:Key="LOCCSM_TabOverview">Genel Bakış</sys:String>
+    <sys:String x:Key="LOCCSM_XInputProvider">XInput Sağlayıcısı</sys:String>
+    <sys:String x:Key="LOCCSM_PrimaryController">Birincil Kontrolcü</sys:String>
+    <sys:String x:Key="LOCCSM_LastRefresh">Son Yenileme</sys:String>
+    <sys:String x:Key="LOCCSM_ProviderActive">Etkin</sys:String>
+    <sys:String x:Key="LOCCSM_ProviderReady">Hazır</sys:String>
+    <sys:String x:Key="LOCCSM_TabControllers">Kontrolcüler</sys:String>
+    <sys:String x:Key="LOCCSM_ControllersHelp">XInput ve Playnite üzerinden gerçek zamanlı algılanan kontrolcüler.</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerName">Kontrolcü</sys:String>
+    <sys:String x:Key="LOCCSM_Connection">Bağlantı</sys:String>
+    <sys:String x:Key="LOCCSM_Battery">Pil</sys:String>
+    <sys:String x:Key="LOCCSM_TabGeneral">Genel</sys:String>
+    <sys:String x:Key="LOCCSM_GeneralHelp">İzlemeyi ve düzenli doğrulamayı yapılandırın.</sys:String>
+    <sys:String x:Key="LOCCSM_ReconciliationHelp">Playnite üzerinden ikincil doğrulama aralığı.</sys:String>
+    <sys:String x:Key="LOCCSM_Seconds">saniye</sys:String>
+    <sys:String x:Key="LOCCSM_TabAdvanced">Gelişmiş</sys:String>
+    <sys:String x:Key="LOCCSM_AdvancedHelp">Tanılama ve geliştirilmekte olan özelliklerin durumu.</sys:String>
+    <sys:String x:Key="LOCCSM_FoundationTitle">Geliştirme durumu</sys:String>
+    <sys:String x:Key="LOCCSM_TabAbout">Hakkında</sys:String>
+    <sys:String x:Key="LOCCSM_Version011">Sürüm 0.1.1</sys:String>
+    <sys:String x:Key="LOCCSM_AboutPurpose">Playnite oturumları için güvenilir kontrolcü izleme.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutDescription">Playnite kontrolcü köprüsüne bağlı olmadan bağlantıları, kopmaları ve XInput etkinliğini algılar.</sys:String>
+    <sys:String x:Key="LOCCSM_Unknown">Bilinmiyor</sys:String>
+    <sys:String x:Key="LOCCSM_ValueWired">Kablolu</sys:String>
+    <sys:String x:Key="LOCCSM_ValueWireless">Kablosuz</sys:String>
+    <sys:String x:Key="LOCCSM_ValueUnknown">Bilinmiyor</sys:String>
+    <sys:String x:Key="LOCCSM_ValueEmpty">Boş</sys:String>
+    <sys:String x:Key="LOCCSM_ValueLow">Düşük</sys:String>
+    <sys:String x:Key="LOCCSM_ValueMedium">Orta</sys:String>
+    <sys:String x:Key="LOCCSM_ValueFull">Dolu</sys:String>
 </ResourceDictionary>
-

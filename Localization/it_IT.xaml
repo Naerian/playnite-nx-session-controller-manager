@@ -21,5 +21,34 @@
     <sys:String x:Key="LOCCSM_Connected">Connesso</sys:String>
     <sys:String x:Key="LOCCSM_Disconnected">Disconnesso</sys:String>
     <sys:String x:Key="LOCCSM_StatusFormat">{0} · {1} connessi</sys:String>
+    <sys:String x:Key="LOCCSM_TabOverview">Panoramica</sys:String>
+    <sys:String x:Key="LOCCSM_XInputProvider">Provider XInput</sys:String>
+    <sys:String x:Key="LOCCSM_PrimaryController">Controller principale</sys:String>
+    <sys:String x:Key="LOCCSM_LastRefresh">Ultimo aggiornamento</sys:String>
+    <sys:String x:Key="LOCCSM_ProviderActive">Attivo</sys:String>
+    <sys:String x:Key="LOCCSM_ProviderReady">Pronto</sys:String>
+    <sys:String x:Key="LOCCSM_TabControllers">Controller</sys:String>
+    <sys:String x:Key="LOCCSM_ControllersHelp">Controller rilevati in tempo reale tramite XInput e Playnite.</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerName">Controller</sys:String>
+    <sys:String x:Key="LOCCSM_Connection">Connessione</sys:String>
+    <sys:String x:Key="LOCCSM_Battery">Batteria</sys:String>
+    <sys:String x:Key="LOCCSM_TabGeneral">Generale</sys:String>
+    <sys:String x:Key="LOCCSM_GeneralHelp">Configura il monitoraggio e la verifica periodica.</sys:String>
+    <sys:String x:Key="LOCCSM_ReconciliationHelp">Intervallo della verifica secondaria tramite Playnite.</sys:String>
+    <sys:String x:Key="LOCCSM_Seconds">secondi</sys:String>
+    <sys:String x:Key="LOCCSM_TabAdvanced">Avanzate</sys:String>
+    <sys:String x:Key="LOCCSM_AdvancedHelp">Diagnostica e stato delle funzioni in sviluppo.</sys:String>
+    <sys:String x:Key="LOCCSM_FoundationTitle">Stato dello sviluppo</sys:String>
+    <sys:String x:Key="LOCCSM_TabAbout">Informazioni</sys:String>
+    <sys:String x:Key="LOCCSM_Version011">Versione 0.1.1</sys:String>
+    <sys:String x:Key="LOCCSM_AboutPurpose">Monitoraggio affidabile dei controller per le sessioni Playnite.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutDescription">Rileva connessioni, disconnessioni e attività XInput senza dipendere dal bridge controller di Playnite.</sys:String>
+    <sys:String x:Key="LOCCSM_Unknown">Sconosciuto</sys:String>
+    <sys:String x:Key="LOCCSM_ValueWired">Cablato</sys:String>
+    <sys:String x:Key="LOCCSM_ValueWireless">Wireless</sys:String>
+    <sys:String x:Key="LOCCSM_ValueUnknown">Sconosciuto</sys:String>
+    <sys:String x:Key="LOCCSM_ValueEmpty">Scarica</sys:String>
+    <sys:String x:Key="LOCCSM_ValueLow">Bassa</sys:String>
+    <sys:String x:Key="LOCCSM_ValueMedium">Media</sys:String>
+    <sys:String x:Key="LOCCSM_ValueFull">Piena</sys:String>
 </ResourceDictionary>
-

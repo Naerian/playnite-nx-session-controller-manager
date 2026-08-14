@@ -43,14 +43,21 @@
   <ItemGroup>
     <Compile Include="Controllers\ControllerDeviceSnapshot.cs" />
     <Compile Include="Controllers\ControllerManager.cs" />
+    <Compile Include="Controllers\XInputProvider.cs" />
     <Compile Include="PlayniteIntegration\ControllerSessionManagerPlugin.cs" />
     <Compile Include="PlayniteIntegration\ControllerSessionManagerSettings.cs" />
-    <Compile Include="PlayniteIntegration\ControllerSessionManagerSettingsView.cs" />
+    <Compile Include="PlayniteIntegration\ControllerSessionManagerSettingsView.cs">
+      <DependentUpon>ControllerSessionManagerSettingsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="PlayniteIntegration\ControllerThemeApi.cs" />
     <Compile Include="PlayniteIntegration\ControllerThemeControl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="PlayniteIntegration\ControllerSessionManagerSettingsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <None Include="extension.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

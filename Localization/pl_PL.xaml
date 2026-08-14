@@ -21,5 +21,34 @@
     <sys:String x:Key="LOCCSM_Connected">Podłączony</sys:String>
     <sys:String x:Key="LOCCSM_Disconnected">Odłączony</sys:String>
     <sys:String x:Key="LOCCSM_StatusFormat">{0} · podłączone: {1}</sys:String>
+    <sys:String x:Key="LOCCSM_TabOverview">Przegląd</sys:String>
+    <sys:String x:Key="LOCCSM_XInputProvider">Dostawca XInput</sys:String>
+    <sys:String x:Key="LOCCSM_PrimaryController">Główny kontroler</sys:String>
+    <sys:String x:Key="LOCCSM_LastRefresh">Ostatnie odświeżenie</sys:String>
+    <sys:String x:Key="LOCCSM_ProviderActive">Aktywny</sys:String>
+    <sys:String x:Key="LOCCSM_ProviderReady">Gotowy</sys:String>
+    <sys:String x:Key="LOCCSM_TabControllers">Kontrolery</sys:String>
+    <sys:String x:Key="LOCCSM_ControllersHelp">Kontrolery wykrywane na żywo przez XInput i Playnite.</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerName">Kontroler</sys:String>
+    <sys:String x:Key="LOCCSM_Connection">Połączenie</sys:String>
+    <sys:String x:Key="LOCCSM_Battery">Bateria</sys:String>
+    <sys:String x:Key="LOCCSM_TabGeneral">Ogólne</sys:String>
+    <sys:String x:Key="LOCCSM_GeneralHelp">Skonfiguruj monitorowanie i okresową weryfikację.</sys:String>
+    <sys:String x:Key="LOCCSM_ReconciliationHelp">Interwał dodatkowej weryfikacji przez Playnite.</sys:String>
+    <sys:String x:Key="LOCCSM_Seconds">sekundy</sys:String>
+    <sys:String x:Key="LOCCSM_TabAdvanced">Zaawansowane</sys:String>
+    <sys:String x:Key="LOCCSM_AdvancedHelp">Diagnostyka i stan rozwijanych funkcji.</sys:String>
+    <sys:String x:Key="LOCCSM_FoundationTitle">Stan rozwoju</sys:String>
+    <sys:String x:Key="LOCCSM_TabAbout">O programie</sys:String>
+    <sys:String x:Key="LOCCSM_Version011">Wersja 0.1.1</sys:String>
+    <sys:String x:Key="LOCCSM_AboutPurpose">Niezawodne monitorowanie kontrolerów w sesjach Playnite.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutDescription">Wykrywa połączenia, rozłączenia i aktywność XInput bez zależności od mostka kontrolerów Playnite.</sys:String>
+    <sys:String x:Key="LOCCSM_Unknown">Nieznany</sys:String>
+    <sys:String x:Key="LOCCSM_ValueWired">Przewodowe</sys:String>
+    <sys:String x:Key="LOCCSM_ValueWireless">Bezprzewodowe</sys:String>
+    <sys:String x:Key="LOCCSM_ValueUnknown">Nieznany</sys:String>
+    <sys:String x:Key="LOCCSM_ValueEmpty">Pusta</sys:String>
+    <sys:String x:Key="LOCCSM_ValueLow">Niski</sys:String>
+    <sys:String x:Key="LOCCSM_ValueMedium">Średni</sys:String>
+    <sys:String x:Key="LOCCSM_ValueFull">Pełna</sys:String>
 </ResourceDictionary>
-

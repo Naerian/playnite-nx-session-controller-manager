@@ -21,5 +21,34 @@
     <sys:String x:Key="LOCCSM_Connected">Подключён</sys:String>
     <sys:String x:Key="LOCCSM_Disconnected">Отключён</sys:String>
     <sys:String x:Key="LOCCSM_StatusFormat">{0} · подключено: {1}</sys:String>
+    <sys:String x:Key="LOCCSM_TabOverview">Обзор</sys:String>
+    <sys:String x:Key="LOCCSM_XInputProvider">Провайдер XInput</sys:String>
+    <sys:String x:Key="LOCCSM_PrimaryController">Основной контроллер</sys:String>
+    <sys:String x:Key="LOCCSM_LastRefresh">Последнее обновление</sys:String>
+    <sys:String x:Key="LOCCSM_ProviderActive">Активен</sys:String>
+    <sys:String x:Key="LOCCSM_ProviderReady">Готов</sys:String>
+    <sys:String x:Key="LOCCSM_TabControllers">Контроллеры</sys:String>
+    <sys:String x:Key="LOCCSM_ControllersHelp">Контроллеры, обнаруженные в реальном времени через XInput и Playnite.</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerName">Контроллер</sys:String>
+    <sys:String x:Key="LOCCSM_Connection">Подключение</sys:String>
+    <sys:String x:Key="LOCCSM_Battery">Батарея</sys:String>
+    <sys:String x:Key="LOCCSM_TabGeneral">Общие</sys:String>
+    <sys:String x:Key="LOCCSM_GeneralHelp">Настройка мониторинга и периодической проверки.</sys:String>
+    <sys:String x:Key="LOCCSM_ReconciliationHelp">Интервал дополнительной проверки через Playnite.</sys:String>
+    <sys:String x:Key="LOCCSM_Seconds">секунд</sys:String>
+    <sys:String x:Key="LOCCSM_TabAdvanced">Дополнительно</sys:String>
+    <sys:String x:Key="LOCCSM_AdvancedHelp">Диагностика и состояние разрабатываемых функций.</sys:String>
+    <sys:String x:Key="LOCCSM_FoundationTitle">Состояние разработки</sys:String>
+    <sys:String x:Key="LOCCSM_TabAbout">О программе</sys:String>
+    <sys:String x:Key="LOCCSM_Version011">Версия 0.1.1</sys:String>
+    <sys:String x:Key="LOCCSM_AboutPurpose">Надёжный мониторинг контроллеров для сеансов Playnite.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutDescription">Обнаруживает подключения, отключения и активность XInput независимо от моста контроллеров Playnite.</sys:String>
+    <sys:String x:Key="LOCCSM_Unknown">Неизвестно</sys:String>
+    <sys:String x:Key="LOCCSM_ValueWired">Проводное</sys:String>
+    <sys:String x:Key="LOCCSM_ValueWireless">Беспроводное</sys:String>
+    <sys:String x:Key="LOCCSM_ValueUnknown">Неизвестно</sys:String>
+    <sys:String x:Key="LOCCSM_ValueEmpty">Разряжена</sys:String>
+    <sys:String x:Key="LOCCSM_ValueLow">Низкий</sys:String>
+    <sys:String x:Key="LOCCSM_ValueMedium">Средний</sys:String>
+    <sys:String x:Key="LOCCSM_ValueFull">Полная</sys:String>
 </ResourceDictionary>
-

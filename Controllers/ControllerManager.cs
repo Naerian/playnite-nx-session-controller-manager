@@ -52,6 +52,63 @@ namespace ControllerSessionManager.Controllers
             RaiseSnapshotChanged();
         }
 
+        public void ReconcileProvider(string providerId, IEnumerable<ControllerDeviceSnapshot> observations)
+        {
+            if (string.IsNullOrWhiteSpace(providerId))
+            {
+                throw new ArgumentException("A provider id is required.", "providerId");
+            }
+
+            var now = DateTime.UtcNow;
+            var observedKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            lock (syncRoot)
+            {
+                foreach (var observation in observations ?? Enumerable.Empty<ControllerDeviceSnapshot>())
+                {
+                    var key = observation.ControllerId;
+                    if (string.IsNullOrWhiteSpace(key))
+                    {
+                        continue;
+                    }
+
+                    observedKeys.Add(key);
+                    ControllerDeviceSnapshot existing;
+                    if (!devices.TryGetValue(key, out existing))
+                    {
+                        existing = observation.Clone();
+                        devices[key] = existing;
+                    }
+                    else
+                    {
+                        existing.ProviderId = providerId;
+                        existing.ProviderInstanceId = observation.ProviderInstanceId;
+                        existing.Name = observation.Name;
+                        existing.Path = observation.Path;
+                        existing.IsConnected = observation.IsConnected;
+                        existing.IsEnabled = observation.IsEnabled;
+                        existing.ConnectionType = observation.ConnectionType;
+                        existing.BatteryLevel = observation.BatteryLevel;
+                        if (observation.LastInputUtc.HasValue)
+                        {
+                            existing.LastInputUtc = observation.LastInputUtc;
+                        }
+                    }
+
+                    existing.LastSeenUtc = now;
+                }
+
+                foreach (var pair in devices)
+                {
+                    if (pair.Value.ProviderId == providerId && !observedKeys.Contains(pair.Key))
+                    {
+                        pair.Value.IsConnected = false;
+                    }
+                }
+            }
+
+            RaiseSnapshotChanged();
+        }
+
         public void RecordConnected(GamepadController controller)
         {
             if (controller == null)
@@ -137,6 +194,8 @@ namespace ControllerSessionManager.Controllers
                 Path = controller.Path ?? string.Empty,
                 IsConnected = true,
                 IsEnabled = controller.Enabled,
+                ConnectionType = "Unknown",
+                BatteryLevel = "Unknown",
                 LastSeenUtc = now
             };
         }
@@ -166,4 +225,3 @@ namespace ControllerSessionManager.Controllers
         }
     }
 }
-

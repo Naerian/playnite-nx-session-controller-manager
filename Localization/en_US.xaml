@@ -23,5 +23,34 @@
     <sys:String x:Key="LOCCSM_Connected">Connected</sys:String>
     <sys:String x:Key="LOCCSM_Disconnected">Disconnected</sys:String>
     <sys:String x:Key="LOCCSM_StatusFormat">{0} · {1} connected</sys:String>
+    <sys:String x:Key="LOCCSM_TabOverview">Overview</sys:String>
+    <sys:String x:Key="LOCCSM_XInputProvider">XInput provider</sys:String>
+    <sys:String x:Key="LOCCSM_PrimaryController">Primary controller</sys:String>
+    <sys:String x:Key="LOCCSM_LastRefresh">Last refresh</sys:String>
+    <sys:String x:Key="LOCCSM_ProviderActive">Active · controller detected</sys:String>
+    <sys:String x:Key="LOCCSM_ProviderReady">Ready · waiting for controller</sys:String>
+    <sys:String x:Key="LOCCSM_TabControllers">Controllers</sys:String>
+    <sys:String x:Key="LOCCSM_ControllersHelp">Controllers currently visible to the enabled Windows providers.</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerName">Controller</sys:String>
+    <sys:String x:Key="LOCCSM_Connection">Connection</sys:String>
+    <sys:String x:Key="LOCCSM_Battery">Battery</sys:String>
+    <sys:String x:Key="LOCCSM_TabGeneral">General</sys:String>
+    <sys:String x:Key="LOCCSM_GeneralHelp">Configure lightweight controller monitoring while Playnite is running.</sys:String>
+    <sys:String x:Key="LOCCSM_ReconciliationHelp">How often the slower Playnite inventory fallback is checked. XInput uses a separate responsive monitor.</sys:String>
+    <sys:String x:Key="LOCCSM_Seconds">seconds</sys:String>
+    <sys:String x:Key="LOCCSM_TabAdvanced">Advanced</sys:String>
+    <sys:String x:Key="LOCCSM_AdvancedHelp">Diagnostics and preview features intended for testing and troubleshooting.</sys:String>
+    <sys:String x:Key="LOCCSM_FoundationTitle">Development status</sys:String>
+    <sys:String x:Key="LOCCSM_TabAbout">About</sys:String>
+    <sys:String x:Key="LOCCSM_Version011">Version 0.1.1</sys:String>
+    <sys:String x:Key="LOCCSM_AboutPurpose">Console-style controller session management for Playnite</sys:String>
+    <sys:String x:Key="LOCCSM_AboutDescription">Monitors connected controllers and builds the foundation for active-controller tracking, disconnect protection, safe game pausing, battery status and an external in-game overlay.</sys:String>
+    <sys:String x:Key="LOCCSM_Unknown">Unknown</sys:String>
+    <sys:String x:Key="LOCCSM_ValueWired">Wired</sys:String>
+    <sys:String x:Key="LOCCSM_ValueWireless">Wireless</sys:String>
+    <sys:String x:Key="LOCCSM_ValueUnknown">Unknown</sys:String>
+    <sys:String x:Key="LOCCSM_ValueEmpty">Empty</sys:String>
+    <sys:String x:Key="LOCCSM_ValueLow">Low</sys:String>
+    <sys:String x:Key="LOCCSM_ValueMedium">Medium</sys:String>
+    <sys:String x:Key="LOCCSM_ValueFull">Full</sys:String>
 </ResourceDictionary>
-

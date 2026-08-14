@@ -21,5 +21,34 @@
     <sys:String x:Key="LOCCSM_Connected">Connectée</sys:String>
     <sys:String x:Key="LOCCSM_Disconnected">Déconnectée</sys:String>
     <sys:String x:Key="LOCCSM_StatusFormat">{0} · {1} connectées</sys:String>
+    <sys:String x:Key="LOCCSM_TabOverview">Vue d’ensemble</sys:String>
+    <sys:String x:Key="LOCCSM_XInputProvider">Fournisseur XInput</sys:String>
+    <sys:String x:Key="LOCCSM_PrimaryController">Manette principale</sys:String>
+    <sys:String x:Key="LOCCSM_LastRefresh">Dernière actualisation</sys:String>
+    <sys:String x:Key="LOCCSM_ProviderActive">Actif · manette détectée</sys:String>
+    <sys:String x:Key="LOCCSM_ProviderReady">Prêt · en attente d’une manette</sys:String>
+    <sys:String x:Key="LOCCSM_TabControllers">Manettes</sys:String>
+    <sys:String x:Key="LOCCSM_ControllersHelp">Manettes actuellement visibles par les fournisseurs Windows activés.</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerName">Manette</sys:String>
+    <sys:String x:Key="LOCCSM_Connection">Connexion</sys:String>
+    <sys:String x:Key="LOCCSM_Battery">Batterie</sys:String>
+    <sys:String x:Key="LOCCSM_TabGeneral">Général</sys:String>
+    <sys:String x:Key="LOCCSM_GeneralHelp">Configurez la surveillance légère pendant l’exécution de Playnite.</sys:String>
+    <sys:String x:Key="LOCCSM_ReconciliationHelp">Fréquence du contrôle de secours Playnite. XInput utilise un moniteur réactif séparé.</sys:String>
+    <sys:String x:Key="LOCCSM_Seconds">secondes</sys:String>
+    <sys:String x:Key="LOCCSM_TabAdvanced">Avancé</sys:String>
+    <sys:String x:Key="LOCCSM_AdvancedHelp">Diagnostic et fonctions préliminaires destinées aux tests et au dépannage.</sys:String>
+    <sys:String x:Key="LOCCSM_FoundationTitle">État du développement</sys:String>
+    <sys:String x:Key="LOCCSM_TabAbout">À propos</sys:String>
+    <sys:String x:Key="LOCCSM_Version011">Version 0.1.1</sys:String>
+    <sys:String x:Key="LOCCSM_AboutPurpose">Gestion des sessions de manettes façon console pour Playnite</sys:String>
+    <sys:String x:Key="LOCCSM_AboutDescription">Surveille les manettes et prépare le suivi actif, la protection contre les déconnexions, la pause sûre, la batterie et un overlay externe en jeu.</sys:String>
+    <sys:String x:Key="LOCCSM_Unknown">Inconnu</sys:String>
+    <sys:String x:Key="LOCCSM_ValueWired">Filaire</sys:String>
+    <sys:String x:Key="LOCCSM_ValueWireless">Sans fil</sys:String>
+    <sys:String x:Key="LOCCSM_ValueUnknown">Inconnu</sys:String>
+    <sys:String x:Key="LOCCSM_ValueEmpty">Vide</sys:String>
+    <sys:String x:Key="LOCCSM_ValueLow">Faible</sys:String>
+    <sys:String x:Key="LOCCSM_ValueMedium">Moyenne</sys:String>
+    <sys:String x:Key="LOCCSM_ValueFull">Pleine</sys:String>
 </ResourceDictionary>
-
