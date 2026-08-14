@@ -1,0 +1,25 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <sys:String x:Key="LOCCSM_PluginName">Controller Session Manager</sys:String>
+    <sys:String x:Key="LOCCSM_SettingsTitle">Controller Session Manager</sys:String>
+    <sys:String x:Key="LOCCSM_EnableMonitoring">启用控制器监控</sys:String>
+    <sys:String x:Key="LOCCSM_EnableDebugLogging">启用详细诊断日志</sys:String>
+    <sys:String x:Key="LOCCSM_ReconciliationInterval">连接检查间隔（秒）</sys:String>
+    <sys:String x:Key="LOCCSM_ValidationInterval">检查间隔必须在 2 到 60 秒之间。</sys:String>
+    <sys:String x:Key="LOCCSM_ConnectedControllers">已连接的控制器</sys:String>
+    <sys:String x:Key="LOCCSM_Refresh">刷新</sys:String>
+    <sys:String x:Key="LOCCSM_NoControllers">未连接控制器</sys:String>
+    <sys:String x:Key="LOCCSM_NoInputYet">尚未检测到输入</sys:String>
+    <sys:String x:Key="LOCCSM_LastInput">最后输入</sys:String>
+    <sys:String x:Key="LOCCSM_FoundationNotice">基础版本：控制器清单和诊断已启用。会话保护、暂停、覆盖层和电池功能将分阶段加入。</sys:String>
+    <sys:String x:Key="LOCCSM_MenuDiagnostics">控制器诊断</sys:String>
+    <sys:String x:Key="LOCCSM_MenuRefresh">刷新控制器</sys:String>
+    <sys:String x:Key="LOCCSM_DiagnosticsTitle">控制器诊断</sys:String>
+    <sys:String x:Key="LOCCSM_DiagnosticsHeader">Controller Session Manager 诊断快照</sys:String>
+    <sys:String x:Key="LOCCSM_DiagnosticsCount">已连接：{0}</sys:String>
+    <sys:String x:Key="LOCCSM_State">状态</sys:String>
+    <sys:String x:Key="LOCCSM_Provider">提供程序</sys:String>
+    <sys:String x:Key="LOCCSM_Connected">已连接</sys:String>
+    <sys:String x:Key="LOCCSM_Disconnected">已断开</sys:String>
+    <sys:String x:Key="LOCCSM_StatusFormat">{0} · 已连接 {1} 个</sys:String>
+</ResourceDictionary>
+

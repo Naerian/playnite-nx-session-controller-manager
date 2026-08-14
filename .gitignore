@@ -1,0 +1,9 @@
+.vs/
+bin/
+obj/
+dist/
+packages/
+*.user
+*.suo
+*.pext
+

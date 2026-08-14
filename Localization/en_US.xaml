@@ -1,0 +1,27 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <sys:String x:Key="LOCCSM_PluginName">Controller Session Manager</sys:String>
+    <sys:String x:Key="LOCCSM_SettingsTitle">Controller Session Manager</sys:String>
+    <sys:String x:Key="LOCCSM_EnableMonitoring">Enable controller monitoring</sys:String>
+    <sys:String x:Key="LOCCSM_EnableDebugLogging">Enable detailed diagnostic logging</sys:String>
+    <sys:String x:Key="LOCCSM_ReconciliationInterval">Connection reconciliation interval (seconds)</sys:String>
+    <sys:String x:Key="LOCCSM_ValidationInterval">The reconciliation interval must be between 2 and 60 seconds.</sys:String>
+    <sys:String x:Key="LOCCSM_ConnectedControllers">Connected controllers</sys:String>
+    <sys:String x:Key="LOCCSM_Refresh">Refresh</sys:String>
+    <sys:String x:Key="LOCCSM_NoControllers">No controller connected</sys:String>
+    <sys:String x:Key="LOCCSM_NoInputYet">No input observed yet</sys:String>
+    <sys:String x:Key="LOCCSM_LastInput">Last input</sys:String>
+    <sys:String x:Key="LOCCSM_FoundationNotice">Foundation release: controller inventory and diagnostics are active. Session protection, pause, overlay and battery providers will be added in staged releases.</sys:String>
+    <sys:String x:Key="LOCCSM_MenuDiagnostics">Controller diagnostics</sys:String>
+    <sys:String x:Key="LOCCSM_MenuRefresh">Refresh controllers</sys:String>
+    <sys:String x:Key="LOCCSM_DiagnosticsTitle">Controller diagnostics</sys:String>
+    <sys:String x:Key="LOCCSM_DiagnosticsHeader">Controller Session Manager diagnostic snapshot</sys:String>
+    <sys:String x:Key="LOCCSM_DiagnosticsCount">Connected: {0}</sys:String>
+    <sys:String x:Key="LOCCSM_State">State</sys:String>
+    <sys:String x:Key="LOCCSM_Provider">Provider</sys:String>
+    <sys:String x:Key="LOCCSM_Connected">Connected</sys:String>
+    <sys:String x:Key="LOCCSM_Disconnected">Disconnected</sys:String>
+    <sys:String x:Key="LOCCSM_StatusFormat">{0} · {1} connected</sys:String>
+</ResourceDictionary>
+

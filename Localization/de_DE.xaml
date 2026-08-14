@@ -1,0 +1,25 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <sys:String x:Key="LOCCSM_PluginName">Controller Session Manager</sys:String>
+    <sys:String x:Key="LOCCSM_SettingsTitle">Controller Session Manager</sys:String>
+    <sys:String x:Key="LOCCSM_EnableMonitoring">Controller-Überwachung aktivieren</sys:String>
+    <sys:String x:Key="LOCCSM_EnableDebugLogging">Detaillierte Diagnoseprotokollierung aktivieren</sys:String>
+    <sys:String x:Key="LOCCSM_ReconciliationInterval">Prüfintervall für Verbindungen (Sekunden)</sys:String>
+    <sys:String x:Key="LOCCSM_ValidationInterval">Das Prüfintervall muss zwischen 2 und 60 Sekunden liegen.</sys:String>
+    <sys:String x:Key="LOCCSM_ConnectedControllers">Verbundene Controller</sys:String>
+    <sys:String x:Key="LOCCSM_Refresh">Aktualisieren</sys:String>
+    <sys:String x:Key="LOCCSM_NoControllers">Kein Controller verbunden</sys:String>
+    <sys:String x:Key="LOCCSM_NoInputYet">Noch keine Eingabe erkannt</sys:String>
+    <sys:String x:Key="LOCCSM_LastInput">Letzte Eingabe</sys:String>
+    <sys:String x:Key="LOCCSM_FoundationNotice">Basisversion: Controller-Inventar und Diagnose sind aktiv. Sitzungsschutz, Pause, Overlay und Batterieanbieter folgen schrittweise.</sys:String>
+    <sys:String x:Key="LOCCSM_MenuDiagnostics">Controller-Diagnose</sys:String>
+    <sys:String x:Key="LOCCSM_MenuRefresh">Controller aktualisieren</sys:String>
+    <sys:String x:Key="LOCCSM_DiagnosticsTitle">Controller-Diagnose</sys:String>
+    <sys:String x:Key="LOCCSM_DiagnosticsHeader">Diagnoseübersicht von Controller Session Manager</sys:String>
+    <sys:String x:Key="LOCCSM_DiagnosticsCount">Verbunden: {0}</sys:String>
+    <sys:String x:Key="LOCCSM_State">Status</sys:String>
+    <sys:String x:Key="LOCCSM_Provider">Anbieter</sys:String>
+    <sys:String x:Key="LOCCSM_Connected">Verbunden</sys:String>
+    <sys:String x:Key="LOCCSM_Disconnected">Getrennt</sys:String>
+    <sys:String x:Key="LOCCSM_StatusFormat">{0} · {1} verbunden</sys:String>
+</ResourceDictionary>
+

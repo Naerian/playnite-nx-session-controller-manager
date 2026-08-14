@@ -1,0 +1,25 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <sys:String x:Key="LOCCSM_PluginName">Controller Session Manager</sys:String>
+    <sys:String x:Key="LOCCSM_SettingsTitle">Controller Session Manager</sys:String>
+    <sys:String x:Key="LOCCSM_EnableMonitoring">Kontrolcü izlemeyi etkinleştir</sys:String>
+    <sys:String x:Key="LOCCSM_EnableDebugLogging">Ayrıntılı tanılama günlüğünü etkinleştir</sys:String>
+    <sys:String x:Key="LOCCSM_ReconciliationInterval">Bağlantı denetim aralığı (saniye)</sys:String>
+    <sys:String x:Key="LOCCSM_ValidationInterval">Aralık 2 ile 60 saniye arasında olmalıdır.</sys:String>
+    <sys:String x:Key="LOCCSM_ConnectedControllers">Bağlı kontrolcüler</sys:String>
+    <sys:String x:Key="LOCCSM_Refresh">Yenile</sys:String>
+    <sys:String x:Key="LOCCSM_NoControllers">Bağlı kontrolcü yok</sys:String>
+    <sys:String x:Key="LOCCSM_NoInputYet">Henüz giriş algılanmadı</sys:String>
+    <sys:String x:Key="LOCCSM_LastInput">Son giriş</sys:String>
+    <sys:String x:Key="LOCCSM_FoundationNotice">Temel sürüm: kontrolcü envanteri ve tanılama etkin. Oturum koruması, duraklatma, kaplama ve pil desteği aşamalı olarak eklenecek.</sys:String>
+    <sys:String x:Key="LOCCSM_MenuDiagnostics">Kontrolcü tanılaması</sys:String>
+    <sys:String x:Key="LOCCSM_MenuRefresh">Kontrolcüleri yenile</sys:String>
+    <sys:String x:Key="LOCCSM_DiagnosticsTitle">Kontrolcü tanılaması</sys:String>
+    <sys:String x:Key="LOCCSM_DiagnosticsHeader">Controller Session Manager tanılama özeti</sys:String>
+    <sys:String x:Key="LOCCSM_DiagnosticsCount">Bağlı: {0}</sys:String>
+    <sys:String x:Key="LOCCSM_State">Durum</sys:String>
+    <sys:String x:Key="LOCCSM_Provider">Sağlayıcı</sys:String>
+    <sys:String x:Key="LOCCSM_Connected">Bağlı</sys:String>
+    <sys:String x:Key="LOCCSM_Disconnected">Bağlantı kesildi</sys:String>
+    <sys:String x:Key="LOCCSM_StatusFormat">{0} · {1} bağlı</sys:String>
+</ResourceDictionary>
+

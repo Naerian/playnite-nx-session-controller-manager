@@ -1,0 +1,25 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <sys:String x:Key="LOCCSM_PluginName">Controller Session Manager</sys:String>
+    <sys:String x:Key="LOCCSM_SettingsTitle">Controller Session Manager</sys:String>
+    <sys:String x:Key="LOCCSM_EnableMonitoring">Включить мониторинг контроллеров</sys:String>
+    <sys:String x:Key="LOCCSM_EnableDebugLogging">Включить подробный журнал диагностики</sys:String>
+    <sys:String x:Key="LOCCSM_ReconciliationInterval">Интервал проверки подключений (секунды)</sys:String>
+    <sys:String x:Key="LOCCSM_ValidationInterval">Интервал должен быть от 2 до 60 секунд.</sys:String>
+    <sys:String x:Key="LOCCSM_ConnectedControllers">Подключённые контроллеры</sys:String>
+    <sys:String x:Key="LOCCSM_Refresh">Обновить</sys:String>
+    <sys:String x:Key="LOCCSM_NoControllers">Нет подключённых контроллеров</sys:String>
+    <sys:String x:Key="LOCCSM_NoInputYet">Ввод ещё не обнаружен</sys:String>
+    <sys:String x:Key="LOCCSM_LastInput">Последний ввод</sys:String>
+    <sys:String x:Key="LOCCSM_FoundationNotice">Базовая версия: инвентаризация и диагностика активны. Защита сессии, пауза, оверлей и батарея будут добавляться поэтапно.</sys:String>
+    <sys:String x:Key="LOCCSM_MenuDiagnostics">Диагностика контроллеров</sys:String>
+    <sys:String x:Key="LOCCSM_MenuRefresh">Обновить контроллеры</sys:String>
+    <sys:String x:Key="LOCCSM_DiagnosticsTitle">Диагностика контроллеров</sys:String>
+    <sys:String x:Key="LOCCSM_DiagnosticsHeader">Диагностический снимок Controller Session Manager</sys:String>
+    <sys:String x:Key="LOCCSM_DiagnosticsCount">Подключено: {0}</sys:String>
+    <sys:String x:Key="LOCCSM_State">Состояние</sys:String>
+    <sys:String x:Key="LOCCSM_Provider">Провайдер</sys:String>
+    <sys:String x:Key="LOCCSM_Connected">Подключён</sys:String>
+    <sys:String x:Key="LOCCSM_Disconnected">Отключён</sys:String>
+    <sys:String x:Key="LOCCSM_StatusFormat">{0} · подключено: {1}</sys:String>
+</ResourceDictionary>
+
