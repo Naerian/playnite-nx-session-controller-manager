@@ -8,4 +8,7 @@ SourceUrl: https://github.com/Naerian/playnite-nx-session-controller-manager
 Description: |
   Controller Session Manager identifies connected controllers, tracks which ones actually participate in a game session and reacts when a participant disconnects. It supports adaptive controller handover and local multiplayer, configurable Fullscreen notifications and an external disconnect overlay, conservative pause policies, custom names and icons, trustworthy battery states, Desktop quick access, theme integration and privacy-conscious support reports.
 IconUrl: https://raw.githubusercontent.com/Naerian/playnite-nx-session-controller-manager/main/media/icon.png
-Tags: ['Generic', 'controller', 'gamepad', 'battery', 'fullscreen', 'accessibility']
+Tags: ['controller', 'gamepad', 'battery', 'fullscreen', 'accessibility', 'utility']
+Links:
+  GitHub: https://github.com/Naerian/playnite-nx-session-controller-manager
+  Support: https://ko-fi.com/naerian
