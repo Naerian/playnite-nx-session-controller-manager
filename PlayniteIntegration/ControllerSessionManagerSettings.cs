@@ -1,4 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
+using ControllerSessionManager.Controllers;
+using ControllerSessionManager.Sessions;
 using Playnite.SDK;
 using Playnite.SDK.Data;
 
@@ -10,7 +13,57 @@ namespace ControllerSessionManager.PlayniteIntegration
         private ControllerSessionManagerSettings editingClone;
         private bool enableMonitoring = true;
         private bool enableDebugLogging;
+        private bool showPrimaryControllerInTopPanel;
+        private bool colorTopPanelIndicatorByBattery = true;
+        private bool enableSessionTracking = true;
+        private bool showDisconnectOverlay = true;
+        private bool showFullscreenControllerNotifications = true;
+        private bool forcePauseOfflineGames;
+        private int notificationWidth = 520;
+        private int notificationScalePercent = 110;
+        private int notificationDurationMilliseconds = 5000;
+        private string notificationPosition = "TopRight";
+        private string notificationBackgroundColor = "#F4121418";
+        private string notificationTextColor = "#FFFFFFFF";
+        private string notificationSecondaryTextColor = "#FFC6CBD4";
+        private string notificationConnectedColor = "#FF4FC27E";
+        private string notificationDisconnectedColor = "#FF50AAFF";
+        private string notificationWarningColor = "#FFF5B542";
+        private int notificationTitleFontSize = 19;
+        private int notificationMessageFontSize = 15;
+        private int notificationIconSize = 32;
+        private string notificationIconPosition = "Left";
+        private int notificationPadding = 18;
+        private bool notificationShowBorder = true;
+        private string notificationBorderPosition = "Bottom";
+        private int notificationBorderThickness = 3;
+        private int notificationCornerRadius = 10;
+        private bool showControllerNameInNotifications = true;
+        private int overlayScalePercent = 100;
+        private string overlayDimColor = "#96000000";
+        private string overlayCardColor = "#EB121418";
+        private string overlayAccentColor = "#FF2391FF";
+        private string overlayTextColor = "#FFFFFFFF";
+        private string overlayWarningColor = "#FFF5B542";
+        private int overlayTitleFontSize = 30;
+        private int overlayControllerFontSize = 22;
+        private int overlayInstructionFontSize = 19;
+        private int overlayStatusFontSize = 15;
+        private int overlayControllerIconSize = 30;
+        private int overlayStatusIconSize = 18;
+        private int overlayPadding = 34;
+        private bool overlayShowBorder = true;
+        private int overlayBorderThickness = 3;
+        private int overlayCornerRadius = 13;
+        private bool allowControllerTakeover = true;
+        private bool protectAllActiveControllers;
+        private int settingsSchemaVersion;
+        private bool pauseGameOnDisconnect;
+        private string pauseKey = "Escape";
+        private int disconnectGracePeriodMilliseconds = 1500;
         private int reconciliationIntervalSeconds = 5;
+        private List<ControllerProfile> controllerProfiles = new List<ControllerProfile>();
+        private List<GameSessionOverride> gameSessionOverrides = new List<GameSessionOverride>();
 
         public ControllerSessionManagerSettings()
         {
@@ -24,6 +77,8 @@ namespace ControllerSessionManager.PlayniteIntegration
             {
                 CopyFrom(saved);
             }
+
+            MigrateSettings();
         }
 
         public bool EnableMonitoring
@@ -32,16 +87,402 @@ namespace ControllerSessionManager.PlayniteIntegration
             set { SetValue(ref enableMonitoring, value); }
         }
 
+        public int SettingsSchemaVersion
+        {
+            get { return settingsSchemaVersion; }
+            set { SetValue(ref settingsSchemaVersion, value); }
+        }
+
         public bool EnableDebugLogging
         {
             get { return enableDebugLogging; }
             set { SetValue(ref enableDebugLogging, value); }
         }
 
+        public bool ShowPrimaryControllerInTopPanel
+        {
+            get { return showPrimaryControllerInTopPanel; }
+            set { SetValue(ref showPrimaryControllerInTopPanel, value); }
+        }
+
+        public bool ColorTopPanelIndicatorByBattery
+        {
+            get { return colorTopPanelIndicatorByBattery; }
+            set { SetValue(ref colorTopPanelIndicatorByBattery, value); }
+        }
+
         public int ReconciliationIntervalSeconds
         {
             get { return reconciliationIntervalSeconds; }
             set { SetValue(ref reconciliationIntervalSeconds, value); }
+        }
+
+        public bool EnableSessionTracking
+        {
+            get { return enableSessionTracking; }
+            set { SetValue(ref enableSessionTracking, value); }
+        }
+
+        public int DisconnectGracePeriodMilliseconds
+        {
+            get { return disconnectGracePeriodMilliseconds; }
+            set { SetValue(ref disconnectGracePeriodMilliseconds, value); }
+        }
+
+        public bool AllowControllerTakeover
+        {
+            get { return allowControllerTakeover; }
+            set { SetValue(ref allowControllerTakeover, value); }
+        }
+
+        public bool ShowDisconnectOverlay
+        {
+            get { return showDisconnectOverlay; }
+            set { SetValue(ref showDisconnectOverlay, value); }
+        }
+
+        public bool ShowFullscreenControllerNotifications
+        {
+            get { return showFullscreenControllerNotifications; }
+            set { SetValue(ref showFullscreenControllerNotifications, value); }
+        }
+
+        public bool ForcePauseOfflineGames
+        {
+            get { return forcePauseOfflineGames; }
+            set { SetValue(ref forcePauseOfflineGames, value); }
+        }
+
+        public int NotificationWidth { get { return notificationWidth; } set { SetValue(ref notificationWidth, value); } }
+        public int NotificationScalePercent { get { return notificationScalePercent; } set { SetValue(ref notificationScalePercent, value); } }
+        public int NotificationDurationMilliseconds { get { return notificationDurationMilliseconds; } set { SetValue(ref notificationDurationMilliseconds, value); } }
+        public string NotificationPosition { get { return notificationPosition; } set { SetValue(ref notificationPosition, value); } }
+        public string NotificationBackgroundColor { get { return notificationBackgroundColor; } set { SetValue(ref notificationBackgroundColor, value); } }
+        public string NotificationTextColor { get { return notificationTextColor; } set { SetValue(ref notificationTextColor, value); } }
+        public string NotificationSecondaryTextColor { get { return notificationSecondaryTextColor; } set { SetValue(ref notificationSecondaryTextColor, value); } }
+        public string NotificationConnectedColor { get { return notificationConnectedColor; } set { SetValue(ref notificationConnectedColor, value); } }
+        public string NotificationDisconnectedColor { get { return notificationDisconnectedColor; } set { SetValue(ref notificationDisconnectedColor, value); } }
+        public string NotificationWarningColor { get { return notificationWarningColor; } set { SetValue(ref notificationWarningColor, value); } }
+        public int NotificationTitleFontSize { get { return notificationTitleFontSize; } set { SetValue(ref notificationTitleFontSize, value); } }
+        public int NotificationMessageFontSize { get { return notificationMessageFontSize; } set { SetValue(ref notificationMessageFontSize, value); } }
+        public int NotificationIconSize { get { return notificationIconSize; } set { SetValue(ref notificationIconSize, value); } }
+        public string NotificationIconPosition { get { return notificationIconPosition; } set { SetValue(ref notificationIconPosition, value); } }
+        public int NotificationPadding { get { return notificationPadding; } set { SetValue(ref notificationPadding, value); } }
+        public bool NotificationShowBorder { get { return notificationShowBorder; } set { SetValue(ref notificationShowBorder, value); } }
+        public string NotificationBorderPosition { get { return notificationBorderPosition; } set { SetValue(ref notificationBorderPosition, value); } }
+        public int NotificationBorderThickness { get { return notificationBorderThickness; } set { SetValue(ref notificationBorderThickness, value); } }
+        public int NotificationCornerRadius { get { return notificationCornerRadius; } set { SetValue(ref notificationCornerRadius, value); } }
+        public bool ShowControllerNameInNotifications { get { return showControllerNameInNotifications; } set { SetValue(ref showControllerNameInNotifications, value); } }
+        public int OverlayScalePercent { get { return overlayScalePercent; } set { SetValue(ref overlayScalePercent, value); } }
+        public string OverlayDimColor { get { return overlayDimColor; } set { SetValue(ref overlayDimColor, value); } }
+        public string OverlayCardColor { get { return overlayCardColor; } set { SetValue(ref overlayCardColor, value); } }
+        public string OverlayAccentColor { get { return overlayAccentColor; } set { SetValue(ref overlayAccentColor, value); } }
+        public string OverlayTextColor { get { return overlayTextColor; } set { SetValue(ref overlayTextColor, value); } }
+        public string OverlayWarningColor { get { return overlayWarningColor; } set { SetValue(ref overlayWarningColor, value); } }
+        public int OverlayTitleFontSize { get { return overlayTitleFontSize; } set { SetValue(ref overlayTitleFontSize, value); } }
+        public int OverlayControllerFontSize { get { return overlayControllerFontSize; } set { SetValue(ref overlayControllerFontSize, value); } }
+        public int OverlayInstructionFontSize { get { return overlayInstructionFontSize; } set { SetValue(ref overlayInstructionFontSize, value); } }
+        public int OverlayStatusFontSize { get { return overlayStatusFontSize; } set { SetValue(ref overlayStatusFontSize, value); } }
+        public int OverlayControllerIconSize { get { return overlayControllerIconSize; } set { SetValue(ref overlayControllerIconSize, value); } }
+        public int OverlayStatusIconSize { get { return overlayStatusIconSize; } set { SetValue(ref overlayStatusIconSize, value); } }
+        public int OverlayPadding { get { return overlayPadding; } set { SetValue(ref overlayPadding, value); } }
+        public bool OverlayShowBorder { get { return overlayShowBorder; } set { SetValue(ref overlayShowBorder, value); } }
+        public int OverlayBorderThickness { get { return overlayBorderThickness; } set { SetValue(ref overlayBorderThickness, value); } }
+        public int OverlayCornerRadius { get { return overlayCornerRadius; } set { SetValue(ref overlayCornerRadius, value); } }
+
+        public bool ProtectAllActiveControllers
+        {
+            get { return protectAllActiveControllers; }
+            set { SetValue(ref protectAllActiveControllers, value); }
+        }
+
+        public bool PauseGameOnDisconnect
+        {
+            get { return pauseGameOnDisconnect; }
+            set { SetValue(ref pauseGameOnDisconnect, value); }
+        }
+
+        public string PauseKey
+        {
+            get { return pauseKey; }
+            set { SetValue(ref pauseKey, value); }
+        }
+
+        public List<GameSessionOverride> GameSessionOverrides
+        {
+            get { return gameSessionOverrides; }
+            set { SetValue(ref gameSessionOverrides, value ?? new List<GameSessionOverride>()); }
+        }
+
+        public List<ControllerProfile> ControllerProfiles
+        {
+            get { return controllerProfiles; }
+            set { SetValue(ref controllerProfiles, value ?? new List<ControllerProfile>()); }
+        }
+
+        [DontSerialize]
+        public List<ControllerIconOption> IconOptions
+        {
+            get
+            {
+                return new List<ControllerIconOption>
+                {
+                    Icon("gamepad", "Gamepad 1", "device-gamepad.svg"),
+                    Icon("gamepad-2", "Gamepad 2", "device-gamepad-2.svg"),
+                    Icon("gamepad-3", "Gamepad 3", "device-gamepad-3.svg"),
+                    Icon("gamepad-4", "Gamepad 4", "device-gamepad-4.svg"),
+                    Icon("nintendo", "Nintendo", "device-nintendo.svg")
+                };
+            }
+        }
+
+        internal bool SyncControllerProfiles(IEnumerable<ControllerDeviceSnapshot> controllers)
+        {
+            var changed = false;
+            foreach (var controller in controllers ?? Enumerable.Empty<ControllerDeviceSnapshot>())
+            {
+                var hardwareId = string.IsNullOrWhiteSpace(controller.HardwareId)
+                    ? controller.ControllerId
+                    : controller.HardwareId;
+                var profile = ControllerProfiles.FirstOrDefault(a => a.HardwareId == hardwareId);
+                if (profile == null)
+                {
+                    profile = new ControllerProfile
+                    {
+                        HardwareId = hardwareId,
+                        DetectedName = controller.DetectedName ?? controller.Name,
+                        CustomName = controller.DetectedName ?? controller.Name,
+                        IconId = SuggestIcon(controller)
+                    };
+                    ControllerProfiles.Add(profile);
+                    changed = true;
+                }
+                else
+                {
+                    var detectedName = controller.DetectedName ?? controller.Name;
+                    if (!string.Equals(profile.DetectedName, detectedName,
+                        System.StringComparison.Ordinal))
+                    {
+                        profile.DetectedName = detectedName;
+                        changed = true;
+                    }
+                    if (profile.CustomName == null)
+                    {
+                        profile.CustomName = profile.DetectedName;
+                        changed = true;
+                    }
+
+                    var normalizedIcon = NormalizeIconId(profile.IconId);
+                    if (!string.Equals(profile.IconId, normalizedIcon,
+                        System.StringComparison.Ordinal))
+                    {
+                        profile.IconId = normalizedIcon;
+                        changed = true;
+                    }
+                }
+
+                if (string.Equals(controller.ProviderId, XInputProvider.ProviderId,
+                    System.StringComparison.OrdinalIgnoreCase) && controller.ProviderInstanceId >= 0)
+                {
+                    foreach (var other in ControllerProfiles.Where(a => !object.ReferenceEquals(a, profile) &&
+                        a.LastKnownXInputSlot == controller.ProviderInstanceId))
+                    {
+                        other.LastKnownXInputSlot = null;
+                        changed = true;
+                    }
+                    if (profile.LastKnownXInputSlot != controller.ProviderInstanceId)
+                    {
+                        profile.LastKnownXInputSlot = controller.ProviderInstanceId;
+                        changed = true;
+                    }
+                }
+            }
+
+            return changed;
+        }
+
+        internal ControllerProfile GetControllerProfile(string hardwareId)
+        {
+            int xInputSlot;
+            if (TryGetXInputSlot(hardwareId, out xInputSlot))
+            {
+                var slotProfile = ControllerProfiles.FirstOrDefault(a =>
+                    a.LastKnownXInputSlot == xInputSlot && !IsSyntheticXInputProfile(a));
+                if (slotProfile != null)
+                {
+                    return slotProfile;
+                }
+            }
+
+            return ControllerProfiles.FirstOrDefault(a => string.Equals(a.HardwareId, hardwareId,
+                System.StringComparison.OrdinalIgnoreCase));
+        }
+
+        private static bool TryGetXInputSlot(string value, out int slot)
+        {
+            slot = -1;
+            const string prefix = "xinput:slot:";
+            return !string.IsNullOrWhiteSpace(value) &&
+                value.StartsWith(prefix, System.StringComparison.OrdinalIgnoreCase) &&
+                int.TryParse(value.Substring(prefix.Length), out slot) && slot >= 0 && slot < 4;
+        }
+
+        private static bool IsSyntheticXInputProfile(ControllerProfile profile)
+        {
+            int ignored;
+            return profile != null && TryGetXInputSlot(profile.HardwareId, out ignored);
+        }
+
+        internal SessionProtectionPolicy GetSessionPolicy(System.Guid gameId)
+        {
+            var gameOverride = GameSessionOverrides.FirstOrDefault(a => a.GameId == gameId);
+            var hasSessionOverride = HasSessionOverride(gameOverride);
+            var hasPauseOverride = HasPauseOverride(gameOverride);
+            return new SessionProtectionPolicy
+            {
+                Enabled = !hasSessionOverride ? EnableSessionTracking : gameOverride.EnableSessionTracking,
+                GracePeriodMilliseconds = !hasSessionOverride ? DisconnectGracePeriodMilliseconds :
+                    gameOverride.DisconnectGracePeriodMilliseconds,
+                AllowControllerTakeover = true,
+                ProtectAllActiveControllers = !hasSessionOverride ? ProtectAllActiveControllers :
+                    gameOverride.ProtectAllActiveControllers,
+                PauseGameOnDisconnect = !hasPauseOverride ? PauseGameOnDisconnect :
+                    gameOverride.PauseGameOnDisconnect,
+                ForcePauseOfflineGames = !hasPauseOverride ? ForcePauseOfflineGames :
+                    gameOverride.ForcePauseOfflineGames,
+                PauseKey = NormalizePauseKey(!hasPauseOverride ? PauseKey : gameOverride.PauseKey),
+                IsGameOverride = hasSessionOverride || hasPauseOverride,
+                HasSessionOverride = hasSessionOverride,
+                HasPauseOverride = hasPauseOverride
+            };
+        }
+
+        internal void SetGameOverride(System.Guid gameId, string gameName, bool enabled,
+            bool protectAllControllers)
+        {
+            var value = GameSessionOverrides.FirstOrDefault(a => a.GameId == gameId);
+            if (value == null)
+            {
+                value = new GameSessionOverride
+                {
+                    GameId = gameId,
+                    PauseGameOnDisconnect = enabled && PauseGameOnDisconnect,
+                    PauseKey = NormalizePauseKey(PauseKey),
+                    OverrideSessionProtection = true,
+                    OverridePauseProfile = false
+                };
+                GameSessionOverrides.Add(value);
+            }
+
+            value.GameName = gameName;
+            value.EnableSessionTracking = enabled;
+            value.DisconnectGracePeriodMilliseconds = DisconnectGracePeriodMilliseconds;
+            value.AllowControllerTakeover = true;
+            value.ProtectAllActiveControllers = protectAllControllers;
+            value.OverrideSessionProtection = true;
+        }
+
+        internal void SetGamePauseOverride(System.Guid gameId, string gameName, bool pauseGame,
+            bool forcePauseOffline, string keyName)
+        {
+            var value = GameSessionOverrides.FirstOrDefault(a => a.GameId == gameId);
+            if (value == null)
+            {
+                value = new GameSessionOverride
+                {
+                    GameId = gameId,
+                    EnableSessionTracking = EnableSessionTracking,
+                    DisconnectGracePeriodMilliseconds = DisconnectGracePeriodMilliseconds,
+                    AllowControllerTakeover = AllowControllerTakeover,
+                    ProtectAllActiveControllers = ProtectAllActiveControllers,
+                    OverrideSessionProtection = false,
+                    OverridePauseProfile = true
+                };
+                GameSessionOverrides.Add(value);
+            }
+
+            value.GameName = gameName;
+            value.PauseGameOnDisconnect = pauseGame;
+            value.ForcePauseOfflineGames = forcePauseOffline;
+            value.PauseKey = NormalizePauseKey(keyName);
+            value.OverridePauseProfile = true;
+        }
+
+        internal void UseGlobalSessionPolicy(System.Guid gameId)
+        {
+            var value = GameSessionOverrides.FirstOrDefault(a => a.GameId == gameId);
+            if (value == null)
+            {
+                return;
+            }
+
+            value.OverrideSessionProtection = false;
+            RemoveEmptyOverride(value);
+        }
+
+        internal void UseGlobalPausePolicy(System.Guid gameId)
+        {
+            var value = GameSessionOverrides.FirstOrDefault(a => a.GameId == gameId);
+            if (value == null)
+            {
+                return;
+            }
+
+            value.OverridePauseProfile = false;
+            RemoveEmptyOverride(value);
+        }
+
+        internal void RemoveGameOverride(System.Guid gameId)
+        {
+            GameSessionOverrides.RemoveAll(a => a.GameId == gameId);
+        }
+
+        private void RemoveEmptyOverride(GameSessionOverride value)
+        {
+            if (!HasSessionOverride(value) && !HasPauseOverride(value))
+            {
+                GameSessionOverrides.Remove(value);
+            }
+        }
+
+        private void MigrateSettings()
+        {
+            if (SettingsSchemaVersion < 3)
+            {
+                // Versions before 0.4 did not distinguish an intentional local-multiplayer choice
+                // from the old protect-all default. Prefer automatic ownership for ambiguous
+                // legacy values; explicit overrides written by 0.3.2 already carry flags.
+                ProtectAllActiveControllers = false;
+                AllowControllerTakeover = true;
+                foreach (var value in GameSessionOverrides)
+                {
+                    value.AllowControllerTakeover = true;
+                    if (!value.OverrideSessionProtection.HasValue)
+                    {
+                        value.ProtectAllActiveControllers = false;
+                        value.OverrideSessionProtection = false;
+                    }
+                }
+                SettingsSchemaVersion = 3;
+            }
+
+            if (SettingsSchemaVersion < 4)
+            {
+                // 0.5.1 makes the global scope adaptive. Preserve explicit per-game local
+                // multiplayer overrides, but remove the now-hidden global force-local value.
+                ProtectAllActiveControllers = false;
+                SettingsSchemaVersion = 4;
+            }
+        }
+
+        private static bool HasSessionOverride(GameSessionOverride value)
+        {
+            return value != null && (value.OverrideSessionProtection ?? true);
+        }
+
+        private static bool HasPauseOverride(GameSessionOverride value)
+        {
+            return value != null && (value.OverridePauseProfile ?? true);
         }
 
         internal void Attach(ControllerSessionManagerPlugin sourcePlugin)
@@ -85,6 +526,51 @@ namespace ControllerSessionManager.PlayniteIntegration
                     : plugin.Loc("LOCCSM_ValidationInterval"));
             }
 
+            if (DisconnectGracePeriodMilliseconds < 250 || DisconnectGracePeriodMilliseconds > 10000)
+            {
+                errors.Add(plugin == null
+                    ? "The disconnect grace period must be between 250 and 10000 milliseconds."
+                    : plugin.Loc("LOCCSM_ValidationGracePeriod"));
+            }
+
+            if (!GamePauseService.IsSupportedKey(PauseKey))
+            {
+                errors.Add(plugin == null
+                    ? "The pause key must be Escape, Space, Enter, Tab, Backspace, A-Z, 0-9 or F1-F12."
+                    : plugin.Loc("LOCCSM_ValidationPauseKey"));
+            }
+
+            if (NotificationWidth < 300 || NotificationWidth > 900 ||
+                NotificationScalePercent < 80 || NotificationScalePercent > 160 ||
+                NotificationDurationMilliseconds < 2000 || NotificationDurationMilliseconds > 15000 ||
+                NotificationTitleFontSize < 12 || NotificationTitleFontSize > 36 ||
+                NotificationMessageFontSize < 10 || NotificationMessageFontSize > 30 ||
+                NotificationIconSize < 16 || NotificationIconSize > 72 ||
+                NotificationPadding < 6 || NotificationPadding > 40 ||
+                NotificationBorderThickness < 0 || NotificationBorderThickness > 10 ||
+                NotificationCornerRadius < 0 || NotificationCornerRadius > 40 ||
+                OverlayScalePercent < 80 || OverlayScalePercent > 140 ||
+                OverlayTitleFontSize < 18 || OverlayTitleFontSize > 64 ||
+                OverlayControllerFontSize < 12 || OverlayControllerFontSize > 48 ||
+                OverlayInstructionFontSize < 12 || OverlayInstructionFontSize > 40 ||
+                OverlayStatusFontSize < 10 || OverlayStatusFontSize > 30 ||
+                OverlayControllerIconSize < 16 || OverlayControllerIconSize > 72 ||
+                OverlayStatusIconSize < 12 || OverlayStatusIconSize > 48 ||
+                OverlayPadding < 12 || OverlayPadding > 80 ||
+                OverlayBorderThickness < 0 || OverlayBorderThickness > 10 ||
+                OverlayCornerRadius < 0 || OverlayCornerRadius > 40)
+            {
+                errors.Add(plugin == null ? "Notification or overlay dimensions are outside the supported range."
+                    : plugin.Loc("LOCCSM_ValidationAppearance"));
+            }
+            if (!IsSupportedPosition(NotificationPosition) || !IsSupportedBorderPosition(NotificationBorderPosition) ||
+                !IsSupportedIconPosition(NotificationIconPosition) ||
+                !AppearanceColors().All(IsHexColor))
+            {
+                errors.Add(plugin == null ? "An appearance color or notification position is invalid."
+                    : plugin.Loc("LOCCSM_ValidationAppearance"));
+            }
+
             return errors.Count == 0;
         }
 
@@ -93,17 +579,224 @@ namespace ControllerSessionManager.PlayniteIntegration
             return new ControllerSessionManagerSettings
             {
                 EnableMonitoring = EnableMonitoring,
+                SettingsSchemaVersion = SettingsSchemaVersion,
                 EnableDebugLogging = EnableDebugLogging,
-                ReconciliationIntervalSeconds = ReconciliationIntervalSeconds
+                ShowPrimaryControllerInTopPanel = ShowPrimaryControllerInTopPanel,
+                ColorTopPanelIndicatorByBattery = ColorTopPanelIndicatorByBattery,
+                EnableSessionTracking = EnableSessionTracking,
+                ShowDisconnectOverlay = ShowDisconnectOverlay,
+                ShowFullscreenControllerNotifications = ShowFullscreenControllerNotifications,
+                ForcePauseOfflineGames = ForcePauseOfflineGames,
+                NotificationWidth = NotificationWidth,
+                NotificationScalePercent = NotificationScalePercent,
+                NotificationDurationMilliseconds = NotificationDurationMilliseconds,
+                NotificationPosition = NotificationPosition,
+                NotificationBackgroundColor = NotificationBackgroundColor,
+                NotificationTextColor = NotificationTextColor,
+                NotificationSecondaryTextColor = NotificationSecondaryTextColor,
+                NotificationConnectedColor = NotificationConnectedColor,
+                NotificationDisconnectedColor = NotificationDisconnectedColor,
+                NotificationWarningColor = NotificationWarningColor,
+                NotificationTitleFontSize = NotificationTitleFontSize,
+                NotificationMessageFontSize = NotificationMessageFontSize,
+                NotificationIconSize = NotificationIconSize,
+                NotificationIconPosition = NotificationIconPosition,
+                NotificationPadding = NotificationPadding,
+                NotificationShowBorder = NotificationShowBorder,
+                NotificationBorderPosition = NotificationBorderPosition,
+                NotificationBorderThickness = NotificationBorderThickness,
+                NotificationCornerRadius = NotificationCornerRadius,
+                ShowControllerNameInNotifications = ShowControllerNameInNotifications,
+                OverlayScalePercent = OverlayScalePercent,
+                OverlayDimColor = OverlayDimColor,
+                OverlayCardColor = OverlayCardColor,
+                OverlayAccentColor = OverlayAccentColor,
+                OverlayTextColor = OverlayTextColor,
+                OverlayWarningColor = OverlayWarningColor,
+                OverlayTitleFontSize = OverlayTitleFontSize,
+                OverlayControllerFontSize = OverlayControllerFontSize,
+                OverlayInstructionFontSize = OverlayInstructionFontSize,
+                OverlayStatusFontSize = OverlayStatusFontSize,
+                OverlayControllerIconSize = OverlayControllerIconSize,
+                OverlayStatusIconSize = OverlayStatusIconSize,
+                OverlayPadding = OverlayPadding,
+                OverlayShowBorder = OverlayShowBorder,
+                OverlayBorderThickness = OverlayBorderThickness,
+                OverlayCornerRadius = OverlayCornerRadius,
+                AllowControllerTakeover = AllowControllerTakeover,
+                ProtectAllActiveControllers = ProtectAllActiveControllers,
+                PauseGameOnDisconnect = PauseGameOnDisconnect,
+                PauseKey = PauseKey,
+                DisconnectGracePeriodMilliseconds = DisconnectGracePeriodMilliseconds,
+                ReconciliationIntervalSeconds = ReconciliationIntervalSeconds,
+                ControllerProfiles = CloneProfiles(ControllerProfiles),
+                GameSessionOverrides = CloneGameOverrides(GameSessionOverrides)
             };
         }
 
         private void CopyFrom(ControllerSessionManagerSettings source)
         {
             EnableMonitoring = source.EnableMonitoring;
+            SettingsSchemaVersion = source.SettingsSchemaVersion;
             EnableDebugLogging = source.EnableDebugLogging;
+            ShowPrimaryControllerInTopPanel = source.ShowPrimaryControllerInTopPanel;
+            ColorTopPanelIndicatorByBattery = source.ColorTopPanelIndicatorByBattery;
+            EnableSessionTracking = source.EnableSessionTracking;
+            ShowDisconnectOverlay = source.ShowDisconnectOverlay;
+            ShowFullscreenControllerNotifications = source.ShowFullscreenControllerNotifications;
+            ForcePauseOfflineGames = source.ForcePauseOfflineGames;
+            NotificationWidth = source.NotificationWidth;
+            NotificationScalePercent = source.NotificationScalePercent;
+            NotificationDurationMilliseconds = source.NotificationDurationMilliseconds;
+            NotificationPosition = source.NotificationPosition;
+            NotificationBackgroundColor = source.NotificationBackgroundColor;
+            NotificationTextColor = source.NotificationTextColor;
+            NotificationSecondaryTextColor = source.NotificationSecondaryTextColor;
+            NotificationConnectedColor = source.NotificationConnectedColor;
+            NotificationDisconnectedColor = source.NotificationDisconnectedColor;
+            NotificationWarningColor = source.NotificationWarningColor;
+            NotificationTitleFontSize = source.NotificationTitleFontSize;
+            NotificationMessageFontSize = source.NotificationMessageFontSize;
+            NotificationIconSize = source.NotificationIconSize;
+            NotificationIconPosition = source.NotificationIconPosition;
+            NotificationPadding = source.NotificationPadding;
+            NotificationShowBorder = source.NotificationShowBorder;
+            NotificationBorderPosition = source.NotificationBorderPosition;
+            NotificationBorderThickness = source.NotificationBorderThickness;
+            NotificationCornerRadius = source.NotificationCornerRadius;
+            ShowControllerNameInNotifications = source.ShowControllerNameInNotifications;
+            OverlayScalePercent = source.OverlayScalePercent;
+            OverlayDimColor = source.OverlayDimColor;
+            OverlayCardColor = source.OverlayCardColor;
+            OverlayAccentColor = source.OverlayAccentColor;
+            OverlayTextColor = source.OverlayTextColor;
+            OverlayWarningColor = source.OverlayWarningColor;
+            OverlayTitleFontSize = source.OverlayTitleFontSize;
+            OverlayControllerFontSize = source.OverlayControllerFontSize;
+            OverlayInstructionFontSize = source.OverlayInstructionFontSize;
+            OverlayStatusFontSize = source.OverlayStatusFontSize;
+            OverlayControllerIconSize = source.OverlayControllerIconSize;
+            OverlayStatusIconSize = source.OverlayStatusIconSize;
+            OverlayPadding = source.OverlayPadding;
+            OverlayShowBorder = source.OverlayShowBorder;
+            OverlayBorderThickness = source.OverlayBorderThickness;
+            OverlayCornerRadius = source.OverlayCornerRadius;
+            AllowControllerTakeover = source.AllowControllerTakeover;
+            ProtectAllActiveControllers = source.ProtectAllActiveControllers;
+            PauseGameOnDisconnect = source.PauseGameOnDisconnect;
+            PauseKey = NormalizePauseKey(source.PauseKey);
+            DisconnectGracePeriodMilliseconds = source.DisconnectGracePeriodMilliseconds;
             ReconciliationIntervalSeconds = source.ReconciliationIntervalSeconds;
+            ControllerProfiles = CloneProfiles(source.ControllerProfiles);
+            GameSessionOverrides = CloneGameOverrides(source.GameSessionOverrides);
+            foreach (var profile in ControllerProfiles)
+            {
+                profile.IconId = NormalizeIconId(profile.IconId);
+            }
+        }
+
+        private static ControllerIconOption Icon(string id, string name, string fileName)
+        {
+            return new ControllerIconOption { Id = id, Name = name, FileName = fileName };
+        }
+
+        private static string SuggestIcon(ControllerDeviceSnapshot controller)
+        {
+            var name = (controller.DetectedName ?? controller.Name ?? string.Empty).ToLowerInvariant();
+            return name.Contains("nintendo") || name.Contains("switch") ? "nintendo" : "gamepad-4";
+        }
+
+        private static string NormalizeIconId(string iconId)
+        {
+            switch (iconId)
+            {
+                case "gamepad":
+                case "gamepad-2":
+                case "gamepad-3":
+                case "gamepad-4":
+                case "nintendo":
+                    return iconId;
+                default:
+                    return "gamepad-4";
+            }
+        }
+
+        private static List<ControllerProfile> CloneProfiles(IEnumerable<ControllerProfile> profiles)
+        {
+            return (profiles ?? Enumerable.Empty<ControllerProfile>()).Select(a => new ControllerProfile
+            {
+                HardwareId = a.HardwareId,
+                LastKnownXInputSlot = a.LastKnownXInputSlot,
+                DetectedName = a.DetectedName,
+                CustomName = a.CustomName,
+                IconId = a.IconId
+            }).ToList();
+        }
+
+        private static List<GameSessionOverride> CloneGameOverrides(IEnumerable<GameSessionOverride> overrides)
+        {
+            return (overrides ?? Enumerable.Empty<GameSessionOverride>()).Select(a => new GameSessionOverride
+            {
+                GameId = a.GameId,
+                GameName = a.GameName,
+                EnableSessionTracking = a.EnableSessionTracking,
+                DisconnectGracePeriodMilliseconds = a.DisconnectGracePeriodMilliseconds,
+                AllowControllerTakeover = a.AllowControllerTakeover,
+                ProtectAllActiveControllers = a.ProtectAllActiveControllers,
+                PauseGameOnDisconnect = a.PauseGameOnDisconnect,
+                ForcePauseOfflineGames = a.ForcePauseOfflineGames,
+                PauseKey = NormalizePauseKey(a.PauseKey),
+                OverrideSessionProtection = a.OverrideSessionProtection,
+                OverridePauseProfile = a.OverridePauseProfile
+            }).ToList();
+        }
+
+        private static string NormalizePauseKey(string value)
+        {
+            return GamePauseService.IsSupportedKey(value) ? value.Trim() : "Escape";
+        }
+
+        private IEnumerable<string> AppearanceColors()
+        {
+            yield return NotificationBackgroundColor;
+            yield return NotificationTextColor;
+            yield return NotificationSecondaryTextColor;
+            yield return NotificationConnectedColor;
+            yield return NotificationDisconnectedColor;
+            yield return NotificationWarningColor;
+            yield return OverlayDimColor;
+            yield return OverlayCardColor;
+            yield return OverlayAccentColor;
+            yield return OverlayTextColor;
+            yield return OverlayWarningColor;
+        }
+
+        private static bool IsSupportedPosition(string value)
+        {
+            return value == "TopRight" || value == "TopLeft" ||
+                value == "BottomRight" || value == "BottomLeft";
+        }
+
+        private static bool IsSupportedBorderPosition(string value)
+        {
+            return value == "Left" || value == "Top" || value == "Right" || value == "Bottom";
+        }
+
+        private static bool IsSupportedIconPosition(string value)
+        {
+            return value == "Left" || value == "Right" || value == "Top" ||
+                value == "Bottom" || value == "Hidden";
+        }
+
+        private static bool IsHexColor(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value) || value[0] != '#' ||
+                value.Length != 7 && value.Length != 9)
+            {
+                return false;
+            }
+            return value.Skip(1).All(a => (a >= '0' && a <= '9') ||
+                (a >= 'a' && a <= 'f') || (a >= 'A' && a <= 'F'));
         }
     }
 }
-

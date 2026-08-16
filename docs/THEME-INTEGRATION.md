@@ -205,6 +205,15 @@ Sólo son útiles cuando el binding fuente ya está disponible en el contexto de
 
 La misma lista lógica se registrará para ambos modos, pero cada elemento se probará en ambos. El theme debe colocar explícitamente los placeholders en sus vistas. CSM no modifica archivos del theme instalado, porque Playnite reemplaza el directorio completo del theme durante actualizaciones.
 
+El indicador que CSM añade automáticamente a la barra superior pertenece exclusivamente a Desktop. No detecta themes por nombre. Localiza su ancestro interno `TopPanelItem` por el nombre runtime del tipo y mide el ancho real del contenedor:
+
+- ancho igual o superior a 58 px: icono y batería disponible; ambos usan el color semántico si la opción está activada o el color del theme si está desactivada;
+- ancho inferior a 58 px con batería: solo icono, con color semántico opcional según el mismo ajuste;
+- ancho inferior a 58 px sin batería: solo icono con el color normal del theme;
+- tooltip con `Nombre: Batería`, o solo `Nombre` si no hay batería.
+
+El control reacciona a `SizeChanged` y libera esa suscripción en `Unloaded`. Por tanto, soporta botones estrechos o circulares de 35 × 35 px y conserva la presentación completa en barras amplias sin excepciones específicas por theme.
+
 Recomendaciones para Fullscreen:
 
 - targets de 44–48 px o más si el control es interactivo;
@@ -246,4 +255,3 @@ Cada icono debe tener fallback `Generic/Unknown`. VID/PID ayuda a clasificar, pe
 - [Playnite: integración desde themes](https://api.playnite.link/docs/tutorials/themes/extensionIntegration.html)
 - [Playnite: introducción a themes WPF](https://api.playnite.link/docs/tutorials/themes/introduction.html)
 - [Playnite: instalación y reemplazo de directorios de themes](https://api.playnite.link/docs/manual/features/themesSupport/installingThemes.html)
-

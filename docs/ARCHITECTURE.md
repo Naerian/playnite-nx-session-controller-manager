@@ -1,5 +1,11 @@
 # Controller Session Manager — Arquitectura
 
+## Límite de seguridad nativa en Fullscreen (0.5.7)
+
+El proceso Fullscreen de Playnite nunca inicializa ni llama a SDL desde esta extensión. XInput y los eventos de mandos de Playnite se mantienen dentro del proceso; el enriquecimiento SDL de nombres, batería e input no XInput queda limitado a Desktop. Cualquier muestreo SDL futuro para Fullscreen deberá ejecutarse en un proceso auxiliar descartable, de modo que un fallo nativo del driver no pueda terminar Playnite.
+
+Desde 0.5.8, Desktop persiste la última asociación entre el perfil físico y el slot XInput. El proceso Fullscreen reutiliza esa asociación para el nombre, alias e icono, pero no la considera una identificación criptográfica ni permanente: si Windows reasigna slots, Desktop corrige el vínculo en el siguiente arranque o refresco.
+
 > Estado: propuesta previa a implementación  
 > Fecha de revisión: 2026-08-14  
 > Alcance inicial: Playnite 10.x, Windows 10 1903 o posterior, proceso x64
@@ -198,7 +204,17 @@ Al desaparecer un binding, el registro sólo marca el dispositivo `Missing` cuan
 5. Ejecutar pausa segura y overlay de forma independiente; el fallo de uno no impide el otro.
 6. Al reconectar, ocultar overlay y reanudar sólo si CSM confirmó que él mismo pausó y la política lo permite.
 
-Para «permitir otro mando», el incidente puede cerrarse por takeover tras input significativo del sustituto. Para «requerir el mismo», sólo se acepta una coincidencia fuerte o confirmación manual.
+Desde 0.4.0 la sustitución no es una preferencia separada. En automático, un input intencionado transfiere la propiedad al mando disponible; en multijugador local, sólo un dispositivo que no pertenezca ya a otro participante puede ocupar la plaza ausente.
+
+Desde 0.5.1, `AdaptiveSessionScopeDetector` observa cambios únicos de `LastInputUtc`, compacta repeticiones inferiores a 180 ms y mantiene una ventana móvil de veinte segundos. Dos participantes con al menos dos muestras cada uno y tres transiciones promocionan la sesión automática a multijugador local hasta terminar el juego. Esto evita pedir clasificación al usuario sin confundir un cambio aislado de mando con cooperativo.
+
+Desde 0.4.1, la evidencia de input conserva su clase (`DigitalButton`, `Trigger`, `Stick`, `DirectionalPad` o fallback de Playnite). SDL evalúa el desplazamiento respecto a una línea base capturada al abrir el dispositivo, no sólo el delta entre dos lecturas, para que un eje que vuelve a su valor inicial al apagarse no active al mando. Una sustitución exige además neutralidad continua durante 200 ms; mientras exista una incidencia, XInput/SDL se sondean cada 100 ms en lugar de 250 ms.
+
+En 0.4.2, SDL usa la asignación canónica de botones y excluye Guide/PS/Home: pulsarlo para apagar el mando no implica que ese mando participase en el juego. Los sticks se reconocen desde 8.000 unidades respecto a la línea base y el reposo previo al relevo se reduce a 100 ms.
+
+En 0.4.3, el proveedor se sondea cada 50 ms mientras una sesión está activa. Esto impide que un movimiento breve del stick empiece y vuelva a reposo entre dos muestras de inventario. Fuera de una partida se conservan 250 ms para reducir trabajo innecesario.
+
+La implementación distingue dos alcances. En `MostRecent`, sólo el mando con input intencionado más reciente permanece protegido y una sustitución puede ocurrir desde que empieza el margen de desconexión. En `AllActive`, cada mando usado representa un participante local independiente: un mando que ya pertenece a la sesión no puede sustituir a otro participante desaparecido, pero uno nuevo/no asignado sí. Un mando retirado conserva un suelo de activación y no puede volver a entrar hasta superar su último timestamp conocido con input nuevo.
 
 ## 9. Pausa y seguridad
 
@@ -284,4 +300,3 @@ Cada evento incluye `CorrelationId`, `SessionId`, `ControllerId` interno, provee
 - [GameInput: dispositivos](https://learn.microsoft.com/en-us/gaming/gdk/docs/features/common/input/overviews/input-devices)
 - [GameInput: callbacks](https://learn.microsoft.com/en-us/gaming/gdk/docs/features/common/input/advanced/input-callbacks)
 - [XInput: uso y rendimiento](https://learn.microsoft.com/en-us/windows/win32/xinput/getting-started-with-xinput)
-

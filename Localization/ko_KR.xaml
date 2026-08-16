@@ -10,7 +10,7 @@
     <sys:String x:Key="LOCCSM_NoControllers">연결된 컨트롤러 없음</sys:String>
     <sys:String x:Key="LOCCSM_NoInputYet">아직 입력이 감지되지 않음</sys:String>
     <sys:String x:Key="LOCCSM_LastInput">마지막 입력</sys:String>
-    <sys:String x:Key="LOCCSM_FoundationNotice">기반 릴리스: 컨트롤러 목록과 진단 기능이 활성화되었습니다. 세션 보호, 일시 정지, 오버레이 및 배터리 기능은 단계적으로 추가됩니다.</sys:String>
+    <sys:String x:Key="LOCCSM_FoundationNotice">컨트롤러 목록, 세션 추적 및 연결 끊김 오버레이가 활성화되었습니다. 안전한 일시 정지와 추가 배터리 기능은 추후 제공됩니다.</sys:String>
     <sys:String x:Key="LOCCSM_MenuDiagnostics">컨트롤러 진단</sys:String>
     <sys:String x:Key="LOCCSM_MenuRefresh">컨트롤러 새로 고침</sys:String>
     <sys:String x:Key="LOCCSM_DiagnosticsTitle">컨트롤러 진단</sys:String>
@@ -40,7 +40,7 @@
     <sys:String x:Key="LOCCSM_AdvancedHelp">진단 및 개발 중인 기능의 상태입니다.</sys:String>
     <sys:String x:Key="LOCCSM_FoundationTitle">개발 상태</sys:String>
     <sys:String x:Key="LOCCSM_TabAbout">정보</sys:String>
-    <sys:String x:Key="LOCCSM_Version011">버전 0.1.1</sys:String>
+    <sys:String x:Key="LOCCSM_Version017">버전 0.1.7</sys:String>
     <sys:String x:Key="LOCCSM_AboutPurpose">Playnite 세션을 위한 안정적인 컨트롤러 모니터링.</sys:String>
     <sys:String x:Key="LOCCSM_AboutDescription">Playnite 컨트롤러 브리지에 의존하지 않고 연결, 연결 해제 및 XInput 활동을 감지합니다.</sys:String>
     <sys:String x:Key="LOCCSM_Unknown">알 수 없음</sys:String>
@@ -51,4 +51,127 @@
     <sys:String x:Key="LOCCSM_ValueLow">낮음</sys:String>
     <sys:String x:Key="LOCCSM_ValueMedium">중간</sys:String>
     <sys:String x:Key="LOCCSM_ValueFull">가득 참</sys:String>
+    <sys:String x:Key="LOCCSM_ValueWirelessReceiver">무선 수신기</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerProfiles">컨트롤러 이름 및 아이콘</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerProfilesHelp">감지된 각 컨트롤러에 선택적으로 Playnite 이름과 아이콘을 지정합니다.</sys:String>
+    <sys:String x:Key="LOCCSM_DetectedName">감지된 이름</sys:String>
+    <sys:String x:Key="LOCCSM_CustomName">사용자 지정 이름</sys:String>
+    <sys:String x:Key="LOCCSM_Icon">아이콘</sys:String>
+    <sys:String x:Key="LOCCSM_NoIcon">없음</sys:String>
+    <sys:String x:Key="LOCCSM_ValueUnavailable">사용할 수 없음</sys:String>
+    <sys:String x:Key="LOCCSM_UserName">사용자 이름</sys:String>
+    <sys:String x:Key="LOCCSM_HidDiagnostics">HID 진단</sys:String>
+    <sys:String x:Key="LOCCSM_HidDiagnosticsHelp">검증된 배터리 프로필 개발을 위해 일치하는 HID 인터페이스, 기능 및 현재 보고서를 읽기 전용으로 내보냅니다.</sys:String>
+    <sys:String x:Key="LOCCSM_ExportHidDiagnostics">HID 진단 내보내기</sys:String>
+    <sys:String x:Key="LOCCSM_HidDiagnosticsExported">HID 진단을 다음 위치로 내보냈습니다:\n{0}</sys:String>
+    <sys:String x:Key="LOCCSM_OverviewHelp">연결된 컨트롤러, 활성 입력 공급자, 기본 컨트롤러 및 마지막 새로 고침을 빠르게 확인합니다.</sys:String>
+    <sys:String x:Key="LOCCSM_DevicesTab">장치</sys:String>
+    <sys:String x:Key="LOCCSM_BatteryUnknownHint">컨트롤러, 수신기 또는 Windows 드라이버가 표준 API에 충전 수준을 제공하지 않으면 배터리가 알 수 없음으로 표시될 수 있습니다. 전용 USB 수신기에서 흔합니다.</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerGeneralTitle">컨트롤러 표시</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerGeneralHelp">Playnite 데스크톱 모드에서 컨트롤러 정보를 표시할 방법을 선택합니다.</sys:String>
+    <sys:String x:Key="LOCCSM_DesktopIntegrationTitle">빠른 실행</sys:String>
+    <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanel">상단 패널에 기본 컨트롤러 아이콘과 배터리 표시</sys:String>
+    <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanelHelp">지정된 아이콘은 항상 표시됩니다. 배터리 수준은 사용 가능할 때만 추가됩니다.</sys:String>
+    <sys:String x:Key="LOCCSM_ValueBluetooth">Bluetooth</sys:String>
+    <sys:String x:Key="LOCCSM_VersionAuthorFormat">버전 {0} | 제작자: Narian</sys:String>
+    <sys:String x:Key="LOCCSM_ProjectLinksTitle">프로젝트 링크</sys:String>
+    <sys:String x:Key="LOCCSM_OpenWiki">위키 열기</sys:String>
+    <sys:String x:Key="LOCCSM_ReportIssue">문제 신고</sys:String>
+    <sys:String x:Key="LOCCSM_SupportTitle">개발 지원</sys:String>
+    <sys:String x:Key="LOCCSM_KoFiSupportHelp">이 플러그인이 유용하다면 Ko-fi에서 지속적인 개발을 지원할 수 있습니다.</sys:String>
+    <sys:String x:Key="LOCCSM_KoFiSupport">Ko-fi에서 지원</sys:String>
+    <sys:String x:Key="LOCCSM_Actions">작업</sys:String>
+    <sys:String x:Key="LOCCSM_TestVibration">진동 테스트</sys:String>
+    <sys:String x:Key="LOCCSM_VibrationUnavailable">현재 연결 모드 또는 드라이버에서 이 컨트롤러가 진동 명령을 수락하지 않았습니다.</sys:String>
+    <sys:String x:Key="LOCCSM_SessionStatus">게임 세션</sys:String>
+    <sys:String x:Key="LOCCSM_ActiveSessionControllers">세션 활성 컨트롤러</sys:String>
+    <sys:String x:Key="LOCCSM_SessionProtectionTitle">연결 끊김 보호 기반</sys:String>
+    <sys:String x:Key="LOCCSM_SessionProtectionHelp">게임 중 사용한 컨트롤러를 추적하고 유예 시간 후 연결 끊김을 확인하여 외부 오버레이를 표시할 수 있습니다. 자동 일시 정지는 아직 활성화되지 않습니다.</sys:String>
+    <sys:String x:Key="LOCCSM_EnableSessionTracking">게임 세션 중 활성 컨트롤러 추적</sys:String>
+    <sys:String x:Key="LOCCSM_DisconnectGracePeriod">연결 끊김 유예 시간</sys:String>
+    <sys:String x:Key="LOCCSM_DisconnectGracePeriodHelp">연결 끊김을 확인하기 전에 짧은 끊김이나 즉시 재연결을 허용하는 시간입니다.</sys:String>
+    <sys:String x:Key="LOCCSM_ValidationGracePeriod">연결 끊김 유예 시간은 250~10000밀리초여야 합니다.</sys:String>
+    <sys:String x:Key="LOCCSM_SessionIdle">활성 게임 세션 없음</sys:String>
+    <sys:String x:Key="LOCCSM_SessionDisconnectConfirmed">확인된 연결 끊김: {0}</sys:String>
+    <sys:String x:Key="LOCCSM_SessionGracePeriod">컨트롤러 없음 · 유예 시간 대기 중</sys:String>
+    <sys:String x:Key="LOCCSM_SessionWaitingForInput">세션 시작됨 · 컨트롤러 입력 대기 중</sys:String>
+    <sys:String x:Key="LOCCSM_SessionTracking">세션 활성 컨트롤러 추적 중</sys:String>
+    <sys:String x:Key="LOCCSM_NoActiveSessionControllers">이 세션에서 컨트롤러 입력이 아직 없습니다</sys:String>
+    <sys:String x:Key="LOCCSM_AllowControllerTakeover">연결 끊김 확인 후 다른 컨트롤러가 제어하도록 허용</sys:String>
+    <sys:String x:Key="LOCCSM_AllowControllerTakeoverHelp">활성화하면 다른 컨트롤러의 새로운 입력으로 연결이 끊긴 컨트롤러를 대체할 수 있습니다. 로컬 멀티플레이에서는 이미 활성인 플레이어가 다른 플레이어를 대체하지 않습니다.</sys:String>
+    <sys:String x:Key="LOCCSM_GameOverridesHelp">게임 컨텍스트 메뉴에서 자동 싱글 플레이 할당 또는 명시적 로컬 멀티플레이 보호를 선택하세요.</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyUseGlobal">전역 설정 사용</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyDisable">세션 보호 비활성화</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyRequireSame">자동 / 적응형</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyAllowTakeover">싱글 플레이 · 다른 컨트롤러의 전환 허용</sys:String>
+    <sys:String x:Key="LOCCSM_MenuSettings">설정</sys:String>
+    <sys:String x:Key="LOCCSM_ShowDisconnectOverlay">컨트롤러 연결 끊김 확인 후 오버레이 표시</sys:String>
+    <sys:String x:Key="LOCCSM_ShowDisconnectOverlayHelp">외부 오버레이는 정보용이며 문제가 해결되거나 게임이 종료되면 자동으로 닫힙니다.</sys:String>
+    <sys:String x:Key="LOCCSM_ProtectAllActiveControllers">기본적으로 로컬 멀티플레이 보호 사용</sys:String>
+    <sys:String x:Key="LOCCSM_ProtectAllActiveControllersHelp">여러 로컬 플레이어가 별도 컨트롤러를 사용할 때만 활성화하세요. 싱글 플레이와 온라인 멀티플레이에는 자동 모드를 권장합니다.</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyLocalMultiplayer">로컬 멀티플레이 · 모든 활성 컨트롤러 보호</sys:String>
+    <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">연결 끊김 확인 후 게임 일시 정지 시도</sys:String>
+    <sys:String x:Key="LOCCSM_PauseGameOnDisconnectHelp">전면 창이 게임 또는 하위 프로세스에 속할 때만 설정한 키를 한 번 보냅니다. 기본적으로 꺼져 있으며 자동으로 재개하지 않습니다.</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyEnablePause">이 게임 자동 일시 정지</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyDisablePause">이 게임을 자동 일시 정지하지 않음</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayPauseDisabled">자동 일시 정지 꺼짐</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayPauseSent">자동 일시 정지를 요청했습니다</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayPauseNotSent">일시 정지 실패: 게임이 전면에 없었습니다</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayPauseFailed">일시 정지를 요청할 수 없습니다</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayDisconnectTitle">컨트롤러 연결 끊김</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayDisconnectMessage">연결이 끊겼습니다: {0}</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayWaitSameController">다시 연결하여 계속하세요.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayAllowTakeover">다시 연결하거나 사용 가능한 다른 컨트롤러로 계속하세요.</sys:String>
+    <sys:String x:Key="LOCCSM_ColorTopPanelByBattery">배터리 수준에 따라 아이콘과 텍스트 색상 지정</sys:String>
+    <sys:String x:Key="LOCCSM_PauseKey">일시 정지 키</sys:String>
+    <sys:String x:Key="LOCCSM_PauseKeyHelp">허용: Escape, Space, Enter, Tab, Backspace, A-Z, 0-9, F1-F12.</sys:String>
+    <sys:String x:Key="LOCCSM_ValidationPauseKey">키는 Escape, Space, Enter, Tab, Backspace, A-Z, 0-9 또는 F1-F12여야 합니다.</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicySessionSection">세션 보호</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyPauseSection">자동 일시 정지</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyPauseUseGlobal">전역 일시 정지 설정 사용</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyPauseEscape">연결 해제 시 Escape 전송</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyPauseCustom">연결 해제 시 설정 키({0}) 전송</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyOverlayOnly">오버레이만 · 키를 보내지 않음</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayDisconnectTitlePlural">컨트롤러 {0}개 연결 끊김</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayReconnectControllers">다시 연결하여 계속하세요.</sys:String>
+    <sys:String x:Key="LOCCSM_ForcePauseOfflineGames">연결 끊김 확인 시 오프라인 게임 강제 일시 정지</sys:String>
+    <sys:String x:Key="LOCCSM_ForcePauseOfflineGamesHelp">기본적으로 꺼진 고급 기능입니다. 컨트롤러가 돌아오거나 다른 컨트롤러가 인계할 때까지 전면 게임 프로세스를 중단합니다. 온라인 활동이 감지되면 게임을 중단하지 않고 알림만 표시합니다. 감지는 완전하지 않습니다.</sys:String>
+    <sys:String x:Key="LOCCSM_FullscreenNotificationsTitle">화면 알림</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceLayout">레이아웃</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceContent">콘텐츠</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceShape">모양 및 테두리</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceColors">색상</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceTypography">타이포그래피</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceIconsBorder">아이콘 및 테두리</sys:String>
+    <sys:String x:Key="LOCCSM_BackdropHelp">배경은 오버레이 뒤의 게임 화면을 덮습니다. 앞의 두 16진수 숫자로 불투명도를 조절하며 #00000000을 사용하면 완전히 투명해집니다.</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationIconPosition">아이콘 위치</sys:String>
+    <sys:String x:Key="LOCCSM_IconHidden">아이콘 숨기기</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationWarningPreview">경고</sys:String>
+    <sys:String x:Key="LOCCSM_ShowFullscreenControllerNotifications">전체 화면 인터페이스에서 컨트롤러 연결 및 해제 알림</sys:String>
+    <sys:String x:Key="LOCCSM_ShowFullscreenControllerNotificationsHelp">Playnite 탐색 중 짧고 방해되지 않는 알림을 표시하며 실행 중인 게임 위에는 표시하지 않습니다.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayForcePaused">게임을 안전하게 강제 일시 정지했습니다</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayForcePauseFailed">게임을 안전하게 강제 일시 정지하지 못했습니다</sys:String>
+    <sys:String x:Key="LOCCSM_OnlineFallbackToastTitle">컨트롤러 연결 끊김</sys:String>
+    <sys:String x:Key="LOCCSM_OnlineFallbackToastMessage">온라인 활동 감지 · 게임을 중단하지 않았습니다</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerConnectedToast">컨트롤러 연결됨</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerDisconnectedToast">컨트롤러 연결 끊김</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyForcePauseOffline">오프라인 강제 일시 정지 · 온라인이면 알림</sys:String>
+    <sys:String x:Key="LOCCSM_TabSession">세션</sys:String><sys:String x:Key="LOCCSM_TabAppearance">모양</sys:String>
+    <sys:String x:Key="LOCCSM_AdaptiveProtectionHelp">자동 모드는 싱글 플레이로 시작하며 여러 컨트롤러의 지속적인 교대 입력을 감지한 경우에만 로컬 멀티플레이로 전환합니다. 컨트롤러를 한 번 바꾸는 것만으로는 전환되지 않습니다. 필요한 게임에만 별도 설정을 사용하세요.</sys:String>
+    <sys:String x:Key="LOCCSM_PauseModesHelp">안전한 전역 보호를 선택하세요. 오프라인 강제 일시 정지가 일시 정지 키보다 우선하며 게임별로 변경할 수 있습니다.</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationWidth">너비 (px)</sys:String><sys:String x:Key="LOCCSM_NotificationScale">크기 (%)</sys:String><sys:String x:Key="LOCCSM_NotificationDuration">표시 시간 (ms)</sys:String><sys:String x:Key="LOCCSM_NotificationPosition">위치</sys:String>
+    <sys:String x:Key="LOCCSM_PositionTopRight">오른쪽 위</sys:String><sys:String x:Key="LOCCSM_PositionTopLeft">왼쪽 위</sys:String><sys:String x:Key="LOCCSM_PositionBottomRight">오른쪽 아래</sys:String><sys:String x:Key="LOCCSM_PositionBottomLeft">왼쪽 아래</sys:String>
+    <sys:String x:Key="LOCCSM_ColorFormatHelp">색상: #RRGGBB 또는 #AARRGGBB(알파, 빨강, 초록, 파랑).</sys:String>
+    <sys:String x:Key="LOCCSM_BackgroundColor">배경</sys:String><sys:String x:Key="LOCCSM_PrimaryTextColor">기본 텍스트</sys:String><sys:String x:Key="LOCCSM_SecondaryTextColor">보조 텍스트</sys:String><sys:String x:Key="LOCCSM_ConnectedColor">연결 강조</sys:String><sys:String x:Key="LOCCSM_DisconnectedColor">해제 강조</sys:String><sys:String x:Key="LOCCSM_WarningColor">경고 강조</sys:String>
+    <sys:String x:Key="LOCCSM_PreviewNotification">알림 미리 보기</sys:String><sys:String x:Key="LOCCSM_OverlayAppearanceTitle">연결 해제 오버레이</sys:String><sys:String x:Key="LOCCSM_OverlayAppearanceHelp">독립 게임 오버레이를 꾸밉니다. 가독성을 위해 Playnite 테마와 독립된 색상을 사용합니다.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayScale">오버레이 크기 (%)</sys:String><sys:String x:Key="LOCCSM_DimColor">배경 오버레이</sys:String><sys:String x:Key="LOCCSM_CardColor">카드 배경</sys:String><sys:String x:Key="LOCCSM_AccentColor">기본 강조</sys:String>
+    <sys:String x:Key="LOCCSM_ValidationAppearance">너비, 표시 시간 또는 배율이 지원 범위를 벗어났습니다.</sys:String><sys:String x:Key="LOCCSM_NotificationPreviewTitle">컨트롤러 연결됨</sys:String><sys:String x:Key="LOCCSM_NotificationPreviewMessage">Controller Session Manager 알림은 이렇게 표시됩니다.</sys:String>
+    <sys:String x:Key="LOCCSM_SessionAdaptiveLocal">로컬 멀티플레이 자동 감지 · 컨트롤러 {0}개 보호 중</sys:String>
+    <sys:String x:Key="LOCCSM_Monitoring">모니터링</sys:String>
+    <sys:String x:Key="LOCCSM_ShowControllerNameInNotifications">알림에 장치 이름 표시</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationTitleSize">제목 텍스트 (px)</sys:String><sys:String x:Key="LOCCSM_NotificationTextSize">메시지 텍스트 (px)</sys:String><sys:String x:Key="LOCCSM_NotificationIconSize">아이콘 크기 (px)</sys:String><sys:String x:Key="LOCCSM_NotificationPadding">내부 여백 (px)</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationShowBorder">상태 색상 테두리 표시</sys:String><sys:String x:Key="LOCCSM_NotificationBorderPosition">테두리 위치</sys:String><sys:String x:Key="LOCCSM_NotificationBorderThickness">테두리 두께 (px)</sys:String>
+    <sys:String x:Key="LOCCSM_BorderLeft">왼쪽</sys:String><sys:String x:Key="LOCCSM_BorderTop">위</sys:String><sys:String x:Key="LOCCSM_BorderRight">오른쪽</sys:String><sys:String x:Key="LOCCSM_BorderBottom">아래</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayPreview">실시간 미리보기</sys:String><sys:String x:Key="LOCCSM_PreviewControllerName">예시 컨트롤러</sys:String><sys:String x:Key="LOCCSM_OverlayPreviewHelp">편집하는 동안 색상과 크기가 업데이트됩니다. 실제 오버레이는 화면에 맞게 조정됩니다.</sys:String>
+    <sys:String x:Key="LOCCSM_SelectColor">색상 선택</sys:String><sys:String x:Key="LOCCSM_NotificationCornerRadius">알림 모서리 반경 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayTitleSize">제목 텍스트 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerTextSize">컨트롤러 텍스트 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayInstructionSize">안내 텍스트 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusSize">상태 텍스트 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerIconSize">컨트롤러 아이콘 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusIconSize">상태 아이콘 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayPadding">카드 여백 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayCornerRadius">모서리 반경 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayShowBorder">오버레이 카드 테두리 표시</sys:String>
 </ResourceDictionary>

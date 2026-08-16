@@ -12,6 +12,16 @@ namespace ControllerSessionManager.Controllers
 
         public string Name { get; set; }
 
+        public string DetectedName { get; set; }
+
+        public string HardwareId { get; set; }
+
+        public ushort VendorId { get; set; }
+
+        public ushort ProductId { get; set; }
+
+        public string IconId { get; set; }
+
         public string Path { get; set; }
 
         public bool IsConnected { get; set; }
@@ -25,6 +35,12 @@ namespace ControllerSessionManager.Controllers
         public DateTime LastSeenUtc { get; set; }
 
         public DateTime? LastInputUtc { get; set; }
+
+        public string LastInputKind { get; set; }
+
+        public bool? IsInputNeutral { get; set; }
+
+        public DateTime? InputNeutralSinceUtc { get; set; }
 
         public ControllerDeviceSnapshot Clone()
         {

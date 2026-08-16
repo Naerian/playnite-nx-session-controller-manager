@@ -36,12 +36,23 @@ foreach ($fileName in $expectedFiles) {
     }
 }
 
+& (Join-Path $root "tests\run-session-tests.ps1")
+
 & (Join-Path $root "build.ps1") -Configuration $Configuration
 
 $assemblyPath = Join-Path $root "bin\$Configuration\ControllerSessionManager.dll"
 $assemblyName = [Reflection.AssemblyName]::GetAssemblyName($assemblyPath)
-if ($assemblyName.Version.ToString() -ne "0.1.1.0") {
+if ($assemblyName.Version.ToString() -ne "0.5.9.0") {
     throw "Unexpected assembly version: $($assemblyName.Version)"
+}
+
+$overlayPath = Join-Path $root "bin\$Configuration\ControllerSessionManager.OverlayHost.exe"
+if (-not (Test-Path -LiteralPath $overlayPath)) {
+    throw "Build output is missing ControllerSessionManager.OverlayHost.exe"
+}
+$overlayName = [Reflection.AssemblyName]::GetAssemblyName($overlayPath)
+if ($overlayName.Version.ToString() -ne "0.5.9.0") {
+    throw "Unexpected overlay host version: $($overlayName.Version)"
 }
 
 $outputLocalization = Join-Path $root "bin\$Configuration\Localization"
@@ -51,4 +62,4 @@ foreach ($fileName in $expectedFiles) {
     }
 }
 
-Write-Host "Verification passed: $($expectedFiles.Count) locales, $($englishKeys.Count) keys each, assembly $($assemblyName.Version)."
+Write-Host "Verification passed: $($expectedFiles.Count) locales, $($englishKeys.Count) keys each, plugin $($assemblyName.Version), overlay $($overlayName.Version)."

@@ -60,7 +60,7 @@ Incluye:
 - overrides por `Game.Id` para protección y grace period;
 - simulador/replay de trazas para tests deterministas.
 
-Todavía sólo registra/notifica dentro de Playnite; no inyecta pausa.
+La base actual incluye pausa por tecla y pausa forzada offline opcional con watchdog; no usa inyección, hooks ni drivers.
 
 Gate:
 
@@ -70,6 +70,8 @@ Gate:
 - eventos tardíos de una sesión anterior no afectan la siguiente.
 
 ## 5. v0.3 — Pausa segura y overlay Default
+
+Estado 0.3.0: implementados `SendEscape` opcional, validación del árbol de procesos foreground, receipt sin auto-resume y el OverlayHost Default. `CustomKey`, perfiles más detallados y la matriz amplia de compatibilidad quedan para iteraciones posteriores.
 
 Incluye:
 
@@ -217,4 +219,3 @@ Un dispositivo sólo se declara soportado si existe:
 - limitaciones conocidas.
 
 «Detectado» no implica batería, conexión exacta, rumble ni identidad persistente.
-

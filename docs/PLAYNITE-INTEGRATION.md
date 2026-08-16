@@ -34,6 +34,20 @@ Playnite advierte que su SDK no es completamente thread-safe. Ningún callback n
 
 `StartedProcessId` puede no ser válido para todos los lanzamientos, según la propia API. El `GameTargetResolver` lo tratará como pista inicial y verificará existencia, ventana y relación de procesos. Sin target fiable, `SendKey` se omite y el overlay aún puede mostrarse.
 
+Desde 0.3.0, la primera estrategia `SendEscape` está implementada como opción desactivada por defecto. En cada incidencia agregada sólo se intenta una vez. Se obtiene el HWND foreground, su PID y el snapshot de padres con Toolhelp; el PID debe coincidir con `StartedProcessId` o descender de él. Antes de `SendInput` se vuelve a comprobar HWND y PID. El resultado se conserva como `PauseReceipt` para diagnóstico y presentación, pero nunca se usa para reanudar automáticamente.
+
+En 0.3.1 la estrategia acepta una tecla simple validada. El ajuste global define la tecla y el override por `Game.Id` almacena `overlay only`, `Escape` o una copia de la tecla configurada. Los modificadores y secuencias quedan rechazados. Un `PauseAttemptGate` agregado a la incidencia garantiza que dos desconexiones cooperativas no generen dos pulsaciones.
+
+En 0.3.2 el override diferencia explícitamente la herencia de protección y la de pausa. Los valores antiguos sin marcadores se interpretan como overrides completos para no cambiar silenciosamente el comportamiento ya guardado. `GetGameMenuItems` crea dos rutas anidadas y antepone `✓` a la selección común; el SDK no expone una propiedad `IsChecked` para `GameMenuItem`, por lo que el carácter visible es la solución compatible con temas.
+
+En 0.4.0 la protección se reduce a `Automatic`, `LocalMultiplayer` y `Disabled`. La biblioteca de Playnite puede contener características de cooperativo u online, pero no garantiza su presencia, procedencia ni el modo concreto elegido en la ejecución actual. CSM no clasifica automáticamente el juego: usa Automatic por defecto y conserva LocalMultiplayer como elección explícita por `Game.Id`. El multijugador exclusivamente online usa Automatic porque los jugadores remotos no aparecen como dispositivos locales.
+
+En 0.4.1, el relevo automático espera a que el mando alternativo permanezca neutral durante 200 ms. Así una pulsación o un stick mantenido no cierra el overlay mientras la misma entrada todavía podría alcanzar al juego. El sondeo se acelera a 100 ms sólo durante incidencias y vuelve a 250 ms al resolverlas.
+
+En 0.4.2, Guide/PS/Home se trata como botón del sistema y no activa una sesión. El umbral de stick baja a 8.000 unidades y el reposo de relevo a 100 ms para que un movimiento normal cierre el aviso prácticamente al instante.
+
+En 0.4.3, el sondeo de mandos se realiza cada 50 ms durante toda la sesión de juego, no sólo después de detectar una desconexión. Un movimiento breve deja así evidencia antes de volver a reposo. Sin juego activo, el intervalo vuelve a 250 ms.
+
 ## 4. Integración de eventos de controlador
 
 Los eventos de Playnite se traducen a `ControllerObservation` de baja/media autoridad. `GamepadController.Path` se normaliza y se usa como evidencia para correlacionar con la ruta PnP de GameInput. `InstanceId` queda scoped al provider y a la ejecución: la documentación no promete persistencia.
@@ -67,7 +81,7 @@ Clave: `Playnite.SDK.Models.Game.Id`. Motivos:
 - el nombre puede cambiar;
 - `Game.GameId` es un identificador del proveedor y no es globalmente único.
 
-La UI ofrecerá «Configurar CSM para este juego» desde `GetGameMenuItems`. La configuración sigue siendo propiedad del plugin y no muta tags/campos del juego. Los overrides huérfanos se conservan por seguridad y podrán limpiarse manualmente.
+La UI ofrece los submenús `Protección de sesión` y `Pausa automática` desde `GetGameMenuItems`. La configuración sigue siendo propiedad del plugin y no muta tags/campos del juego. Los overrides huérfanos se conservan por seguridad y podrán limpiarse manualmente.
 
 ## 6. Proceso y ventana del juego
 
@@ -141,6 +155,14 @@ Los themes referencian, por ejemplo:
 
 Esto requiere soporte tanto del plugin como del theme; no aparece automáticamente en el theme default.
 
+### Indicador automático de la barra superior de Desktop
+
+El `TopPanelItem` opcional de CSM contiene un `PluginUserControl` y abre los ajustes del plugin al pulsarlo. Como `TopPanelItem` es un control interno de Playnite, el control no referencia ese tipo: al cargarse recorre sus ancestros con `VisualTreeHelper` y selecciona aquel cuyo `GetType().Name` sea exactamente `TopPanelItem`.
+
+El ancho se obtiene de `Width` cuando es válido o de `ActualWidth` como fallback. Con menos de 58 px se considera compacto y siempre se muestra únicamente el icono: usa el color semántico del estado cuando hay batería y el color normal del theme cuando no la hay. En anchos de 58 px o más se muestran icono y batería cuando ambos están disponibles. Se escucha `SizeChanged` para responder a cambios del theme o ventana, y el handler se desconecta en `Unloaded`.
+
+El tooltip usa una sola línea: `Nombre: Batería` cuando existe un valor real, o solamente `Nombre` cuando la batería no está disponible. No se generan porcentajes ni estados ficticios.
+
 ## 11. Datos para themes: límite y alternativa soportada
 
 Playnite documenta bindings de themes a **settings del plugin** mediante `PluginSettings`, no un binding arbitrario al ViewModel runtime del plugin. No se publicará como setting un estado de mando que cambia continuamente: semánticamente no es configuración y persistiría ruido.
@@ -176,6 +198,18 @@ Las propiedades visuales y resource keys quedan en `THEME-INTEGRATION.md`. Añad
 
 ## 13. Fuentes oficiales
 
+### Flujo de overlay implementado
+
+Tras `DisconnectConfirmed`, el plugin inicia bajo demanda `ControllerSessionManager.OverlayHost.exe` y le envía el estado localizado mediante un named pipe restringido al usuario actual y protegido con un token aleatorio por instancia. El host muestra una ventana WPF topmost, no activable y click-through en el monitor de la ventana principal del proceso del juego, con fallback al monitor primario.
+
+La misma incidencia se actualiza si faltan varios mandos. `DisconnectResolved`, `ControllerTakeover`, `OnGameStopped`, desactivar el seguimiento o cerrar Playnite ocultan el overlay. Un heartbeat evita ventanas huérfanas: el host la oculta tras 8 segundos sin comunicación y termina tras 30 segundos o al desaparecer el proceso padre.
+
+### Alcance de protección de la sesión
+
+El modo global es adaptativo. Empieza siguiendo el mando usado más recientemente y promociona la sesión a cooperativo local después de observar participación alternada sostenida de varios mandos. Una sola transición A→B conserva el comportamiento de un jugador; la secuencia A→B→A→B dentro de veinte segundos, con al menos dos muestras significativas por mando, protege a ambos como participantes independientes. El override `Multijugador local` fuerza directamente ese alcance para títulos atípicos.
+
+En modo multijugador, sólo un mando que todavía no pertenecía a la sesión puede sustituir automáticamente a un participante ausente. Tras la sustitución se guarda como suelo el último timestamp de input del mando retirado; una observación antigua o una simple reconexión no puede reactivarlo, pero un input genuinamente posterior sí. El menú contextual permite fijar Automatic o LocalMultiplayer por `Game.Id`.
+
 - [Generic plugins](https://api.playnite.link/docs/tutorials/extensions/genericPlugins.html)
 - [Eventos de extensiones](https://api.playnite.link/docs/tutorials/extensions/events.html)
 - [OnGameStartedEventArgs](https://api.playnite.link/docs/api/Playnite.SDK.Events.OnGameStartedEventArgs.html)
@@ -184,4 +218,3 @@ Las propiedades visuales y resource keys quedan en `THEME-INTEGRATION.md`. Añad
 - [Integración de elementos para themes](https://api.playnite.link/docs/tutorials/themes/extensionIntegration.html)
 - [GamepadController](https://api.playnite.link/docs/api/Playnite.SDK.Events.GamepadController.html)
 - [IPlayniteAPI.GetConnectedControllers](https://api.playnite.link/docs/api/Playnite.SDK.IPlayniteAPI.html)
-

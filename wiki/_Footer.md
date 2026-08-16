@@ -1,0 +1,1 @@
+[Home](Home) | [English](EN-Overview) | [Español](ES-Descripcion-General) | [Releases](https://github.com/Naerian/playnite-nx-session-controller-manager/releases) | [Issues](https://github.com/Naerian/playnite-nx-session-controller-manager/issues)

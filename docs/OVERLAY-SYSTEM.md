@@ -1,5 +1,7 @@
 # Sistema de overlay
 
+> Estado de implementación 0.5.9: el host externo gestiona el overlay, notificaciones Fullscreen en cola y una concesión opcional de pausa forzada para juegos offline. Usa pipe local autenticado, ACL del usuario, ventanas click-through/no-activate, selección de monitor, heartbeat y recuperación automática. Escala, posición, tipografía, iconos, padding, borde, radio de esquina, backdrop y paleta se reciben como datos validados; nunca se carga XAML ni código de terceros. Las notificaciones convierten DIP a píxeles según el DPI real, filtran durante 300 ms los cambios transitorios de XInput y los fallos de arranque o IPC quedan contenidos sin atravesar el callback de Playnite.
+
 ## 1. Decisión: proceso WPF independiente
 
 Opciones:
@@ -25,17 +27,17 @@ OverlayManager                         IpcServer
 
 El plugin inicia el host bajo el mismo usuario/integrity. IPC local mediante named pipe con ACL del usuario actual, mensajes con longitud máxima, versión y nonce de sesión. Ningún XAML cruza IPC; sólo DTOs validados.
 
-## 3. Protocolo IPC v1
+## 3. Protocolo IPC CSM3
 
 Envelope:
 
 ```json
 {
-  "protocolVersion": 1,
+  "protocolVersion": 3,
   "messageId": "guid",
   "sessionId": "guid",
-  "type": "ShowDisconnect",
-  "payload": {}
+  "type": "ShowDisconnect | Toast | HideAll | Heartbeat | Shutdown",
+  "payload": { "pauseStatus": "text", "forcePause": false, "verifiedProcessId": 0 }
 }
 ```
 
@@ -87,7 +89,27 @@ Por defecto el overlay es informativo y click-through/no-activate: el juego cons
 - capturar teclado/mouse no captura necesariamente el mando;
 - hooks/global filters aumentan riesgo y conflictos.
 
+CSM no presenta el overlay como una barrera universal: una ventana externa puede capturar ratón/teclado al tomar foco, pero no puede impedir de forma fiable el sondeo XInput, Raw Input, Steam Input o GameInput configurado para segundo plano. La protección se basa en la pausa segura y en resolver rápidamente la asignación del mando, sin drivers, hooks ni dispositivos virtuales.
+
+En 0.4.1, el relevo no se completa mientras el mando alternativo conserve una entrada activa. El proveedor publica neutralidad y su inicio; la sesión exige 200 ms continuos en reposo y acelera temporalmente el sondeo de 250 a 100 ms. SDL compara cada eje contra la línea base tomada al conectar para descartar retornos a reposo durante el apagado. La geometría del mando aparece en una fila compacta junto a su nombre.
+
+En 0.4.2, el tiempo de reposo baja a 100 ms. El botón canónico Guide/PS/Home queda excluido de la participación y el umbral de stick se ajusta a 8.000 unidades, de modo que el relevo responda a un movimiento normal sin aceptar drift respecto a la línea base.
+
+En 0.4.3, el sondeo funciona a 50 ms durante la partida para capturar incluso movimientos breves antes de que el mando vuelva a reposo. Fuera de una sesión permanece en 250 ms.
+
 La navegación del overlay sólo se habilitará si se diseña un modo interactivo explícito. Nunca se registrarán hotkeys o Raw Input globales desde themes.
+
+La pausa por tecla de 0.3.0 sigue verificando que la ventana foreground pertenece al PID iniciado por Playnite o a su árbol de descendientes, vuelve a comprobar HWND/PID y envía exactamente un par down/up mediante `SendInput`.
+
+En 0.3.1 el protocolo compacto `CSM2` añade el tipo y la geometría del estado. El host renderiza una etiqueta con `player-pause.svg` para pausa solicitada/desactivada y `alert-triangle.svg` para comprobaciones omitidas o fallos. El título, los nombres y la instrucción tienen jerarquía independiente y variantes singulares/plurales. El plugin puede enviar una tecla simple configurada, manteniendo una sola tentativa por incidencia.
+
+En 0.5.0 el modo avanzado de pausa forzada es independiente de la pausa por tecla y está desactivado por defecto. El plugin valida primero el proceso foreground. Después busca evidencia de sesión online: metadatos fuertes de juego exclusivamente online o conexiones TCP públicas establecidas pertenecientes al árbol del juego. Con evidencia online se muestra un toast y no se suspende nada. Sin ella, el host abre el proceso validado con el permiso mínimo de suspensión y mantiene una concesión idempotente mediante `NtSuspendProcess`/`NtResumeProcess`.
+
+La concesión se libera al resolver la incidencia, terminar el juego, recibir `Shutdown`, morir Playnite o perder el heartbeat durante ocho segundos. El cliente nunca mata el host mientras cree que puede existir una concesión activa; si el cierre ordenado falla, deja actuar al watchdog. Esta medida prima la recuperación del juego sobre la limpieza inmediata del proceso auxiliar.
+
+La detección online es deliberadamente de mejor esfuerzo. Una partida UDP, un servicio separado o tráfico encapsulado puede no detectarse; telemetría TCP puede causar un fallback conservador. Por eso el modo sigue siendo opt-in y debe probarse por juego.
+
+La paleta predeterminada no se obtiene del tema de Playnite: usa fondo oscuro translúcido, contenido blanco, azul para el borde y los estados informativos, y ámbar para advertencias. El host es un proceso WPF aislado y no carga diccionarios XAML de terceros en tiempo de ejecución. Esta decisión evita dependencias visuales y mantiene contraste estable sobre el juego, con independencia de que la sesión se iniciara desde Desktop o Fullscreen.
 
 ## 7. Modelo visual estable
 
@@ -141,7 +163,7 @@ Version: 1.0.0
 ControllerSessionManagerApiVersion: 1
 EntryPoint: Overlay.xaml
 Resources: Resources.xaml
-MinHostVersion: 0.3.0
+MinHostVersion: 0.3.1
 ```
 
 Las claves son case-sensitive; `Id` sólo admite ASCII seguro. Se rechazan rutas absolutas, `..`, URI de red y archivos fuera del directorio del theme.
@@ -194,16 +216,19 @@ Los assets pueden ser PNG/WebP compatible con el runtime o geometrías XAML allo
 - charging/connected: opcional, cooldown configurable;
 - disconnect de sesión: modal persistente hasta resolución, no timeout normal.
 
-Las notificaciones transitorias se encolan con prioridad y límite; una desconexión sustituye cualquier toast.
+Las notificaciones transitorias se encolan. Desde 0.5.9 permiten previsualizar de inmediato los estados conectado, desconectado y aviso, y colocar el icono a la izquierda, derecha, arriba, abajo u ocultarlo. También admiten texto multilínea, ancho, escala, duración, una de las cuatro esquinas, fondo, textos y acentos semánticos. Mantienen el icono asignado y nombre personalizado en una ventana topmost click-through/no-activate. Las notificaciones normales de conexión se limitan a la interfaz Fullscreen sin juego activo; el fallback online puede avisar durante la partida.
+
+El overlay de desconexión permite configurar por separado escala, oscurecimiento de pantalla, fondo de tarjeta, texto, acento principal y aviso. El host sólo acepta colores hexadecimales y límites numéricos conocidos enviados por el plugin. Esta personalización es de datos, no un cargador de themes ni una vía para ejecutar contenido externo.
 
 ## 13. Failsafes
 
 - `HideAll` en `OnGameStopped`, disable, theme switch y shutdown.
 - Watchdog del host: oculta si pierde pipe/heartbeat.
-- Watchdog del plugin: mata sólo el proceso overlay que él creó y cuyo token coincide; nunca por nombre global.
+- Cierre ordenado `SHUTDOWN`; el cliente sólo mata su host si no existe una concesión de suspensión activa.
+- La concesión de suspensión se libera antes de ocultar, cerrar o expirar por watchdog.
 - Fallback Default ante cualquier excepción del theme.
 - Crash loop: máximo un reinicio por sesión.
-- Overlay no controla la reanudación del juego; sólo envía intención al plugin.
+- El host sólo reanuda el proceso que él mismo suspendió y una única vez por concesión.
 
 ## 14. Validación visual
 
@@ -224,4 +249,3 @@ Pruebas obligatorias por release:
 - [DirectFlip e independent flip](https://learn.microsoft.com/en-us/windows/win32/direct3ddxgi/for-best-performance--use-dxgi-flip-model)
 - [SetWindowPos](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowpos)
 - [MonitorFromWindow](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-monitorfromwindow)
-

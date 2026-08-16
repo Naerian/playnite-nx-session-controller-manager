@@ -10,7 +10,7 @@
     <sys:String x:Key="LOCCSM_NoControllers">Aucune manette connectée</sys:String>
     <sys:String x:Key="LOCCSM_NoInputYet">Aucune entrée détectée</sys:String>
     <sys:String x:Key="LOCCSM_LastInput">Dernière entrée</sys:String>
-    <sys:String x:Key="LOCCSM_FoundationNotice">Version de base : l’inventaire et le diagnostic sont actifs. La protection de session, la pause, l’overlay et la batterie seront ajoutés progressivement.</sys:String>
+    <sys:String x:Key="LOCCSM_FoundationNotice">L’inventaire, le suivi de session et l’overlay de déconnexion sont actifs. La pause sûre et d’autres fournisseurs de batterie restent planifiés.</sys:String>
     <sys:String x:Key="LOCCSM_MenuDiagnostics">Diagnostic des manettes</sys:String>
     <sys:String x:Key="LOCCSM_MenuRefresh">Actualiser les manettes</sys:String>
     <sys:String x:Key="LOCCSM_DiagnosticsTitle">Diagnostic des manettes</sys:String>
@@ -40,7 +40,7 @@
     <sys:String x:Key="LOCCSM_AdvancedHelp">Diagnostic et fonctions préliminaires destinées aux tests et au dépannage.</sys:String>
     <sys:String x:Key="LOCCSM_FoundationTitle">État du développement</sys:String>
     <sys:String x:Key="LOCCSM_TabAbout">À propos</sys:String>
-    <sys:String x:Key="LOCCSM_Version011">Version 0.1.1</sys:String>
+    <sys:String x:Key="LOCCSM_Version017">Version 0.1.7</sys:String>
     <sys:String x:Key="LOCCSM_AboutPurpose">Gestion des sessions de manettes façon console pour Playnite</sys:String>
     <sys:String x:Key="LOCCSM_AboutDescription">Surveille les manettes et prépare le suivi actif, la protection contre les déconnexions, la pause sûre, la batterie et un overlay externe en jeu.</sys:String>
     <sys:String x:Key="LOCCSM_Unknown">Inconnu</sys:String>
@@ -51,4 +51,128 @@
     <sys:String x:Key="LOCCSM_ValueLow">Faible</sys:String>
     <sys:String x:Key="LOCCSM_ValueMedium">Moyenne</sys:String>
     <sys:String x:Key="LOCCSM_ValueFull">Pleine</sys:String>
+    <sys:String x:Key="LOCCSM_ValueWirelessReceiver">Récepteur sans fil</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerProfiles">Noms et icônes des manettes</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerProfilesHelp">Attribuez facultativement un nom Playnite et une icône à chaque manette détectée.</sys:String>
+    <sys:String x:Key="LOCCSM_DetectedName">Nom détecté</sys:String>
+    <sys:String x:Key="LOCCSM_CustomName">Nom personnalisé</sys:String>
+    <sys:String x:Key="LOCCSM_Icon">Icône</sys:String>
+    <sys:String x:Key="LOCCSM_NoIcon">Aucune</sys:String>
+    <sys:String x:Key="LOCCSM_ValueUnavailable">Indisponible</sys:String>
+    <sys:String x:Key="LOCCSM_UserName">Nom de l’utilisateur</sys:String>
+    <sys:String x:Key="LOCCSM_HidDiagnostics">Diagnostic HID</sys:String>
+    <sys:String x:Key="LOCCSM_HidDiagnosticsHelp">Exporte en lecture seule les interfaces HID correspondantes, leurs capacités et les rapports actuels afin de créer des profils de batterie validés.</sys:String>
+    <sys:String x:Key="LOCCSM_ExportHidDiagnostics">Exporter le diagnostic HID</sys:String>
+    <sys:String x:Key="LOCCSM_HidDiagnosticsExported">Diagnostic HID exporté vers :\n{0}</sys:String>
+    <sys:String x:Key="LOCCSM_OverviewHelp">Vue rapide des manettes connectées, du fournisseur d'entrée actif, de la manette principale et de la dernière actualisation.</sys:String>
+    <sys:String x:Key="LOCCSM_DevicesTab">Appareils</sys:String>
+    <sys:String x:Key="LOCCSM_BatteryUnknownHint">La batterie peut apparaître comme Inconnue lorsque la manette, le récepteur ou le pilote Windows n'expose pas son niveau aux API standard. C'est fréquent avec les récepteurs USB propriétaires.</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerGeneralTitle">Affichage des manettes</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerGeneralHelp">Choisissez comment les informations des manettes sont affichées dans le mode Bureau de Playnite.</sys:String>
+    <sys:String x:Key="LOCCSM_DesktopIntegrationTitle">Accès rapide</sys:String>
+    <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanel">Afficher l'icône et la batterie de la manette principale dans la barre supérieure</sys:String>
+    <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanelHelp">L'icône attribuée est toujours affichée. Le niveau de batterie est ajouté uniquement s'il est disponible.</sys:String>
+    <sys:String x:Key="LOCCSM_ValueBluetooth">Bluetooth</sys:String>
+    <sys:String x:Key="LOCCSM_VersionAuthorFormat">Version {0} | Auteur : Narian</sys:String>
+    <sys:String x:Key="LOCCSM_ProjectLinksTitle">Liens du projet</sys:String>
+    <sys:String x:Key="LOCCSM_OpenWiki">Ouvrir le wiki</sys:String>
+    <sys:String x:Key="LOCCSM_ReportIssue">Signaler un problème</sys:String>
+    <sys:String x:Key="LOCCSM_SupportTitle">Soutenir le développement</sys:String>
+    <sys:String x:Key="LOCCSM_KoFiSupportHelp">Si ce plugin vous est utile, vous pouvez soutenir son développement sur Ko-fi.</sys:String>
+    <sys:String x:Key="LOCCSM_KoFiSupport">Soutenir sur Ko-fi</sys:String>
+    <sys:String x:Key="LOCCSM_Actions">Actions</sys:String>
+    <sys:String x:Key="LOCCSM_TestVibration">Tester la vibration</sys:String>
+    <sys:String x:Key="LOCCSM_VibrationUnavailable">Cette manette n'a pas accepté la commande de vibration avec son mode de connexion ou son pilote actuel.</sys:String>
+    <sys:String x:Key="LOCCSM_SessionStatus">Session de jeu</sys:String>
+    <sys:String x:Key="LOCCSM_ActiveSessionControllers">Manettes actives de la session</sys:String>
+    <sys:String x:Key="LOCCSM_SessionProtectionTitle">Base de protection contre les déconnexions</sys:String>
+    <sys:String x:Key="LOCCSM_SessionProtectionHelp">Suit les manettes utilisées, confirme leur déconnexion après un délai configurable et peut afficher un overlay externe. La pause automatique n’est pas encore active.</sys:String>
+    <sys:String x:Key="LOCCSM_EnableSessionTracking">Suivre les manettes actives pendant les sessions de jeu</sys:String>
+    <sys:String x:Key="LOCCSM_DisconnectGracePeriod">Délai de déconnexion</sys:String>
+    <sys:String x:Key="LOCCSM_DisconnectGracePeriodHelp">Temps accordé aux microcoupures ou reconnexions immédiates avant de confirmer une déconnexion.</sys:String>
+    <sys:String x:Key="LOCCSM_ValidationGracePeriod">Le délai de déconnexion doit être compris entre 250 et 10000 millisecondes.</sys:String>
+    <sys:String x:Key="LOCCSM_SessionIdle">Aucune session de jeu active</sys:String>
+    <sys:String x:Key="LOCCSM_SessionDisconnectConfirmed">Déconnexions confirmées : {0}</sys:String>
+    <sys:String x:Key="LOCCSM_SessionGracePeriod">Manette absente · délai en cours</sys:String>
+    <sys:String x:Key="LOCCSM_SessionWaitingForInput">Session démarrée · en attente d'une entrée de manette</sys:String>
+    <sys:String x:Key="LOCCSM_SessionTracking">Suivi des manettes actives de la session</sys:String>
+    <sys:String x:Key="LOCCSM_NoActiveSessionControllers">Aucune manette n'a fourni d'entrée pendant cette session</sys:String>
+    <sys:String x:Key="LOCCSM_AllowControllerTakeover">Autoriser une autre manette à prendre le relais après une déconnexion confirmée</sys:String>
+    <sys:String x:Key="LOCCSM_AllowControllerTakeoverHelp">Si activé, une nouvelle entrée d'une autre manette peut remplacer celle déconnectée. En multijoueur local, la manette d'un joueur déjà actif ne remplace jamais un autre joueur.</sys:String>
+    <sys:String x:Key="LOCCSM_GameOverridesHelp">Utilisez le menu contextuel du jeu pour choisir l'attribution solo automatique ou la protection multijoueur local explicite.</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyUseGlobal">Utiliser les réglages globaux</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyDisable">Désactiver la protection de session</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyRequireSame">Automatique / adaptatif</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyAllowTakeover">Solo · autoriser une autre manette à prendre le relais</sys:String>
+    <sys:String x:Key="LOCCSM_MenuSettings">Paramètres</sys:String>
+    <sys:String x:Key="LOCCSM_ShowDisconnectOverlay">Afficher un overlay après la déconnexion confirmée d'une manette</sys:String>
+    <sys:String x:Key="LOCCSM_ShowDisconnectOverlayHelp">L'overlay externe est informatif et se ferme automatiquement lorsque l'incident est résolu ou que le jeu se termine.</sys:String>
+    <sys:String x:Key="LOCCSM_ProtectAllActiveControllers">Utiliser la protection multijoueur local par défaut</sys:String>
+    <sys:String x:Key="LOCCSM_ProtectAllActiveControllersHelp">Activez-la uniquement si plusieurs joueurs locaux utilisent des manettes distinctes. Le mode automatique est recommandé en solo et multijoueur en ligne.</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyLocalMultiplayer">Multijoueur local · protéger toutes les manettes actives</sys:String>
+    <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">Essayer de mettre le jeu en pause après une déconnexion confirmée</sys:String>
+    <sys:String x:Key="LOCCSM_PauseGameOnDisconnectHelp">Envoie une fois la touche configurée, uniquement si la fenêtre au premier plan appartient au jeu ou à un processus enfant. Désactivé par défaut ; aucune reprise automatique.</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyEnablePause">Mettre ce jeu en pause automatiquement</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyDisablePause">Ne pas mettre ce jeu en pause automatiquement</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayPauseDisabled">Pause automatique désactivée</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayPauseSent">Pause automatique demandée</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayPauseNotSent">Pause impossible : le jeu n'était pas au premier plan</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayPauseFailed">Impossible de demander la pause</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayDisconnectTitle">Manette déconnectée</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayDisconnectMessage">Connexion perdue : {0}</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayWaitSameController">Reconnectez-la pour continuer.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayAllowTakeover">Reconnectez-la ou utilisez une autre manette disponible pour continuer.</sys:String>
+    <sys:String x:Key="LOCCSM_ColorTopPanelByBattery">Colorer l’icône et le texte de batterie selon son niveau</sys:String>
+    <sys:String x:Key="LOCCSM_PauseKey">Touche de pause</sys:String>
+    <sys:String x:Key="LOCCSM_PauseKeyHelp">Valeurs acceptées : Escape, Space, Enter, Tab, Backspace, A-Z, 0-9 et F1-F12.</sys:String>
+    <sys:String x:Key="LOCCSM_ValidationPauseKey">La touche doit être Escape, Space, Enter, Tab, Backspace, A-Z, 0-9 ou F1-F12.</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicySessionSection">Protection de session</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyPauseSection">Pause automatique</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyPauseUseGlobal">Utiliser les réglages globaux de pause</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyPauseEscape">Envoyer Échap lors d'une déconnexion</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyPauseCustom">Envoyer la touche configurée ({0}) lors d'une déconnexion</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyOverlayOnly">Overlay uniquement · ne pas envoyer de touche</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayDisconnectTitlePlural">{0} manettes déconnectées</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayReconnectControllers">Reconnectez-les pour continuer.</sys:String>
+    <sys:String x:Key="LOCCSM_ForcePauseOfflineGames">Forcer la pause des jeux hors ligne après une déconnexion confirmée</sys:String>
+    <sys:String x:Key="LOCCSM_ForcePauseOfflineGamesHelp">Option avancée désactivée par défaut. Suspend le processus du jeu au premier plan jusqu'au retour de la manette ou à la prise de contrôle d'une autre. Si une activité en ligne est détectée, le jeu n'est pas suspendu et une notification s'affiche. La détection est approximative.</sys:String>
+    <sys:String x:Key="LOCCSM_FullscreenNotificationsTitle">Notification à l’écran</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceLayout">Disposition</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceContent">Contenu</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceShape">Forme et bordure</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceColors">Couleurs</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceTypography">Typographie</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceIconsBorder">Icônes et bordure</sys:String>
+    <sys:String x:Key="LOCCSM_BackdropHelp">L’arrière-plan recouvre le jeu derrière l’overlay. Les deux premiers chiffres hexadécimaux règlent l’opacité ; utilisez #00000000 pour le rendre totalement transparent.</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationIconPosition">Position de l’icône</sys:String>
+    <sys:String x:Key="LOCCSM_IconHidden">Masquer l’icône</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationWarningPreview">Avertissement</sys:String>
+    <sys:String x:Key="LOCCSM_ShowFullscreenControllerNotifications">Notifier la connexion ou déconnexion d'une manette dans l'interface plein écran</sys:String>
+    <sys:String x:Key="LOCCSM_ShowFullscreenControllerNotificationsHelp">Affiche une brève notification non intrusive dans Playnite, jamais par-dessus un jeu en cours.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayForcePaused">Jeu mis en pause forcée en toute sécurité</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayForcePauseFailed">Impossible de forcer la pause du jeu en toute sécurité</sys:String>
+    <sys:String x:Key="LOCCSM_OnlineFallbackToastTitle">Manette déconnectée</sys:String>
+    <sys:String x:Key="LOCCSM_OnlineFallbackToastMessage">Activité en ligne détectée · le jeu n'a pas été suspendu</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerConnectedToast">Manette connectée</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerDisconnectedToast">Manette déconnectée</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyForcePauseOffline">Pause forcée hors ligne · notifier si en ligne</sys:String>
+    <sys:String x:Key="LOCCSM_TabSession">Session</sys:String>
+    <sys:String x:Key="LOCCSM_TabAppearance">Apparence</sys:String>
+    <sys:String x:Key="LOCCSM_AdaptiveProtectionHelp">Le mode automatique commence en solo et ne passe en multijoueur local qu'après des entrées alternées et soutenues de plusieurs manettes. Essayer une manette puis en changer ne déclenche pas ce mode. Utilisez une exception par jeu si nécessaire.</sys:String>
+    <sys:String x:Key="LOCCSM_PauseModesHelp">Choisissez une protection globale sûre. La pause forcée hors ligne est prioritaire sur la touche de pause et chaque jeu peut la remplacer.</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationWidth">Largeur (px)</sys:String><sys:String x:Key="LOCCSM_NotificationScale">Taille (%)</sys:String><sys:String x:Key="LOCCSM_NotificationDuration">Durée (ms)</sys:String><sys:String x:Key="LOCCSM_NotificationPosition">Position</sys:String>
+    <sys:String x:Key="LOCCSM_PositionTopRight">En haut à droite</sys:String><sys:String x:Key="LOCCSM_PositionTopLeft">En haut à gauche</sys:String><sys:String x:Key="LOCCSM_PositionBottomRight">En bas à droite</sys:String><sys:String x:Key="LOCCSM_PositionBottomLeft">En bas à gauche</sys:String>
+    <sys:String x:Key="LOCCSM_ColorFormatHelp">Formats de couleur : #RRGGBB ou #AARRGGBB (alpha, rouge, vert et bleu).</sys:String>
+    <sys:String x:Key="LOCCSM_BackgroundColor">Arrière-plan</sys:String><sys:String x:Key="LOCCSM_PrimaryTextColor">Texte principal</sys:String><sys:String x:Key="LOCCSM_SecondaryTextColor">Texte secondaire</sys:String><sys:String x:Key="LOCCSM_ConnectedColor">Accent connecté</sys:String><sys:String x:Key="LOCCSM_DisconnectedColor">Accent déconnecté</sys:String><sys:String x:Key="LOCCSM_WarningColor">Accent d'avertissement</sys:String>
+    <sys:String x:Key="LOCCSM_PreviewNotification">Aperçu de la notification</sys:String><sys:String x:Key="LOCCSM_OverlayAppearanceTitle">Overlay de déconnexion</sys:String><sys:String x:Key="LOCCSM_OverlayAppearanceHelp">Personnalisez l'overlay isolé du jeu. Ses couleurs restent indépendantes du thème Playnite pour garantir la lisibilité.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayScale">Taille de l'overlay (%)</sys:String><sys:String x:Key="LOCCSM_DimColor">Arrière-plan</sys:String><sys:String x:Key="LOCCSM_CardColor">Fond de la carte</sys:String><sys:String x:Key="LOCCSM_AccentColor">Accent principal</sys:String>
+    <sys:String x:Key="LOCCSM_ValidationAppearance">La largeur, la durée ou l'échelle visuelle est hors limites.</sys:String><sys:String x:Key="LOCCSM_NotificationPreviewTitle">Manette connectée</sys:String><sys:String x:Key="LOCCSM_NotificationPreviewMessage">Voici l'apparence des notifications de Controller Session Manager.</sys:String>
+    <sys:String x:Key="LOCCSM_SessionAdaptiveLocal">Multijoueur local détecté automatiquement · {0} manettes protégées</sys:String>
+    <sys:String x:Key="LOCCSM_Monitoring">Surveillance</sys:String>
+    <sys:String x:Key="LOCCSM_ShowControllerNameInNotifications">Afficher le nom du périphérique dans les notifications</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationTitleSize">Texte du titre (px)</sys:String><sys:String x:Key="LOCCSM_NotificationTextSize">Texte du message (px)</sys:String><sys:String x:Key="LOCCSM_NotificationIconSize">Taille de l’icône (px)</sys:String><sys:String x:Key="LOCCSM_NotificationPadding">Marge intérieure (px)</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationShowBorder">Afficher une bordure de couleur sémantique</sys:String><sys:String x:Key="LOCCSM_NotificationBorderPosition">Position de la bordure</sys:String><sys:String x:Key="LOCCSM_NotificationBorderThickness">Épaisseur de bordure (px)</sys:String>
+    <sys:String x:Key="LOCCSM_BorderLeft">Gauche</sys:String><sys:String x:Key="LOCCSM_BorderTop">Haut</sys:String><sys:String x:Key="LOCCSM_BorderRight">Droite</sys:String><sys:String x:Key="LOCCSM_BorderBottom">Bas</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayPreview">Aperçu en direct</sys:String><sys:String x:Key="LOCCSM_PreviewControllerName">Manette d’exemple</sys:String><sys:String x:Key="LOCCSM_OverlayPreviewHelp">Les couleurs et l’échelle changent pendant la modification. L’overlay réel s’adapte à l’écran.</sys:String>
+    <sys:String x:Key="LOCCSM_SelectColor">Choisir la couleur</sys:String><sys:String x:Key="LOCCSM_NotificationCornerRadius">Rayon des coins de la notification (px)</sys:String><sys:String x:Key="LOCCSM_OverlayTitleSize">Texte du titre (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerTextSize">Texte de la manette (px)</sys:String><sys:String x:Key="LOCCSM_OverlayInstructionSize">Texte d’instruction (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusSize">Texte d’état (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerIconSize">Icône de manette (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusIconSize">Icône d’état (px)</sys:String><sys:String x:Key="LOCCSM_OverlayPadding">Marge de la carte (px)</sys:String><sys:String x:Key="LOCCSM_OverlayCornerRadius">Rayon des coins (px)</sys:String><sys:String x:Key="LOCCSM_OverlayShowBorder">Afficher la bordure de la carte</sys:String>
 </ResourceDictionary>

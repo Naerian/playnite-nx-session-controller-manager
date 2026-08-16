@@ -19,6 +19,7 @@ namespace ControllerSessionManager.Controllers
             lock (syncRoot)
             {
                 return devices.Values
+                    .Where(a => !IsRedundantPlayniteBridge(a))
                     .OrderByDescending(a => a.IsConnected)
                     .ThenBy(a => a.Name, StringComparer.CurrentCultureIgnoreCase)
                     .Select(a => a.Clone())
@@ -35,6 +36,14 @@ namespace ControllerSessionManager.Controllers
             {
                 foreach (var controller in connectedControllers ?? Enumerable.Empty<GamepadController>())
                 {
+                    if (IsXInputBridge(controller))
+                    {
+                        // XInputProvider is the authoritative source for these devices. The
+                        // Playnite bridge can disappear and return with a different InstanceId
+                        // during one hot-plug, which otherwise creates generic duplicate rows
+                        // and inverted connection notifications.
+                        continue;
+                    }
                     var key = GetProviderKey(controller);
                     observedKeys.Add(key);
                     UpsertConnected(controller, key, now);
@@ -83,6 +92,10 @@ namespace ControllerSessionManager.Controllers
                         existing.ProviderId = providerId;
                         existing.ProviderInstanceId = observation.ProviderInstanceId;
                         existing.Name = observation.Name;
+                        existing.DetectedName = observation.DetectedName;
+                        existing.HardwareId = observation.HardwareId;
+                        existing.VendorId = observation.VendorId;
+                        existing.ProductId = observation.ProductId;
                         existing.Path = observation.Path;
                         existing.IsConnected = observation.IsConnected;
                         existing.IsEnabled = observation.IsEnabled;
@@ -91,7 +104,10 @@ namespace ControllerSessionManager.Controllers
                         if (observation.LastInputUtc.HasValue)
                         {
                             existing.LastInputUtc = observation.LastInputUtc;
+                            existing.LastInputKind = observation.LastInputKind;
                         }
+                        existing.IsInputNeutral = observation.IsInputNeutral;
+                        existing.InputNeutralSinceUtc = observation.InputNeutralSinceUtc;
                     }
 
                     existing.LastSeenUtc = now;
@@ -111,13 +127,17 @@ namespace ControllerSessionManager.Controllers
 
         public void RecordConnected(GamepadController controller)
         {
-            if (controller == null)
+            if (controller == null || IsXInputBridge(controller))
             {
                 return;
             }
 
             lock (syncRoot)
             {
+                if (FindProviderMatch(controller) != null)
+                {
+                    return;
+                }
                 UpsertConnected(controller, GetProviderKey(controller), DateTime.UtcNow);
             }
 
@@ -126,13 +146,17 @@ namespace ControllerSessionManager.Controllers
 
         public void RecordDisconnected(GamepadController controller)
         {
-            if (controller == null)
+            if (controller == null || IsXInputBridge(controller))
             {
                 return;
             }
 
             lock (syncRoot)
             {
+                if (FindProviderMatch(controller) != null)
+                {
+                    return;
+                }
                 var key = GetProviderKey(controller);
                 ControllerDeviceSnapshot device;
                 if (!devices.TryGetValue(key, out device))
@@ -158,9 +182,26 @@ namespace ControllerSessionManager.Controllers
             lock (syncRoot)
             {
                 var now = DateTime.UtcNow;
-                var key = GetProviderKey(controller);
-                UpsertConnected(controller, key, now);
-                devices[key].LastInputUtc = now;
+                var providerMatch = FindProviderMatch(controller);
+                if (providerMatch == null && IsXInputBridge(controller))
+                {
+                    return;
+                }
+                if (providerMatch != null)
+                {
+                    providerMatch.LastInputUtc = now;
+                    providerMatch.LastInputKind = InputEvidenceKind.PlayniteButton.ToString();
+                    providerMatch.IsInputNeutral = false;
+                    providerMatch.InputNeutralSinceUtc = null;
+                    providerMatch.LastSeenUtc = now;
+                }
+                else
+                {
+                    var key = GetProviderKey(controller);
+                    UpsertConnected(controller, key, now);
+                    devices[key].LastInputUtc = now;
+                    devices[key].LastInputKind = InputEvidenceKind.PlayniteButton.ToString();
+                }
             }
 
             RaiseSnapshotChanged();
@@ -191,6 +232,8 @@ namespace ControllerSessionManager.Controllers
                 ProviderId = ProviderId,
                 ProviderInstanceId = controller.InstanceId,
                 Name = string.IsNullOrWhiteSpace(controller.Name) ? "Unknown controller" : controller.Name,
+                DetectedName = string.IsNullOrWhiteSpace(controller.Name) ? "Unknown controller" : controller.Name,
+                HardwareId = key,
                 Path = controller.Path ?? string.Empty,
                 IsConnected = true,
                 IsEnabled = controller.Enabled,
@@ -213,6 +256,39 @@ namespace ControllerSessionManager.Controllers
             return string.IsNullOrWhiteSpace(path)
                 ? string.Empty
                 : path.Trim().Replace('/', '\\').ToUpperInvariant();
+        }
+
+        private static bool IsXInputBridge(GamepadController controller)
+        {
+            return ControllerBridgeIdentity.GetXInputSlot(controller == null ? null : controller.Path).HasValue;
+        }
+
+        private ControllerDeviceSnapshot FindProviderMatch(GamepadController controller)
+        {
+            var slot = ControllerBridgeIdentity.GetXInputSlot(controller == null ? null : controller.Path);
+            if (slot.HasValue)
+            {
+                return devices.Values.FirstOrDefault(a => a.IsConnected &&
+                    string.Equals(a.ProviderId, XInputProvider.ProviderId, StringComparison.OrdinalIgnoreCase) &&
+                    a.ProviderInstanceId == slot.Value);
+            }
+
+            return devices.Values.FirstOrDefault(a => a.ProviderId != ProviderId && a.IsConnected &&
+                a.ProviderInstanceId == controller.InstanceId);
+        }
+
+        private bool IsRedundantPlayniteBridge(ControllerDeviceSnapshot snapshot)
+        {
+            if (snapshot == null || !string.Equals(snapshot.ProviderId, ProviderId,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            var slot = ControllerBridgeIdentity.GetXInputSlot(snapshot.Path);
+            return slot.HasValue && devices.Values.Any(a => a.IsConnected &&
+                string.Equals(a.ProviderId, XInputProvider.ProviderId, StringComparison.OrdinalIgnoreCase) &&
+                a.ProviderInstanceId == slot.Value);
         }
 
         private void RaiseSnapshotChanged()
