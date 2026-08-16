@@ -64,6 +64,11 @@ namespace ControllerSessionManager.PlayniteIntegration
             plugin.ExportHidDiagnostics();
         }
 
+        private void ExportSupportReportClick(object sender, RoutedEventArgs args)
+        {
+            plugin.ExportSupportReport();
+        }
+
         private void PreviewNotificationClick(object sender, RoutedEventArgs args)
         {
             var button = sender as Button;

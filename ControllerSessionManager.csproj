@@ -45,6 +45,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\ControllerDeviceSnapshot.cs" />
+    <Compile Include="Controllers\DiagnosticEventBuffer.cs" />
+    <Compile Include="Controllers\IControllerBatteryProvider.cs" />
+    <Compile Include="Controllers\PlayStationHidBatteryProvider.cs" />
     <Compile Include="Controllers\ControllerManager.cs" />
     <Compile Include="Controllers\HidDiagnosticsService.cs" />
     <Compile Include="Controllers\IntentionalInputDetector.cs" />
@@ -60,6 +63,7 @@
     <Compile Include="Sessions\InputPollingPolicy.cs" />
     <Compile Include="Overlay\OverlayClient.cs" />
     <Compile Include="PlayniteIntegration\ControllerSessionManagerPlugin.cs" />
+    <Compile Include="PlayniteIntegration\SupportReportService.cs" />
     <Compile Include="PlayniteIntegration\ControllerSessionManagerSettings.cs" />
     <Compile Include="PlayniteIntegration\ControllerProfile.cs" />
     <Compile Include="PlayniteIntegration\GameSessionOverride.cs" />
@@ -99,6 +103,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="CHANGELOG.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="media\icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

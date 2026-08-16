@@ -725,6 +725,14 @@
                         </Border>
                         <Border Style="{StaticResource SettingsCard}">
                             <StackPanel>
+                                <TextBlock Text="{DynamicResource LOCCSM_SupportReport}" Style="{StaticResource SectionHeaderText}" />
+                                <TextBlock Text="{DynamicResource LOCCSM_SupportReportHelp}" Style="{StaticResource HintText}" Margin="0,6,0,12" />
+                                <Button Content="{DynamicResource LOCCSM_ExportSupportReport}" HorizontalAlignment="Left"
+                                        MinWidth="180" Click="ExportSupportReportClick" />
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource SettingsCard}">
+                            <StackPanel>
                                 <TextBlock Text="{DynamicResource LOCCSM_HidDiagnostics}" Style="{StaticResource SectionHeaderText}" />
                                 <TextBlock Text="{DynamicResource LOCCSM_HidDiagnosticsHelp}" Style="{StaticResource HintText}" Margin="0,6,0,12" />
                                 <Button Content="{DynamicResource LOCCSM_ExportHidDiagnostics}" HorizontalAlignment="Left"
@@ -746,14 +754,16 @@
                     <StackPanel Margin="8">
                         <Border Style="{StaticResource IntroCard}">
                             <StackPanel>
-                                <TextBlock Text="{DynamicResource LOCCSM_AboutDescription}" TextWrapping="Wrap" Margin="0,0,0,8" />
+                                <TextBlock Text="{DynamicResource LOCCSM_AboutPurpose}" FontSize="22" FontWeight="SemiBold" />
+                                <TextBlock Text="{DynamicResource LOCCSM_AboutDescription}" TextWrapping="Wrap" Margin="0,8,0,10" />
                                 <TextBlock x:Name="AboutVersionText" FontWeight="SemiBold" />
                             </StackPanel>
                         </Border>
                         <Border Style="{StaticResource SettingsCard}">
                             <StackPanel>
                                 <TextBlock Text="{DynamicResource LOCCSM_AboutPurpose}" Style="{StaticResource SectionHeaderText}" />
-                                <TextBlock Text="{DynamicResource LOCCSM_AboutDescription}" Style="{StaticResource HintText}" Margin="0,7,0,0" />
+                                <TextBlock Text="{DynamicResource LOCCSM_AboutCapabilities}" TextWrapping="Wrap" Margin="0,7,0,0" />
+                                <TextBlock Text="{DynamicResource LOCCSM_AboutSafety}" Style="{StaticResource HintText}" Margin="0,10,0,0" />
                             </StackPanel>
                         </Border>
                         <Grid>

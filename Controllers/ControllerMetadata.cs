@@ -15,6 +15,7 @@ namespace ControllerSessionManager.Controllers
         public string HardwareId { get; set; }
         public string ConnectionType { get; set; }
         public string BatteryLevel { get; set; }
+        public string BatteryProviderId { get; set; }
         public DateTime? LastInputUtc { get; set; }
         public string LastInputKind { get; set; }
         public bool? IsInputNeutral { get; set; }

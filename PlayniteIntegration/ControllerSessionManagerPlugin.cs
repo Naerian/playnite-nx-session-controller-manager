@@ -32,6 +32,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private readonly AdaptiveSessionScopeDetector adaptiveSessionScopeDetector;
         private readonly PauseAttemptGate pauseAttemptGate;
         private readonly OverlayClient overlayClient;
+        private readonly DiagnosticEventBuffer diagnosticEvents;
         private ResourceDictionary englishFallbackResources;
         private ControllerSessionManagerSettings settings;
         private bool disposed;
@@ -87,6 +88,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             adaptiveSessionScopeDetector = new AdaptiveSessionScopeDetector();
             pauseAttemptGate = new PauseAttemptGate();
             overlayClient = new OverlayClient(logger);
+            diagnosticEvents = new DiagnosticEventBuffer(200);
             Theme = new ControllerThemeApi();
 
             Properties = new GenericPluginProperties { HasSettings = true };
@@ -111,6 +113,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             ApplySettings();
             logger.Info(string.Format("Controller Session Manager {0} initialized.",
                 GetType().Assembly.GetName().Version.ToString(3)));
+            diagnosticEvents.Add("lifecycle", "Plugin initialized in " + PlayniteApi.ApplicationInfo.Mode + " mode");
         }
 
         public string Loc(string key)
@@ -310,6 +313,39 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
         }
 
+        public void ExportSupportReport()
+        {
+            try
+            {
+                RefreshControllers();
+                var report = SupportReportService.CreateReport(
+                    GetType().Assembly.GetName().Version.ToString(3),
+                    PlayniteApi.ApplicationInfo.Mode.ToString(), settings, GetControllerSnapshot(),
+                    activeGameId, activeGameProcessId, activeSessionPolicy, sessionManager,
+                    diagnosticEvents.Snapshot());
+                var dialog = new SaveFileDialog
+                {
+                    Title = Loc("LOCCSM_ExportSupportReport"),
+                    Filter = "Text files (*.txt)|*.txt",
+                    FileName = "ControllerSessionManager_Support_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".txt"
+                };
+                if (dialog.ShowDialog() != true)
+                {
+                    return;
+                }
+
+                File.WriteAllText(dialog.FileName, report, Encoding.UTF8);
+                PlayniteApi.Dialogs.ShowMessage(
+                    string.Format(Loc("LOCCSM_SupportReportExported"), dialog.FileName),
+                    Loc("LOCCSM_SupportReport"));
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Failed to export the support report.");
+                PlayniteApi.Dialogs.ShowErrorMessage(ex.Message, Loc("LOCCSM_SupportReport"));
+            }
+        }
+
         public void ApplySettings()
         {
             reconciliationTimer.Stop();
@@ -408,6 +444,12 @@ namespace ControllerSessionManager.PlayniteIntegration
             yield return new MainMenuItem
             {
                 MenuSection = "Controller Session Manager",
+                Description = Loc("LOCCSM_MenuExportSupport"),
+                Action = delegate { ExportSupportReport(); }
+            };
+            yield return new MainMenuItem
+            {
+                MenuSection = "Controller Session Manager",
                 Description = Loc("LOCCSM_MenuRefresh"),
                 Action = delegate { RefreshControllers(); }
             };
@@ -489,6 +531,7 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         public override void OnApplicationStarted(OnApplicationStartedEventArgs args)
         {
+            diagnosticEvents.Add("lifecycle", "Playnite application started");
             RefreshControllers();
         }
 
@@ -503,6 +546,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             {
                 controllerManager.RecordConnected(args.Controller);
                 logger.Info(string.Format("Controller connected: {0}", SafeName(args.Controller)));
+                diagnosticEvents.Add("controller", "Connected: " + SafeName(args.Controller));
             }
         }
 
@@ -512,6 +556,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             {
                 controllerManager.RecordDisconnected(args.Controller);
                 logger.Info(string.Format("Controller disconnected: {0}", SafeName(args.Controller)));
+                diagnosticEvents.Add("controller", "Disconnected: " + SafeName(args.Controller));
             }
         }
 
@@ -551,6 +596,13 @@ namespace ControllerSessionManager.PlayniteIntegration
                     activeSessionPolicy.PauseGameOnDisconnect,
                     activeSessionPolicy.ForcePauseOfflineGames,
                     activeSessionPolicy.PauseKey));
+                diagnosticEvents.Add("session", string.Format(
+                    "Started game={0} scope={1} takeover={2} pause={3} forcePause={4}",
+                    SupportReportService.Fingerprint(activeGameId.Value.ToString("N")),
+                    activeSessionPolicy.ProtectAllActiveControllers ? "all-active" : "adaptive",
+                    activeSessionPolicy.AllowControllerTakeover,
+                    activeSessionPolicy.PauseGameOnDisconnect,
+                    activeSessionPolicy.ForcePauseOfflineGames));
                 PublishControllerSnapshotChanged();
             }
             if (settings.EnableDebugLogging && args != null && args.Game != null)
@@ -562,6 +614,7 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         public override void OnGameStopped(OnGameStoppedEventArgs args)
         {
+            diagnosticEvents.Add("session", "Game stopped; active incident and session state cleared");
             if (settings.EnableDebugLogging && activeGameId.HasValue)
             {
                 logger.Debug(string.Format("Session foundation stopped for {0}.", activeGameId.Value));
@@ -654,6 +707,8 @@ namespace ControllerSessionManager.PlayniteIntegration
             logger.Info(string.Format("session.{0} controller={1} name={2} replacement={3} replacementName={4} evidence={5}",
                 args.Type.ToString().ToLowerInvariant(), args.ControllerKey, args.ControllerName,
                 args.ReplacementControllerKey, args.ReplacementControllerName, args.InputEvidence));
+            diagnosticEvents.Add("incident", string.Format("{0}: {1}; replacement={2}; evidence={3}",
+                args.Type, args.ControllerName, args.ReplacementControllerName, args.InputEvidence));
             if (args.Type == SessionEventType.DisconnectConfirmed)
             {
                 EnsureDisconnectIncident();
@@ -959,6 +1014,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 if (activePauseReceipt.Status != PauseAttemptStatus.Sent)
                 {
                     logger.Info(string.Format("session.forcePause targetUnavailable={0}", activePauseReceipt.Status));
+                    diagnosticEvents.Add("pause", "Force-pause target unavailable: " + activePauseReceipt.Status);
                     return;
                 }
 
@@ -966,6 +1022,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                     gamePauseService.GetProcessTree(activeGameProcessId));
                 logger.Info(string.Format("session.onlineDetection evidence={0} detail={1}",
                     online.Evidence, online.Detail ?? string.Empty));
+                diagnosticEvents.Add("online", string.Format("likely={0} evidence={1} detail={2}",
+                    online.IsOnlineLikely, online.Evidence, online.Detail));
                 if (online.IsOnlineLikely)
                 {
                     activeOnlineNotificationOnly = true;
@@ -973,10 +1031,12 @@ namespace ControllerSessionManager.PlayniteIntegration
                         Loc("LOCCSM_OnlineFallbackToastTitle"), Loc("LOCCSM_OnlineFallbackToastMessage"),
                         SvgIconGeometryLoader.GetPathData("alert-triangle.svg"),
                         settings.NotificationDurationMilliseconds, GetToastStylePayload());
+                    diagnosticEvents.Add("pause", "Force-pause replaced by online safety notification");
                     return;
                 }
 
                 activeForcePauseRequested = true;
+                diagnosticEvents.Add("pause", "Offline force-pause lease requested");
                 return;
             }
 
@@ -990,6 +1050,8 @@ namespace ControllerSessionManager.PlayniteIntegration
             logger.Info(string.Format("session.pause status={0} key={1} targetPid={2} targetWindow={3}",
                 activePauseReceipt.Status, activeSessionPolicy.PauseKey, activePauseReceipt.TargetProcessId,
                 activePauseReceipt.TargetWindow.ToInt64()));
+            diagnosticEvents.Add("pause", string.Format("Key={0} status={1}",
+                activeSessionPolicy.PauseKey, activePauseReceipt.Status));
         }
 
         private string GetOverlayPauseStatus()

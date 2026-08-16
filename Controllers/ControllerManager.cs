@@ -101,6 +101,7 @@ namespace ControllerSessionManager.Controllers
                         existing.IsEnabled = observation.IsEnabled;
                         existing.ConnectionType = observation.ConnectionType;
                         existing.BatteryLevel = observation.BatteryLevel;
+                        existing.BatteryProviderId = observation.BatteryProviderId;
                         if (observation.LastInputUtc.HasValue)
                         {
                             existing.LastInputUtc = observation.LastInputUtc;
@@ -239,6 +240,7 @@ namespace ControllerSessionManager.Controllers
                 IsEnabled = controller.Enabled,
                 ConnectionType = "Unknown",
                 BatteryLevel = "Unknown",
+                BatteryProviderId = "None",
                 LastSeenUtc = now
             };
         }

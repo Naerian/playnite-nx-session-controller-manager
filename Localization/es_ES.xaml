@@ -202,4 +202,11 @@
     <sys:String x:Key="LOCCSM_SelectColor">Elegir color</sys:String>
     <sys:String x:Key="LOCCSM_OverlayTitleSize">Texto del título (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerTextSize">Texto del mando (px)</sys:String><sys:String x:Key="LOCCSM_OverlayInstructionSize">Texto de instrucción (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusSize">Texto de estado (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationCornerRadius">Redondeo de la notificación (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerIconSize">Icono del mando (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusIconSize">Icono de estado (px)</sys:String><sys:String x:Key="LOCCSM_OverlayPadding">Padding de la tarjeta (px)</sys:String><sys:String x:Key="LOCCSM_OverlayCornerRadius">Redondeo de esquinas (px)</sys:String><sys:String x:Key="LOCCSM_OverlayShowBorder">Mostrar el borde de la tarjeta del overlay</sys:String>
+    <sys:String x:Key="LOCCSM_SupportReport">Informe de soporte</sys:String>
+    <sys:String x:Key="LOCCSM_SupportReportHelp">Exporta una instantánea respetuosa con la privacidad de los ajustes, proveedores de mandos, sesión actual e incidencias recientes. Excluye rutas HID, números de serie, carpetas del usuario y registros de Playnite.</sys:String>
+    <sys:String x:Key="LOCCSM_ExportSupportReport">Exportar informe de soporte</sys:String>
+    <sys:String x:Key="LOCCSM_SupportReportExported">Informe de soporte exportado en:&#10;{0}</sys:String>
+    <sys:String x:Key="LOCCSM_MenuExportSupport">Exportar informe de soporte</sys:String>
+    <sys:String x:Key="LOCCSM_AboutCapabilities">Controller Session Manager identifica los mandos conectados, conserva nombres e iconos personalizados, muestra estados de batería fiables, detecta los mandos usados realmente por un juego y protege sesiones individuales o multijugador local si un participante se desconecta.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutSafety">El overlay externo y las acciones de pausa opcionales están aislados de Playnite y del juego. No inyecta entradas y actúa de forma conservadora cuando las pruebas sobre dispositivo, proceso o sesión en línea son incompletas.</sys:String>
 </ResourceDictionary>

@@ -31,7 +31,10 @@ internal static class SessionManagerTests
             AdaptiveScopePromotesSustainedAlternatingControllers();
             AdaptiveScopeDoesNotPromoteOneAccidentalControllerSwitch();
             PlayniteXInputBridgeUsesPathSlotInsteadOfInstanceId();
-            Console.WriteLine("Session manager tests passed: 19 scenarios.");
+            DualSenseUsbBatteryReportIsParsed();
+            DualShock4UsbBatteryReportIsParsed();
+            UnknownPlayStationReportIsRejected();
+            Console.WriteLine("Session manager tests passed: 22 scenarios.");
             return 0;
         }
         catch (Exception error)
@@ -39,6 +42,37 @@ internal static class SessionManagerTests
             Console.Error.WriteLine(error);
             return 1;
         }
+    }
+
+    private static void DualSenseUsbBatteryReportIsParsed()
+    {
+        var report = new byte[64];
+        report[0] = 0x01;
+        report[53] = 0x06;
+        string level;
+        Equal(true, PlayStationHidBatteryProvider.TryParseReport(0x0CE6, report, out level),
+            "A documented DualSense USB status report should be accepted.");
+        Equal("Medium", level, "DualSense capacity 6 should map to the coarse medium level.");
+    }
+
+    private static void DualShock4UsbBatteryReportIsParsed()
+    {
+        var report = new byte[64];
+        report[0] = 0x01;
+        report[30] = 0x03;
+        string level;
+        Equal(true, PlayStationHidBatteryProvider.TryParseReport(0x09CC, report, out level),
+            "A documented DualShock 4 USB status report should be accepted.");
+        Equal("Medium", level, "DualShock 4 capacity 3 should map to the coarse medium level.");
+    }
+
+    private static void UnknownPlayStationReportIsRejected()
+    {
+        string level;
+        Equal(false, PlayStationHidBatteryProvider.TryParseReport(0x0CE6, new byte[64], out level),
+            "A report without the documented report ID must be rejected.");
+        Equal(false, PlayStationHidBatteryProvider.TryParseReport(0x1234, new byte[64], out level),
+            "An unverified product ID must never use the Sony provider.");
     }
 
     private static void PlayniteXInputBridgeUsesPathSlotInsteadOfInstanceId()

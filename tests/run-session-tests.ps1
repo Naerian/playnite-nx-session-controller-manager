@@ -12,6 +12,10 @@ $testExecutable = Join-Path $output "SessionManagerTests.exe"
 & $compiler /nologo /warn:4 /warnaserror+ /optimize+ /target:exe /out:$testExecutable `
     /reference:System.Core.dll `
     (Join-Path $root "Controllers\ControllerDeviceSnapshot.cs") `
+    (Join-Path $root "Controllers\ControllerMetadata.cs") `
+    (Join-Path $root "Controllers\IControllerBatteryProvider.cs") `
+    (Join-Path $root "Controllers\HidDiagnosticsService.cs") `
+    (Join-Path $root "Controllers\PlayStationHidBatteryProvider.cs") `
     (Join-Path $root "Controllers\ControllerBridgeIdentity.cs") `
     (Join-Path $root "Controllers\IntentionalInputDetector.cs") `
     (Join-Path $root "Sessions\GameSessionManager.cs") `

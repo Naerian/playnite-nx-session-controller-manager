@@ -32,6 +32,8 @@ namespace ControllerSessionManager.Controllers
 
         public string BatteryLevel { get; set; }
 
+        public string BatteryProviderId { get; set; }
+
         public DateTime LastSeenUtc { get; set; }
 
         public DateTime? LastInputUtc { get; set; }

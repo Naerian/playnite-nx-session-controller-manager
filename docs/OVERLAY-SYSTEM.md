@@ -1,6 +1,6 @@
 # Sistema de overlay
 
-> Estado de implementación 0.5.9: el host externo gestiona el overlay, notificaciones Fullscreen en cola y una concesión opcional de pausa forzada para juegos offline. Usa pipe local autenticado, ACL del usuario, ventanas click-through/no-activate, selección de monitor, heartbeat y recuperación automática. Escala, posición, tipografía, iconos, padding, borde, radio de esquina, backdrop y paleta se reciben como datos validados; nunca se carga XAML ni código de terceros. Las notificaciones convierten DIP a píxeles según el DPI real, filtran durante 300 ms los cambios transitorios de XInput y los fallos de arranque o IPC quedan contenidos sin atravesar el callback de Playnite.
+> Estado de implementación 1.0.0: el host externo gestiona el overlay, notificaciones Fullscreen en cola y una concesión opcional de pausa forzada para juegos offline. Usa pipe local autenticado, ACL del usuario, ventanas click-through/no-activate, selección de monitor, heartbeat y recuperación automática. Escala, posición, tipografía, iconos, padding, borde, radio de esquina, backdrop y paleta se reciben como datos validados; nunca se carga XAML ni código de terceros. Las notificaciones convierten DIP a píxeles según el DPI real, filtran durante 300 ms los cambios transitorios de XInput y los fallos de arranque o IPC quedan contenidos sin atravesar el callback de Playnite.
 
 ## 1. Decisión: proceso WPF independiente
 

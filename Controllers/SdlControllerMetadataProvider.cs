@@ -64,6 +64,9 @@ namespace ControllerSessionManager.Controllers
                     var inputState = shouldSampleDevice
                         ? GetInputState(index, instanceId, gameController)
                         : null;
+                    var batteryLevel = shouldSampleDevice
+                        ? GetBatteryLevel(index, instanceId)
+                        : "Unknown";
                     result.Add(new ControllerMetadata
                     {
                         Index = index,
@@ -77,9 +80,9 @@ namespace ControllerSessionManager.Controllers
                         HardwareId = string.Format("{0}:{1}", baseId, ordinal),
                         ConnectionType = ControllerDeviceIdentity.GetConnectionType(
                             string.Format("{0} {1}", rawName, displayName), vendorId, productId, devicePath),
-                        BatteryLevel = shouldSampleDevice
-                            ? GetBatteryLevel(index, instanceId)
-                            : "Unknown",
+                        BatteryLevel = batteryLevel,
+                        BatteryProviderId = batteryLevel == "Unknown" || batteryLevel == "Unavailable"
+                            ? null : "SDL",
                         LastInputUtc = inputState == null ? null : inputState.LastInputUtc,
                         LastInputKind = inputState == null ? null : inputState.LastInputKind,
                         IsInputNeutral = inputState == null ? (bool?)null : inputState.IsInputNeutral,

@@ -174,4 +174,11 @@
     <sys:String x:Key="LOCCSM_BorderLeft">左</sys:String><sys:String x:Key="LOCCSM_BorderTop">上</sys:String><sys:String x:Key="LOCCSM_BorderRight">右</sys:String><sys:String x:Key="LOCCSM_BorderBottom">下</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPreview">ライブプレビュー</sys:String><sys:String x:Key="LOCCSM_PreviewControllerName">サンプルコントローラー</sys:String><sys:String x:Key="LOCCSM_OverlayPreviewHelp">編集中に色と倍率が更新されます。実際のオーバーレイは画面に合わせて調整されます。</sys:String>
     <sys:String x:Key="LOCCSM_SelectColor">色を選択</sys:String><sys:String x:Key="LOCCSM_NotificationCornerRadius">通知の角の半径 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayTitleSize">タイトル文字 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerTextSize">コントローラー文字 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayInstructionSize">案内文字 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusSize">状態文字 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerIconSize">コントローラーアイコン (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusIconSize">状態アイコン (px)</sys:String><sys:String x:Key="LOCCSM_OverlayPadding">カード余白 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayCornerRadius">角の半径 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayShowBorder">オーバーレイカードの境界線を表示</sys:String>
+    <sys:String x:Key="LOCCSM_SupportReport">サポートレポート</sys:String>
+    <sys:String x:Key="LOCCSM_SupportReportHelp">設定、コントローラープロバイダー、現在のセッション、最近の問題をプライバシーに配慮して出力します。HID パス、シリアル番号、ユーザーフォルダー、Playnite ログは含みません。</sys:String>
+    <sys:String x:Key="LOCCSM_ExportSupportReport">サポートレポートを出力</sys:String>
+    <sys:String x:Key="LOCCSM_SupportReportExported">レポートを出力しました:&#10;{0}</sys:String>
+    <sys:String x:Key="LOCCSM_MenuExportSupport">サポートレポートを出力</sys:String>
+    <sys:String x:Key="LOCCSM_AboutCapabilities">Controller Session Manager は接続中のコントローラーを識別し、カスタム名とアイコンを保持し、信頼できるバッテリー状態を表示します。ゲームで実際に使われる機器を検出し、切断時に一人用またはローカルマルチプレイのセッションを保護します。</sys:String>
+    <sys:String x:Key="LOCCSM_AboutSafety">外部オーバーレイと任意の一時停止操作は Playnite およびゲームから分離されています。入力を注入せず、機器、プロセス、オンラインセッションの根拠が不十分な場合は安全側に動作します。</sys:String>
 </ResourceDictionary>

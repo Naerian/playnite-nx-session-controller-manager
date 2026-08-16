@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.0 — 2026-08-16
+
+- Added a privacy-conscious support report with effective settings, anonymized controller identities, provider decisions, current session state and a bounded incident timeline.
+- Added a verified Sony HID battery provider for DualSense and DualShock 4 USB/Bluetooth reports, including Bluetooth CRC validation and strict VID/PID matching.
+- Kept unsupported receiver protocols explicitly unknown instead of deriving battery values from unverified byte heuristics.
+- Added package icon and project links to the Playnite extension manifest.
+- Prepared the installer manifest and add-on database submission metadata.
+- Expanded the About page, README, English/Spanish Wiki and troubleshooting guidance for the stable 1.0 release.
+
 ## 0.5.9 — 2026-08-16
 
 - Added immediate previews for connected, disconnected and warning notifications so every semantic color can be checked independently.

@@ -23,6 +23,7 @@ It is designed for Desktop, Fullscreen and couch-gaming setups, including single
 - Customize notification and overlay dimensions, typography, icons, borders, corner radii, backdrop and semantic colors.
 - Preview connected, disconnected and warning notifications, plus the disconnect overlay, from settings.
 - Export read-only HID diagnostics for unsupported controllers and battery investigations.
+- Export a privacy-conscious support report containing effective settings, provider decisions, anonymized controller identities, session state and the latest incident timeline.
 - Integrate status, controller information and player slots into compatible Playnite themes.
 - Use Playnite localization dictionaries in 12 languages with English fallback.
 
@@ -36,7 +37,7 @@ It is designed for Desktop, Fullscreen and couch-gaming setups, including single
 
 ### Playnite add-on browser
 
-Controller Session Manager is still under active development. Once it is published in the Playnite add-on database, this section will contain its direct installation link.
+The add-on database manifest is prepared for submission. Until it is accepted, install the release package manually from GitHub.
 
 ### Manual installation
 
@@ -89,7 +90,13 @@ The optional Desktop indicator locates Playnite's internal `TopPanelItem` contai
 
 ## Battery and controller limitations
 
-Battery reporting depends on the protocol, receiver, firmware and driver. XInput commonly exposes only `Empty`, `Low`, `Medium` and `Full`; many USB receivers expose no standard battery channel at all. Controller Session Manager therefore keeps unavailable values as **Unknown** and never converts coarse levels into invented percentages.
+Battery reporting depends on the protocol, receiver, firmware and driver. XInput and SDL provide the general battery channels. Version 1.0.0 additionally reads the documented HID status reports of Sony DualSense and DualShock 4 devices when Desktop-mode metadata identifies a verified Sony VID/PID. Bluetooth reports must also pass their protocol CRC. Many USB receivers, including current 8BitDo receiver modes, expose no independently verified battery channel; these remain **Unknown**. Controller Session Manager never converts coarse levels into invented percentages.
+
+## Support and diagnostics
+
+Use **Advanced > Support report** or the Playnite main menu to export a text report suitable for an issue. It contains the plugin and environment versions, effective protection settings, selected controller providers, anonymized device fingerprints, current session state and a bounded timeline of recent connection, pause and incident events. It deliberately excludes HID paths, serial numbers, user folders and Playnite log contents.
+
+The separate HID diagnostic remains available for protocol investigations. Unlike the normal support report it is intentionally low-level and can contain device paths or serial data, so review it before sharing publicly.
 
 Controller identity is strongest in Desktop, where safe metadata enrichment is available. Fullscreen deliberately avoids SDL initialization and native SDL calls because some driver hot-unplug paths can terminate Playnite without a managed exception. Previously learned XInput-slot associations preserve friendly names and custom icons across that safety boundary.
 

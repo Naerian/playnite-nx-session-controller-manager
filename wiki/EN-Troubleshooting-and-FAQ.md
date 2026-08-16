@@ -30,4 +30,4 @@ Windowed and borderless are recommended. A legacy exclusive-fullscreen game can 
 
 ## What should a useful bug report include?
 
-Include Playnite mode and theme, plugin version, controller model, USB/Bluetooth/dongle mode, game, remapping tools, exact reproduction steps, expected and actual result, and a HID diagnostic when detection or battery is involved.
+Export **Advanced > Support report** and include it with Playnite mode and theme, controller model, USB/Bluetooth/dongle mode, game, remapping tools, exact reproduction steps, and expected versus actual result. The report already includes the version, anonymized session state and recent incident timeline. Add a reviewed HID diagnostic only when detection or battery is involved.

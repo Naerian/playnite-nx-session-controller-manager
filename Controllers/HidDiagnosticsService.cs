@@ -83,6 +83,109 @@ namespace ControllerSessionManager.Controllers
             return false;
         }
 
+        public static bool TryReadInputReport(ushort vendorId, ushort productId,
+            int timeoutMilliseconds, out byte[] report)
+        {
+            report = null;
+            Guid hidGuid;
+            NativeMethods.HidD_GetHidGuid(out hidGuid);
+            var deviceInfoSet = NativeMethods.SetupDiGetClassDevs(
+                ref hidGuid, IntPtr.Zero, IntPtr.Zero, DigcfPresent | DigcfDeviceInterface);
+            if (deviceInfoSet == new IntPtr(-1))
+            {
+                return false;
+            }
+
+            try
+            {
+                for (uint index = 0; ; index++)
+                {
+                    var interfaceData = new SpDeviceInterfaceData
+                    {
+                        Size = Marshal.SizeOf(typeof(SpDeviceInterfaceData))
+                    };
+                    if (!NativeMethods.SetupDiEnumDeviceInterfaces(
+                        deviceInfoSet, IntPtr.Zero, ref hidGuid, index, ref interfaceData))
+                    {
+                        break;
+                    }
+
+                    uint requiredSize;
+                    NativeMethods.SetupDiGetDeviceInterfaceDetail(
+                        deviceInfoSet, ref interfaceData, IntPtr.Zero, 0, out requiredSize, IntPtr.Zero);
+                    if (requiredSize == 0)
+                    {
+                        continue;
+                    }
+
+                    var detail = Marshal.AllocHGlobal((int)requiredSize);
+                    try
+                    {
+                        Marshal.WriteInt32(detail, IntPtr.Size == 8 ? 8 : 6);
+                        if (!NativeMethods.SetupDiGetDeviceInterfaceDetail(
+                            deviceInfoSet, ref interfaceData, detail, requiredSize, out requiredSize, IntPtr.Zero))
+                        {
+                            continue;
+                        }
+
+                        var path = Marshal.PtrToStringUni(IntPtr.Add(detail, IntPtr.Size == 8 ? 8 : 4));
+                        if (string.IsNullOrWhiteSpace(path))
+                        {
+                            continue;
+                        }
+
+                        using (var handle = OpenHidDevice(path))
+                        {
+                            var attributes = new HiddAttributes { Size = Marshal.SizeOf(typeof(HiddAttributes)) };
+                            if (handle == null || handle.IsInvalid ||
+                                !NativeMethods.HidD_GetAttributes(handle, ref attributes) ||
+                                attributes.VendorId != vendorId || attributes.ProductId != productId)
+                            {
+                                continue;
+                            }
+
+                            IntPtr preparsedData;
+                            if (!NativeMethods.HidD_GetPreparsedData(handle, out preparsedData))
+                            {
+                                continue;
+                            }
+                            try
+                            {
+                                HidpCaps caps;
+                                if (NativeMethods.HidP_GetCaps(preparsedData, out caps) < 0 ||
+                                    caps.InputReportByteLength <= 0 || caps.InputReportByteLength > 4096)
+                                {
+                                    continue;
+                                }
+
+                                byte[] captured;
+                                if (TryReadStreamReport(handle, caps.InputReportByteLength,
+                                    Math.Max(20, Math.Min(500, timeoutMilliseconds)), out captured))
+                                {
+                                    report = captured;
+                                    return true;
+                                }
+                            }
+                            finally
+                            {
+                                NativeMethods.HidD_FreePreparsedData(preparsedData);
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        Marshal.FreeHGlobal(detail);
+                    }
+                }
+            }
+            finally
+            {
+                NativeMethods.SetupDiDestroyDeviceInfoList(deviceInfoSet);
+            }
+
+            return false;
+        }
+
         private static void EnumerateInterfaces(IReadOnlyCollection<ControllerDeviceSnapshot> controllers, StringBuilder output)
         {
             Guid hidGuid;
@@ -247,12 +350,21 @@ namespace ControllerSessionManager.Controllers
                 return;
             }
 
+            byte[] buffer;
+            output.AppendLine(TryReadStreamReport(handle, length, 350, out buffer)
+                ? "Input stream: " + BitConverter.ToString(buffer, 0, Math.Min(buffer.Length, 96))
+                : "Input stream: no report captured in 350 ms");
+        }
+
+        private static bool TryReadStreamReport(SafeFileHandle handle, int length,
+            int timeoutMilliseconds, out byte[] report)
+        {
+            report = null;
             var buffer = new byte[length];
             var eventHandle = NativeMethods.CreateEvent(IntPtr.Zero, true, false, null);
             if (eventHandle == IntPtr.Zero)
             {
-                output.AppendLine("Input stream: event creation failed");
-                return;
+                return false;
             }
 
             try
@@ -262,7 +374,7 @@ namespace ControllerSessionManager.Controllers
                 var completed = NativeMethods.ReadFile(handle, buffer, (uint)buffer.Length, out bytesRead, ref overlapped);
                 if (!completed && Marshal.GetLastWin32Error() == ErrorIoPending)
                 {
-                    if (NativeMethods.WaitForSingleObject(eventHandle, 350) == WaitObject0)
+                    if (NativeMethods.WaitForSingleObject(eventHandle, (uint)timeoutMilliseconds) == WaitObject0)
                     {
                         completed = NativeMethods.GetOverlappedResult(handle, ref overlapped, out bytesRead, false);
                     }
@@ -272,9 +384,15 @@ namespace ControllerSessionManager.Controllers
                     }
                 }
 
-                output.AppendLine(completed && bytesRead > 0
-                    ? "Input stream: " + BitConverter.ToString(buffer, 0, Math.Min((int)bytesRead, 96))
-                    : "Input stream: no report captured in 350 ms");
+                if (!completed || bytesRead == 0)
+                {
+                    return false;
+                }
+
+                report = bytesRead == buffer.Length
+                    ? buffer
+                    : buffer.Take((int)bytesRead).ToArray();
+                return true;
             }
             finally
             {

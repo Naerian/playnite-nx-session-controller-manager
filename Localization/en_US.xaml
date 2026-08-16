@@ -204,4 +204,11 @@
     <sys:String x:Key="LOCCSM_SelectColor">Choose color</sys:String>
     <sys:String x:Key="LOCCSM_OverlayTitleSize">Title text (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerTextSize">Controller text (px)</sys:String><sys:String x:Key="LOCCSM_OverlayInstructionSize">Instruction text (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusSize">Status text (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationCornerRadius">Notification corner radius (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerIconSize">Controller icon (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusIconSize">Status icon (px)</sys:String><sys:String x:Key="LOCCSM_OverlayPadding">Card padding (px)</sys:String><sys:String x:Key="LOCCSM_OverlayCornerRadius">Corner radius (px)</sys:String><sys:String x:Key="LOCCSM_OverlayShowBorder">Show overlay card border</sys:String>
+    <sys:String x:Key="LOCCSM_SupportReport">Support report</sys:String>
+    <sys:String x:Key="LOCCSM_SupportReportHelp">Export a privacy-conscious snapshot of settings, controller providers, the current session and recent incident events. HID paths, serial numbers, user folders and Playnite logs are excluded.</sys:String>
+    <sys:String x:Key="LOCCSM_ExportSupportReport">Export support report</sys:String>
+    <sys:String x:Key="LOCCSM_SupportReportExported">Support report exported to:&#10;{0}</sys:String>
+    <sys:String x:Key="LOCCSM_MenuExportSupport">Export support report</sys:String>
+    <sys:String x:Key="LOCCSM_AboutCapabilities">Controller Session Manager identifies connected controllers, preserves custom names and icons, reports trustworthy battery states, detects the controllers actually used by a game, and protects single-player or local multiplayer sessions when a participant disconnects.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutSafety">Its external overlay and optional pause actions are isolated from Playnite and the game. It avoids input injection and falls back conservatively whenever device, process or online-session evidence is incomplete.</sys:String>
 </ResourceDictionary>

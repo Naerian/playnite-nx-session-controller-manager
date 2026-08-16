@@ -18,6 +18,8 @@ namespace ControllerSessionManager.Controllers
         private const byte BatteryTypeNimh = 3;
         private readonly SlotState[] slots = new SlotState[4];
         private readonly SdlControllerMetadataProvider metadataProvider = new SdlControllerMetadataProvider();
+        private readonly IList<IControllerBatteryProvider> batteryProviders =
+            new List<IControllerBatteryProvider> { new PlayStationHidBatteryProvider() };
         private bool unavailable;
 
         public XInputProvider()
@@ -55,6 +57,10 @@ namespace ControllerSessionManager.Controllers
                 var metadata = sampleSdlInput
                     ? metadataProvider.GetControllers(true)
                     : new List<ControllerMetadata>();
+                if (sampleSdlInput)
+                {
+                    EnrichKnownBatteryProtocols(metadata);
+                }
                 var usedMetadata = new HashSet<ControllerMetadata>();
                 for (uint index = 0; index < 4; index++)
                 {
@@ -121,6 +127,8 @@ namespace ControllerSessionManager.Controllers
                     var detectedName = deviceMetadata == null
                         ? string.Format("XInput Controller (Player {0})", index + 1)
                         : deviceMetadata.DisplayName;
+                    var batteryLevel = GetBatteryLevel(deviceMetadata, batteryResult, battery,
+                        wired && detectedConnection == "Unknown", wireless);
                     result.Add(new ControllerDeviceSnapshot
                     {
                         ControllerId = string.Format("xinput:slot:{0}", index),
@@ -137,8 +145,8 @@ namespace ControllerSessionManager.Controllers
                         IsConnected = true,
                         IsEnabled = true,
                         ConnectionType = connection,
-                        BatteryLevel = GetBatteryLevel(deviceMetadata, batteryResult, battery,
-                            wired && detectedConnection == "Unknown", wireless),
+                        BatteryLevel = batteryLevel,
+                        BatteryProviderId = GetBatteryProviderId(deviceMetadata, batteryLevel),
                         LastSeenUtc = now,
                         LastInputUtc = slot.LastInputUtc,
                         LastInputKind = slot.LastInputKind,
@@ -164,6 +172,8 @@ namespace ControllerSessionManager.Controllers
                         IsEnabled = true,
                         ConnectionType = sdlDevice.ConnectionType,
                         BatteryLevel = sdlDevice.BatteryLevel,
+                        BatteryProviderId = string.IsNullOrWhiteSpace(sdlDevice.BatteryProviderId)
+                            ? "None" : sdlDevice.BatteryProviderId,
                         LastSeenUtc = DateTime.UtcNow,
                         LastInputUtc = sdlDevice.LastInputUtc,
                         LastInputKind = sdlDevice.LastInputKind,
@@ -182,6 +192,36 @@ namespace ControllerSessionManager.Controllers
             }
 
             return result;
+        }
+
+        private void EnrichKnownBatteryProtocols(IEnumerable<ControllerMetadata> controllers)
+        {
+            foreach (var controller in controllers.Where(a => a != null &&
+                (string.IsNullOrWhiteSpace(a.BatteryLevel) || a.BatteryLevel == "Unknown" ||
+                 a.BatteryLevel == "Unavailable")))
+            {
+                foreach (var provider in batteryProviders.Where(a => a.Supports(controller)))
+                {
+                    string level;
+                    if (provider.TryGetBatteryLevel(controller, out level))
+                    {
+                        controller.BatteryLevel = level;
+                        controller.BatteryProviderId = provider.Id;
+                        break;
+                    }
+                }
+            }
+        }
+
+        private static string GetBatteryProviderId(ControllerMetadata metadata, string level)
+        {
+            if (metadata != null && !string.IsNullOrWhiteSpace(metadata.BatteryProviderId) &&
+                level != "Unknown" && level != "Unavailable")
+            {
+                return metadata.BatteryProviderId;
+            }
+            return level == "Empty" || level == "Low" || level == "Medium" || level == "Full"
+                ? ProviderId : "None";
         }
 
         public void Dispose()

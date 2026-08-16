@@ -30,4 +30,4 @@ Se recomiendan ventana y pantalla completa sin bordes. Un juego exclusivo hereda
 
 ## ¿Qué debe incluir una incidencia útil?
 
-Indica modo y tema de Playnite, versión, modelo del mando, USB/Bluetooth/dongle, juego, herramientas de remapeo, pasos exactos, resultado esperado y real, y un diagnóstico HID si el problema afecta a detección o batería.
+Exporta **Avanzado > Informe de soporte** y adjúntalo junto con modo y tema de Playnite, modelo del mando, USB/Bluetooth/dongle, juego, herramientas de remapeo, pasos exactos y resultado esperado frente al real. El informe ya incluye versión, estado anónimo de la sesión y cronología reciente. Añade un diagnóstico HID revisado solo si el problema afecta a detección o batería.

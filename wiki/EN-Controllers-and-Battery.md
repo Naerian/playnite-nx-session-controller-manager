@@ -14,8 +14,12 @@ Controller Session Manager combines device metadata and Windows transport eviden
 
 XInput generally exposes four coarse levels: Empty, Low, Medium and Full. These levels are shown with semantic colors. They are not converted into percentages because doing so would imply precision the API does not provide.
 
-Many proprietary USB receivers expose no standard battery collection. A vendor-specific implementation may exist, but it must be understood and tested per protocol. **Unknown** therefore means that none of the safe providers returned a trustworthy value; it does not imply a full battery.
+Many proprietary USB receivers expose no standard battery collection. Version 1.0.0 adds a strict Sony HID provider for documented DualSense and DualShock 4 USB/Bluetooth reports; Bluetooth data must pass its CRC and the device must match a verified Sony VID/PID. Unverified receiver byte patterns, including 8BitDo heuristics, are deliberately not interpreted. **Unknown** therefore means that none of the safe providers returned a trustworthy value; it does not imply a full battery.
 
 ## HID diagnostics
 
 Use **Advanced > Export HID diagnostics** when a device is missing, duplicated or has no battery. The report inventories relevant interfaces and capabilities without sending vendor commands. Attach it to a GitHub issue together with the exact model, connection mode and driver software.
+
+## Support report
+
+Use **Advanced > Support report** for normal incident diagnosis. It includes effective settings, provider choices, anonymized controller fingerprints, current session state and the latest connection/pause/incident events. It excludes HID paths, serial numbers, user folders and Playnite log contents. The lower-level HID diagnostic can contain device paths or serial information, so review that separate file before posting it publicly.
