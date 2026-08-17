@@ -19,7 +19,11 @@ namespace ControllerSessionManager.Controllers
         private readonly SlotState[] slots = new SlotState[4];
         private readonly SdlControllerMetadataProvider metadataProvider = new SdlControllerMetadataProvider();
         private readonly IList<IControllerBatteryProvider> batteryProviders =
-            new List<IControllerBatteryProvider> { new PlayStationHidBatteryProvider() };
+            new List<IControllerBatteryProvider>
+            {
+                new WindowsBluetoothBatteryProvider(),
+                new PlayStationHidBatteryProvider()
+            };
         private bool unavailable;
 
         public XInputProvider()
@@ -141,7 +145,7 @@ namespace ControllerSessionManager.Controllers
                             : deviceMetadata.HardwareId,
                         VendorId = deviceMetadata == null ? (ushort)0 : deviceMetadata.VendorId,
                         ProductId = deviceMetadata == null ? (ushort)0 : deviceMetadata.ProductId,
-                        Path = string.Empty,
+                        Path = deviceMetadata == null ? string.Empty : deviceMetadata.DevicePath ?? string.Empty,
                         IsConnected = true,
                         IsEnabled = true,
                         ConnectionType = connection,
@@ -167,7 +171,7 @@ namespace ControllerSessionManager.Controllers
                         HardwareId = sdlDevice.HardwareId,
                         VendorId = sdlDevice.VendorId,
                         ProductId = sdlDevice.ProductId,
-                        Path = string.Empty,
+                        Path = sdlDevice.DevicePath ?? string.Empty,
                         IsConnected = true,
                         IsEnabled = true,
                         ConnectionType = sdlDevice.ConnectionType,

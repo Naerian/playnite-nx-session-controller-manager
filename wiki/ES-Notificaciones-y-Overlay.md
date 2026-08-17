@@ -12,7 +12,7 @@ Los cambios XInput estables usan un antirrebote de 300 ms para descartar oscilac
 
 El overlay aparece cuando un mando participante supera el margen de gracia desconectado. Muestra el dispositivo ausente, la instrucción para continuar y el resultado de la pausa. Reconectar o completar un relevo válido lo cierra; en multijugador local la incidencia permanece hasta recuperar la plaza correspondiente.
 
-La tarjeta y el backdrop de pantalla completa tienen colores, tamaños, tipografías, iconos, padding, borde y redondeo independientes. Los valores `#AARRGGBB` admiten alfa; `#00000000` hace transparente el backdrop. La vista previa compacta se actualiza al editar.
+La tarjeta y el backdrop de pantalla completa tienen colores, tamaños, tipografías, iconos, padding, borde y redondeo independientes. El icono situado junto al nombre del mando y el icono del estado de pausa o aviso pueden mostrarse u ocultarse por separado. Los valores `#AARRGGBB` admiten alfa; `#00000000` hace transparente el backdrop. La vista previa compacta se actualiza al editar.
 
 ## Compatibilidad y entrada
 

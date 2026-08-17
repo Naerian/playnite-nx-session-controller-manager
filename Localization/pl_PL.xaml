@@ -20,15 +20,15 @@
     <sys:String x:Key="LOCCSM_Provider">Dostawca</sys:String>
     <sys:String x:Key="LOCCSM_Connected">Podłączony</sys:String>
     <sys:String x:Key="LOCCSM_Disconnected">Odłączony</sys:String>
-    <sys:String x:Key="LOCCSM_StatusFormat">{0} · podłączone: {1}</sys:String>
+    <sys:String x:Key="LOCCSM_StatusFormat">{0}. Podłączone: {1}</sys:String>
     <sys:String x:Key="LOCCSM_TabOverview">Przegląd</sys:String>
-    <sys:String x:Key="LOCCSM_XInputProvider">Dostawca XInput</sys:String>
+    <sys:String x:Key="LOCCSM_XInputProvider">Dostawcy wejścia</sys:String>
     <sys:String x:Key="LOCCSM_PrimaryController">Główny kontroler</sys:String>
     <sys:String x:Key="LOCCSM_LastRefresh">Ostatnie odświeżenie</sys:String>
     <sys:String x:Key="LOCCSM_ProviderActive">Aktywny</sys:String>
     <sys:String x:Key="LOCCSM_ProviderReady">Gotowy</sys:String>
     <sys:String x:Key="LOCCSM_TabControllers">Kontrolery</sys:String>
-    <sys:String x:Key="LOCCSM_ControllersHelp">Kontrolery wykrywane na żywo przez XInput i Playnite.</sys:String>
+    <sys:String x:Key="LOCCSM_ControllersHelp">Kontrolery widoczne przez aktywnych dostawców Playnite, XInput i metadanych Desktop.</sys:String>
     <sys:String x:Key="LOCCSM_ControllerName">Kontroler</sys:String>
     <sys:String x:Key="LOCCSM_Connection">Połączenie</sys:String>
     <sys:String x:Key="LOCCSM_Battery">Bateria</sys:String>
@@ -42,7 +42,7 @@
     <sys:String x:Key="LOCCSM_TabAbout">O programie</sys:String>
     <sys:String x:Key="LOCCSM_Version017">Wersja 0.1.7</sys:String>
     <sys:String x:Key="LOCCSM_AboutPurpose">Niezawodne monitorowanie kontrolerów w sesjach Playnite.</sys:String>
-    <sys:String x:Key="LOCCSM_AboutDescription">Wykrywa połączenia, rozłączenia i aktywność XInput bez zależności od mostka kontrolerów Playnite.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutDescription">Łączy zdarzenia kontrolerów Playnite, sloty zgodne z XInput i bezpieczne metadane Desktop do śledzenia aktywności, baterii, rozłączeń, bezpiecznej pauzy i zewnętrznej nakładki.</sys:String>
     <sys:String x:Key="LOCCSM_Unknown">Nieznany</sys:String>
     <sys:String x:Key="LOCCSM_ValueWired">Przewodowe</sys:String>
     <sys:String x:Key="LOCCSM_ValueWireless">Bezprzewodowe</sys:String>
@@ -86,15 +86,15 @@
     <sys:String x:Key="LOCCSM_SessionStatus">Sesja gry</sys:String>
     <sys:String x:Key="LOCCSM_ActiveSessionControllers">Aktywne kontrolery sesji</sys:String>
     <sys:String x:Key="LOCCSM_SessionProtectionTitle">Podstawa ochrony przed rozłączeniem</sys:String>
-    <sys:String x:Key="LOCCSM_SessionProtectionHelp">Śledzi używane kontrolery, potwierdza rozłączenia po konfigurowalnym czasie i może pokazać zewnętrzną nakładkę. Automatyczna pauza nie jest jeszcze aktywna.</sys:String>
+    <sys:String x:Key="LOCCSM_SessionProtectionHelp">Śledzi kontrolery używane podczas gry, potwierdza rozłączenia po ustawionym czasie i może wyświetlić zewnętrzną nakładkę lub wykonać skonfigurowaną bezpieczną akcję pauzy.</sys:String>
     <sys:String x:Key="LOCCSM_EnableSessionTracking">Śledź aktywne kontrolery podczas sesji gry</sys:String>
     <sys:String x:Key="LOCCSM_DisconnectGracePeriod">Czas tolerancji rozłączenia</sys:String>
     <sys:String x:Key="LOCCSM_DisconnectGracePeriodHelp">Czas na krótkie przerwy lub natychmiastowe ponowne połączenie przed potwierdzeniem rozłączenia.</sys:String>
     <sys:String x:Key="LOCCSM_ValidationGracePeriod">Czas tolerancji musi wynosić od 250 do 10000 milisekund.</sys:String>
     <sys:String x:Key="LOCCSM_SessionIdle">Brak aktywnej sesji gry</sys:String>
     <sys:String x:Key="LOCCSM_SessionDisconnectConfirmed">Potwierdzone rozłączenia: {0}</sys:String>
-    <sys:String x:Key="LOCCSM_SessionGracePeriod">Brak kontrolera · trwa czas tolerancji</sys:String>
-    <sys:String x:Key="LOCCSM_SessionWaitingForInput">Sesja rozpoczęta · oczekiwanie na wejście kontrolera</sys:String>
+    <sys:String x:Key="LOCCSM_SessionGracePeriod">Kontroler odłączony. Krótkie oczekiwanie na ponowne połączenie</sys:String>
+    <sys:String x:Key="LOCCSM_SessionWaitingForInput">Sesja rozpoczęta. Oczekiwanie na wejście kontrolera</sys:String>
     <sys:String x:Key="LOCCSM_SessionTracking">Śledzenie aktywnych kontrolerów sesji</sys:String>
     <sys:String x:Key="LOCCSM_NoActiveSessionControllers">Żaden kontroler nie dostarczył wejścia w tej sesji</sys:String>
     <sys:String x:Key="LOCCSM_AllowControllerTakeover">Pozwól innemu kontrolerowi przejąć sterowanie po potwierdzonym rozłączeniu</sys:String>
@@ -103,13 +103,13 @@
     <sys:String x:Key="LOCCSM_GamePolicyUseGlobal">Użyj ustawień globalnych</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyDisable">Wyłącz ochronę sesji</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyRequireSame">Automatycznie / adaptacyjnie</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyAllowTakeover">Jeden gracz · zezwól na przejęcie przez inny kontroler</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyAllowTakeover">Jeden gracz. Zezwól na przejęcie przez inny kontroler</sys:String>
     <sys:String x:Key="LOCCSM_MenuSettings">Ustawienia</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlay">Pokaż nakładkę po potwierdzonym rozłączeniu kontrolera</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlayHelp">Zewnętrzna nakładka ma charakter informacyjny i zamyka się automatycznie po rozwiązaniu incydentu lub zakończeniu gry.</sys:String>
     <sys:String x:Key="LOCCSM_ProtectAllActiveControllers">Domyślnie używaj ochrony lokalnego trybu wieloosobowego</sys:String>
     <sys:String x:Key="LOCCSM_ProtectAllActiveControllersHelp">Włącz tylko wtedy, gdy kilku lokalnych graczy używa osobnych kontrolerów. Tryb automatyczny jest zalecany dla jednego gracza i trybu online.</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyLocalMultiplayer">Lokalny tryb wieloosobowy · chroń wszystkie aktywne kontrolery</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyLocalMultiplayer">Lokalny tryb wieloosobowy. Chroń wszystkie aktywne kontrolery</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">Spróbuj wstrzymać grę po potwierdzonym rozłączeniu</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnectHelp">Wysyła skonfigurowany klawisz tylko raz, gdy okno na pierwszym planie należy do gry lub procesu potomnego. Domyślnie wyłączone; bez automatycznego wznowienia.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyEnablePause">Automatycznie wstrzymuj tę grę</sys:String>
@@ -121,7 +121,7 @@
     <sys:String x:Key="LOCCSM_OverlayDisconnectTitle">Kontroler rozłączony</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectMessage">Utracono połączenie: {0}</sys:String>
     <sys:String x:Key="LOCCSM_OverlayWaitSameController">Podłącz go ponownie, aby kontynuować.</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayAllowTakeover">Podłącz go ponownie albo użyj innego dostępnego kontrolera, aby kontynuować.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayAllowTakeover">Podłącz go ponownie albo naciśnij przycisk lub porusz drążkiem innego kontrolera.</sys:String>
     <sys:String x:Key="LOCCSM_ColorTopPanelByBattery">Koloruj ikonę i tekst zgodnie z poziomem baterii</sys:String>
     <sys:String x:Key="LOCCSM_PauseKey">Klawisz pauzy</sys:String>
     <sys:String x:Key="LOCCSM_PauseKeyHelp">Dozwolone: Escape, Space, Enter, Tab, Backspace, A-Z, 0-9 i F1-F12.</sys:String>
@@ -131,11 +131,11 @@
     <sys:String x:Key="LOCCSM_GamePolicyPauseUseGlobal">Użyj globalnych ustawień pauzy</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseEscape">Wyślij Escape po rozłączeniu</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseCustom">Wyślij skonfigurowany klawisz ({0}) po rozłączeniu</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyOverlayOnly">Tylko nakładka · nie wysyłaj klawisza</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyOverlayOnly">Tylko nakładka. Nie wysyłaj klawisza</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectTitlePlural">Rozłączono kontrolery: {0}</sys:String>
     <sys:String x:Key="LOCCSM_OverlayReconnectControllers">Podłącz je ponownie, aby kontynuować.</sys:String>
-    <sys:String x:Key="LOCCSM_ForcePauseOfflineGames">Wymuś pauzę gry offline po potwierdzonym rozłączeniu</sys:String>
-    <sys:String x:Key="LOCCSM_ForcePauseOfflineGamesHelp">Opcja zaawansowana, domyślnie wyłączona. Wstrzymuje proces gry na pierwszym planie do powrotu kontrolera lub przejęcia przez inny. Po wykryciu aktywności online gra nie jest wstrzymywana, a pojawia się powiadomienie. Wykrywanie jest przybliżone.</sys:String>
+    <sys:String x:Key="LOCCSM_ForcePauseOfflineGames">Tymczasowo zatrzymaj grę, gdy nie wykryto aktywności sieciowej</sys:String>
+    <sys:String x:Key="LOCCSM_ForcePauseOfflineGamesHelp">Po odłączeniu kontrolera tymczasowo zatrzymuje grę do jego powrotu lub użycia innego kontrolera. Przy aktywności sieciowej gra działa dalej, aby nie zakłócić rozgrywki online. Wykrywanie nie zawsze jest dokładne.</sys:String>
     <sys:String x:Key="LOCCSM_FullscreenNotificationsTitle">Powiadomienie ekranowe</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceLayout">Układ</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceContent">Zawartość</sys:String>
@@ -149,16 +149,16 @@
     <sys:String x:Key="LOCCSM_NotificationWarningPreview">Ostrzeżenie</sys:String>
     <sys:String x:Key="LOCCSM_ShowFullscreenControllerNotifications">Powiadamiaj o połączeniu lub rozłączeniu kontrolera w interfejsie pełnoekranowym</sys:String>
     <sys:String x:Key="LOCCSM_ShowFullscreenControllerNotificationsHelp">Pokazuje krótkie, dyskretne powiadomienie podczas przeglądania Playnite; nigdy nad uruchomioną grą.</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayForcePaused">Gra bezpiecznie wstrzymana</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayForcePauseFailed">Nie udało się bezpiecznie wymusić pauzy gry</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayForcePaused">Gra tymczasowo zatrzymana</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayForcePauseFailed">Nie udało się tymczasowo zatrzymać gry</sys:String>
     <sys:String x:Key="LOCCSM_OnlineFallbackToastTitle">Kontroler rozłączony</sys:String>
-    <sys:String x:Key="LOCCSM_OnlineFallbackToastMessage">Wykryto aktywność online · gra nie została wstrzymana</sys:String>
+    <sys:String x:Key="LOCCSM_OnlineFallbackToastMessage">Wykryto aktywność sieciową. Gra będzie działać dalej, aby nie przerwać sesji online</sys:String>
     <sys:String x:Key="LOCCSM_ControllerConnectedToast">Kontroler połączony</sys:String>
     <sys:String x:Key="LOCCSM_ControllerDisconnectedToast">Kontroler rozłączony</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyForcePauseOffline">Wymuś pauzę offline · powiadom online</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyForcePauseOffline">Tymczasowo zatrzymaj grę bez aktywności sieciowej. W przeciwnym razie pokaż tylko ostrzeżenie</sys:String>
     <sys:String x:Key="LOCCSM_TabSession">Sesja</sys:String><sys:String x:Key="LOCCSM_TabAppearance">Wygląd</sys:String>
     <sys:String x:Key="LOCCSM_AdaptiveProtectionHelp">Tryb automatyczny zaczyna jako jednoosobowy i przechodzi do lokalnego multiplayera dopiero po ciągłym naprzemiennym użyciu kilku kontrolerów. Jednorazowa zmiana kontrolera nie włącza tego trybu. W razie potrzeby użyj wyjątku dla gry.</sys:String>
-    <sys:String x:Key="LOCCSM_PauseModesHelp">Wybierz bezpieczną ochronę globalną. Wymuszona pauza offline ma pierwszeństwo przed klawiszem pauzy; każda gra może to zmienić.</sys:String>
+    <sys:String x:Key="LOCCSM_PauseModesHelp">Wybierz działanie po odłączeniu kontrolera: pokaż ostrzeżenie, spróbuj wstrzymać grę lub tymczasowo ją zatrzymaj, gdy jest to bezpieczne. Każda gra może używać innego ustawienia.</sys:String>
     <sys:String x:Key="LOCCSM_NotificationWidth">Szerokość (px)</sys:String><sys:String x:Key="LOCCSM_NotificationScale">Rozmiar (%)</sys:String><sys:String x:Key="LOCCSM_NotificationDuration">Czas (ms)</sys:String><sys:String x:Key="LOCCSM_NotificationPosition">Pozycja</sys:String>
     <sys:String x:Key="LOCCSM_PositionTopRight">Góra prawa</sys:String><sys:String x:Key="LOCCSM_PositionTopLeft">Góra lewa</sys:String><sys:String x:Key="LOCCSM_PositionBottomRight">Dół prawa</sys:String><sys:String x:Key="LOCCSM_PositionBottomLeft">Dół lewa</sys:String>
     <sys:String x:Key="LOCCSM_ColorFormatHelp">Kolory: #RRGGBB lub #AARRGGBB (alfa, czerwony, zielony i niebieski).</sys:String>
@@ -166,7 +166,7 @@
     <sys:String x:Key="LOCCSM_PreviewNotification">Podgląd powiadomienia</sys:String><sys:String x:Key="LOCCSM_OverlayAppearanceTitle">Nakładka rozłączenia</sys:String><sys:String x:Key="LOCCSM_OverlayAppearanceHelp">Dostosuj izolowaną nakładkę gry. Kolory są niezależne od motywu Playnite dla czytelności.</sys:String>
     <sys:String x:Key="LOCCSM_OverlayScale">Rozmiar nakładki (%)</sys:String><sys:String x:Key="LOCCSM_DimColor">Tło</sys:String><sys:String x:Key="LOCCSM_CardColor">Tło karty</sys:String><sys:String x:Key="LOCCSM_AccentColor">Akcent główny</sys:String>
     <sys:String x:Key="LOCCSM_ValidationAppearance">Szerokość, czas lub skala jest poza dozwolonym zakresem.</sys:String><sys:String x:Key="LOCCSM_NotificationPreviewTitle">Kontroler połączony</sys:String><sys:String x:Key="LOCCSM_NotificationPreviewMessage">Tak będą wyglądać powiadomienia Controller Session Manager.</sys:String>
-    <sys:String x:Key="LOCCSM_SessionAdaptiveLocal">Automatycznie wykryto lokalny multiplayer · chronione kontrolery: {0}</sys:String>
+    <sys:String x:Key="LOCCSM_SessionAdaptiveLocal">Automatycznie wykryto lokalny multiplayer. Chronione kontrolery: {0}</sys:String>
     <sys:String x:Key="LOCCSM_Monitoring">Monitorowanie</sys:String>
     <sys:String x:Key="LOCCSM_ShowControllerNameInNotifications">Pokaż nazwę urządzenia w powiadomieniach</sys:String>
     <sys:String x:Key="LOCCSM_NotificationTitleSize">Tekst tytułu (px)</sys:String><sys:String x:Key="LOCCSM_NotificationTextSize">Tekst wiadomości (px)</sys:String><sys:String x:Key="LOCCSM_NotificationIconSize">Rozmiar ikony (px)</sys:String><sys:String x:Key="LOCCSM_NotificationPadding">Wewnętrzny odstęp (px)</sys:String>
@@ -181,4 +181,6 @@
     <sys:String x:Key="LOCCSM_MenuExportSupport">Eksportuj raport</sys:String>
     <sys:String x:Key="LOCCSM_AboutCapabilities">Controller Session Manager wykrywa podłączone kontrolery, zachowuje własne nazwy i ikony, podaje wiarygodny stan baterii, rozpoznaje faktycznie używane kontrolery i chroni sesje jednoosobowe lub lokalne wieloosobowe po rozłączeniu uczestnika.</sys:String>
     <sys:String x:Key="LOCCSM_AboutSafety">Zewnętrzna nakładka i opcjonalne pauzowanie są odizolowane od Playnite i gry. Nie wstrzykuje wejścia i działa zachowawczo, gdy dane o urządzeniu, procesie lub sesji online są niepełne.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">Pokaż ikonę obok nazwy kontrolera</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowStatusIcon">Pokaż ikonę stanu pauzy lub ostrzeżenia</sys:String>
 </ResourceDictionary>

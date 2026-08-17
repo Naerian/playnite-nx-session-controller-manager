@@ -8,6 +8,8 @@ namespace ControllerSessionManager.Controllers
 
         public string ProviderId { get; set; }
 
+        public string LifecycleProviderId { get; set; }
+
         public int ProviderInstanceId { get; set; }
 
         public string Name { get; set; }

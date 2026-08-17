@@ -30,6 +30,7 @@ namespace ControllerSessionManager.Controllers
 
             try
             {
+                NativeMethods.SDL_PumpEvents();
                 NativeMethods.SDL_GameControllerUpdate();
                 var duplicateCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
                 var observedInstances = new HashSet<int>();
@@ -433,6 +434,9 @@ namespace ControllerSessionManager.Controllers
 
             [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
             public static extern void SDL_GameControllerUpdate();
+
+            [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
+            public static extern void SDL_PumpEvents();
 
             [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
             public static extern IntPtr SDL_JoystickOpen(int joystickIndex);

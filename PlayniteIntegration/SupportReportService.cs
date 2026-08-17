@@ -65,7 +65,10 @@ namespace ControllerSessionManager.PlayniteIntegration
             foreach (var controller in controllers.OrderByDescending(a => a.IsConnected).ThenBy(a => a.Name))
             {
                 output.AppendLine(string.Format("- {0} | connected={1} enabled={2} provider={3}:{4} VID={5:X4} PID={6:X4}",
-                    Safe(controller.Name), controller.IsConnected, controller.IsEnabled, Safe(controller.ProviderId),
+                    Safe(controller.Name), controller.IsConnected, controller.IsEnabled,
+                    Safe(string.IsNullOrWhiteSpace(controller.LifecycleProviderId)
+                        ? controller.ProviderId
+                        : controller.LifecycleProviderId + " + " + controller.ProviderId),
                     controller.ProviderInstanceId, controller.VendorId, controller.ProductId));
                 output.AppendLine(string.Format("  identity={0} connection={1} battery={2} batteryProvider={3} input={4} lastSeen={5}",
                     Fingerprint(string.IsNullOrWhiteSpace(controller.HardwareId) ? controller.ControllerId : controller.HardwareId),

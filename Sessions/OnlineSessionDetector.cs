@@ -18,6 +18,7 @@ namespace ControllerSessionManager.Sessions
         public OnlineEvidenceKind Evidence { get; set; }
         public string Detail { get; set; }
         public bool IsOnlineLikely { get { return Evidence != OnlineEvidenceKind.None; } }
+        public bool IsNotificationOnlySafe { get { return Evidence == OnlineEvidenceKind.Metadata; } }
     }
 
     internal sealed class OnlineSessionDetector

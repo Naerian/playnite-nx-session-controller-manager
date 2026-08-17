@@ -7,10 +7,17 @@ namespace ControllerSessionManager.Controllers
 {
     public sealed class ControllerManager
     {
-        private const string ProviderId = "Playnite";
+        private const string ProviderId = ControllerSnapshotMerger.PlayniteProviderId;
         private readonly object syncRoot = new object();
         private readonly Dictionary<string, ControllerDeviceSnapshot> devices =
             new Dictionary<string, ControllerDeviceSnapshot>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, int> missingInventoryObservations =
+            new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, int> missingProviderObservations =
+            new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        private readonly HashSet<string> providerFallbackDisconnected =
+            new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        private bool playniteAuthorityInitialized;
 
         public event EventHandler SnapshotChanged;
 
@@ -18,12 +25,8 @@ namespace ControllerSessionManager.Controllers
         {
             lock (syncRoot)
             {
-                return devices.Values
-                    .Where(a => !IsRedundantPlayniteBridge(a))
-                    .OrderByDescending(a => a.IsConnected)
-                    .ThenBy(a => a.Name, StringComparer.CurrentCultureIgnoreCase)
-                    .Select(a => a.Clone())
-                    .ToList();
+                return ControllerSnapshotMerger.Merge(devices.Values,
+                    playniteAuthorityInitialized);
             }
         }
 
@@ -34,18 +37,12 @@ namespace ControllerSessionManager.Controllers
 
             lock (syncRoot)
             {
+                playniteAuthorityInitialized = true;
                 foreach (var controller in connectedControllers ?? Enumerable.Empty<GamepadController>())
                 {
-                    if (IsXInputBridge(controller))
-                    {
-                        // XInputProvider is the authoritative source for these devices. The
-                        // Playnite bridge can disappear and return with a different InstanceId
-                        // during one hot-plug, which otherwise creates generic duplicate rows
-                        // and inverted connection notifications.
-                        continue;
-                    }
                     var key = GetProviderKey(controller);
                     observedKeys.Add(key);
+                    missingInventoryObservations.Remove(key);
                     UpsertConnected(controller, key, now);
                 }
 
@@ -53,7 +50,20 @@ namespace ControllerSessionManager.Controllers
                 {
                     if (pair.Value.ProviderId == ProviderId && !observedKeys.Contains(pair.Key))
                     {
-                        pair.Value.IsConnected = false;
+                        int misses;
+                        missingInventoryObservations.TryGetValue(pair.Key, out misses);
+                        misses++;
+                        missingInventoryObservations[pair.Key] = misses;
+
+                        // SDK callbacks are authoritative and normally mark a disconnect
+                        // immediately. Inventory absence is only a recovery path and requires
+                        // two consecutive observations with no still-connected capability.
+                        var capability = ControllerSnapshotMerger.FindCapability(pair.Value,
+                            devices.Values.Where(a => a.ProviderId != ProviderId));
+                        if (misses >= 2 && (capability == null || !capability.IsConnected))
+                        {
+                            pair.Value.IsConnected = false;
+                        }
                     }
                 }
             }
@@ -121,6 +131,8 @@ namespace ControllerSessionManager.Controllers
                         pair.Value.IsConnected = false;
                     }
                 }
+
+                ApplyProviderLifecycleFallback(providerId);
             }
 
             RaiseSnapshotChanged();
@@ -128,18 +140,19 @@ namespace ControllerSessionManager.Controllers
 
         public void RecordConnected(GamepadController controller)
         {
-            if (controller == null || IsXInputBridge(controller))
+            if (controller == null)
             {
                 return;
             }
 
             lock (syncRoot)
             {
-                if (FindProviderMatch(controller) != null)
-                {
-                    return;
-                }
-                UpsertConnected(controller, GetProviderKey(controller), DateTime.UtcNow);
+                playniteAuthorityInitialized = true;
+                var key = GetProviderKey(controller);
+                missingInventoryObservations.Remove(key);
+                UpsertConnected(controller, key, DateTime.UtcNow);
+                providerFallbackDisconnected.Remove(key);
+                ClearProviderMissing(key);
             }
 
             RaiseSnapshotChanged();
@@ -147,27 +160,37 @@ namespace ControllerSessionManager.Controllers
 
         public void RecordDisconnected(GamepadController controller)
         {
-            if (controller == null || IsXInputBridge(controller))
+            if (controller == null)
             {
                 return;
             }
 
             lock (syncRoot)
             {
-                if (FindProviderMatch(controller) != null)
-                {
-                    return;
-                }
+                playniteAuthorityInitialized = true;
                 var key = GetProviderKey(controller);
                 ControllerDeviceSnapshot device;
                 if (!devices.TryGetValue(key, out device))
                 {
-                    device = CreateSnapshot(controller, key, DateTime.UtcNow);
-                    devices[key] = device;
+                    var incoming = CreateSnapshot(controller, key, DateTime.UtcNow);
+                    device = ControllerSnapshotMerger.FindAuthoritativeEventTarget(incoming,
+                        devices.Values.Where(a => a.ProviderId == ProviderId));
+                    if (device == null)
+                    {
+                        device = incoming;
+                        devices[key] = device;
+                    }
+                    else
+                    {
+                        key = devices.First(a => object.ReferenceEquals(a.Value, device)).Key;
+                    }
                 }
 
                 device.IsConnected = false;
                 device.LastSeenUtc = DateTime.UtcNow;
+                missingInventoryObservations[key] = 2;
+                providerFallbackDisconnected.Remove(key);
+                ClearProviderMissing(key);
             }
 
             RaiseSnapshotChanged();
@@ -184,10 +207,6 @@ namespace ControllerSessionManager.Controllers
             {
                 var now = DateTime.UtcNow;
                 var providerMatch = FindProviderMatch(controller);
-                if (providerMatch == null && IsXInputBridge(controller))
-                {
-                    return;
-                }
                 if (providerMatch != null)
                 {
                     providerMatch.LastInputUtc = now;
@@ -196,13 +215,16 @@ namespace ControllerSessionManager.Controllers
                     providerMatch.InputNeutralSinceUtc = null;
                     providerMatch.LastSeenUtc = now;
                 }
-                else
-                {
-                    var key = GetProviderKey(controller);
-                    UpsertConnected(controller, key, now);
-                    devices[key].LastInputUtc = now;
-                    devices[key].LastInputKind = InputEvidenceKind.PlayniteButton.ToString();
-                }
+                var key = GetProviderKey(controller);
+                missingInventoryObservations.Remove(key);
+                UpsertConnected(controller, key, now);
+                devices[key].LastInputUtc = now;
+                devices[key].LastInputKind = InputEvidenceKind.PlayniteButton.ToString();
+                devices[key].IsInputNeutral = false;
+                devices[key].InputNeutralSinceUtc = null;
+                playniteAuthorityInitialized = true;
+                providerFallbackDisconnected.Remove(key);
+                ClearProviderMissing(key);
             }
 
             RaiseSnapshotChanged();
@@ -222,23 +244,31 @@ namespace ControllerSessionManager.Controllers
             device.ProviderInstanceId = controller.InstanceId;
             device.IsEnabled = controller.Enabled;
             device.IsConnected = true;
+            device.LifecycleProviderId = ProviderId;
             device.LastSeenUtc = now;
         }
 
         private static ControllerDeviceSnapshot CreateSnapshot(GamepadController controller, string key, DateTime now)
         {
+            ushort vendorId;
+            ushort productId;
+            ControllerBridgeIdentity.TryGetVidPid(controller.Path, out vendorId, out productId);
             return new ControllerDeviceSnapshot
             {
                 ControllerId = key,
                 ProviderId = ProviderId,
+                LifecycleProviderId = ProviderId,
                 ProviderInstanceId = controller.InstanceId,
                 Name = string.IsNullOrWhiteSpace(controller.Name) ? "Unknown controller" : controller.Name,
                 DetectedName = string.IsNullOrWhiteSpace(controller.Name) ? "Unknown controller" : controller.Name,
                 HardwareId = key,
+                VendorId = vendorId,
+                ProductId = productId,
                 Path = controller.Path ?? string.Empty,
                 IsConnected = true,
                 IsEnabled = controller.Enabled,
-                ConnectionType = "Unknown",
+                ConnectionType = ControllerDeviceIdentity.GetConnectionType(controller.Name,
+                    vendorId, productId, controller.Path),
                 BatteryLevel = "Unknown",
                 BatteryProviderId = "None",
                 LastSeenUtc = now
@@ -260,39 +290,88 @@ namespace ControllerSessionManager.Controllers
                 : path.Trim().Replace('/', '\\').ToUpperInvariant();
         }
 
-        private static bool IsXInputBridge(GamepadController controller)
-        {
-            return ControllerBridgeIdentity.GetXInputSlot(controller == null ? null : controller.Path).HasValue;
-        }
-
         private ControllerDeviceSnapshot FindProviderMatch(GamepadController controller)
         {
-            var slot = ControllerBridgeIdentity.GetXInputSlot(controller == null ? null : controller.Path);
-            if (slot.HasValue)
-            {
-                return devices.Values.FirstOrDefault(a => a.IsConnected &&
-                    string.Equals(a.ProviderId, XInputProvider.ProviderId, StringComparison.OrdinalIgnoreCase) &&
-                    a.ProviderInstanceId == slot.Value);
-            }
-
-            return devices.Values.FirstOrDefault(a => a.ProviderId != ProviderId && a.IsConnected &&
-                a.ProviderInstanceId == controller.InstanceId);
+            var authority = CreateSnapshot(controller, GetProviderKey(controller), DateTime.UtcNow);
+            return ControllerSnapshotMerger.FindCapability(authority,
+                devices.Values.Where(a => a.ProviderId != ProviderId));
         }
 
-        private bool IsRedundantPlayniteBridge(ControllerDeviceSnapshot snapshot)
+        public void ConfirmProviderLifecycle()
         {
-            if (snapshot == null || !string.Equals(snapshot.ProviderId, ProviderId,
-                StringComparison.OrdinalIgnoreCase))
+            var changed = false;
+            lock (syncRoot)
             {
-                return false;
+                changed |= ApplyProviderLifecycleFallback("XInput");
+                changed |= ApplyProviderLifecycleFallback("SDL");
             }
+            if (changed)
+            {
+                RaiseSnapshotChanged();
+            }
+        }
+        private bool ApplyProviderLifecycleFallback(string providerId)
+        {
+            var changed = false;
+            var capabilities = devices.Values.Where(a => string.Equals(a.ProviderId, providerId,
+                StringComparison.OrdinalIgnoreCase)).ToList();
+            foreach (var authorityPair in devices.Where(a => string.Equals(a.Value.ProviderId,
+                ProviderId, StringComparison.OrdinalIgnoreCase)).ToList())
+            {
+                var authorityKey = authorityPair.Key;
+                var authority = authorityPair.Value;
+                var capability = ControllerSnapshotMerger.FindCapability(authority, capabilities);
+                if (capability == null)
+                {
+                    continue;
+                }
 
-            var slot = ControllerBridgeIdentity.GetXInputSlot(snapshot.Path);
-            return slot.HasValue && devices.Values.Any(a => a.IsConnected &&
-                string.Equals(a.ProviderId, XInputProvider.ProviderId, StringComparison.OrdinalIgnoreCase) &&
-                a.ProviderInstanceId == slot.Value);
+                var evidenceKey = authorityKey + "|" + providerId;
+                if (capability.IsConnected)
+                {
+                    missingProviderObservations.Remove(evidenceKey);
+                    if (!authority.IsConnected && providerFallbackDisconnected.Contains(authorityKey))
+                    {
+                        authority.IsConnected = true;
+                        authority.LastSeenUtc = DateTime.UtcNow;
+                        authority.LifecycleProviderId = ProviderId + "+" + providerId + " recovery";
+                        providerFallbackDisconnected.Remove(authorityKey);
+                        changed = true;
+                    }
+                    continue;
+                }
+
+                if (!authority.IsConnected)
+                {
+                    missingProviderObservations.Remove(evidenceKey);
+                    continue;
+                }
+
+                int misses;
+                missingProviderObservations.TryGetValue(evidenceKey, out misses);
+                misses++;
+                missingProviderObservations[evidenceKey] = misses;
+                if (misses >= 3)
+                {
+                    authority.IsConnected = false;
+                    authority.LastSeenUtc = DateTime.UtcNow;
+                    authority.LifecycleProviderId = ProviderId + "+" + providerId + " recovery";
+                    providerFallbackDisconnected.Add(authorityKey);
+                    changed = true;
+                }
+            }
+            return changed;
         }
 
+        private void ClearProviderMissing(string authorityKey)
+        {
+            var prefix = authorityKey + "|";
+            foreach (var key in missingProviderObservations.Keys.Where(a =>
+                a.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)).ToList())
+            {
+                missingProviderObservations.Remove(key);
+            }
+        }
         private void RaiseSnapshotChanged()
         {
             var handler = SnapshotChanged;

@@ -20,15 +20,15 @@
     <sys:String x:Key="LOCCSM_Provider">Провайдер</sys:String>
     <sys:String x:Key="LOCCSM_Connected">Подключён</sys:String>
     <sys:String x:Key="LOCCSM_Disconnected">Отключён</sys:String>
-    <sys:String x:Key="LOCCSM_StatusFormat">{0} · подключено: {1}</sys:String>
+    <sys:String x:Key="LOCCSM_StatusFormat">{0}. Подключено: {1}</sys:String>
     <sys:String x:Key="LOCCSM_TabOverview">Обзор</sys:String>
-    <sys:String x:Key="LOCCSM_XInputProvider">Провайдер XInput</sys:String>
+    <sys:String x:Key="LOCCSM_XInputProvider">Провайдеры ввода</sys:String>
     <sys:String x:Key="LOCCSM_PrimaryController">Основной контроллер</sys:String>
     <sys:String x:Key="LOCCSM_LastRefresh">Последнее обновление</sys:String>
     <sys:String x:Key="LOCCSM_ProviderActive">Активен</sys:String>
     <sys:String x:Key="LOCCSM_ProviderReady">Готов</sys:String>
     <sys:String x:Key="LOCCSM_TabControllers">Контроллеры</sys:String>
-    <sys:String x:Key="LOCCSM_ControllersHelp">Контроллеры, обнаруженные в реальном времени через XInput и Playnite.</sys:String>
+    <sys:String x:Key="LOCCSM_ControllersHelp">Контроллеры, видимые через активные провайдеры Playnite, XInput и метаданных Desktop.</sys:String>
     <sys:String x:Key="LOCCSM_ControllerName">Контроллер</sys:String>
     <sys:String x:Key="LOCCSM_Connection">Подключение</sys:String>
     <sys:String x:Key="LOCCSM_Battery">Батарея</sys:String>
@@ -42,7 +42,7 @@
     <sys:String x:Key="LOCCSM_TabAbout">О программе</sys:String>
     <sys:String x:Key="LOCCSM_Version017">Версия 0.1.7</sys:String>
     <sys:String x:Key="LOCCSM_AboutPurpose">Надёжный мониторинг контроллеров для сеансов Playnite.</sys:String>
-    <sys:String x:Key="LOCCSM_AboutDescription">Обнаруживает подключения, отключения и активность XInput независимо от моста контроллеров Playnite.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutDescription">Объединяет события контроллеров Playnite, совместимые с XInput слоты и безопасные метаданные Desktop для активности, батареи, защиты от отключения, безопасной паузы и внешнего оверлея.</sys:String>
     <sys:String x:Key="LOCCSM_Unknown">Неизвестно</sys:String>
     <sys:String x:Key="LOCCSM_ValueWired">Проводное</sys:String>
     <sys:String x:Key="LOCCSM_ValueWireless">Беспроводное</sys:String>
@@ -86,15 +86,15 @@
     <sys:String x:Key="LOCCSM_SessionStatus">Игровая сессия</sys:String>
     <sys:String x:Key="LOCCSM_ActiveSessionControllers">Активные контроллеры сессии</sys:String>
     <sys:String x:Key="LOCCSM_SessionProtectionTitle">Основа защиты от отключений</sys:String>
-    <sys:String x:Key="LOCCSM_SessionProtectionHelp">Отслеживает используемые контроллеры, подтверждает отключение после задержки и может показать внешний оверлей. Автоматическая пауза пока не активна.</sys:String>
+    <sys:String x:Key="LOCCSM_SessionProtectionHelp">Отслеживает контроллеры во время игры, подтверждает отключение после заданной задержки и может показать внешний оверлей или выполнить настроенное безопасное действие паузы.</sys:String>
     <sys:String x:Key="LOCCSM_EnableSessionTracking">Отслеживать активные контроллеры во время игровых сессий</sys:String>
     <sys:String x:Key="LOCCSM_DisconnectGracePeriod">Задержка подтверждения отключения</sys:String>
     <sys:String x:Key="LOCCSM_DisconnectGracePeriodHelp">Время для кратких сбоев или немедленного переподключения до подтверждения отключения.</sys:String>
     <sys:String x:Key="LOCCSM_ValidationGracePeriod">Задержка должна составлять от 250 до 10000 миллисекунд.</sys:String>
     <sys:String x:Key="LOCCSM_SessionIdle">Нет активной игровой сессии</sys:String>
     <sys:String x:Key="LOCCSM_SessionDisconnectConfirmed">Подтверждённые отключения: {0}</sys:String>
-    <sys:String x:Key="LOCCSM_SessionGracePeriod">Контроллер отсутствует · ожидание задержки</sys:String>
-    <sys:String x:Key="LOCCSM_SessionWaitingForInput">Сессия начата · ожидание ввода контроллера</sys:String>
+    <sys:String x:Key="LOCCSM_SessionGracePeriod">Контроллер отключён. Несколько секунд ожидания повторного подключения</sys:String>
+    <sys:String x:Key="LOCCSM_SessionWaitingForInput">Сессия начата. Ожидание ввода контроллера</sys:String>
     <sys:String x:Key="LOCCSM_SessionTracking">Отслеживание активных контроллеров сессии</sys:String>
     <sys:String x:Key="LOCCSM_NoActiveSessionControllers">Ни один контроллер не использовался в этой сессии</sys:String>
     <sys:String x:Key="LOCCSM_AllowControllerTakeover">Разрешить другому контроллеру продолжить после подтверждённого отключения</sys:String>
@@ -103,13 +103,13 @@
     <sys:String x:Key="LOCCSM_GamePolicyUseGlobal">Использовать глобальные настройки</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyDisable">Отключить защиту сеанса</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyRequireSame">Автоматически / адаптивно</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyAllowTakeover">Один игрок · разрешить смену контроллера</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyAllowTakeover">Один игрок. Разрешить смену контроллера</sys:String>
     <sys:String x:Key="LOCCSM_MenuSettings">Настройки</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlay">Показывать оверлей после подтверждённого отключения контроллера</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlayHelp">Внешний оверлей носит информационный характер и автоматически закрывается после устранения инцидента или завершения игры.</sys:String>
     <sys:String x:Key="LOCCSM_ProtectAllActiveControllers">По умолчанию использовать защиту локальной игры</sys:String>
     <sys:String x:Key="LOCCSM_ProtectAllActiveControllersHelp">Включайте только для нескольких локальных игроков с отдельными контроллерами. Автоматический режим рекомендуется для одного игрока и сетевой игры.</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyLocalMultiplayer">Локальная игра · защищать все активные контроллеры</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyLocalMultiplayer">Локальная игра. Защищать все активные контроллеры</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">Пытаться приостановить игру после подтверждённого отключения</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnectHelp">Однократно отправляет настроенную клавишу, только если активное окно принадлежит игре или дочернему процессу. По умолчанию выключено; автоматического возобновления нет.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyEnablePause">Автоматически приостанавливать эту игру</sys:String>
@@ -121,7 +121,7 @@
     <sys:String x:Key="LOCCSM_OverlayDisconnectTitle">Контроллер отключён</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectMessage">Соединение потеряно: {0}</sys:String>
     <sys:String x:Key="LOCCSM_OverlayWaitSameController">Подключите его снова, чтобы продолжить.</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayAllowTakeover">Подключите его или используйте другой доступный контроллер, чтобы продолжить.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayAllowTakeover">Подключите его снова либо нажмите кнопку или сдвиньте стик другого контроллера.</sys:String>
     <sys:String x:Key="LOCCSM_ColorTopPanelByBattery">Окрашивать значок и текст по уровню батареи</sys:String>
     <sys:String x:Key="LOCCSM_PauseKey">Клавиша паузы</sys:String>
     <sys:String x:Key="LOCCSM_PauseKeyHelp">Допустимы: Escape, Space, Enter, Tab, Backspace, A-Z, 0-9 и F1-F12.</sys:String>
@@ -131,11 +131,11 @@
     <sys:String x:Key="LOCCSM_GamePolicyPauseUseGlobal">Использовать глобальные настройки паузы</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseEscape">Отправлять Escape при отключении</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseCustom">Отправлять настроенную клавишу ({0}) при отключении</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyOverlayOnly">Только оверлей · не отправлять клавишу</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyOverlayOnly">Только оверлей. Не отправлять клавишу</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectTitlePlural">Отключено контроллеров: {0}</sys:String>
     <sys:String x:Key="LOCCSM_OverlayReconnectControllers">Подключите их снова, чтобы продолжить.</sys:String>
-    <sys:String x:Key="LOCCSM_ForcePauseOfflineGames">Принудительно приостанавливать офлайн-игры после подтверждённого отключения</sys:String>
-    <sys:String x:Key="LOCCSM_ForcePauseOfflineGamesHelp">Расширенная настройка, по умолчанию выключена. Приостанавливает процесс игры на переднем плане до возврата геймпада или перехода управления к другому. При обнаружении сетевой активности игра не приостанавливается, а показывается уведомление. Определение приблизительное.</sys:String>
+    <sys:String x:Key="LOCCSM_ForcePauseOfflineGames">Временно остановить игру, если сетевая активность не обнаружена</sys:String>
+    <sys:String x:Key="LOCCSM_ForcePauseOfflineGamesHelp">При отключении контроллера временно останавливает игру до его возврата или использования другого контроллера. При сетевой активности игра продолжает работу, чтобы не нарушить онлайн-сессию. Определение не всегда бывает точным.</sys:String>
     <sys:String x:Key="LOCCSM_FullscreenNotificationsTitle">Экранное уведомление</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceLayout">Компоновка</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceContent">Содержимое</sys:String>
@@ -149,16 +149,16 @@
     <sys:String x:Key="LOCCSM_NotificationWarningPreview">Предупреждение</sys:String>
     <sys:String x:Key="LOCCSM_ShowFullscreenControllerNotifications">Уведомлять о подключении и отключении геймпада в полноэкранном интерфейсе</sys:String>
     <sys:String x:Key="LOCCSM_ShowFullscreenControllerNotificationsHelp">Показывает короткое ненавязчивое уведомление при навигации по Playnite, но не поверх запущенной игры.</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayForcePaused">Игра безопасно приостановлена</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayForcePauseFailed">Не удалось безопасно приостановить игру</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayForcePaused">Игра временно остановлена</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayForcePauseFailed">Не удалось временно остановить игру</sys:String>
     <sys:String x:Key="LOCCSM_OnlineFallbackToastTitle">Геймпад отключён</sys:String>
-    <sys:String x:Key="LOCCSM_OnlineFallbackToastMessage">Обнаружена сетевая активность · игра не приостановлена</sys:String>
+    <sys:String x:Key="LOCCSM_OnlineFallbackToastMessage">Обнаружена сетевая активность. Игра продолжит работу, чтобы не прерывать онлайн-сессию</sys:String>
     <sys:String x:Key="LOCCSM_ControllerConnectedToast">Геймпад подключён</sys:String>
     <sys:String x:Key="LOCCSM_ControllerDisconnectedToast">Геймпад отключён</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyForcePauseOffline">Принудительная пауза офлайн · уведомление онлайн</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyForcePauseOffline">Временно остановить игру без сетевой активности. В противном случае показать только предупреждение</sys:String>
     <sys:String x:Key="LOCCSM_TabSession">Сеанс</sys:String><sys:String x:Key="LOCCSM_TabAppearance">Оформление</sys:String>
     <sys:String x:Key="LOCCSM_AdaptiveProtectionHelp">Автоматический режим начинается как одиночный и переходит в локальный мультиплеер только после устойчивого чередования ввода с нескольких геймпадов. Разовая смена геймпада не включает этот режим. При необходимости задайте исключение для игры.</sys:String>
-    <sys:String x:Key="LOCCSM_PauseModesHelp">Выберите безопасную глобальную защиту. Принудительная офлайн-пауза имеет приоритет над клавишей; для каждой игры её можно изменить.</sys:String>
+    <sys:String x:Key="LOCCSM_PauseModesHelp">Выберите действие при отключении контроллера: показать предупреждение, попытаться поставить игру на паузу или временно остановить её, когда это безопасно. Для каждой игры можно выбрать отдельную настройку.</sys:String>
     <sys:String x:Key="LOCCSM_NotificationWidth">Ширина (px)</sys:String><sys:String x:Key="LOCCSM_NotificationScale">Размер (%)</sys:String><sys:String x:Key="LOCCSM_NotificationDuration">Длительность (мс)</sys:String><sys:String x:Key="LOCCSM_NotificationPosition">Положение</sys:String>
     <sys:String x:Key="LOCCSM_PositionTopRight">Справа сверху</sys:String><sys:String x:Key="LOCCSM_PositionTopLeft">Слева сверху</sys:String><sys:String x:Key="LOCCSM_PositionBottomRight">Справа снизу</sys:String><sys:String x:Key="LOCCSM_PositionBottomLeft">Слева снизу</sys:String>
     <sys:String x:Key="LOCCSM_ColorFormatHelp">Цвета: #RRGGBB или #AARRGGBB (альфа, красный, зелёный и синий).</sys:String>
@@ -166,7 +166,7 @@
     <sys:String x:Key="LOCCSM_PreviewNotification">Предпросмотр уведомления</sys:String><sys:String x:Key="LOCCSM_OverlayAppearanceTitle">Оверлей отключения</sys:String><sys:String x:Key="LOCCSM_OverlayAppearanceHelp">Настройте изолированный игровой оверлей. Для читаемости его цвета не зависят от темы Playnite.</sys:String>
     <sys:String x:Key="LOCCSM_OverlayScale">Размер оверлея (%)</sys:String><sys:String x:Key="LOCCSM_DimColor">Затемнение фона</sys:String><sys:String x:Key="LOCCSM_CardColor">Фон карточки</sys:String><sys:String x:Key="LOCCSM_AccentColor">Основной акцент</sys:String>
     <sys:String x:Key="LOCCSM_ValidationAppearance">Ширина, длительность или масштаб вне допустимого диапазона.</sys:String><sys:String x:Key="LOCCSM_NotificationPreviewTitle">Геймпад подключён</sys:String><sys:String x:Key="LOCCSM_NotificationPreviewMessage">Так будут выглядеть уведомления Controller Session Manager.</sys:String>
-    <sys:String x:Key="LOCCSM_SessionAdaptiveLocal">Локальный мультиплеер определён автоматически · защищено геймпадов: {0}</sys:String>
+    <sys:String x:Key="LOCCSM_SessionAdaptiveLocal">Локальный мультиплеер определён автоматически. Защищено геймпадов: {0}</sys:String>
     <sys:String x:Key="LOCCSM_Monitoring">Мониторинг</sys:String>
     <sys:String x:Key="LOCCSM_ShowControllerNameInNotifications">Показывать имя устройства в уведомлениях</sys:String>
     <sys:String x:Key="LOCCSM_NotificationTitleSize">Текст заголовка (px)</sys:String><sys:String x:Key="LOCCSM_NotificationTextSize">Текст сообщения (px)</sys:String><sys:String x:Key="LOCCSM_NotificationIconSize">Размер значка (px)</sys:String><sys:String x:Key="LOCCSM_NotificationPadding">Внутренний отступ (px)</sys:String>
@@ -181,4 +181,6 @@
     <sys:String x:Key="LOCCSM_MenuExportSupport">Экспортировать отчёт</sys:String>
     <sys:String x:Key="LOCCSM_AboutCapabilities">Controller Session Manager определяет подключённые контроллеры, сохраняет свои имена и значки, сообщает достоверный заряд, выявляет реально используемые контроллеры и защищает одиночные или локальные многопользовательские сеансы при отключении участника.</sys:String>
     <sys:String x:Key="LOCCSM_AboutSafety">Внешний оверлей и необязательная пауза изолированы от Playnite и игры. Плагин не внедряет ввод и действует осторожно при неполных данных об устройстве, процессе или сетевом сеансе.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">Показывать значок рядом с названием контроллера</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowStatusIcon">Показывать значок состояния паузы или предупреждения</sys:String>
 </ResourceDictionary>

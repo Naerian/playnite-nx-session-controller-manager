@@ -39,10 +39,13 @@ namespace ControllerSessionManager.Sessions
 
     public sealed class GameSessionManager
     {
+        private static readonly TimeSpan PreSessionInputGrace = TimeSpan.FromSeconds(10);
         private readonly Dictionary<string, SessionControllerSnapshot> activeControllers =
             new Dictionary<string, SessionControllerSnapshot>(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, DateTime> activationFloors =
             new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
+        private readonly HashSet<string> knownConnectedKeys =
+            new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         public event EventHandler<SessionEventArgs> EventOccurred;
 
@@ -72,6 +75,7 @@ namespace ControllerSessionManager.Sessions
         {
             activeControllers.Clear();
             activationFloors.Clear();
+            knownConnectedKeys.Clear();
             GameId = gameId;
             StartedUtc = nowUtc;
             IsRunning = true;
@@ -81,8 +85,54 @@ namespace ControllerSessionManager.Sessions
         {
             activeControllers.Clear();
             activationFloors.Clear();
+            knownConnectedKeys.Clear();
             IsRunning = false;
             GameId = Guid.Empty;
+        }
+
+        public bool SeedInitialController(IEnumerable<ControllerDeviceSnapshot> controllers, DateTime nowUtc)
+        {
+            if (!IsRunning || activeControllers.Count > 0)
+            {
+                return false;
+            }
+
+            var snapshot = (controllers ?? Enumerable.Empty<ControllerDeviceSnapshot>()).ToList();
+            foreach (var connectedKey in snapshot.Where(a => a.IsConnected).Select(GetControllerKey))
+            {
+                knownConnectedKeys.Add(connectedKey);
+            }
+            // The public snapshot is already physically deduplicated. Do not apply the
+            // short-lived Playnite input suppression here: a pure SDK controller may be
+            // the only safe startup owner available.
+            var candidate = snapshot.Where(a => a.IsConnected)
+                .GroupBy(GetControllerKey, StringComparer.OrdinalIgnoreCase)
+                .Select(a => a.OrderByDescending(b => b.LastInputUtc.HasValue)
+                    .ThenByDescending(b => b.LastInputUtc)
+                    .ThenBy(b => b.Name, StringComparer.CurrentCultureIgnoreCase)
+                    .First())
+                .OrderByDescending(a => a.LastInputUtc.HasValue)
+                .ThenByDescending(a => a.LastInputUtc)
+                .ThenBy(a => a.Name, StringComparer.CurrentCultureIgnoreCase)
+                .FirstOrDefault();
+            if (candidate == null)
+            {
+                return false;
+            }
+
+            var key = GetControllerKey(candidate);
+            var active = new SessionControllerSnapshot
+            {
+                ControllerKey = key,
+                Name = candidate.Name,
+                LastInputUtc = candidate.LastInputUtc,
+                ActivatedUtc = nowUtc,
+                InputEvidence = "SessionStartFallback"
+            };
+            activeControllers[key] = active;
+            activationFloors.Remove(key);
+            Raise(SessionEventType.ControllerActivated, active);
+            return true;
         }
 
         public void Update(IEnumerable<ControllerDeviceSnapshot> controllers, DateTime nowUtc,
@@ -98,6 +148,8 @@ namespace ControllerSessionManager.Sessions
                 .GroupBy(GetControllerKey, StringComparer.OrdinalIgnoreCase)
                 .ToDictionary(a => a.Key, a => a.OrderByDescending(b => b.LastInputUtc).First(),
                     StringComparer.OrdinalIgnoreCase);
+            var newlyConnectedKeys = new HashSet<string>(connected.Keys.Where(a =>
+                !knownConnectedKeys.Contains(a)), StringComparer.OrdinalIgnoreCase);
 
             var eligible = connected.Values.Where(a => IsEligibleForActivation(a, snapshot, nowUtc))
                 .OrderByDescending(a => a.LastInputUtc).ToList();
@@ -145,7 +197,13 @@ namespace ControllerSessionManager.Sessions
 
             if (allowControllerTakeover)
             {
-                ResolveTakeovers(connected, protectAllActiveControllers, nowUtc);
+                ResolveTakeovers(connected, newlyConnectedKeys, protectAllActiveControllers, nowUtc);
+            }
+
+            knownConnectedKeys.Clear();
+            foreach (var key in connected.Keys)
+            {
+                knownConnectedKeys.Add(key);
             }
         }
 
@@ -169,7 +227,8 @@ namespace ControllerSessionManager.Sessions
         private bool IsEligibleForActivation(ControllerDeviceSnapshot controller,
             IEnumerable<ControllerDeviceSnapshot> snapshot, DateTime nowUtc)
         {
-            if (!controller.LastInputUtc.HasValue || controller.LastInputUtc.Value < StartedUtc ||
+            if (!controller.LastInputUtc.HasValue ||
+                controller.LastInputUtc.Value < StartedUtc - PreSessionInputGrace ||
                 IsLikelyDuplicateFallback(controller, snapshot, nowUtc))
             {
                 return false;
@@ -220,6 +279,22 @@ namespace ControllerSessionManager.Sessions
                 return;
             }
 
+            if (string.Equals(current.InputEvidence, "SessionStartFallback",
+                StringComparison.OrdinalIgnoreCase) && eligible.Count > 0)
+            {
+                var observedOwner = eligible.FirstOrDefault(a => string.Equals(GetControllerKey(a),
+                    current.ControllerKey, StringComparison.OrdinalIgnoreCase));
+                var actualController = observedOwner ?? eligible[0];
+                var actualKey = GetControllerKey(actualController);
+                if (!string.Equals(actualKey, current.ControllerKey, StringComparison.OrdinalIgnoreCase))
+                {
+                    Retire(current);
+                    activeControllers.Remove(current.ControllerKey);
+                }
+                ActivateOrRefresh(actualController);
+                return;
+            }
+
             var currentObservation = eligible.FirstOrDefault(a => string.Equals(GetControllerKey(a),
                 current.ControllerKey, StringComparison.OrdinalIgnoreCase));
             if (currentObservation != null)
@@ -251,7 +326,7 @@ namespace ControllerSessionManager.Sessions
         }
 
         private void ResolveTakeovers(IDictionary<string, ControllerDeviceSnapshot> connected,
-            bool protectAllActiveControllers, DateTime nowUtc)
+            ISet<string> newlyConnectedKeys, bool protectAllActiveControllers, DateTime nowUtc)
         {
             var usedReplacementKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var removals = new List<string>();
@@ -260,10 +335,11 @@ namespace ControllerSessionManager.Sessions
             {
                 var replacement = connected
                     .Where(a => !string.Equals(a.Key, missing.ControllerKey, StringComparison.OrdinalIgnoreCase) &&
-                        !usedReplacementKeys.Contains(a.Key) && a.Value.LastInputUtc.HasValue &&
+                        !usedReplacementKeys.Contains(a.Key) &&
                         IsAvailableReplacement(a.Key, missing, protectAllActiveControllers) &&
-                        IsReplacementSettled(a.Value, nowUtc) &&
-                        a.Value.LastInputUtc.Value > missing.MissingSinceUtc.Value)
+                        ((a.Value.LastInputUtc.HasValue && IsReplacementSettled(a.Value, nowUtc) &&
+                            a.Value.LastInputUtc.Value > missing.MissingSinceUtc.Value) ||
+                         (newlyConnectedKeys.Contains(a.Key) && a.Value.IsInputNeutral != false)))
                     .OrderByDescending(a => a.Value.LastInputUtc)
                     .FirstOrDefault();
                 if (string.IsNullOrWhiteSpace(replacement.Key))
@@ -281,8 +357,10 @@ namespace ControllerSessionManager.Sessions
                         ControllerKey = replacement.Key,
                         Name = replacement.Value.Name,
                         LastInputUtc = replacement.Value.LastInputUtc,
-                        ActivatedUtc = replacement.Value.LastInputUtc,
-                        InputEvidence = replacement.Value.LastInputKind
+                        ActivatedUtc = replacement.Value.LastInputUtc ?? nowUtc,
+                        InputEvidence = newlyConnectedKeys.Contains(replacement.Key)
+                            ? "ConnectedAfterDisconnect"
+                            : replacement.Value.LastInputKind
                     };
                     activeControllers[replacement.Key] = replacementSession;
                 }

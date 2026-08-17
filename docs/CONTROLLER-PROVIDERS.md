@@ -4,15 +4,15 @@
 
 ## 1. Recomendación
 
-Usar esta pila por fases:
+Pila implementada en 1.0.6:
 
-1. **GameInput v3.x**: inventario principal, identidad, presencia, input y capacidades.
-2. **XInput 1.4**: slots compatibles y batería cualitativa de mandos XInput.
-3. **Playnite controller bridge**: señal complementaria y fallback de presencia/input de navegación.
-4. **HID/SetupAPI metadata**: enriquecimiento dirigido y batería sólo para perfiles conocidos.
-5. **Raw Input**: fallback posterior para dispositivos que GameInput no represente correctamente; no activarlo en v0.1 sin evidencia.
+1. **Playnite SDK**: autoridad de inventario, conexión, desconexión y botones.
+2. **XInput 1.4**: input de alta frecuencia, slots, vibración y batería cualitativa cuando el endpoint sea XInput.
+3. **SDL limitado a Desktop**: nombre, ruta, VID/PID, input y capacidades que Playnite ya normaliza; nunca gobierna el ciclo de vida visible.
+4. **Windows PnP/HID**: transporte, batería Bluetooth expuesta por Windows y perfiles de batería estrictamente conocidos.
+5. **Raw Input/GameInput propios**: no se cargan en la versión actual. Sólo se reconsiderarán fuera de proceso y con una necesidad demostrada.
 
-Windows.Gaming.Input (WGI) se conserva como alternativa de fallback/prototipo, no junto a GameInput por defecto, porque solapa funciones y aumenta la deduplicación.
+La base SDL GameControllerDB normaliza GUID, nombre, botones y ejes conocidos; no proporciona por sí misma batería, transporte ni un ciclo de vida independiente. La extensión aprovecha la compatibilidad SDL de Playnite mediante el SDK y evita crear un segundo propietario de eventos en Fullscreen.
 
 ## 2. Matriz de capacidades
 
@@ -192,4 +192,3 @@ Reglas:
 - [HID API](https://learn.microsoft.com/en-us/windows-hardware/drivers/hid/hid-api)
 - [WGI RawGameController](https://learn.microsoft.com/en-us/windows/uwp/gaming/raw-game-controller)
 - [Playnite GamepadController](https://api.playnite.link/docs/api/Playnite.SDK.Events.GamepadController.html)
-

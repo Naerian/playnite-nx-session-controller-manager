@@ -45,6 +45,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private PauseReceipt activePauseReceipt;
         private bool activeForcePauseRequested;
         private bool activeOnlineNotificationOnly;
+        private bool activeNetworkSafetyDetected;
         private int activeGameProcessId;
         private readonly Guid notificationSessionId = Guid.NewGuid();
         private readonly Dictionary<string, ControllerToastIdentity> connectedToastControllers =
@@ -157,30 +158,30 @@ namespace ControllerSessionManager.PlayniteIntegration
                 return;
             }
 
-            PollXInput();
-
-            if (!playniteBridgeAvailable)
+            if (playniteBridgeAvailable)
             {
-                return;
-            }
-
-            try
-            {
-                controllerManager.Reconcile(PlayniteApi.GetConnectedControllers());
-            }
-            catch (NullReferenceException ex)
-            {
-                playniteBridgeAvailable = false;
-                if (!playniteBridgeWarningLogged)
+                try
                 {
-                    playniteBridgeWarningLogged = true;
-                    logger.Warn(ex, "Playnite controller enumeration is unavailable in this application mode. XInput monitoring remains active.");
+                    // Establish the authoritative SDK inventory before supplemental polling can
+                    // publish a startup transition or stale transport observation.
+                    controllerManager.Reconcile(PlayniteApi.GetConnectedControllers());
+                }
+                catch (NullReferenceException ex)
+                {
+                    playniteBridgeAvailable = false;
+                    if (!playniteBridgeWarningLogged)
+                    {
+                        playniteBridgeWarningLogged = true;
+                        logger.Warn(ex, "Playnite controller enumeration is unavailable in this application mode. XInput remains a startup fallback.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.Error(ex, "Failed to reconcile Playnite controllers.");
                 }
             }
-            catch (Exception ex)
-            {
-                logger.Error(ex, "Failed to reconcile Playnite controllers.");
-            }
+
+            PollXInput();
         }
 
         public bool TryVibrateController(ControllerDeviceSnapshot controller)
@@ -192,7 +193,21 @@ namespace ControllerSessionManager.PlayniteIntegration
 
             try
             {
-                return xInputProvider.TryVibrate(controller.ProviderId, controller.ProviderInstanceId);
+                RefreshControllers();
+                var connected = GetControllerSnapshot().Where(a => a.IsConnected).ToList();
+                var current = connected.FirstOrDefault(a =>
+                    string.Equals(a.ControllerId, controller.ControllerId, StringComparison.OrdinalIgnoreCase)) ??
+                    connected.FirstOrDefault(a => !string.IsNullOrWhiteSpace(controller.HardwareId) &&
+                        string.Equals(a.HardwareId, controller.HardwareId, StringComparison.OrdinalIgnoreCase));
+                if (current == null)
+                {
+                    var sameName = connected.Where(a =>
+                        string.Equals(a.DetectedName, controller.DetectedName,
+                            StringComparison.CurrentCultureIgnoreCase)).ToList();
+                    current = sameName.Count == 1 ? sameName[0] : null;
+                }
+                return current != null && xInputProvider.TryVibrate(
+                    current.ProviderId, current.ProviderInstanceId);
             }
             catch (Exception ex)
             {
@@ -239,7 +254,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             return active.Count == 0
                 ? Loc("LOCCSM_NoActiveSessionControllers")
                 : string.Join(", ", active.Select(a => a.DisconnectConfirmed
-                    ? string.Format("{0} · {1}", a.Name, Loc("LOCCSM_Disconnected"))
+                    ? string.Format("{0}. {1}", a.Name, Loc("LOCCSM_Disconnected"))
                     : a.Name));
         }
 
@@ -251,7 +266,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             if (sessionPrimary != null)
             {
                 return sessionPrimary.DisconnectConfirmed
-                    ? string.Format("{0} · {1}", sessionPrimary.Name, Loc("LOCCSM_Disconnected"))
+                    ? string.Format("{0}. {1}", sessionPrimary.Name, Loc("LOCCSM_Disconnected"))
                     : sessionPrimary.Name;
             }
 
@@ -580,6 +595,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             activePauseReceipt = null;
             activeForcePauseRequested = false;
             activeOnlineNotificationOnly = false;
+            activeNetworkSafetyDetected = false;
             pauseAttemptGate.Reset();
             activeGameOnlineMetadata = GetOnlineMetadata(args == null ? null : args.Game);
             adaptiveSessionScopeDetector.Reset(DateTime.UtcNow);
@@ -587,7 +603,11 @@ namespace ControllerSessionManager.PlayniteIntegration
             activeSessionPolicy = activeGameId.HasValue ? settings.GetSessionPolicy(activeGameId.Value) : null;
             if (activeGameId.HasValue && activeSessionPolicy.Enabled)
             {
-                sessionManager.Start(activeGameId.Value, DateTime.UtcNow);
+                var sessionStartedUtc = DateTime.UtcNow;
+                sessionManager.Start(activeGameId.Value, sessionStartedUtc);
+                var seededInitialController = sessionManager.SeedInitialController(
+                    GetControllerSnapshot(), sessionStartedUtc);
+                overlayClient.Prepare(activeSessionId);
                 sessionTimer.Start();
                 logger.Info(string.Format("session.started game={0} scope={1} takeover={2} pause={3} forcePauseOffline={4} pauseKey={5}",
                     activeGameId.Value,
@@ -596,6 +616,10 @@ namespace ControllerSessionManager.PlayniteIntegration
                     activeSessionPolicy.PauseGameOnDisconnect,
                     activeSessionPolicy.ForcePauseOfflineGames,
                     activeSessionPolicy.PauseKey));
+                if (!seededInitialController)
+                {
+                    logger.Info("session.initialControllerPending reason=no-connected-controller");
+                }
                 diagnosticEvents.Add("session", string.Format(
                     "Started game={0} scope={1} takeover={2} pause={3} forcePause={4}",
                     SupportReportService.Fingerprint(activeGameId.Value.ToString("N")),
@@ -740,12 +764,16 @@ namespace ControllerSessionManager.PlayniteIntegration
                 SavePluginSettings(settings);
             }
             var signature = string.Join("|", observations.Select(a => string.Format(
-                "{0}:{1}:{2}:{3}:{4}:{5}:{6}:{7}:{8}:{9}:{10}", a.ControllerId, a.IsConnected, a.ConnectionType,
+                "{0}:{1}:{2}:{3}:{4}:{5}:{6}:{7}:{8}:{9}:{10}:{11}:{12}", a.ControllerId, a.IsConnected, a.ConnectionType,
                 a.BatteryLevel, a.LastInputUtc.HasValue ? a.LastInputUtc.Value.Ticks : 0,
                 a.HardwareId, a.DetectedName, a.ProviderId, a.LastInputKind, a.IsInputNeutral,
-                a.InputNeutralSinceUtc.HasValue ? a.InputNeutralSinceUtc.Value.Ticks : 0)));
+                a.InputNeutralSinceUtc.HasValue ? a.InputNeutralSinceUtc.Value.Ticks : 0,
+                a.BatteryProviderId, a.Path)));
             if (signature == lastXInputSignature)
             {
+                // Playnite may not deliver controller callbacks while a launched game owns the
+                // foreground. Repeated provider samples confirm only fallback-owned transitions.
+                controllerManager.ConfirmProviderLifecycle();
                 // A pending toast needs its own short stability clock. Do not wait for the
                 // five-second reconciliation timer merely because the hardware signature did
                 // not change again after the initial connection transition.
@@ -923,6 +951,9 @@ namespace ControllerSessionManager.PlayniteIntegration
                 text.AppendLine(string.Format("  {0}: {1}", Loc("LOCCSM_State"),
                     controller.IsConnected ? Loc("LOCCSM_Connected") : Loc("LOCCSM_Disconnected")));
                 text.AppendLine(string.Format("  {0}: {1}", Loc("LOCCSM_Provider"), controller.ProviderId));
+                text.AppendLine(string.Format("  Lifecycle: {0}",
+                    string.IsNullOrWhiteSpace(controller.LifecycleProviderId)
+                        ? controller.ProviderId : controller.LifecycleProviderId));
                 text.AppendLine(string.Format("  Instance: {0}", controller.ProviderInstanceId));
                 text.AppendLine(string.Format("  {0}: {1}", Loc("LOCCSM_Connection"), controller.ConnectionType));
                 text.AppendLine(string.Format("  {0}: {1}", Loc("LOCCSM_Battery"), controller.BatteryLevel));
@@ -950,7 +981,7 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private void RefreshDisconnectOverlay()
         {
-            var missing = sessionManager.ActiveControllers.Where(a => a.DisconnectConfirmed).ToList();
+            var missing = sessionManager.ActiveControllers.Where(a => a.MissingSinceUtc.HasValue).ToList();
             if (settings == null || !sessionManager.IsRunning || missing.Count == 0 ||
                 activeSessionId == Guid.Empty)
             {
@@ -997,6 +1028,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 activePauseReceipt = null;
                 activeForcePauseRequested = false;
                 activeOnlineNotificationOnly = false;
+                activeNetworkSafetyDetected = false;
                 pauseAttemptGate.Reset();
             }
         }
@@ -1026,12 +1058,20 @@ namespace ControllerSessionManager.PlayniteIntegration
                     online.IsOnlineLikely, online.Evidence, online.Detail));
                 if (online.IsOnlineLikely)
                 {
-                    activeOnlineNotificationOnly = true;
-                    overlayClient.ShowToast(activeSessionId, activePauseReceipt.TargetProcessId, "warning",
-                        Loc("LOCCSM_OnlineFallbackToastTitle"), Loc("LOCCSM_OnlineFallbackToastMessage"),
-                        SvgIconGeometryLoader.GetPathData("alert-triangle.svg"),
-                        settings.NotificationDurationMilliseconds, GetToastStylePayload());
-                    diagnosticEvents.Add("pause", "Force-pause replaced by online safety notification");
+                    activeNetworkSafetyDetected = true;
+                    activeOnlineNotificationOnly = online.IsNotificationOnlySafe;
+                    if (activeOnlineNotificationOnly)
+                    {
+                        overlayClient.ShowToast(activeSessionId, activePauseReceipt.TargetProcessId, "warning",
+                            Loc("LOCCSM_OnlineFallbackToastTitle"), Loc("LOCCSM_OnlineFallbackToastMessage"),
+                            SvgIconGeometryLoader.GetPathData("alert-triangle.svg"),
+                            settings.NotificationDurationMilliseconds, GetToastStylePayload());
+                        diagnosticEvents.Add("pause", "Force-pause replaced by strong online safety notification");
+                    }
+                    else
+                    {
+                        diagnosticEvents.Add("pause", "Force-pause skipped for weak network evidence; disconnect overlay retained");
+                    }
                     return;
                 }
 
@@ -1056,8 +1096,17 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private string GetOverlayPauseStatus()
         {
+            if (sessionManager.ActiveControllers.Any(a =>
+                a.MissingSinceUtc.HasValue && !a.DisconnectConfirmed))
+            {
+                return Loc("LOCCSM_SessionGracePeriod");
+            }
             if (activeSessionPolicy != null && activeSessionPolicy.ForcePauseOfflineGames)
             {
+                if (activeNetworkSafetyDetected)
+                {
+                    return Loc("LOCCSM_OnlineFallbackToastMessage");
+                }
                 return activeForcePauseRequested
                     ? Loc("LOCCSM_OverlayForcePaused")
                     : Loc("LOCCSM_OverlayForcePauseFailed");
@@ -1077,9 +1126,14 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private string GetOverlayPauseStatusKind()
         {
+            if (sessionManager.ActiveControllers.Any(a =>
+                a.MissingSinceUtc.HasValue && !a.DisconnectConfirmed))
+            {
+                return "neutral";
+            }
             if (activeSessionPolicy != null && activeSessionPolicy.ForcePauseOfflineGames)
             {
-                return activeForcePauseRequested ? "pause" : "warning";
+                return activeForcePauseRequested && !activeNetworkSafetyDetected ? "pause" : "warning";
             }
             if (activeSessionPolicy == null || !activeSessionPolicy.PauseGameOnDisconnect)
             {
@@ -1108,6 +1162,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             activePauseReceipt = null;
             activeForcePauseRequested = false;
             activeOnlineNotificationOnly = false;
+            activeNetworkSafetyDetected = false;
             pauseAttemptGate.Reset();
         }
 
@@ -1262,7 +1317,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 settings.OverlayInstructionFontSize.ToString(), settings.OverlayStatusFontSize.ToString(),
                 settings.OverlayControllerIconSize.ToString(), settings.OverlayStatusIconSize.ToString(),
                 settings.OverlayPadding.ToString(), settings.OverlayShowBorder.ToString(),
-                settings.OverlayBorderThickness.ToString(), settings.OverlayCornerRadius.ToString()
+                settings.OverlayBorderThickness.ToString(), settings.OverlayCornerRadius.ToString(),
+                settings.OverlayShowControllerIcon.ToString(), settings.OverlayShowStatusIcon.ToString()
             });
         }
 

@@ -120,7 +120,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
             ConnectedCountText.Text = connected.Count.ToString(CultureInfo.CurrentCulture);
             PrimaryControllerText.Text = plugin.GetPrimaryControllerText();
-            XInputStatusText.Text = connected.Any(a => a.ProviderId == XInputProvider.ProviderId)
+            XInputStatusText.Text = connected.Count > 0
                 ? plugin.Loc("LOCCSM_ProviderActive")
                 : plugin.Loc("LOCCSM_ProviderReady");
             LastRefreshText.Text = DateTime.Now.ToString("T", CultureInfo.CurrentCulture);

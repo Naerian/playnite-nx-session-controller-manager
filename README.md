@@ -6,19 +6,19 @@ It is designed for Desktop, Fullscreen and couch-gaming setups, including single
 
 ## Features
 
-- Detect XInput controllers and enrich their identity with safe Desktop-side device metadata.
+- Combine Playnite SDK controller events, XInput-compatible slots and safe Desktop-side SDL metadata without presenting each API observation as a separate physical controller.
 - Keep a custom name and one of the bundled SVG icons for every known controller.
 - Distinguish USB, Bluetooth and wireless-receiver connections when Windows exposes enough information.
 - Show coarse battery states using semantic colors; unknown remains explicit instead of inventing a percentage.
 - Test vibration from the controller table.
 - Add an adaptive controller and battery indicator to the Playnite Desktop top panel.
 - Show configurable connected and disconnected notifications while browsing Playnite Fullscreen.
-- Track controllers that receive intentional input after a game starts instead of treating every connected device as a participant.
+- Track controllers that receive intentional input immediately before or during game startup instead of treating every connected device as a participant.
 - Adapt automatically between normal single-player handover and detected local multiplayer activity.
 - Show an external, controller-aware disconnect overlay when a participating controller disappears.
 - Optionally send a configurable pause key after verifying that the game still owns the foreground window.
 - Optionally force-pause verified offline games through a watchdog-backed external host.
-- Fall back to a non-blocking warning when the game appears to have an online session.
+- Avoid forced suspension when network evidence is present; only strong online-only metadata uses the non-blocking notification path, while weak TCP evidence retains the disconnect overlay.
 - Store session-protection and pause policies independently for each game.
 - Customize notification and overlay dimensions, typography, icons, borders, corner radii, backdrop and semantic colors.
 - Preview connected, disconnected and warning notifications, plus the disconnect overlay, from settings.
@@ -77,7 +77,9 @@ Pause-key delivery is conservative: Controller Session Manager verifies the fore
 
 Fullscreen connection notifications are lightweight, topmost, click-through and non-activating. They support independent connected, disconnected and warning colors; configurable position, size, duration, padding and border; and icon placement on the left, right, top, bottom or hidden.
 
-The disconnect overlay is a separate external window intended for an active game session. It identifies the missing controller, explains how to continue and reports whether a pause action was requested, skipped or failed. Its backdrop and card presentation are fully configurable. The overlay does not inject into games, install input hooks or load third-party theme code.
+The disconnect overlay is a separate external window intended for an active game session. It identifies the missing controller, explains how to continue and reports whether a pause action was requested, skipped or failed. Its backdrop and card presentation are fully configurable, including independent visibility controls for the controller-name icon and the pause/warning status icon. The overlay does not inject into games, install input hooks or load third-party theme code.
+
+The host is prepared when a protected game session begins, and the overlay appears during the suspected-disconnect phase. Pause or process-suspension actions still wait for the configured confirmation grace period. Reconnecting the same controller resolves the incident. A different controller connected after the incident is accepted as an intentional replacement; a controller that was already connected must produce a button or stick input so an unrelated local-co-op device cannot silently take over.
 
 ## Desktop top-panel indicator
 
@@ -90,7 +92,9 @@ The optional Desktop indicator locates Playnite's internal `TopPanelItem` contai
 
 ## Battery and controller limitations
 
-Battery reporting depends on the protocol, receiver, firmware and driver. XInput and SDL provide the general battery channels. Version 1.0.0 additionally reads the documented HID status reports of Sony DualSense and DualShock 4 devices when Desktop-mode metadata identifies a verified Sony VID/PID. Bluetooth reports must also pass their protocol CRC. Many USB receivers, including current 8BitDo receiver modes, expose no independently verified battery channel; these remain **Unknown**. Controller Session Manager never converts coarse levels into invented percentages.
+Battery reporting depends on the protocol, receiver, firmware and driver. XInput and SDL provide general battery channels. Version 1.0.6 also follows the Windows PnP device container for Bluetooth controllers and consumes the same read-only battery property used by Windows when it is available. This supports devices such as 8BitDo Bluetooth modes without decoding proprietary reports. Documented Sony DualSense and DualShock 4 HID reports remain a strict fallback, but some Bluetooth driver paths expose neither a safely readable battery report nor rumble through the active provider. Those cases deliberately remain **Unknown** or unavailable instead of sending speculative proprietary commands. USB receivers that expose no trustworthy Windows or protocol value remain **Unknown**. Controller Session Manager never converts coarse levels into invented percentages.
+
+Controller Session Manager does not equate XInput with an Xbox-branded USB controller. A controller such as an 8BitDo can use DInput/HID over Bluetooth, expose an XInput-compatible endpoint through its dongle, and use another identity over USB. The provider column describes the observation API; the connection column describes the detected transport.
 
 ## Support and diagnostics
 
@@ -100,7 +104,9 @@ The separate HID diagnostic remains available for protocol investigations. Unlik
 
 Controller identity is strongest in Desktop, where safe metadata enrichment is available. Fullscreen deliberately avoids SDL initialization and native SDL calls because some driver hot-unplug paths can terminate Playnite without a managed exception. Previously learned XInput-slot associations preserve friendly names and custom icons across that safety boundary.
 
-Online-session detection is necessarily best effort. Strong online-only metadata and established public TCP connections from the game process tree are treated as online evidence. UDP-only games, launchers, VPNs, telemetry and unusual process models can produce false positives or false negatives, so pause behavior should be tested per game.
+Playnite's controller inventory and connection callbacks are the normal lifecycle authority. XInput, SDL and Windows PnP enrich that record with input evidence, names, transport, battery and rumble capabilities. If Playnite misses a callback while a game owns the foreground, three consecutive missing samples from the already-associated provider can recover the disconnect. That provider may only reconnect a state it declared itself and can never reverse an explicit SDK disconnect. A completely empty or unavailable SDK registry retains a bounded fallback.
+
+Online-session detection is necessarily best effort. Strong online-only metadata and established public TCP connections from the game process tree both prevent forced suspension. A TCP connection alone is weak evidence—it may be telemetry or a platform service—so it no longer hides the disconnect overlay. Only strong online-only metadata selects the notification-only path. UDP-only games, launchers, VPNs, telemetry and unusual process models can still produce false positives or false negatives, so pause behavior should be tested per game.
 
 ## Documentation
 

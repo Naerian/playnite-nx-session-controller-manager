@@ -45,9 +45,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\ControllerDeviceSnapshot.cs" />
+    <Compile Include="Controllers\ControllerSnapshotMerger.cs" />
     <Compile Include="Controllers\DiagnosticEventBuffer.cs" />
     <Compile Include="Controllers\IControllerBatteryProvider.cs" />
     <Compile Include="Controllers\PlayStationHidBatteryProvider.cs" />
+    <Compile Include="Controllers\WindowsBluetoothBatteryProvider.cs" />
     <Compile Include="Controllers\ControllerManager.cs" />
     <Compile Include="Controllers\HidDiagnosticsService.cs" />
     <Compile Include="Controllers\IntentionalInputDetector.cs" />

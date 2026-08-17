@@ -80,12 +80,9 @@ namespace ControllerSessionManager.Controllers
         public static string GetConnectionType(string deviceName, ushort vendorId, ushort productId,
             string devicePath = null)
         {
-            if (vendorId == 0x2DC8 && IsKnownWirelessEightBitDo(productId))
-            {
-                return "WirelessReceiver";
-            }
-
-            if (Contains(devicePath, "bthenum") || Contains(devicePath, "bluetooth"))
+            if (Contains(devicePath, "bthenum") || Contains(devicePath, "bthle") ||
+                Contains(devicePath, "bluetooth") ||
+                Contains(devicePath, "00001812-0000-1000-8000-00805f9b34fb"))
             {
                 return "Bluetooth";
             }
@@ -112,13 +109,6 @@ namespace ControllerSessionManager.Controllers
             }
 
             return "Unknown";
-        }
-
-        private static bool IsKnownWirelessEightBitDo(ushort productId)
-        {
-            return productId == 0x310B || productId == 0x6012 || productId == 0x3011 ||
-                productId == 0x3012 || productId == 0x3013 || productId == 0x301B ||
-                productId == 0x301C || productId == 0x301D;
         }
 
         private static bool IsGenericName(string rawName)

@@ -12,7 +12,7 @@ Stable XInput changes use a short 300 ms debounce to reject rapid driver flaps w
 
 The overlay appears after a participating controller remains absent beyond the configured grace period. It shows the missing device, continuation instruction and pause result. Reconnecting or completing an eligible handover closes it; local multiplayer incidents remain until the corresponding player slot is recovered.
 
-The overlay card and full-screen backdrop have independent colors, sizing, typography, icon sizes, padding, border and corner radius. `#AARRGGBB` values support alpha; `#00000000` makes the backdrop transparent. The compact preview updates while settings change.
+The overlay card and full-screen backdrop have independent colors, sizing, typography, icon sizes, padding, border and corner radius. The controller-name icon and the pause/warning status icon can each be shown or hidden independently. `#AARRGGBB` values support alpha; `#00000000` makes the backdrop transparent. The compact preview updates while settings change.
 
 ## Compatibility and input
 

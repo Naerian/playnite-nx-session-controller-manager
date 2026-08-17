@@ -20,15 +20,15 @@
     <sys:String x:Key="LOCCSM_Provider">提供程序</sys:String>
     <sys:String x:Key="LOCCSM_Connected">已连接</sys:String>
     <sys:String x:Key="LOCCSM_Disconnected">已断开</sys:String>
-    <sys:String x:Key="LOCCSM_StatusFormat">{0} · 已连接 {1} 个</sys:String>
+    <sys:String x:Key="LOCCSM_StatusFormat">{0}. 已连接 {1} 个</sys:String>
     <sys:String x:Key="LOCCSM_TabOverview">概览</sys:String>
-    <sys:String x:Key="LOCCSM_XInputProvider">XInput 提供程序</sys:String>
+    <sys:String x:Key="LOCCSM_XInputProvider">输入提供程序</sys:String>
     <sys:String x:Key="LOCCSM_PrimaryController">主控制器</sys:String>
     <sys:String x:Key="LOCCSM_LastRefresh">上次刷新</sys:String>
     <sys:String x:Key="LOCCSM_ProviderActive">已启用</sys:String>
     <sys:String x:Key="LOCCSM_ProviderReady">就绪</sys:String>
     <sys:String x:Key="LOCCSM_TabControllers">控制器</sys:String>
-    <sys:String x:Key="LOCCSM_ControllersHelp">通过 XInput 和 Playnite 实时检测到的控制器。</sys:String>
+    <sys:String x:Key="LOCCSM_ControllersHelp">通过已启用的 Playnite、XInput 和桌面元数据提供程序检测到的控制器。</sys:String>
     <sys:String x:Key="LOCCSM_ControllerName">控制器</sys:String>
     <sys:String x:Key="LOCCSM_Connection">连接</sys:String>
     <sys:String x:Key="LOCCSM_Battery">电池</sys:String>
@@ -42,7 +42,7 @@
     <sys:String x:Key="LOCCSM_TabAbout">关于</sys:String>
     <sys:String x:Key="LOCCSM_Version017">版本 0.1.7</sys:String>
     <sys:String x:Key="LOCCSM_AboutPurpose">为 Playnite 会话提供可靠的控制器监控。</sys:String>
-    <sys:String x:Key="LOCCSM_AboutDescription">无需依赖 Playnite 控制器桥接，即可检测连接、断开连接和 XInput 活动。</sys:String>
+    <sys:String x:Key="LOCCSM_AboutDescription">结合 Playnite 控制器事件、XInput 兼容插槽和安全的桌面元数据，以跟踪活动控制器、电池、断开保护、安全暂停和外部游戏叠加层。</sys:String>
     <sys:String x:Key="LOCCSM_Unknown">未知</sys:String>
     <sys:String x:Key="LOCCSM_ValueWired">有线</sys:String>
     <sys:String x:Key="LOCCSM_ValueWireless">无线</sys:String>
@@ -86,15 +86,15 @@
     <sys:String x:Key="LOCCSM_SessionStatus">游戏会话</sys:String>
     <sys:String x:Key="LOCCSM_ActiveSessionControllers">会话活动控制器</sys:String>
     <sys:String x:Key="LOCCSM_SessionProtectionTitle">断开保护基础</sys:String>
-    <sys:String x:Key="LOCCSM_SessionProtectionHelp">跟踪游戏中使用的控制器，在宽限期后确认断开并可显示外部覆盖层。自动暂停尚未启用。</sys:String>
+    <sys:String x:Key="LOCCSM_SessionProtectionHelp">跟踪游戏中使用的控制器，在设定等待时间后确认断开，并可显示外部覆盖层或执行已配置的安全暂停操作。</sys:String>
     <sys:String x:Key="LOCCSM_EnableSessionTracking">在游戏会话期间跟踪活动控制器</sys:String>
     <sys:String x:Key="LOCCSM_DisconnectGracePeriod">断开宽限期</sys:String>
     <sys:String x:Key="LOCCSM_DisconnectGracePeriodHelp">确认断开前，允许短暂中断或立即重新连接的时间。</sys:String>
     <sys:String x:Key="LOCCSM_ValidationGracePeriod">断开宽限期必须在 250 到 10000 毫秒之间。</sys:String>
     <sys:String x:Key="LOCCSM_SessionIdle">没有活动的游戏会话</sys:String>
     <sys:String x:Key="LOCCSM_SessionDisconnectConfirmed">已确认断开：{0}</sys:String>
-    <sys:String x:Key="LOCCSM_SessionGracePeriod">控制器缺失 · 正在等待宽限期</sys:String>
-    <sys:String x:Key="LOCCSM_SessionWaitingForInput">会话已开始 · 等待控制器输入</sys:String>
+    <sys:String x:Key="LOCCSM_SessionGracePeriod">控制器已断开。正在等待几秒钟以便重新连接</sys:String>
+    <sys:String x:Key="LOCCSM_SessionWaitingForInput">会话已开始. 等待控制器输入</sys:String>
     <sys:String x:Key="LOCCSM_SessionTracking">正在跟踪会话活动控制器</sys:String>
     <sys:String x:Key="LOCCSM_NoActiveSessionControllers">本次会话尚无控制器输入</sys:String>
     <sys:String x:Key="LOCCSM_AllowControllerTakeover">确认断开连接后允许其他控制器接管</sys:String>
@@ -103,13 +103,13 @@
     <sys:String x:Key="LOCCSM_GamePolicyUseGlobal">使用全局设置</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyDisable">禁用会话保护</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyRequireSame">自动 / 自适应</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyAllowTakeover">单人游戏 · 允许其他控制器接管</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyAllowTakeover">单人游戏. 允许其他控制器接管</sys:String>
     <sys:String x:Key="LOCCSM_MenuSettings">设置</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlay">确认控制器断开连接后显示覆盖层</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlayHelp">外部覆盖层仅用于提示，并会在事件解决或游戏结束时自动关闭。</sys:String>
     <sys:String x:Key="LOCCSM_ProtectAllActiveControllers">默认使用本地多人保护</sys:String>
     <sys:String x:Key="LOCCSM_ProtectAllActiveControllersHelp">仅当多个本地玩家使用独立控制器时启用。单人游戏和在线多人游戏建议使用自动模式。</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyLocalMultiplayer">本地多人游戏 · 保护所有活动控制器</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyLocalMultiplayer">本地多人游戏. 保护所有活动控制器</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">确认断开连接后尝试暂停游戏</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnectHelp">仅当前台窗口属于游戏或其子进程时发送一次已配置按键。默认关闭，并且绝不会自动恢复游戏。</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyEnablePause">为此游戏启用自动暂停</sys:String>
@@ -121,7 +121,7 @@
     <sys:String x:Key="LOCCSM_OverlayDisconnectTitle">控制器已断开连接</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectMessage">连接已丢失：{0}</sys:String>
     <sys:String x:Key="LOCCSM_OverlayWaitSameController">重新连接后继续。</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayAllowTakeover">重新连接，或使用其他可用的控制器继续。</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayAllowTakeover">重新连接，或按下另一控制器的按钮或移动摇杆。</sys:String>
     <sys:String x:Key="LOCCSM_ColorTopPanelByBattery">根据电池电量为图标和文本着色</sys:String>
     <sys:String x:Key="LOCCSM_PauseKey">暂停键</sys:String>
     <sys:String x:Key="LOCCSM_PauseKeyHelp">支持：Escape、Space、Enter、Tab、Backspace、A-Z、0-9 和 F1-F12。</sys:String>
@@ -131,11 +131,11 @@
     <sys:String x:Key="LOCCSM_GamePolicyPauseUseGlobal">使用全局暂停设置</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseEscape">控制器断开时发送 Escape</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseCustom">控制器断开时发送已配置按键（{0}）</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyOverlayOnly">仅显示覆盖层 · 不发送按键</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyOverlayOnly">仅显示覆盖层. 不发送按键</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectTitlePlural">{0} 个控制器已断开</sys:String>
     <sys:String x:Key="LOCCSM_OverlayReconnectControllers">重新连接后继续。</sys:String>
-    <sys:String x:Key="LOCCSM_ForcePauseOfflineGames">确认断开连接后强制暂停离线游戏</sys:String>
-    <sys:String x:Key="LOCCSM_ForcePauseOfflineGamesHelp">高级选项，默认关闭。暂停前台游戏进程，直到控制器恢复或其他控制器接管。检测到在线活动时不会暂停游戏，只显示通知。在线检测并非绝对可靠。</sys:String>
+    <sys:String x:Key="LOCCSM_ForcePauseOfflineGames">未检测到网络活动时暂时停止游戏</sys:String>
+    <sys:String x:Key="LOCCSM_ForcePauseOfflineGamesHelp">控制器断开时，暂时停止游戏，直到控制器恢复或使用另一个控制器。检测到网络活动时，为避免影响在线游戏，游戏将继续运行。检测结果并非总是准确。</sys:String>
     <sys:String x:Key="LOCCSM_FullscreenNotificationsTitle">屏幕通知</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceLayout">布局</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceContent">内容</sys:String>
@@ -149,16 +149,16 @@
     <sys:String x:Key="LOCCSM_NotificationWarningPreview">警告</sys:String>
     <sys:String x:Key="LOCCSM_ShowFullscreenControllerNotifications">在全屏界面中提示控制器连接或断开</sys:String>
     <sys:String x:Key="LOCCSM_ShowFullscreenControllerNotificationsHelp">浏览 Playnite 时显示简短且不打扰的通知，不会覆盖正在运行的游戏。</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayForcePaused">游戏已安全强制暂停</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayForcePauseFailed">无法安全地强制暂停游戏</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayForcePaused">游戏已暂时停止</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayForcePauseFailed">无法暂时停止游戏</sys:String>
     <sys:String x:Key="LOCCSM_OnlineFallbackToastTitle">控制器已断开</sys:String>
-    <sys:String x:Key="LOCCSM_OnlineFallbackToastMessage">检测到在线活动 · 游戏未暂停</sys:String>
+    <sys:String x:Key="LOCCSM_OnlineFallbackToastMessage">检测到网络活动。为避免中断在线游戏，游戏将继续运行</sys:String>
     <sys:String x:Key="LOCCSM_ControllerConnectedToast">控制器已连接</sys:String>
     <sys:String x:Key="LOCCSM_ControllerDisconnectedToast">控制器已断开</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyForcePauseOffline">离线时强制暂停 · 在线时仅通知</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyForcePauseOffline">无网络活动时暂时停止游戏。否则仅显示警告</sys:String>
     <sys:String x:Key="LOCCSM_TabSession">会话</sys:String><sys:String x:Key="LOCCSM_TabAppearance">外观</sys:String>
     <sys:String x:Key="LOCCSM_AdaptiveProtectionHelp">自动模式以单人游戏开始，只有在检测到多个控制器持续交替输入后才会切换为本地多人。仅尝试一个控制器再换用另一个不会触发切换。仅在需要时使用单独的游戏设置。</sys:String>
-    <sys:String x:Key="LOCCSM_PauseModesHelp">选择安全的全局保护。离线强制暂停优先于暂停按键，每个游戏均可单独更改。</sys:String>
+    <sys:String x:Key="LOCCSM_PauseModesHelp">选择控制器断开时的操作：显示警告、尝试暂停游戏，或在安全时暂时停止游戏。每个游戏可以使用不同设置。</sys:String>
     <sys:String x:Key="LOCCSM_NotificationWidth">宽度 (px)</sys:String><sys:String x:Key="LOCCSM_NotificationScale">大小 (%)</sys:String><sys:String x:Key="LOCCSM_NotificationDuration">时长 (ms)</sys:String><sys:String x:Key="LOCCSM_NotificationPosition">位置</sys:String>
     <sys:String x:Key="LOCCSM_PositionTopRight">右上</sys:String><sys:String x:Key="LOCCSM_PositionTopLeft">左上</sys:String><sys:String x:Key="LOCCSM_PositionBottomRight">右下</sys:String><sys:String x:Key="LOCCSM_PositionBottomLeft">左下</sys:String>
     <sys:String x:Key="LOCCSM_ColorFormatHelp">颜色格式：#RRGGBB 或 #AARRGGBB（透明度、红、绿、蓝）。</sys:String>
@@ -166,7 +166,7 @@
     <sys:String x:Key="LOCCSM_PreviewNotification">预览通知</sys:String><sys:String x:Key="LOCCSM_OverlayAppearanceTitle">断开连接覆盖层</sys:String><sys:String x:Key="LOCCSM_OverlayAppearanceHelp">自定义独立游戏覆盖层。其颜色不依赖 Playnite 主题，以确保游戏中的可读性。</sys:String>
     <sys:String x:Key="LOCCSM_OverlayScale">覆盖层大小 (%)</sys:String><sys:String x:Key="LOCCSM_DimColor">背景遮罩</sys:String><sys:String x:Key="LOCCSM_CardColor">卡片背景</sys:String><sys:String x:Key="LOCCSM_AccentColor">主要强调色</sys:String>
     <sys:String x:Key="LOCCSM_ValidationAppearance">宽度、时长或显示比例超出支持范围。</sys:String><sys:String x:Key="LOCCSM_NotificationPreviewTitle">控制器已连接</sys:String><sys:String x:Key="LOCCSM_NotificationPreviewMessage">Controller Session Manager 通知将以此样式显示。</sys:String>
-    <sys:String x:Key="LOCCSM_SessionAdaptiveLocal">已自动检测本地多人游戏 · 正在保护 {0} 个控制器</sys:String>
+    <sys:String x:Key="LOCCSM_SessionAdaptiveLocal">已自动检测本地多人游戏. 正在保护 {0} 个控制器</sys:String>
     <sys:String x:Key="LOCCSM_Monitoring">监控</sys:String>
     <sys:String x:Key="LOCCSM_ShowControllerNameInNotifications">在通知中显示设备名称</sys:String>
     <sys:String x:Key="LOCCSM_NotificationTitleSize">标题文字 (px)</sys:String><sys:String x:Key="LOCCSM_NotificationTextSize">消息文字 (px)</sys:String><sys:String x:Key="LOCCSM_NotificationIconSize">图标大小 (px)</sys:String><sys:String x:Key="LOCCSM_NotificationPadding">内边距 (px)</sys:String>
@@ -181,4 +181,6 @@
     <sys:String x:Key="LOCCSM_MenuExportSupport">导出支持报告</sys:String>
     <sys:String x:Key="LOCCSM_AboutCapabilities">Controller Session Manager 可识别已连接的控制器，保留自定义名称和图标，显示可信的电池状态，检测游戏实际使用的控制器，并在参与者断开时保护单人或本地多人会话。</sys:String>
     <sys:String x:Key="LOCCSM_AboutSafety">外部叠加层和可选暂停操作与 Playnite 和游戏隔离。它不会注入输入；当设备、进程或在线会话证据不足时，会采用保守处理。</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">在控制器名称旁显示图标</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowStatusIcon">显示暂停或警告状态图标</sys:String>
 </ResourceDictionary>

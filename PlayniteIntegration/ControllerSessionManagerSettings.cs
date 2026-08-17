@@ -51,6 +51,8 @@ namespace ControllerSessionManager.PlayniteIntegration
         private int overlayStatusFontSize = 15;
         private int overlayControllerIconSize = 30;
         private int overlayStatusIconSize = 18;
+        private bool overlayShowControllerIcon = true;
+        private bool overlayShowStatusIcon = true;
         private int overlayPadding = 34;
         private bool overlayShowBorder = true;
         private int overlayBorderThickness = 3;
@@ -185,6 +187,8 @@ namespace ControllerSessionManager.PlayniteIntegration
         public int OverlayStatusFontSize { get { return overlayStatusFontSize; } set { SetValue(ref overlayStatusFontSize, value); } }
         public int OverlayControllerIconSize { get { return overlayControllerIconSize; } set { SetValue(ref overlayControllerIconSize, value); } }
         public int OverlayStatusIconSize { get { return overlayStatusIconSize; } set { SetValue(ref overlayStatusIconSize, value); } }
+        public bool OverlayShowControllerIcon { get { return overlayShowControllerIcon; } set { SetValue(ref overlayShowControllerIcon, value); } }
+        public bool OverlayShowStatusIcon { get { return overlayShowStatusIcon; } set { SetValue(ref overlayShowStatusIcon, value); } }
         public int OverlayPadding { get { return overlayPadding; } set { SetValue(ref overlayPadding, value); } }
         public bool OverlayShowBorder { get { return overlayShowBorder; } set { SetValue(ref overlayShowBorder, value); } }
         public int OverlayBorderThickness { get { return overlayBorderThickness; } set { SetValue(ref overlayBorderThickness, value); } }
@@ -619,6 +623,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 OverlayStatusFontSize = OverlayStatusFontSize,
                 OverlayControllerIconSize = OverlayControllerIconSize,
                 OverlayStatusIconSize = OverlayStatusIconSize,
+                OverlayShowControllerIcon = OverlayShowControllerIcon,
+                OverlayShowStatusIcon = OverlayShowStatusIcon,
                 OverlayPadding = OverlayPadding,
                 OverlayShowBorder = OverlayShowBorder,
                 OverlayBorderThickness = OverlayBorderThickness,
@@ -677,6 +683,8 @@ namespace ControllerSessionManager.PlayniteIntegration
             OverlayStatusFontSize = source.OverlayStatusFontSize;
             OverlayControllerIconSize = source.OverlayControllerIconSize;
             OverlayStatusIconSize = source.OverlayStatusIconSize;
+            OverlayShowControllerIcon = source.OverlayShowControllerIcon;
+            OverlayShowStatusIcon = source.OverlayShowStatusIcon;
             OverlayPadding = source.OverlayPadding;
             OverlayShowBorder = source.OverlayShowBorder;
             OverlayBorderThickness = source.OverlayBorderThickness;

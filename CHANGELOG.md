@@ -1,5 +1,34 @@
 # Changelog
 
+## 1.0.6 — Unreleased test build
+- Replaced middle-dot message fragments with complete sentences and rewrote protection/pause labels in plain, action-oriented language.
+- Added independent overlay appearance options for the controller-name icon and the pause/warning status icon, including live preview support.
+- Displayed the disconnect overlay as soon as a tracked controller becomes suspect while keeping pause actions behind the configured confirmation grace period.
+- Prewarmed the external overlay host at game-session startup to remove first-incident process startup latency.
+- Accepted a controller newly connected after a disconnect as an intentional replacement even when its connection/Home input is not exposed; controllers already present still require real gameplay input.
+- Clarified the takeover instruction to explicitly request a button press or stick movement on an already-connected replacement.
+- Split strong online-only metadata from weak TCP evidence: both prevent unsafe forced suspension, but a lone game-owned TCP connection now retains the disconnect overlay instead of hiding it behind a notification.
+- Reworded the network safety status to state that forced suspension was skipped without claiming whether the game paused itself.
+- Armed one conservative startup controller when a game captures input before Playnite can observe it, preventing protected sessions from starting with zero participants.
+- Kept additional connected controllers unassigned until real input is observed, and let the first real input replace the inferred owner immediately for safe single-player and local co-op behavior.
+- Recovered controller disconnects while a launched game owns the foreground by requiring three consecutive missing provider samples; only fallback-owned disconnects may be reversed by provider reconnection.
+- Correlated Playnite and SDL HID records by unique VID/PID evidence when native paths and instance IDs differ, restoring battery and rumble routing only when the active provider actually exposes those capabilities.
+- Inherited intentional input from the ten seconds immediately before game startup so a controller used to launch a title from Desktop is protected even when the game subsequently captures input exclusively.
+
+- Made Playnite SDK inventory and controller callbacks authoritative for connected/disconnected state.
+- Relegated XInput, SDL and Windows PnP observations to identity, input, battery, transport and rumble enrichment; supplemental polling can no longer reverse an SDK disconnect or create duplicate rows after SDK initialization.
+- Kept XInput as a startup fallback only when the Playnite controller inventory is unavailable.
+- Required two missing SDK inventory passes before recovering a missed disconnect, while explicit SDK disconnect callbacks remain immediate.
+- Prevented equal numeric SDL instance IDs and XInput slots from being treated as the same controller without path or provider evidence.
+- Added lifecycle and capability-provider decisions to diagnostics and the exportable support report.
+- Added a read-only Windows Bluetooth PnP battery provider that follows the physical device container and uses the battery value already exposed by Windows.
+- Kept the established coarse battery presentation while recording `Windows.BluetoothPnP` as the diagnostic source.
+- Removed PID-only 8BitDo transport assumptions and prioritized concrete USB/Bluetooth path evidence because the same model can expose different transports and protocol identities.
+- Pumped SDL device events before Desktop inventory refreshes so switching between dongle, cable and Bluetooth is reflected without restarting Playnite.
+- Preserved SDL device paths and used them to collapse matching Playnite SDK/DInput observations into one physical controller row.
+- Re-resolved the live controller before vibration tests so a stale transport instance is never used after a mode switch.
+- Renamed the summary provider label to describe the combined input-provider state instead of implying that every controller is XInput.
+
 ## 1.0.0 — 2026-08-16
 
 - Added a privacy-conscious support report with effective settings, anonymized controller identities, provider decisions, current session state and a bounded incident timeline.

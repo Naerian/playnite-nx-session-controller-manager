@@ -52,6 +52,13 @@ namespace ControllerSessionManager.Overlay
             }));
         }
 
+        public void Prepare(Guid sessionId)
+        {
+            EnsureHost();
+            lastSessionId = sessionId;
+            Heartbeat(sessionId);
+        }
+
         public void ShowToast(Guid sessionId, int processId, string kind, string title,
             string message, string iconGeometry, int durationMilliseconds, string presentationStyle)
         {

@@ -28,13 +28,33 @@ internal static class SessionManagerTests
             PauseAttemptIsOneShotPerIncident();
             OnlineOnlyMetadataIsStrongEvidence();
             GenericMultiplayerMetadataIsNotSessionEvidence();
+            WeakNetworkEvidenceRetainsDisconnectOverlay();
             AdaptiveScopePromotesSustainedAlternatingControllers();
             AdaptiveScopeDoesNotPromoteOneAccidentalControllerSwitch();
             PlayniteXInputBridgeUsesPathSlotInsteadOfInstanceId();
             DualSenseUsbBatteryReportIsParsed();
             DualShock4UsbBatteryReportIsParsed();
             UnknownPlayStationReportIsRejected();
-            Console.WriteLine("Session manager tests passed: 22 scenarios.");
+            BluetoothTransportOverridesEightBitDoReceiverHint();
+            WindowsBluetoothBatteryUsesCoarseLevels();
+            EquivalentHidPathsAreDeduplicated();
+            PlayniteLifecycleOverridesSupplementalPresence();
+            PlayniteLifecycleReceivesSupplementalCapabilities();
+            InitializedAuthoritySuppressesUnmatchedProviderRows();
+            ProviderFallbackRemainsAvailableBeforeSdkInitialization();
+            EmptySdkInventoryUsesDegradedProviderFallback();
+            NumericIdsDoNotMergeAcrossUnrelatedProviders();
+            DisconnectEventMatchesStableXInputSlot();
+            HidVidPidRestoresSupplementalCapabilities();
+            HidVidPidParserRejectsInvalidPaths();
+            RecentPrelaunchInputSeedsSession();
+            StalePrelaunchInputDoesNotSeedSession();
+            SessionStartFallbackArmsOnlyOneConnectedController();
+            SessionStartFallbackUsesMostRecentController();
+            RealInputReplacesSessionStartFallback();
+            NewlyConnectedControllerResolvesIncidentWithoutInput();
+            AlreadyConnectedControllerStillRequiresInputForTakeover();
+            Console.WriteLine("Session manager tests passed: 42 scenarios.");
             return 0;
         }
         catch (Exception error)
@@ -42,6 +62,184 @@ internal static class SessionManagerTests
             Console.Error.WriteLine(error);
             return 1;
         }
+    }
+
+    private static void PlayniteLifecycleOverridesSupplementalPresence()
+    {
+        var sdk = Snapshot("playnite:path:XINPUT#0", "Playnite", 42, "XInput Controller #1",
+            "XINPUT#0", false);
+        var xinput = Snapshot("xinput:slot:0", "XInput", 0, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#vid_2dc8&pid_310b&ig_00", true);
+        var merged = ControllerSnapshotMerger.Merge(new[] { sdk, xinput }, true).Single();
+        Equal(false, merged.IsConnected,
+            "A connected XInput observation must not undo a Playnite disconnect callback.");
+        Equal("Playnite", merged.LifecycleProviderId,
+            "The projected row must identify Playnite as its lifecycle authority.");
+    }
+
+    private static void PlayniteLifecycleReceivesSupplementalCapabilities()
+    {
+        var sdk = Snapshot("playnite:path:XINPUT#0", "Playnite", 91, "XInput Controller #1",
+            "XINPUT#0", true);
+        var xinput = Snapshot("xinput:slot:0", "XInput", 0, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#vid_2dc8&pid_310b&ig_00", true);
+        xinput.HardwareId = "2DC8:310B:receiver";
+        xinput.BatteryLevel = "Full";
+        xinput.ConnectionType = "Wireless";
+        var merged = ControllerSnapshotMerger.Merge(new[] { sdk, xinput }, true).Single();
+        Equal("8BitDo Ultimate 2 Wireless", merged.Name,
+            "Provider metadata should enrich the SDK lifecycle row.");
+        Equal("Full", merged.BatteryLevel, "Provider battery should remain available.");
+        Equal("XInput", merged.ProviderId, "The actionable rumble provider should be retained.");
+    }
+
+    private static void InitializedAuthoritySuppressesUnmatchedProviderRows()
+    {
+        var sdk = Snapshot("playnite:path:HID#A", "Playnite", 7, "DualSense", "HID#A", true);
+        var stale = Snapshot("xinput:slot:2", "XInput", 2, "Stale controller", string.Empty, true);
+        var merged = ControllerSnapshotMerger.Merge(new[] { sdk, stale }, true);
+        Equal(1, merged.Count,
+            "Supplemental polling must not create a second physical controller after SDK initialization.");
+    }
+
+    private static void ProviderFallbackRemainsAvailableBeforeSdkInitialization()
+    {
+        var xinput = Snapshot("xinput:slot:0", "XInput", 0, "Xbox Controller", string.Empty, true);
+        var merged = ControllerSnapshotMerger.Merge(new[] { xinput }, false);
+        Equal(1, merged.Count,
+            "XInput should remain a startup fallback if the SDK inventory is unavailable.");
+    }
+
+    private static void EmptySdkInventoryUsesDegradedProviderFallback()
+    {
+        var xinput = Snapshot("xinput:slot:0", "XInput", 0, "Xbox Controller", string.Empty, true);
+        var merged = ControllerSnapshotMerger.Merge(new[] { xinput }, true);
+        Equal(1, merged.Count,
+            "A completely empty SDK registry must not make a controller disappear when XInput is available.");
+    }
+
+    private static void NumericIdsDoNotMergeAcrossUnrelatedProviders()
+    {
+        var sdk = Snapshot("playnite:path:HID#A", "Playnite", 0, "DirectInput device", "HID#A", true);
+        var xinput = Snapshot("xinput:slot:0", "XInput", 0, "Different controller", string.Empty, true);
+        var merged = ControllerSnapshotMerger.Merge(new[] { sdk, xinput }, true).Single();
+        Equal("Playnite", merged.ProviderId,
+            "An SDL instance ID and XInput slot with the same integer must never be conflated.");
+    }
+
+    private static void DisconnectEventMatchesStableXInputSlot()
+    {
+        var existing = Snapshot("playnite:path:XINPUT#0", "Playnite", 17,
+            "XInput Controller #1", "XINPUT#0", true);
+        var incoming = Snapshot("playnite:instance:93", "Playnite", 93,
+            "XInput Controller #1", "device/xinput#0/controller", false);
+        Equal(existing, ControllerSnapshotMerger.FindAuthoritativeEventTarget(incoming,
+            new[] { existing }),
+            "A reconnect-specific InstanceId must not prevent an immediate SDK disconnect from finding its XInput lifecycle row.");
+    }
+
+    private static void HidVidPidRestoresSupplementalCapabilities()
+    {
+        var sdk = Snapshot("playnite:path:HID#VID_054C&PID_0CE6#PLAYNITE", "Playnite", 800,
+            "DualSense Wireless Controller", @"HID#VID_054C&PID_0CE6#PLAYNITE", true);
+        var sdl = Snapshot("sdl:instance:12", "SDL", 12, "DualSense",
+            @"\\?\hid#vid_054c&pid_0ce6#SDL", true);
+        sdl.VendorId = 0x054C;
+        sdl.ProductId = 0x0CE6;
+        sdl.BatteryLevel = "Medium";
+        var merged = ControllerSnapshotMerger.Merge(new[] { sdk, sdl }, true).Single();
+        Equal("SDL", merged.ProviderId,
+            "VID/PID evidence should recover SDL rumble capabilities when paths and instance IDs differ.");
+        Equal("Medium", merged.BatteryLevel,
+            "VID/PID evidence should preserve verified DualSense battery data.");
+    }
+
+    private static void HidVidPidParserRejectsInvalidPaths()
+    {
+        ushort vendor;
+        ushort product;
+        Equal(true, ControllerBridgeIdentity.TryGetVidPid(
+            @"\\?\hid#vid_2dc8&pid_310b#device", out vendor, out product),
+            "A normal HID path should expose VID and PID.");
+        Equal((ushort)0x2DC8, vendor, "The HID vendor ID should be parsed as hexadecimal.");
+        Equal((ushort)0x310B, product, "The HID product ID should be parsed as hexadecimal.");
+        Equal(false, ControllerBridgeIdentity.TryGetVidPid("HID#VID_ZZZZ", out vendor, out product),
+            "Malformed identifiers must not participate in physical-device correlation.");
+    }
+    private static void RecentPrelaunchInputSeedsSession()
+    {
+        var start = new DateTime(2026, 8, 16, 15, 0, 0, DateTimeKind.Utc);
+        var manager = new GameSessionManager();
+        manager.Start(GameId, start);
+        manager.Update(new[] { Device("A", start.AddSeconds(-2)) }, start, true, false);
+        Equal(1, manager.ActiveControllers.Count,
+            "The controller used immediately before Desktop launches a game should seed the session.");
+    }
+
+    private static void StalePrelaunchInputDoesNotSeedSession()
+    {
+        var start = new DateTime(2026, 8, 16, 15, 30, 0, DateTimeKind.Utc);
+        var manager = new GameSessionManager();
+        manager.Start(GameId, start);
+        manager.Update(new[] { Device("A", start.AddSeconds(-30)) }, start, true, false);
+        Equal(0, manager.ActiveControllers.Count,
+            "Old input must not make an idle connected controller part of a new session.");
+    }
+    private static ControllerDeviceSnapshot Snapshot(string id, string provider, int instance,
+        string name, string path, bool connected)
+    {
+        return new ControllerDeviceSnapshot
+        {
+            ControllerId = id,
+            ProviderId = provider,
+            ProviderInstanceId = instance,
+            Name = name,
+            DetectedName = name,
+            HardwareId = id,
+            Path = path,
+            IsConnected = connected,
+            IsEnabled = true,
+            ConnectionType = "Unknown",
+            BatteryLevel = "Unknown",
+            BatteryProviderId = "None",
+            LastSeenUtc = DateTime.UtcNow
+        };
+    }
+
+    private static void BluetoothTransportOverridesEightBitDoReceiverHint()
+    {
+        var bluetoothPath = @"\\?\hid#{00001812-0000-1000-8000-00805f9b34fb}_dev_vid&122dc8_pid&6012";
+        Equal("Bluetooth", ControllerDeviceIdentity.GetConnectionType(
+            "8BitDo Ultimate 2 Wireless", 0x2DC8, 0x6012, bluetoothPath),
+            "A verified Bluetooth HID path must override model-level receiver hints.");
+        Equal("Wired", ControllerDeviceIdentity.GetConnectionType(
+            "8BitDo Ultimate 2 Wireless", 0x2DC8, 0x6012, @"\\?\usb#vid_2dc8&pid_6012"),
+            "A USB path must remain wired even when the same product supports wireless modes.");
+        Equal("Wireless", ControllerDeviceIdentity.GetConnectionType(
+            "8BitDo Ultimate 2 Wireless", 0x2DC8, 0x310B, @"\\?\hid#vid_2dc8&pid_310b&ig_00"),
+            "A receiver must use generic wireless when the path provides no Bluetooth or USB evidence.");
+    }
+
+    private static void WindowsBluetoothBatteryUsesCoarseLevels()
+    {
+        Equal("Low", WindowsBluetoothBatteryProvider.ToLevel(24),
+            "The Windows value shown for the tester's controller should map to Low.");
+        Equal("Full", WindowsBluetoothBatteryProvider.ToLevel(83),
+            "The locally observed Windows value should map to Full.");
+        Equal(true, WindowsBluetoothBatteryProvider.IsBluetoothPath(
+            @"HID\{00001812-0000-1000-8000-00805F9B34FB}_DEV_VID&122DC8_PID&6012"),
+            "The Bluetooth LE HID service UUID must be recognized.");
+    }
+
+    private static void EquivalentHidPathsAreDeduplicated()
+    {
+        var basePath = @"\\?\hid#vid_2dc8&pid_6012#device#{4d1e55b2-f16f-11cf-88cb-001111000030}";
+        Equal(true, ControllerBridgeIdentity.PathsReferToSameDevice(basePath,
+            @"\\?\HID\VID_2DC8&PID_6012\DEVICE"),
+            "SDL and Playnite representations of the same HID interface should collapse.");
+        Equal(false, ControllerBridgeIdentity.PathsReferToSameDevice(basePath,
+            @"\\?\HID\VID_2DC8&PID_6012\OTHER"),
+            "Two distinct HID instances must not be merged merely because VID/PID match.");
     }
 
     private static void DualSenseUsbBatteryReportIsParsed()
@@ -98,6 +296,20 @@ internal static class SessionManagerTests
         string match;
         Equal(false, OnlineSessionDetector.HasOnlineMetadata(new[] { "Online Co-op", "Multiplayer" }, out match),
             "A game capability alone must not claim that the current session is online.");
+    }
+
+    private static void WeakNetworkEvidenceRetainsDisconnectOverlay()
+    {
+        Equal(false, new OnlineDetectionResult
+        {
+            Evidence = OnlineEvidenceKind.EstablishedTcpConnection
+        }.IsNotificationOnlySafe,
+            "One established TCP connection may block forced suspension but must not hide the disconnect overlay.");
+        Equal(true, new OnlineDetectionResult
+        {
+            Evidence = OnlineEvidenceKind.Metadata
+        }.IsNotificationOnlySafe,
+            "Explicit online-only metadata may use the non-blocking notification path.");
     }
 
     private static void AdaptiveScopePromotesSustainedAlternatingControllers()
@@ -259,6 +471,93 @@ internal static class SessionManagerTests
         manager.Update(new[] { Device("8BitDo", start.AddSeconds(1)) }, start.AddSeconds(2), true, false);
         Equal(0, manager.SuspectedDisconnectCount,
             "Disconnecting an unused controller must not create an incident.");
+    }
+
+    private static void SessionStartFallbackArmsOnlyOneConnectedController()
+    {
+        var start = new DateTime(2026, 8, 16, 12, 35, 0, DateTimeKind.Utc);
+        var manager = new GameSessionManager();
+        manager.Start(GameId, start);
+        Equal(true, manager.SeedInitialController(new[]
+        {
+            ConnectedDevice("DualSense"),
+            ConnectedDevice("8BitDo")
+        }, start), "A session with connected controllers must arm one conservative fallback owner.");
+        Equal(1, manager.ActiveControllers.Count,
+            "The startup fallback must never infer multiple local players from connection alone.");
+
+        var owner = manager.ActiveControllers.Single().ControllerKey;
+        var unused = owner == "DualSense" ? "8BitDo" : "DualSense";
+        manager.Update(new[] { ConnectedDevice(owner) }, start.AddSeconds(1), true, false);
+        Equal(0, manager.SuspectedDisconnectCount,
+            "Removing an unassigned startup controller must not create an incident.");
+
+        manager.Update(new ControllerDeviceSnapshot[0], start.AddSeconds(2), true, false);
+        Equal(1, manager.SuspectedDisconnectCount,
+            "Removing the conservative startup owner must create an incident.");
+    }
+
+    private static void SessionStartFallbackUsesMostRecentController()
+    {
+        var start = new DateTime(2026, 8, 16, 12, 40, 0, DateTimeKind.Utc);
+        var manager = new GameSessionManager();
+        manager.Start(GameId, start);
+        manager.SeedInitialController(new[]
+        {
+            Device("DualSense", start.AddMinutes(-4)),
+            Device("8BitDo", start.AddMinutes(-1))
+        }, start);
+        Equal("8BitDo", manager.ActiveControllers.Single().ControllerKey,
+            "The freshest known controller must win the startup fallback even when its input is stale.");
+    }
+
+    private static void RealInputReplacesSessionStartFallback()
+    {
+        var start = new DateTime(2026, 8, 16, 12, 42, 0, DateTimeKind.Utc);
+        var manager = new GameSessionManager();
+        manager.Start(GameId, start);
+        manager.SeedInitialController(new[]
+        {
+            ConnectedDevice("A-inferred"),
+            ConnectedDevice("B-real")
+        }, start);
+
+        manager.Update(new[]
+        {
+            ConnectedDevice("A-inferred"),
+            Device("B-real", start.AddSeconds(1))
+        }, start.AddSeconds(1), true, false);
+        Equal("B-real", manager.ActiveControllers.Single().ControllerKey,
+            "Real post-start input must replace an inferred startup owner immediately.");
+    }
+
+    private static void NewlyConnectedControllerResolvesIncidentWithoutInput()
+    {
+        var start = new DateTime(2026, 8, 16, 12, 44, 0, DateTimeKind.Utc);
+        var manager = new GameSessionManager();
+        manager.Start(GameId, start);
+        manager.SeedInitialController(new[] { ConnectedDevice("A") }, start);
+        manager.Update(new ControllerDeviceSnapshot[0], start.AddSeconds(1), true, false);
+        manager.Update(new[] { ConnectedDevice("B") }, start.AddSeconds(2), true, false);
+        Equal("B", manager.ActiveControllers.Single().ControllerKey,
+            "A controller connected after the incident must be accepted as an intentional replacement.");
+        Equal(0, manager.SuspectedDisconnectCount,
+            "A newly connected replacement must resolve the incident immediately.");
+    }
+
+    private static void AlreadyConnectedControllerStillRequiresInputForTakeover()
+    {
+        var start = new DateTime(2026, 8, 16, 12, 46, 0, DateTimeKind.Utc);
+        var manager = new GameSessionManager();
+        manager.Start(GameId, start);
+        manager.SeedInitialController(new[] { ConnectedDevice("A"), ConnectedDevice("B") }, start);
+        var owner = manager.ActiveControllers.Single().ControllerKey;
+        var spare = owner == "A" ? "B" : "A";
+        manager.Update(new[] { ConnectedDevice(spare) }, start.AddSeconds(1), true, false);
+        Equal(owner, manager.ActiveControllers.Single().ControllerKey,
+            "A controller that was already connected must not take over without intentional input.");
+        Equal(1, manager.SuspectedDisconnectCount,
+            "The incident must remain until the pre-existing spare is actually used.");
     }
 
     private static void AutomaticTakeoverCanResolveDuringGrace()

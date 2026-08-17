@@ -211,6 +211,8 @@ namespace ControllerSessionManager.OverlayHost
             if (parts.Length <= 13 || !bool.TryParse(parts[13], out showBorder)) showBorder = true;
             var borderThickness = ParseInt(parts, 14, 3, 0, 10);
             var cornerRadius = ParseInt(parts, 15, 13, 0, 40);
+            var showControllerIcon = ParseBool(parts, 16, true);
+            var showStatusIcon = ParseBool(parts, 17, true);
 
             Background = new SolidColorBrush(dim);
             incidentCard.Background = new SolidColorBrush(card);
@@ -225,8 +227,10 @@ namespace ControllerSessionManager.OverlayHost
             pauseStatusText.FontSize = statusSize;
             controllerIcon.Width = controllerIconSize;
             controllerIcon.Height = controllerIconSize;
+            controllerIcon.Visibility = showControllerIcon ? Visibility.Visible : Visibility.Collapsed;
             pauseStatusIcon.Width = statusIconSize;
             pauseStatusIcon.Height = statusIconSize;
+            pauseStatusIcon.Visibility = showStatusIcon ? Visibility.Visible : Visibility.Collapsed;
             titleText.Foreground = new SolidColorBrush(text);
             messageText.Foreground = new SolidColorBrush(text);
             controllerIcon.Stroke = new SolidColorBrush(text);
@@ -239,6 +243,12 @@ namespace ControllerSessionManager.OverlayHost
             return parts.Length > index && int.TryParse(parts[index], out value)
                 ? Math.Max(minimum, Math.Min(maximum, value))
                 : fallback;
+        }
+
+        private static bool ParseBool(string[] parts, int index, bool fallback)
+        {
+            bool value;
+            return parts.Length > index && bool.TryParse(parts[index], out value) ? value : fallback;
         }
 
         private static Color ParseColor(string value, Color fallback)
