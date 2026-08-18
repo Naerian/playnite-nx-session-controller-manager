@@ -43,7 +43,7 @@
     <sys:String x:Key="LOCCSM_Version017">Versão 0.1.7</sys:String>
     <sys:String x:Key="LOCCSM_AboutPurpose">Gestão de controles em partida no estilo console para o Playnite.</sys:String>
     <sys:String x:Key="LOCCSM_AboutDescription">Combina eventos de controle do Playnite, slots compatíveis com XInput e metadados seguros do Desktop para atividade, bateria, proteção contra desconexão, pausa segura e overlay externo.</sys:String>
-    <sys:String x:Key="LOCCSM_AboutWhatItDoesTitle">What Session Controller Manager does</sys:String>
+    <sys:String x:Key="LOCCSM_AboutWhatItDoesTitle">O que o Controller Session Manager faz</sys:String>
     <sys:String x:Key="LOCCSM_Unknown">Desconhecido</sys:String>
     <sys:String x:Key="LOCCSM_ValueWired">Com fio</sys:String>
     <sys:String x:Key="LOCCSM_ValueWireless">Sem fio</sys:String>
@@ -89,7 +89,7 @@
     <sys:String x:Key="LOCCSM_SessionProtectionTitle">Base da proteção contra desconexões</sys:String>
     <sys:String x:Key="LOCCSM_SessionProtectionHelp">Acompanha os controles usados, confirma desconexões após uma espera configurável e pode mostrar um overlay externo ou executar a ação de pausa segura configurada.</sys:String>
     <sys:String x:Key="LOCCSM_EnableSessionTracking">Acompanhar controles ativos durante a partida</sys:String>
-    <sys:String x:Key="LOCCSM_EnableSessionTrackingHelp">Tracks which controllers are active while a game is running.</sys:String>
+    <sys:String x:Key="LOCCSM_EnableSessionTrackingHelp">Acompanha quais controles estão ativos enquanto um jogo está em execução.</sys:String>
     <sys:String x:Key="LOCCSM_DisconnectGracePeriod">Período de tolerância da desconexão</sys:String>
     <sys:String x:Key="LOCCSM_DisconnectGracePeriodHelp">Tempo permitido para breves falhas ou reconexão imediata antes de confirmar uma desconexão.</sys:String>
     <sys:String x:Key="LOCCSM_ValidationGracePeriod">O período de desconexão deve estar entre 250 e 10000 milissegundos.</sys:String>
@@ -113,7 +113,7 @@
     <sys:String x:Key="LOCCSM_ProtectAllActiveControllersHelp">Ative apenas quando vários jogadores locais usarem controles separados. O modo automático é recomendado para um jogador e multijogador online.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyLocalMultiplayer">Multijogador local. Proteger todos os controles ativos</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">Temporarily stop the game when a controller disconnects</sys:String>
-    <sys:String x:Key="LOCCSM_PauseGameOnDisconnectHelp">Suspends the game process every time a controller disconnects, without checking for network activity. Works for all games regardless of input handling. The plugin never resumes the game automatically once the game ends.</sys:String>
+    <sys:String x:Key="LOCCSM_PauseGameOnDisconnectHelp">Suspende o processo do jogo sempre que um controle desconecta, sem verificar atividade de rede. Funciona em todos os jogos. O plugin não retoma o jogo automaticamente quando a partida termina.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyEnablePause">Pausar automaticamente neste jogo</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyDisablePause">Não pausar automaticamente neste jogo</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPauseDisabled">Pausa automática desativada</sys:String>
@@ -125,20 +125,20 @@
     <sys:String x:Key="LOCCSM_GamePolicySessionSection">Proteção em partida</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseSection">Pausa automática</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseUseGlobal">Usar configurações globais de pausa</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicySuspendProcess">Temporarily stop the game when a controller disconnects</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicySuspendProcess">Pausar o jogo temporariamente quando um controle desconectar</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyOverlayOnly">Somente overlay. Não enviar tecla</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectTitlePlural">{0} controles desconectados</sys:String>
     <sys:String x:Key="LOCCSM_OverlayReconnectControllers">Reconecte-os para continuar.</sys:String>
     <sys:String x:Key="LOCCSM_ForcePauseOfflineGames">Parar temporariamente o jogo quando não houver atividade de rede</sys:String>
     <sys:String x:Key="LOCCSM_ForcePauseOfflineGamesHelp">Quando um controle é desconectado, para temporariamente o jogo até ele voltar ou outro ser usado. Se houver atividade de rede, mantém o jogo em execução para não interromper uma partida online. A detecção nem sempre é exata.</sys:String>
     <sys:String x:Key="LOCCSM_FullscreenNotificationsTitle">Notificação em tela cheia</sys:String>
-    <sys:String x:Key="LOCCSM_AppearanceLayout">Layout</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceLayout">Disposição</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceContent">Conteúdo</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceShape">Forma e borda</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceColors">Cores</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceTypography">Tipografia</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceIconsBorder">Ícones e borda</sys:String>
-    <sys:String x:Key="LOCCSM_BackdropHelp">O plano de fundo cobre o jogo atrás do overlay. Os dois primeiros dígitos hexadecimais controlam a opacidade; use #00000000 para deixá-lo totalmente transparente.</sys:String>
+    <sys:String x:Key="LOCCSM_BackdropHelp">O fundo cobre o jogo atrás do overlay. Ajuste a opacidade no seletor de cores.</sys:String>
     <sys:String x:Key="LOCCSM_NotificationIconPosition">Posição do ícone</sys:String>
     <sys:String x:Key="LOCCSM_IconHidden">Ocultar ícone</sys:String>
     <sys:String x:Key="LOCCSM_NotificationWarningPreview">Aviso</sys:String>
@@ -156,7 +156,7 @@
     <sys:String x:Key="LOCCSM_PauseModesHelp">Choose how the plugin reacts when a controller disconnects. Each game can override this setting from its context menu.</sys:String>
     <sys:String x:Key="LOCCSM_NotificationWidth">Largura (px)</sys:String><sys:String x:Key="LOCCSM_NotificationScale">Tamanho (%)</sys:String><sys:String x:Key="LOCCSM_NotificationDuration">Duração (ms)</sys:String><sys:String x:Key="LOCCSM_NotificationPosition">Posição</sys:String>
     <sys:String x:Key="LOCCSM_PositionTopRight">Superior direita</sys:String><sys:String x:Key="LOCCSM_PositionTopLeft">Superior esquerda</sys:String><sys:String x:Key="LOCCSM_PositionBottomRight">Inferior direita</sys:String><sys:String x:Key="LOCCSM_PositionBottomLeft">Inferior esquerda</sys:String>
-    <sys:String x:Key="LOCCSM_ColorFormatHelp">Cores: #RRGGBB ou #AARRGGBB (alfa, vermelho, verde e azul).</sys:String>
+    <sys:String x:Key="LOCCSM_ColorFormatHelp">Você escolhe a cor e a opacidade no seletor. Os valores hexadecimais também aceitam #RRGGBB ou #AARRGGBB.</sys:String>
     <sys:String x:Key="LOCCSM_BackgroundColor">Fundo</sys:String><sys:String x:Key="LOCCSM_PrimaryTextColor">Texto principal</sys:String><sys:String x:Key="LOCCSM_SecondaryTextColor">Texto secundário</sys:String><sys:String x:Key="LOCCSM_ConnectedColor">Destaque conectado</sys:String><sys:String x:Key="LOCCSM_DisconnectedColor">Destaque desconectado</sys:String><sys:String x:Key="LOCCSM_WarningColor">Destaque de aviso</sys:String>
     <sys:String x:Key="LOCCSM_PreviewNotification">Visualizar notificação</sys:String><sys:String x:Key="LOCCSM_OverlayAppearanceTitle">Overlay de desconexão</sys:String><sys:String x:Key="LOCCSM_OverlayAppearanceHelp">Personalize o overlay isolado do jogo. As cores são independentes do tema Playnite para manter a leitura.</sys:String>
     <sys:String x:Key="LOCCSM_OverlayScale">Tamanho do overlay (%)</sys:String><sys:String x:Key="LOCCSM_DimColor">Plano de fundo</sys:String><sys:String x:Key="LOCCSM_CardColor">Fundo do cartão</sys:String><sys:String x:Key="LOCCSM_AccentColor">Destaque principal</sys:String>
@@ -181,25 +181,25 @@
     <sys:String x:Key="LOCCSM_SupportReportExported">Relatório exportado para:&#10;{0}</sys:String>
     <sys:String x:Key="LOCCSM_MenuExportSupport">Exportar relatório</sys:String>
     <sys:String x:Key="LOCCSM_AboutCapabilities">Controller Session Manager identifica controles conectados, preserva nomes e ícones personalizados, informa estados confiáveis de bateria, detecta os controles realmente usados e protege partidas individuais ou multijogador local quando um participante desconecta.</sys:String>
-    <sys:String x:Key="LOCCSM_AboutCapabilities2">When a controller disconnects during a game, the plugin shows a full-screen external overlay with the controller name and pause status. It can suspend the game process automatically — compatible with any game, no key configuration needed — and resumes as soon as a controller reconnects or another one takes over.</sys:String>
-    <sys:String x:Key="LOCCSM_AboutCapabilities3">Includes customizable notifications for both Desktop and Fullscreen modes: colors, font sizes, position, padding, border and icon layout are all configurable separately for each mode. The top-bar icon shows the primary controller and uses color to indicate battery level.</sys:String>
-    <sys:String x:Key="LOCCSM_AboutCapabilities4">Battery reporting works with DualSense, DualShock 4, Xbox controllers and any SDL-supported device. Connection type (USB, Bluetooth, wireless) is detected automatically.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutCapabilities2">Quando um controle desconecta durante uma partida, o plugin mostra um overlay externo em tela cheia com o nome do controle e o estado de pausa. Pode suspender o processo do jogo automaticamente — compatível com qualquer jogo, sem configurar teclas — e retoma assim que um controle reconecta ou outro assume.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutCapabilities3">Inclui notificações personalizáveis para Área de trabalho e Tela cheia: cores, tamanhos de fonte, posição, preenchimento, borda e ícone são configuráveis separadamente em cada modo. O ícone da barra superior mostra o controle principal e indica a bateria pela cor.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutCapabilities4">A bateria funciona com DualSense, DualShock 4, controles Xbox e qualquer dispositivo compatível com SDL. O tipo de conexão (USB, Bluetooth, sem fio) é detectado automaticamente.</sys:String>
     <sys:String x:Key="LOCCSM_AboutSafety">O overlay externo e as ações opcionais de pausa ficam isolados do Playnite e do jogo. Não injeta entradas e age de forma conservadora quando as evidências de dispositivo, processo ou partida online são incompletas.</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">Mostrar o ícone ao lado do nome do controle</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowStatusIcon">Mostrar o ícone de pausa ou aviso</sys:String>
     <sys:String x:Key="LOCCSM_DesktopNotificationsTitle">Notificação da área de trabalho</sys:String>
     <sys:String x:Key="LOCCSM_ShowDesktopControllerNotifications">Notify when a controller connects or disconnects in the Desktop interface</sys:String>
     <sys:String x:Key="LOCCSM_ShowDesktopControllerNotificationsHelp">Shows a short notification in Playnite Desktop mode when a controller is connected or disconnected.</sys:String>
-    <sys:String x:Key="LOCCSM_EnableDisconnectOverlay">Enable the disconnect overlay</sys:String>    <sys:String x:Key="LOCCSM_FullscreenTabLabel">Fullscreen</sys:String>
-    <sys:String x:Key="LOCCSM_DesktopTabLabel">Desktop</sys:String>
-    <sys:String x:Key="LOCCSM_NotificationSurface">Edit notifications for</sys:String>
-    <sys:String x:Key="LOCCSM_ControllerNotificationTitle">Controller Notification</sys:String>
-    <sys:String x:Key="LOCCSM_ControllerNotificationHelp">Customize the toast shown when a controller connects or disconnects in Fullscreen and Desktop.</sys:String>
+    <sys:String x:Key="LOCCSM_EnableDisconnectOverlay">Ativar o overlay de desconexão</sys:String>    <sys:String x:Key="LOCCSM_FullscreenTabLabel">Tela cheia</sys:String>
+    <sys:String x:Key="LOCCSM_DesktopTabLabel">Área de trabalho</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationSurface">Editar notificações de</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerNotificationTitle">Notificação de controle</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerNotificationHelp">Personalize o aviso exibido ao conectar ou desconectar um controle em tela cheia e na área de trabalho.</sys:String>
     <sys:String x:Key="LOCCSM_ExpandSectionHint">Expanda para configurar esta notificação.</sys:String>
     <sys:String x:Key="LOCCSM_ShowControllerNameInDesktopNotifications">Show controller name in notification</sys:String>
-    <sys:String x:Key="LOCCSM_BorderFull">Full</sys:String>
-    <sys:String x:Key="LOCCSM_AutoPauseModeNone">Do nothing - only show the overlay if enabled</sys:String>
-    <sys:String x:Key="LOCCSM_AutoPauseModeNoneHelp">The game keeps running after a disconnect. The disconnect overlay will still appear if the overlay option is enabled.</sys:String>
-    <sys:String x:Key="LOCCSM_ForcePauseOfflineGamesWarning">Detection is not always exact.</sys:String>
+    <sys:String x:Key="LOCCSM_BorderFull">Completo</sys:String>
+    <sys:String x:Key="LOCCSM_AutoPauseModeNone">Não fazer nada — mostrar o overlay só se estiver ativado</sys:String>
+    <sys:String x:Key="LOCCSM_AutoPauseModeNoneHelp">O jogo continua após a desconexão. O overlay de desconexão ainda aparece se a opção de overlay estiver ativada.</sys:String>
+    <sys:String x:Key="LOCCSM_ForcePauseOfflineGamesWarning">A detecção nem sempre é exata.</sys:String>
     <sys:String x:Key="LOCCSM_NotePrefix">NOTA:</sys:String>
 </ResourceDictionary>

@@ -43,7 +43,7 @@
     <sys:String x:Key="LOCCSM_Version017">版本 0.1.7</sys:String>
     <sys:String x:Key="LOCCSM_AboutPurpose">为 Playnite 提供主机风格的游戏中控制器管理。</sys:String>
     <sys:String x:Key="LOCCSM_AboutDescription">结合 Playnite 控制器事件、XInput 兼容插槽和安全的桌面元数据，以跟踪活动控制器、电池、断开保护、安全暂停和外部游戏叠加层。</sys:String>
-    <sys:String x:Key="LOCCSM_AboutWhatItDoesTitle">What Session Controller Manager does</sys:String>
+    <sys:String x:Key="LOCCSM_AboutWhatItDoesTitle">Controller Session Manager 的作用</sys:String>
     <sys:String x:Key="LOCCSM_Unknown">未知</sys:String>
     <sys:String x:Key="LOCCSM_ValueWired">有线</sys:String>
     <sys:String x:Key="LOCCSM_ValueWireless">无线</sys:String>
@@ -89,7 +89,7 @@
     <sys:String x:Key="LOCCSM_SessionProtectionTitle">断开保护基础</sys:String>
     <sys:String x:Key="LOCCSM_SessionProtectionHelp">跟踪游戏中使用的控制器，在设定等待时间后确认断开，并可显示外部覆盖层或执行已配置的安全暂停操作。</sys:String>
     <sys:String x:Key="LOCCSM_EnableSessionTracking">在游戏过程中跟踪活动控制器</sys:String>
-    <sys:String x:Key="LOCCSM_EnableSessionTrackingHelp">Tracks which controllers are active while a game is running.</sys:String>
+    <sys:String x:Key="LOCCSM_EnableSessionTrackingHelp">在游戏运行时跟踪哪些手柄处于活动状态。</sys:String>
     <sys:String x:Key="LOCCSM_DisconnectGracePeriod">断开宽限期</sys:String>
     <sys:String x:Key="LOCCSM_DisconnectGracePeriodHelp">确认断开前，允许短暂中断或立即重新连接的时间。</sys:String>
     <sys:String x:Key="LOCCSM_ValidationGracePeriod">断开宽限期必须在 250 到 10000 毫秒之间。</sys:String>
@@ -113,7 +113,7 @@
     <sys:String x:Key="LOCCSM_ProtectAllActiveControllersHelp">仅当多个本地玩家使用独立控制器时启用。单人游戏和在线多人游戏建议使用自动模式。</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyLocalMultiplayer">本地多人游戏. 保护所有活动控制器</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">Temporarily stop the game when a controller disconnects</sys:String>
-    <sys:String x:Key="LOCCSM_PauseGameOnDisconnectHelp">Suspends the game process every time a controller disconnects, without checking for network activity. Works for all games regardless of input handling. The plugin never resumes the game automatically once the game ends.</sys:String>
+    <sys:String x:Key="LOCCSM_PauseGameOnDisconnectHelp">每次手柄断开时暂停游戏进程，不检查网络活动。适用于所有游戏。游戏结束后插件不会自动恢复游戏。</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyEnablePause">为此游戏启用自动暂停</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyDisablePause">不自动暂停此游戏</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPauseDisabled">自动暂停已关闭</sys:String>
@@ -125,7 +125,7 @@
     <sys:String x:Key="LOCCSM_GamePolicySessionSection">游戏中保护</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseSection">自动暂停</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseUseGlobal">使用全局暂停设置</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicySuspendProcess">Temporarily stop the game when a controller disconnects</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicySuspendProcess">手柄断开时暂时停止游戏</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyOverlayOnly">仅显示覆盖层. 不发送按键</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectTitlePlural">{0} 个控制器已断开</sys:String>
     <sys:String x:Key="LOCCSM_OverlayReconnectControllers">重新连接后继续。</sys:String>
@@ -138,7 +138,7 @@
     <sys:String x:Key="LOCCSM_AppearanceColors">颜色</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceTypography">排版</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceIconsBorder">图标和边框</sys:String>
-    <sys:String x:Key="LOCCSM_BackdropHelp">背景遮罩会覆盖浮层后方的游戏画面。前两位十六进制数字控制不透明度；使用 #00000000 可使其完全透明。</sys:String>
+    <sys:String x:Key="LOCCSM_BackdropHelp">背景会盖住覆盖层后面的游戏。请在取色器中调整不透明度。</sys:String>
     <sys:String x:Key="LOCCSM_NotificationIconPosition">图标位置</sys:String>
     <sys:String x:Key="LOCCSM_IconHidden">隐藏图标</sys:String>
     <sys:String x:Key="LOCCSM_NotificationWarningPreview">警告</sys:String>
@@ -156,7 +156,7 @@
     <sys:String x:Key="LOCCSM_PauseModesHelp">Choose how the plugin reacts when a controller disconnects. Each game can override this setting from its context menu.</sys:String>
     <sys:String x:Key="LOCCSM_NotificationWidth">宽度 (px)</sys:String><sys:String x:Key="LOCCSM_NotificationScale">大小 (%)</sys:String><sys:String x:Key="LOCCSM_NotificationDuration">时长 (ms)</sys:String><sys:String x:Key="LOCCSM_NotificationPosition">位置</sys:String>
     <sys:String x:Key="LOCCSM_PositionTopRight">右上</sys:String><sys:String x:Key="LOCCSM_PositionTopLeft">左上</sys:String><sys:String x:Key="LOCCSM_PositionBottomRight">右下</sys:String><sys:String x:Key="LOCCSM_PositionBottomLeft">左下</sys:String>
-    <sys:String x:Key="LOCCSM_ColorFormatHelp">颜色格式：#RRGGBB 或 #AARRGGBB（透明度、红、绿、蓝）。</sys:String>
+    <sys:String x:Key="LOCCSM_ColorFormatHelp">可在取色器中选择颜色和不透明度。十六进制也支持 #RRGGBB 或 #AARRGGBB。</sys:String>
     <sys:String x:Key="LOCCSM_BackgroundColor">背景</sys:String><sys:String x:Key="LOCCSM_PrimaryTextColor">主要文字</sys:String><sys:String x:Key="LOCCSM_SecondaryTextColor">次要文字</sys:String><sys:String x:Key="LOCCSM_ConnectedColor">连接强调色</sys:String><sys:String x:Key="LOCCSM_DisconnectedColor">断开强调色</sys:String><sys:String x:Key="LOCCSM_WarningColor">警告强调色</sys:String>
     <sys:String x:Key="LOCCSM_PreviewNotification">预览通知</sys:String><sys:String x:Key="LOCCSM_OverlayAppearanceTitle">断开连接覆盖层</sys:String><sys:String x:Key="LOCCSM_OverlayAppearanceHelp">自定义独立游戏覆盖层。其颜色不依赖 Playnite 主题，以确保游戏中的可读性。</sys:String>
     <sys:String x:Key="LOCCSM_OverlayScale">覆盖层大小 (%)</sys:String><sys:String x:Key="LOCCSM_DimColor">背景遮罩</sys:String><sys:String x:Key="LOCCSM_CardColor">卡片背景</sys:String><sys:String x:Key="LOCCSM_AccentColor">主要强调色</sys:String>
@@ -181,25 +181,25 @@
     <sys:String x:Key="LOCCSM_SupportReportExported">报告已导出到：&#10;{0}</sys:String>
     <sys:String x:Key="LOCCSM_MenuExportSupport">导出支持报告</sys:String>
     <sys:String x:Key="LOCCSM_AboutCapabilities">Controller Session Manager 可识别已连接的控制器，保留自定义名称和图标，显示可信的电池状态，检测游戏实际使用的控制器，并在参与者断开时保护单人或本地多人游戏。</sys:String>
-    <sys:String x:Key="LOCCSM_AboutCapabilities2">When a controller disconnects during a game, the plugin shows a full-screen external overlay with the controller name and pause status. It can suspend the game process automatically — compatible with any game, no key configuration needed — and resumes as soon as a controller reconnects or another one takes over.</sys:String>
-    <sys:String x:Key="LOCCSM_AboutCapabilities3">Includes customizable notifications for both Desktop and Fullscreen modes: colors, font sizes, position, padding, border and icon layout are all configurable separately for each mode. The top-bar icon shows the primary controller and uses color to indicate battery level.</sys:String>
-    <sys:String x:Key="LOCCSM_AboutCapabilities4">Battery reporting works with DualSense, DualShock 4, Xbox controllers and any SDL-supported device. Connection type (USB, Bluetooth, wireless) is detected automatically.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutCapabilities2">游戏中手柄断开时，插件会显示带有手柄名称和暂停状态的全屏外部覆盖层。它可以自动挂起游戏进程——兼容任何游戏，无需配置按键——并在手柄重新连接或另一手柄接管后立即恢复。</sys:String>
+    <sys:String x:Key="LOCCSM_AboutCapabilities3">可为桌面和全屏分别自定义通知：颜色、字号、位置、内边距、边框和图标布局均可按模式单独设置。顶栏图标显示主手柄，并用颜色表示电量。</sys:String>
+    <sys:String x:Key="LOCCSM_AboutCapabilities4">电量显示适用于 DualSense、DualShock 4、Xbox 手柄以及任何 SDL 支持的设备。连接类型（USB、蓝牙、无线）会自动检测。</sys:String>
     <sys:String x:Key="LOCCSM_AboutSafety">外部叠加层和可选暂停操作与 Playnite 和游戏隔离。它不会注入输入；当设备、进程或在线对局证据不足时，会采用保守处理。</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">在控制器名称旁显示图标</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowStatusIcon">显示暂停或警告状态图标</sys:String>
     <sys:String x:Key="LOCCSM_DesktopNotificationsTitle">桌面通知</sys:String>
     <sys:String x:Key="LOCCSM_ShowDesktopControllerNotifications">Notify when a controller connects or disconnects in the Desktop interface</sys:String>
     <sys:String x:Key="LOCCSM_ShowDesktopControllerNotificationsHelp">Shows a short notification in Playnite Desktop mode when a controller is connected or disconnected.</sys:String>
-    <sys:String x:Key="LOCCSM_EnableDisconnectOverlay">Enable the disconnect overlay</sys:String>    <sys:String x:Key="LOCCSM_FullscreenTabLabel">Fullscreen</sys:String>
-    <sys:String x:Key="LOCCSM_DesktopTabLabel">Desktop</sys:String>
-    <sys:String x:Key="LOCCSM_NotificationSurface">Edit notifications for</sys:String>
-    <sys:String x:Key="LOCCSM_ControllerNotificationTitle">Controller Notification</sys:String>
-    <sys:String x:Key="LOCCSM_ControllerNotificationHelp">Customize the toast shown when a controller connects or disconnects in Fullscreen and Desktop.</sys:String>
+    <sys:String x:Key="LOCCSM_EnableDisconnectOverlay">启用断开覆盖层</sys:String>    <sys:String x:Key="LOCCSM_FullscreenTabLabel">全屏</sys:String>
+    <sys:String x:Key="LOCCSM_DesktopTabLabel">桌面</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationSurface">编辑通知对象</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerNotificationTitle">手柄通知</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerNotificationHelp">自定义在全屏和桌面模式下手柄连接或断开时显示的通知。</sys:String>
     <sys:String x:Key="LOCCSM_ExpandSectionHint">展开以配置此通知。</sys:String>
     <sys:String x:Key="LOCCSM_ShowControllerNameInDesktopNotifications">Show controller name in notification</sys:String>
-    <sys:String x:Key="LOCCSM_BorderFull">Full</sys:String>
-    <sys:String x:Key="LOCCSM_AutoPauseModeNone">Do nothing - only show the overlay if enabled</sys:String>
-    <sys:String x:Key="LOCCSM_AutoPauseModeNoneHelp">The game keeps running after a disconnect. The disconnect overlay will still appear if the overlay option is enabled.</sys:String>
-    <sys:String x:Key="LOCCSM_ForcePauseOfflineGamesWarning">Detection is not always exact.</sys:String>
-    <sys:String x:Key="LOCCSM_NotePrefix">NOTE:</sys:String>
+    <sys:String x:Key="LOCCSM_BorderFull">四周</sys:String>
+    <sys:String x:Key="LOCCSM_AutoPauseModeNone">不采取操作，仅在启用时显示覆盖层</sys:String>
+    <sys:String x:Key="LOCCSM_AutoPauseModeNoneHelp">断开后游戏继续运行。如果已启用覆盖层选项，断开覆盖层仍会显示。</sys:String>
+    <sys:String x:Key="LOCCSM_ForcePauseOfflineGamesWarning">检测并不总是准确。</sys:String>
+    <sys:String x:Key="LOCCSM_NotePrefix">注意：</sys:String>
 </ResourceDictionary>

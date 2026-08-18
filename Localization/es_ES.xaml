@@ -43,7 +43,7 @@
     <sys:String x:Key="LOCCSM_Version017">Versión 0.1.7</sys:String>
     <sys:String x:Key="LOCCSM_AboutPurpose">Gestión de mandos en partida al estilo consola para Playnite</sys:String>
     <sys:String x:Key="LOCCSM_AboutDescription">Gestión de mandos en partida al estilo consola para Playnite. Detecta los mandos activos, protege la partida ante desconexiones y puede pausar el juego automáticamente hasta que vuelvas a conectarte.</sys:String>
-    <sys:String x:Key="LOCCSM_AboutWhatItDoesTitle">Qué hace Session Controller Manager</sys:String>
+    <sys:String x:Key="LOCCSM_AboutWhatItDoesTitle">Qué hace Controller Session Manager</sys:String>
     <sys:String x:Key="LOCCSM_Unknown">Desconocido</sys:String>
     <sys:String x:Key="LOCCSM_ValueWired">Cable</sys:String>
     <sys:String x:Key="LOCCSM_ValueWireless">Inalámbrico</sys:String>
@@ -139,7 +139,7 @@
     <sys:String x:Key="LOCCSM_AppearanceColors">Colores</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceTypography">Tipografía</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceIconsBorder">Iconos y borde</sys:String>
-    <sys:String x:Key="LOCCSM_BackdropHelp">El fondo trasero cubre el juego detrás del overlay. Los dos primeros dígitos hexadecimales controlan la opacidad; usa #00000000 para hacerlo completamente transparente.</sys:String>
+    <sys:String x:Key="LOCCSM_BackdropHelp">El fondo cubre el juego detrás del overlay. Usa el control de opacidad del selector de color para hacerlo más o menos transparente.</sys:String>
     <sys:String x:Key="LOCCSM_NotificationIconPosition">Posición del icono</sys:String>
     <sys:String x:Key="LOCCSM_IconHidden">Ocultar icono</sys:String>
     <sys:String x:Key="LOCCSM_NotificationWarningPreview">Aviso</sys:String>
@@ -164,7 +164,7 @@
     <sys:String x:Key="LOCCSM_PositionTopLeft">Arriba a la izquierda</sys:String>
     <sys:String x:Key="LOCCSM_PositionBottomRight">Abajo a la derecha</sys:String>
     <sys:String x:Key="LOCCSM_PositionBottomLeft">Abajo a la izquierda</sys:String>
-    <sys:String x:Key="LOCCSM_ColorFormatHelp">Los colores admiten #RRGGBB o #AARRGGBB (alfa, rojo, verde y azul).</sys:String>
+    <sys:String x:Key="LOCCSM_ColorFormatHelp">Puedes elegir el color y la opacidad en el selector. El valor hexadecimal también admite #RRGGBB o #AARRGGBB.</sys:String>
     <sys:String x:Key="LOCCSM_BackgroundColor">Fondo</sys:String>
     <sys:String x:Key="LOCCSM_PrimaryTextColor">Texto principal</sys:String>
     <sys:String x:Key="LOCCSM_SecondaryTextColor">Texto secundario</sys:String>
@@ -209,7 +209,7 @@
     <sys:String x:Key="LOCCSM_ExportSupportReport">Exportar informe de soporte</sys:String>
     <sys:String x:Key="LOCCSM_SupportReportExported">Informe de soporte exportado en:&#10;{0}</sys:String>
     <sys:String x:Key="LOCCSM_MenuExportSupport">Exportar informe de soporte</sys:String>
-    <sys:String x:Key="LOCCSM_AboutCapabilities">Session Controller Manager identifica qué mandos están conectados y activos, combinando datos del SDK de Playnite, XInput y SDL para obtener una imagen fiable de quién está jugando.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutCapabilities">Controller Session Manager identifica qué mandos están conectados y activos, combinando datos del SDK de Playnite, XInput y SDL para obtener una imagen fiable de quién está jugando.</sys:String>
     <sys:String x:Key="LOCCSM_AboutCapabilities2">Cuando un mando se desconecta durante una partida, el plugin muestra un overlay externo a pantalla completa con el nombre del mando y el estado de pausa. Puede suspender el proceso del juego automáticamente —compatible con cualquier juego, sin configurar teclas— y lo retoma en cuanto el mando se reconecta o otro toma el relevo.</sys:String>
     <sys:String x:Key="LOCCSM_AboutCapabilities3">Incluye notificaciones personalizables para los modos Escritorio y Pantalla completa: colores, tamaños de fuente, posición, relleno, borde y posición del icono son configurables por separado en cada modo. El icono de la barra superior muestra el mando principal e indica el nivel de batería mediante color.</sys:String>
     <sys:String x:Key="LOCCSM_AboutCapabilities4">La información de batería funciona con DualSense, DualShock 4, mandos Xbox y cualquier dispositivo compatible con SDL. El tipo de conexión (USB, Bluetooth, inalámbrico) se detecta automáticamente.</sys:String>
@@ -223,7 +223,7 @@
     <sys:String x:Key="LOCCSM_FullscreenTabLabel">Pantalla completa</sys:String>
     <sys:String x:Key="LOCCSM_DesktopTabLabel">Escritorio</sys:String>
     <sys:String x:Key="LOCCSM_NotificationSurface">Editar notificaciones de</sys:String>
-    <sys:String x:Key="LOCCSM_ControllerNotificationTitle">Notificacion de mando</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerNotificationTitle">Notificación de mando</sys:String>
     <sys:String x:Key="LOCCSM_ControllerNotificationHelp">Personaliza el aviso que aparece al conectar o desconectar un mando en pantalla completa y escritorio.</sys:String>
     <sys:String x:Key="LOCCSM_ExpandSectionHint">Despliega para configurar este aviso.</sys:String>
     <sys:String x:Key="LOCCSM_ShowControllerNameInDesktopNotifications">Mostrar el nombre del mando en la notificación</sys:String>

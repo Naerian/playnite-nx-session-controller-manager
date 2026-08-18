@@ -2,6 +2,7 @@
 
 ## 1.0.6 — Unreleased test build
 - Replaced the Windows color dialog with a themed picker that includes a live preview and an opacity percentage, so transparency is adjustable without editing hex.
+- Filled remaining English leftovers in the non-English locales (About text, pause options and notification chrome).
 - Recovered Windows Bluetooth battery for BLE HID pads such as the 8BitDo Ultimate 2 Wireless, whose percentage lives on a `BTHLE\DEV_{address}` node that does not share a PnP container or VID/PID with the gamepad HID path.
 - Recovered Windows Bluetooth battery for XInput-wrapped pads such as 8BitDo, whose `&ig_` HID path is not the device node that Settings uses for the percentage.
 - Let the disconnect-overlay preview fill the remaining settings height so the mockup has more room around the card.
