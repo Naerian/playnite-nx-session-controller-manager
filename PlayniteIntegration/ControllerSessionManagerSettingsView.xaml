@@ -4,7 +4,7 @@
              xmlns:local="clr-namespace:ControllerSessionManager.PlayniteIntegration"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             mc:Ignorable="d" d:DesignHeight="720" d:DesignWidth="920">
+             mc:Ignorable="d" MinWidth="980" MinHeight="640" d:DesignHeight="780" d:DesignWidth="1100">
     <UserControl.Resources>
         <local:IconGeometryConverter x:Key="IconGeometryConverter" />
         <local:HexColorBrushConverter x:Key="HexColorBrushConverter" />
@@ -22,11 +22,28 @@
         <Style x:Key="SectionHeaderText" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
             <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontSize" Value="18" />
         </Style>
         <Style x:Key="HintText" TargetType="TextBlock">
             <Setter Property="TextWrapping" Value="Wrap" />
             <Setter Property="Opacity" Value="0.78" />
+        </Style>
+        <Style x:Key="SectionSubtitleText" TargetType="TextBlock" BasedOn="{StaticResource HintText}">
+            <Setter Property="FontStyle" Value="Italic" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Margin" Value="0,6,0,0" />
+        </Style>
+        <Style x:Key="NoteText" TargetType="TextBlock" BasedOn="{StaticResource HintText}">
+            <Setter Property="FontStyle" Value="Italic" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Margin" Value="0,8,0,0" />
+        </Style>
+        <Style x:Key="WarningHintText" TargetType="TextBlock" BasedOn="{StaticResource HintText}">
+            <Setter Property="Foreground" Value="#FFE24B4B" />
+            <Setter Property="Opacity" Value="1" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="FontStyle" Value="Italic" />
         </Style>
         <Style x:Key="SliderValueText" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
@@ -48,6 +65,14 @@
         </Style>
         <Style x:Key="AppearanceGroupHeader" TargetType="TextBlock" BasedOn="{StaticResource SectionHeaderText}">
             <Setter Property="Margin" Value="0,0,0,10" />
+        </Style>
+        <Style x:Key="FieldLabel" TargetType="TextBlock" BasedOn="{StaticResource HintText}">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Margin" Value="0,0,0,5" />
+        </Style>
+        <Style x:Key="ControllerCard" TargetType="Border" BasedOn="{StaticResource IntroCard}">
+            <Setter Property="Margin" Value="0,0,0,12" />
+            <Setter Property="Padding" Value="16,14" />
         </Style>
         <Style x:Key="CompactSliderPanel" TargetType="StackPanel">
             <Setter Property="Width" Value="240" />
@@ -72,8 +97,8 @@
         </Style>
         <Style x:Key="SettingsCard" TargetType="Border">
             <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource GlyphBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource HighlightGlyphBrush}" />
+            <Setter Property="BorderThickness" Value="4,1,1,1" />
             <Setter Property="Padding" Value="16,14" />
             <Setter Property="Margin" Value="0,0,0,14" />
             <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
@@ -199,14 +224,15 @@
         <Style x:Key="SettingsNavigationTabItem" TargetType="TabItem">
             <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-            <Setter Property="Margin" Value="0,0,0,3" />
+            <Setter Property="Margin" Value="0,0,0,6" />
+            <Setter Property="MinHeight" Value="40" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TabItem">
                         <Border x:Name="NavigationItemBorder" Background="Transparent" BorderBrush="Transparent"
-                                BorderThickness="3,0,0,0" Padding="13,10">
+                                BorderThickness="0,0,3,0" Padding="16,12,18,12">
                             <ContentPresenter x:Name="NavigationHeader" ContentSource="Header"
-                                              HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+                                              HorizontalAlignment="Left" VerticalAlignment="Center" />
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
@@ -230,13 +256,12 @@
                     <ControlTemplate TargetType="TabControl">
                         <Grid KeyboardNavigation.TabNavigation="Local">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="190" />
-                                <ColumnDefinition Width="16" />
+                                <ColumnDefinition Width="228" />
+                                <ColumnDefinition Width="22" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <Border Background="{DynamicResource ControlBackgroundBrush}"
-                                    BorderBrush="{DynamicResource GlyphBrush}" BorderThickness="1"
-                                    Padding="8" CornerRadius="{DynamicResource ControlCornerRadius}">
+                            <Border BorderBrush="{DynamicResource GlyphBrush}" BorderThickness="0,0,1,0"
+                                    Padding="4,8,10,8">
                                 <TabPanel x:Name="HeaderPanel" IsItemsHost="True" />
                             </Border>
                             <ContentPresenter x:Name="PART_SelectedContentHost" Grid.Column="2"
@@ -248,12 +273,13 @@
         </Style>
         <Style x:Key="TopTabItem" TargetType="TabItem">
             <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-            <Setter Property="Margin" Value="0,0,4,0" />
+            <Setter Property="Margin" Value="0,0,8,0" />
+            <Setter Property="MinWidth" Value="140" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TabItem">
                         <Border x:Name="TabBorder" Background="Transparent" BorderBrush="Transparent"
-                                BorderThickness="0,0,0,3" Padding="16,9,16,8">
+                                BorderThickness="0,0,0,3" Padding="20,12,20,11">
                             <ContentPresenter x:Name="Header" ContentSource="Header"
                                               HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
@@ -290,7 +316,7 @@
         </Style>
     </UserControl.Resources>
 
-    <Grid Margin="12">
+    <Grid Margin="16,14">
         <TabControl Style="{StaticResource TopTabs}">
             <TabItem Header="{DynamicResource LOCCSM_TabOverview}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
@@ -301,7 +327,7 @@
                                         MinWidth="120" Margin="16,0,0,0" Click="RefreshControllersClick" />
                                 <StackPanel>
                                     <TextBlock Text="{DynamicResource LOCCSM_TabOverview}" Style="{StaticResource SectionHeaderText}" />
-                                    <TextBlock Text="{DynamicResource LOCCSM_OverviewHelp}" Style="{StaticResource HintText}" Margin="0,6,0,0" />
+                                    <TextBlock Text="{DynamicResource LOCCSM_OverviewHelp}" Style="{StaticResource SectionSubtitleText}" />
                                 </StackPanel>
                             </DockPanel>
                         </Border>
@@ -370,115 +396,115 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <Border Grid.Row="0" Style="{StaticResource IntroCard}">
+                            <StackPanel Grid.Row="0">
+                            <Border Style="{StaticResource IntroCard}" Margin="0,0,0,8">
                                 <DockPanel LastChildFill="True">
                                     <Button DockPanel.Dock="Right" Content="{DynamicResource LOCCSM_Refresh}"
-                                            MinWidth="120" Margin="16,0,0,0" Click="RefreshControllersClick" />
+                                            MinWidth="120" Margin="16,0,0,0" VerticalAlignment="Center"
+                                            Click="RefreshControllersClick" />
                                     <StackPanel>
                                         <TextBlock Text="{DynamicResource LOCCSM_ConnectedControllers}" Style="{StaticResource SectionHeaderText}" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_ControllersHelp}" Style="{StaticResource HintText}" Margin="0,6,0,0" />
+                                        <TextBlock Text="{DynamicResource LOCCSM_ControllersHelp}" Style="{StaticResource SectionSubtitleText}" />
                                     </StackPanel>
                                 </DockPanel>
                             </Border>
-                            <Border Grid.Row="1" Style="{StaticResource SettingsCard}" Padding="16,14">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="*" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-                                    <Border Style="{StaticResource ControllerTableBorder}">
-                        <Grid>
-                        <DataGrid x:Name="ControllerList" AutoGenerateColumns="False" CanUserAddRows="False"
-                                  CanUserDeleteRows="False" Style="{StaticResource ControllerTable}"
-                                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                            <DataGrid.Resources>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-                                </Style>
-                            </DataGrid.Resources>
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="{DynamicResource LOCCSM_DetectedName}" Binding="{Binding DetectedName}" Width="*" IsReadOnly="True">
-                                    <DataGridTextColumn.ElementStyle>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-                                            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
-                                        </Style>
-                                    </DataGridTextColumn.ElementStyle>
-                                </DataGridTextColumn>
-                                <DataGridTemplateColumn Header="{DynamicResource LOCCSM_UserName}" Width="*">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBox Text="{Binding Profile.CustomName, UpdateSourceTrigger=PropertyChanged}" Margin="3" />
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="{DynamicResource LOCCSM_Icon}" Width="130">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <ComboBox ItemsSource="{Binding DataContext.IconOptions, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                      SelectedValuePath="Id"
-                                                      SelectedValue="{Binding Profile.IconId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                      SelectionChanged="ControllerIconSelectionChanged" Margin="3">
-                                                <ComboBox.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <StackPanel Orientation="Horizontal" MinHeight="22">
-                                                            <Viewbox Width="18" Height="18" Margin="0,0,7,0">
-                                                                <Path Data="{Binding GeometryData, Converter={StaticResource IconGeometryConverter}}"
-                                                                      Stroke="Gray" StrokeThickness="2" Fill="Transparent"
-                                                                      StrokeLineJoin="Round" StrokeStartLineCap="Round"
-                                                                      StrokeEndLineCap="Round" Stretch="Uniform" />
-                                                            </Viewbox>
-                                                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
-                                                        </StackPanel>
-                                                    </DataTemplate>
-                                                </ComboBox.ItemTemplate>
-                                            </ComboBox>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                                <DataGridTextColumn Header="{DynamicResource LOCCSM_Provider}" Binding="{Binding Provider}" Width="75" IsReadOnly="True">
-                                    <DataGridTextColumn.ElementStyle>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-                                        </Style>
-                                    </DataGridTextColumn.ElementStyle>
-                                </DataGridTextColumn>
-                                <DataGridTemplateColumn Header="{DynamicResource LOCCSM_Connection}" Width="66" IsReadOnly="True">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Grid ToolTip="{Binding Connection}">
-                                                <Viewbox Width="22" Height="22" HorizontalAlignment="Center">
-                                                    <Path Data="{Binding ConnectionIconGeometry, Converter={StaticResource IconGeometryConverter}}"
-                                                          Stroke="{DynamicResource TextBrush}" StrokeThickness="2"
-                                                          StrokeStartLineCap="Round" StrokeEndLineCap="Round"
-                                                          StrokeLineJoin="Round" Stretch="Uniform" />
-                                                </Viewbox>
-                                                <TextBlock Text="{Binding ConnectionFallback}" HorizontalAlignment="Center"
-                                                           VerticalAlignment="Center" FontWeight="SemiBold" />
-                                            </Grid>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="{DynamicResource LOCCSM_Battery}" Width="95" IsReadOnly="True">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="3,0">
-                                                <Ellipse Width="9" Height="9" Fill="{Binding BatteryBrush}" Margin="0,0,7,0" />
-                                                <TextBlock Text="{Binding Battery}" Foreground="{Binding BatteryBrush}" FontWeight="SemiBold" VerticalAlignment="Center" />
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                        <TextBlock x:Name="EmptyControllersText" Text="{DynamicResource LOCCSM_NoControllers}"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.72" />
-                    </Grid>
-                                    </Border>
-                                    <TextBlock Grid.Row="1" Text="{DynamicResource LOCCSM_BatteryUnknownHint}"
-                                               Style="{StaticResource HintText}" Margin="2,12,2,0" />
-                                </Grid>
-                            </Border>
+                            <TextBlock Style="{StaticResource NoteText}" Margin="4,0,4,12">
+                                <Run FontWeight="SemiBold" Text="{DynamicResource LOCCSM_NotePrefix}" />
+                                <Run Text=" " />
+                                <Run Text="{DynamicResource LOCCSM_BatteryUnknownHint}" />
+                            </TextBlock>
+                            </StackPanel>
+                            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                <StackPanel>
+                                    <Grid MinHeight="120">
+                                        <ItemsControl x:Name="ControllerList">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Style="{StaticResource ControllerCard}">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto" />
+                                                                <ColumnDefinition Width="*" />
+                                                            </Grid.ColumnDefinitions>
+                                                            <Border Width="56" Height="56" Margin="0,0,16,0"
+                                                                    VerticalAlignment="Top"
+                                                                    Background="{DynamicResource ControlBackgroundBrush}"
+                                                                    CornerRadius="{DynamicResource ControlCornerRadius}">
+                                                                <Viewbox Width="32" Height="32">
+                                                                    <Path Data="{Binding IconGeometry, Converter={StaticResource IconGeometryConverter}}"
+                                                                          Stroke="{DynamicResource TextBrush}" StrokeThickness="2"
+                                                                          StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                                                          StrokeLineJoin="Round" Stretch="Uniform" />
+                                                                </Viewbox>
+                                                            </Border>
+                                                            <StackPanel Grid.Column="1">
+                                                                <TextBlock Text="{Binding DetectedName}" Style="{StaticResource SectionHeaderText}"
+                                                                           TextTrimming="CharacterEllipsis" />
+                                                                <StackPanel Orientation="Horizontal" Margin="0,8,0,14">
+                                                                    <Grid ToolTip="{Binding Connection}" Margin="0,0,14,0">
+                                                                        <StackPanel Orientation="Horizontal">
+                                                                            <Viewbox Width="16" Height="16" Margin="0,0,6,0">
+                                                                                <Path Data="{Binding ConnectionIconGeometry, Converter={StaticResource IconGeometryConverter}}"
+                                                                                      Stroke="{DynamicResource TextBrush}" StrokeThickness="2"
+                                                                                      StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                                                                      StrokeLineJoin="Round" Stretch="Uniform" />
+                                                                            </Viewbox>
+                                                                            <TextBlock Text="{Binding Connection}" VerticalAlignment="Center"
+                                                                                       Style="{StaticResource HintText}" />
+                                                                        </StackPanel>
+                                                                    </Grid>
+                                                                    <StackPanel Orientation="Horizontal" Margin="0,0,14,0">
+                                                                        <Ellipse Width="8" Height="8" Fill="{Binding BatteryBrush}" Margin="0,0,6,0"
+                                                                                 VerticalAlignment="Center" />
+                                                                        <TextBlock Text="{Binding Battery}" Foreground="{Binding BatteryBrush}"
+                                                                                   FontWeight="SemiBold" VerticalAlignment="Center" />
+                                                                    </StackPanel>
+                                                                    <TextBlock Text="{Binding Provider}" Style="{StaticResource HintText}"
+                                                                               VerticalAlignment="Center" />
+                                                                </StackPanel>
+                                                                <Grid>
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="16" />
+                                                                        <ColumnDefinition Width="220" />
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <StackPanel>
+                                                                        <TextBlock Text="{DynamicResource LOCCSM_UserName}" Style="{StaticResource FieldLabel}" />
+                                                                        <TextBox Text="{Binding Profile.CustomName, UpdateSourceTrigger=PropertyChanged}" />
+                                                                    </StackPanel>
+                                                                    <StackPanel Grid.Column="2">
+                                                                        <TextBlock Text="{DynamicResource LOCCSM_Icon}" Style="{StaticResource FieldLabel}" />
+                                                                        <ComboBox ItemsSource="{Binding DataContext.IconOptions, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                                  SelectedValuePath="Id"
+                                                                                  SelectedValue="{Binding Profile.IconId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                                  SelectionChanged="ControllerIconSelectionChanged">
+                                                                            <ComboBox.ItemTemplate>
+                                                                                <DataTemplate>
+                                                                                    <StackPanel Orientation="Horizontal" MinHeight="22">
+                                                                                        <Viewbox Width="18" Height="18" Margin="0,0,7,0">
+                                                                                            <Path Data="{Binding GeometryData, Converter={StaticResource IconGeometryConverter}}"
+                                                                                                  Stroke="Gray" StrokeThickness="2" Fill="Transparent"
+                                                                                                  StrokeLineJoin="Round" StrokeStartLineCap="Round"
+                                                                                                  StrokeEndLineCap="Round" Stretch="Uniform" />
+                                                                                        </Viewbox>
+                                                                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                                                                                    </StackPanel>
+                                                                                </DataTemplate>
+                                                                            </ComboBox.ItemTemplate>
+                                                                        </ComboBox>
+                                                                    </StackPanel>
+                                                                </Grid>
+                                                            </StackPanel>
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                        <TextBlock x:Name="EmptyControllersText" Text="{DynamicResource LOCCSM_NoControllers}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.72" />
+                                    </Grid>
+                                </StackPanel>
+                            </ScrollViewer>
                 </Grid>
             </TabItem>
 
@@ -490,7 +516,7 @@
                                 <Border Style="{StaticResource IntroCard}">
                                     <StackPanel>
                                         <TextBlock Text="{DynamicResource LOCCSM_SessionProtectionTitle}" Style="{StaticResource SectionHeaderText}" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_AdaptiveProtectionHelp}" Style="{StaticResource HintText}" Margin="0,6,0,0" />
+                                        <TextBlock Text="{DynamicResource LOCCSM_AdaptiveProtectionHelp}" Style="{StaticResource SectionSubtitleText}" />
                                     </StackPanel>
                                 </Border>
                                 <Border Style="{StaticResource SettingsCard}">
@@ -520,7 +546,7 @@
                                 <Border Style="{StaticResource IntroCard}">
                                     <StackPanel>
                                         <TextBlock Text="{DynamicResource LOCCSM_GamePolicyPauseSection}" Style="{StaticResource SectionHeaderText}" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_PauseModesHelp}" Style="{StaticResource HintText}" Margin="0,6,0,0" />
+                                        <TextBlock Text="{DynamicResource LOCCSM_PauseModesHelp}" Style="{StaticResource SectionSubtitleText}" />
                                     </StackPanel>
                                 </Border>
                                 <Border Style="{StaticResource SettingsCard}">
@@ -528,32 +554,10 @@
                                         <RadioButton Content="{DynamicResource LOCCSM_AutoPauseModeNone}" IsChecked="{Binding IsAutoPauseModeNone}" GroupName="AutoPauseMode" />
                                         <TextBlock Text="{DynamicResource LOCCSM_AutoPauseModeNoneHelp}" Style="{StaticResource HintText}" Margin="22,6,0,14" />
                                         <RadioButton Content="{DynamicResource LOCCSM_ForcePauseOfflineGames}" IsChecked="{Binding IsAutoPauseModeOfflineOnly}" GroupName="AutoPauseMode" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_ForcePauseOfflineGamesHelp}" Style="{StaticResource HintText}" Margin="22,6,0,14" />
+                                        <TextBlock Text="{DynamicResource LOCCSM_ForcePauseOfflineGamesHelp}" Style="{StaticResource HintText}" Margin="22,6,0,4" />
+                                        <TextBlock Text="{DynamicResource LOCCSM_ForcePauseOfflineGamesWarning}" Style="{StaticResource WarningHintText}" Margin="22,0,0,14" />
                                         <RadioButton Content="{DynamicResource LOCCSM_PauseGameOnDisconnect}" IsChecked="{Binding IsAutoPauseModeAlways}" GroupName="AutoPauseMode" />
                                         <TextBlock Text="{DynamicResource LOCCSM_PauseGameOnDisconnectHelp}" Style="{StaticResource HintText}" Margin="22,6,0,0" />
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
-                        </ScrollViewer>
-                    </TabItem>
-                    <TabItem Header="{DynamicResource LOCCSM_Monitoring}">
-                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                            <StackPanel Margin="8">
-                                <Border Style="{StaticResource IntroCard}">
-                                    <StackPanel>
-                                        <TextBlock Text="{DynamicResource LOCCSM_Monitoring}" Style="{StaticResource SectionHeaderText}" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_GeneralHelp}" Style="{StaticResource HintText}" Margin="0,6,0,0" />
-                                    </StackPanel>
-                                </Border>
-                                <Border Style="{StaticResource SettingsCard}">
-                                    <StackPanel>
-                                        <CheckBox Content="{DynamicResource LOCCSM_EnableMonitoring}" IsChecked="{Binding EnableMonitoring}" Margin="0,0,0,12" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_ReconciliationInterval}" Style="{StaticResource SectionHeaderText}" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_ReconciliationHelp}" Style="{StaticResource HintText}" Margin="0,5,0,8" />
-                                        <DockPanel LastChildFill="False">
-                                            <TextBox Width="72" Text="{Binding ReconciliationIntervalSeconds, UpdateSourceTrigger=PropertyChanged}" />
-                                            <TextBlock Text="{DynamicResource LOCCSM_Seconds}" VerticalAlignment="Center" Margin="8,0,0,0" />
-                                        </DockPanel>
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
@@ -570,7 +574,7 @@
                                 <Border Style="{StaticResource IntroCard}">
                                     <StackPanel>
                                         <TextBlock Text="{DynamicResource LOCCSM_DesktopIntegrationTitle}" Style="{StaticResource SectionHeaderText}" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_ShowPrimaryInTopPanelHelp}" Style="{StaticResource HintText}" Margin="0,6,0,0" />
+                                        <TextBlock Text="{DynamicResource LOCCSM_ShowPrimaryInTopPanelHelp}" Style="{StaticResource SectionSubtitleText}" />
                                     </StackPanel>
                                 </Border>
                                 <Border Style="{StaticResource SettingsCard}">
@@ -590,7 +594,7 @@
                                 <Border Style="{StaticResource IntroCard}">
                                     <StackPanel>
                                         <TextBlock Text="{DynamicResource LOCCSM_FullscreenNotificationsTitle}" Style="{StaticResource SectionHeaderText}" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_ShowFullscreenControllerNotificationsHelp}" Style="{StaticResource HintText}" Margin="0,6,0,0" />
+                                        <TextBlock Text="{DynamicResource LOCCSM_ShowFullscreenControllerNotificationsHelp}" Style="{StaticResource SectionSubtitleText}" />
                                     </StackPanel>
                                 </Border>
                                 <Border Style="{StaticResource SettingsCard}">
@@ -648,7 +652,7 @@
                                 <Border Style="{StaticResource IntroCard}">
                                     <StackPanel>
                                         <TextBlock Text="{DynamicResource LOCCSM_DesktopNotificationsTitle}" Style="{StaticResource SectionHeaderText}" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_ShowDesktopControllerNotificationsHelp}" Style="{StaticResource HintText}" Margin="0,6,0,0" />
+                                        <TextBlock Text="{DynamicResource LOCCSM_ShowDesktopControllerNotificationsHelp}" Style="{StaticResource SectionSubtitleText}" />
                                     </StackPanel>
                                 </Border>
                                 <Border Style="{StaticResource SettingsCard}">
@@ -708,7 +712,7 @@
                                 <Border Style="{StaticResource IntroCard}">
                                     <StackPanel>
                                         <TextBlock Text="{DynamicResource LOCCSM_OverlayAppearanceTitle}" Style="{StaticResource SectionHeaderText}" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_OverlayAppearanceHelp}" Style="{StaticResource HintText}" Margin="0,6,0,0" />
+                                        <TextBlock Text="{DynamicResource LOCCSM_OverlayAppearanceHelp}" Style="{StaticResource SectionSubtitleText}" />
                                     </StackPanel>
                                 </Border>
                                 <Border Style="{StaticResource SettingsCard}">
@@ -779,17 +783,40 @@
             </TabItem>
 
             <TabItem Header="{DynamicResource LOCCSM_TabAdvanced}">
+                <TabControl Style="{StaticResource SettingsNavigationTabControl}">
+                    <TabItem Header="{DynamicResource LOCCSM_Monitoring}">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel Margin="8">
+                                <Border Style="{StaticResource IntroCard}">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource LOCCSM_Monitoring}" Style="{StaticResource SectionHeaderText}" />
+                                        <TextBlock Text="{DynamicResource LOCCSM_GeneralHelp}" Style="{StaticResource SectionSubtitleText}" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource SettingsCard}">
+                                    <StackPanel>
+                                        <CheckBox Content="{DynamicResource LOCCSM_ReconciliationInterval}" IsChecked="{Binding EnableMonitoring}" />
+                                        <TextBlock Text="{DynamicResource LOCCSM_ReconciliationHelp}" Style="{StaticResource HintText}" Margin="22,6,0,8" />
+                                        <DockPanel LastChildFill="False" Margin="22,0,0,0" IsEnabled="{Binding EnableMonitoring}">
+                                            <TextBox Width="72" Text="{Binding ReconciliationIntervalSeconds, UpdateSourceTrigger=PropertyChanged}" />
+                                            <TextBlock Text="{DynamicResource LOCCSM_Seconds}" VerticalAlignment="Center" Margin="8,0,0,0" />
+                                        </DockPanel>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+                    <TabItem Header="{DynamicResource LOCCSM_DiagnosticsTitle}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <StackPanel Margin="8">
                         <Border Style="{StaticResource IntroCard}">
                             <StackPanel>
-                                <TextBlock Text="{DynamicResource LOCCSM_TabAdvanced}" Style="{StaticResource SectionHeaderText}" />
-                                <TextBlock Text="{DynamicResource LOCCSM_AdvancedHelp}" Style="{StaticResource HintText}" Margin="0,6,0,0" />
+                                <TextBlock Text="{DynamicResource LOCCSM_DiagnosticsTitle}" Style="{StaticResource SectionHeaderText}" />
+                                <TextBlock Text="{DynamicResource LOCCSM_AdvancedHelp}" Style="{StaticResource SectionSubtitleText}" />
                             </StackPanel>
                         </Border>
                         <Border Style="{StaticResource SettingsCard}">
                             <StackPanel>
-                                <TextBlock Text="{DynamicResource LOCCSM_DiagnosticsTitle}" Style="{StaticResource SectionHeaderText}" Margin="0,0,0,10" />
                                 <CheckBox Content="{DynamicResource LOCCSM_EnableDebugLogging}" IsChecked="{Binding EnableDebugLogging}" />
                             </StackPanel>
                         </Border>
@@ -812,11 +839,13 @@
                         <Border Style="{StaticResource SettingsCard}">
                             <StackPanel>
                                 <TextBlock Text="{DynamicResource LOCCSM_FoundationTitle}" Style="{StaticResource SectionHeaderText}" />
-                                <TextBlock Text="{DynamicResource LOCCSM_FoundationNotice}" Style="{StaticResource HintText}" Margin="0,6,0,0" />
+                                <TextBlock Text="{DynamicResource LOCCSM_FoundationNotice}" Style="{StaticResource SectionSubtitleText}" />
                             </StackPanel>
                         </Border>
                     </StackPanel>
                 </ScrollViewer>
+                    </TabItem>
+                </TabControl>
             </TabItem>
 
             <TabItem Header="{DynamicResource LOCCSM_TabAbout}">

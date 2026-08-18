@@ -40,7 +40,35 @@ namespace ControllerSessionManager.PlayniteIntegration
         private void OnLoaded(object sender, RoutedEventArgs args)
         {
             plugin.ControllerSnapshotChanged += OnControllerSnapshotChanged;
+            ApplyPreferredWindowSize();
             RefreshOverview();
+        }
+
+        private void ApplyPreferredWindowSize()
+        {
+            var window = Window.GetWindow(this);
+            if (window == null)
+            {
+                return;
+            }
+
+            window.SizeToContent = SizeToContent.Manual;
+            if (window.MinWidth < 1000)
+            {
+                window.MinWidth = 1000;
+            }
+            if (window.MinHeight < 700)
+            {
+                window.MinHeight = 700;
+            }
+            if (window.ActualWidth < 1100 && window.Width < 1100)
+            {
+                window.Width = 1100;
+            }
+            if (window.ActualHeight < 780 && window.Height < 780)
+            {
+                window.Height = 780;
+            }
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs args)
@@ -133,12 +161,13 @@ namespace ControllerSessionManager.PlayniteIntegration
         private ControllerRow CreateRow(ControllerDeviceSnapshot controller)
         {
             var currentSettings = DataContext as ControllerSessionManagerSettings;
+            var profile = currentSettings == null ? null : currentSettings.GetControllerProfile(
+                string.IsNullOrWhiteSpace(controller.HardwareId) ? controller.ControllerId : controller.HardwareId);
             return new ControllerRow
             {
                 Name = controller.Name,
                 DetectedName = controller.DetectedName ?? controller.Name,
-                Profile = currentSettings == null ? null : currentSettings.GetControllerProfile(
-                    string.IsNullOrWhiteSpace(controller.HardwareId) ? controller.ControllerId : controller.HardwareId),
+                Profile = profile,
                 Provider = controller.ProviderId,
                 Connection = LocalizeValue(controller.ConnectionType),
                 ConnectionIconGeometry = GetConnectionIconGeometry(controller.ConnectionType),
@@ -146,6 +175,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                     ? "?" : string.Empty,
                 Battery = LocalizeValue(controller.BatteryLevel),
                 BatteryBrush = GetBatteryBrush(controller.BatteryLevel),
+                IconGeometry = GetControllerIconGeometry(profile),
                 Controller = controller,
                 ActionIconGeometry = SvgIconGeometryLoader.GetPathData("wave-sine.svg"),
                 LastInput = controller.LastInputUtc.HasValue
@@ -211,6 +241,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
 
             row.Profile.IconId = option.Id;
+            row.IconGeometry = option.GeometryData;
         }
 
         private void PreviewDesktopNotificationClick(object sender, RoutedEventArgs args)
@@ -253,8 +284,25 @@ namespace ControllerSessionManager.PlayniteIntegration
             return typeof(ControllerSessionManagerSettingsView).Assembly.GetName().Version.ToString(3);
         }
 
-        private sealed class ControllerRow
+        private static string GetControllerIconGeometry(ControllerProfile profile)
         {
+            var iconId = profile == null ? "gamepad-4" : profile.IconId;
+            string fileName;
+            switch (iconId)
+            {
+                case "gamepad-2": fileName = "device-gamepad-2.svg"; break;
+                case "gamepad-3": fileName = "device-gamepad-3.svg"; break;
+                case "gamepad-4": fileName = "device-gamepad-4.svg"; break;
+                case "nintendo": fileName = "device-nintendo.svg"; break;
+                default: fileName = "device-gamepad.svg"; break;
+            }
+            return SvgIconGeometryLoader.GetPathData(fileName);
+        }
+
+        private sealed class ControllerRow : System.ComponentModel.INotifyPropertyChanged
+        {
+            private string iconGeometry;
+
             public string Name { get; set; }
             public string DetectedName { get; set; }
             public ControllerProfile Profile { get; set; }
@@ -267,6 +315,22 @@ namespace ControllerSessionManager.PlayniteIntegration
             public string LastInput { get; set; }
             public ControllerDeviceSnapshot Controller { get; set; }
             public string ActionIconGeometry { get; set; }
+
+            public string IconGeometry
+            {
+                get { return iconGeometry; }
+                set
+                {
+                    iconGeometry = value;
+                    var handler = PropertyChanged;
+                    if (handler != null)
+                    {
+                        handler(this, new System.ComponentModel.PropertyChangedEventArgs("IconGeometry"));
+                    }
+                }
+            }
+
+            public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
         }
     }
 }

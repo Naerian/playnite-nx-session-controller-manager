@@ -1,4 +1,4 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
     <sys:String x:Key="LOCCSM_PluginName">Controller Session Manager</sys:String>
     <sys:String x:Key="LOCCSM_SettingsTitle">Controller Session Manager</sys:String>
     <sys:String x:Key="LOCCSM_EnableMonitoring">Controller-Überwachung aktivieren</sys:String>
@@ -129,7 +129,7 @@
     <sys:String x:Key="LOCCSM_OverlayDisconnectTitlePlural">{0} Controller getrennt</sys:String>
     <sys:String x:Key="LOCCSM_OverlayReconnectControllers">Verbinde sie erneut, um fortzufahren.</sys:String>
     <sys:String x:Key="LOCCSM_ForcePauseOfflineGames">Spiel vorübergehend anhalten, wenn keine Netzwerkaktivität erkannt wird</sys:String>
-    <sys:String x:Key="LOCCSM_ForcePauseOfflineGamesHelp">Wenn ein Controller getrennt wird, hält das Spiel vorübergehend an, bis er zurückkehrt oder ein anderer verwendet wird. Bei Netzwerkaktivität läuft das Spiel weiter, um eine Online-Partie nicht zu stören. Die Erkennung ist nicht immer eindeutig.</sys:String>
+    <sys:String x:Key="LOCCSM_ForcePauseOfflineGamesHelp">Wenn ein Controller getrennt wird, hält das Spiel vorübergehend an, bis er zurückkehrt oder ein anderer verwendet wird. Bei Netzwerkaktivität läuft das Spiel weiter, um eine Online-Partie nicht zu stören.</sys:String>
     <sys:String x:Key="LOCCSM_FullscreenNotificationsTitle">Bildschirmhinweis</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceLayout">Layout</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceContent">Inhalt</sys:String>
@@ -141,8 +141,8 @@
     <sys:String x:Key="LOCCSM_NotificationIconPosition">Symbolposition</sys:String>
     <sys:String x:Key="LOCCSM_IconHidden">Symbol ausblenden</sys:String>
     <sys:String x:Key="LOCCSM_NotificationWarningPreview">Warnung</sys:String>
-    <sys:String x:Key="LOCCSM_ShowFullscreenControllerNotifications">Beim Verbinden oder Trennen eines Controllers in der Vollbildoberfläche benachrichtigen</sys:String>
-    <sys:String x:Key="LOCCSM_ShowFullscreenControllerNotificationsHelp">Zeigt beim Navigieren in Playnite eine kurze, unaufdringliche Benachrichtigung; nicht über laufenden Spielen.</sys:String>
+    <sys:String x:Key="LOCCSM_ShowFullscreenControllerNotifications">Beim Verbinden oder Trennen eines Controllers im Vollbildmodus benachrichtigen</sys:String>
+    <sys:String x:Key="LOCCSM_ShowFullscreenControllerNotificationsHelp">Zeigt eine kurze Benachrichtigung, wenn ein Controller im Playnite-Vollbildmodus verbunden oder getrennt wird.</sys:String>
     <sys:String x:Key="LOCCSM_OverlayForcePaused">Spiel vorübergehend angehalten</sys:String>
     <sys:String x:Key="LOCCSM_OverlayForcePauseFailed">Das Spiel konnte nicht vorübergehend angehalten werden</sys:String>
     <sys:String x:Key="LOCCSM_OnlineFallbackToastTitle">Controller getrennt</sys:String>
@@ -182,7 +182,7 @@
     <sys:String x:Key="LOCCSM_OverlayShowStatusIcon">Symbol für Pause oder Warnung anzeigen</sys:String>
     <sys:String x:Key="LOCCSM_DesktopNotificationsTitle">Desktop-Benachrichtigungen</sys:String>
     <sys:String x:Key="LOCCSM_ShowDesktopControllerNotifications">Beim Verbinden oder Trennen eines Controllers im Desktop-Modus benachrichtigen</sys:String>
-    <sys:String x:Key="LOCCSM_ShowDesktopControllerNotificationsHelp">Zeigt eine kurze Benachrichtigung im Playnite-Desktop-Modus an, wenn ein Controller verbunden oder getrennt wird.</sys:String>
+    <sys:String x:Key="LOCCSM_ShowDesktopControllerNotificationsHelp">Zeigt eine kurze Benachrichtigung, wenn ein Controller im Playnite-Desktop-Modus verbunden oder getrennt wird.</sys:String>
     <sys:String x:Key="LOCCSM_EnableDisconnectOverlay">Trennungs-Overlay aktivieren</sys:String>
     <sys:String x:Key="LOCCSM_FullscreenTabLabel">Fullscreen</sys:String>
     <sys:String x:Key="LOCCSM_DesktopTabLabel">Desktop</sys:String>
@@ -191,4 +191,6 @@
     <sys:String x:Key="LOCCSM_BorderFull">Vollst\u00e4ndig</sys:String>
     <sys:String x:Key="LOCCSM_AutoPauseModeNone">Do nothing - only show the overlay if enabled</sys:String>
     <sys:String x:Key="LOCCSM_AutoPauseModeNoneHelp">The game keeps running after a disconnect. The disconnect overlay will still appear if the overlay option is enabled.</sys:String>
+    <sys:String x:Key="LOCCSM_ForcePauseOfflineGamesWarning">Die Erkennung ist nicht immer eindeutig.</sys:String>
+    <sys:String x:Key="LOCCSM_NotePrefix">HINWEIS:</sys:String>
 </ResourceDictionary>
