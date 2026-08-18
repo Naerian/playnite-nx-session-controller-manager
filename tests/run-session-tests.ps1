@@ -26,6 +26,7 @@ $testExecutable = Join-Path $output "SessionManagerTests.exe"
     (Join-Path $root "Sessions\OnlineSessionDetector.cs") `
     (Join-Path $root "Sessions\AdaptiveSessionScopeDetector.cs") `
     (Join-Path $root "Sessions\InputPollingPolicy.cs") `
+    (Join-Path $root "PlayniteIntegration\ColorPickerMath.cs") `
     (Join-Path $root "tests\SessionManagerTests.cs")
 if ($LASTEXITCODE -ne 0) {
     throw "Session manager test compilation failed with exit code $LASTEXITCODE"

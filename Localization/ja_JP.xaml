@@ -168,7 +168,13 @@
     <sys:String x:Key="LOCCSM_NotificationShowBorder">状態色の境界線を表示する</sys:String><sys:String x:Key="LOCCSM_NotificationBorderPosition">境界線の位置</sys:String><sys:String x:Key="LOCCSM_NotificationBorderThickness">境界線の太さ (px)</sys:String>
     <sys:String x:Key="LOCCSM_BorderLeft">左</sys:String><sys:String x:Key="LOCCSM_BorderTop">上</sys:String><sys:String x:Key="LOCCSM_BorderRight">右</sys:String><sys:String x:Key="LOCCSM_BorderBottom">下</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPreview">ライブプレビュー</sys:String><sys:String x:Key="LOCCSM_PreviewControllerName">サンプルコントローラー</sys:String><sys:String x:Key="LOCCSM_OverlayPreviewHelp">編集中に色と倍率が更新されます。実際のオーバーレイは画面に合わせて調整されます。</sys:String>
-    <sys:String x:Key="LOCCSM_SelectColor">色を選択</sys:String><sys:String x:Key="LOCCSM_NotificationCornerRadius">角の半径 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayTitleSize">タイトル文字 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerTextSize">コントローラー文字 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayInstructionSize">案内文字 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusSize">状態文字 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerIconSize">コントローラーアイコン (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusIconSize">状態アイコン (px)</sys:String><sys:String x:Key="LOCCSM_OverlayPadding">カード余白 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayCornerRadius">角の半径 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayShowBorder">オーバーレイカードの境界線を表示</sys:String>
+    <sys:String x:Key="LOCCSM_SelectColor">色を選択</sys:String>
+    <sys:String x:Key="LOCCSM_ColorPreview">プレビュー</sys:String>
+    <sys:String x:Key="LOCCSM_ColorOpacity">不透明度</sys:String>
+    <sys:String x:Key="LOCCSM_ColorOpacityValue">{0}%</sys:String>
+    <sys:String x:Key="LOCCSM_ColorHex">Hex</sys:String>
+    <sys:String x:Key="LOCCSM_ColorPickerApply">この色を使う</sys:String>
+    <sys:String x:Key="LOCCSM_ColorPickerCancel">キャンセル</sys:String><sys:String x:Key="LOCCSM_NotificationCornerRadius">角の半径 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayTitleSize">タイトル文字 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerTextSize">コントローラー文字 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayInstructionSize">案内文字 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusSize">状態文字 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerIconSize">コントローラーアイコン (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusIconSize">状態アイコン (px)</sys:String><sys:String x:Key="LOCCSM_OverlayPadding">カード余白 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayCornerRadius">角の半径 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayShowBorder">オーバーレイカードの境界線を表示</sys:String>
     <sys:String x:Key="LOCCSM_SupportReport">サポートレポート</sys:String>
     <sys:String x:Key="LOCCSM_SupportReportHelp">設定、コントローラープロバイダー、現在の状態、最近の問題をプライバシーに配慮して出力します。HID パス、シリアル番号、ユーザーフォルダー、Playnite ログは含みません。</sys:String>
     <sys:String x:Key="LOCCSM_ExportSupportReport">サポートレポートを出力</sys:String>

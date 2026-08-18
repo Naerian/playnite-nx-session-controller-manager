@@ -196,6 +196,12 @@
     <sys:String x:Key="LOCCSM_PreviewControllerName">Mando de ejemplo</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPreviewHelp">Los colores y la escala cambian mientras los editas. El overlay real de la partida se adapta a la pantalla actual.</sys:String>
     <sys:String x:Key="LOCCSM_SelectColor">Elegir color</sys:String>
+    <sys:String x:Key="LOCCSM_ColorPreview">Vista previa</sys:String>
+    <sys:String x:Key="LOCCSM_ColorOpacity">Opacidad</sys:String>
+    <sys:String x:Key="LOCCSM_ColorOpacityValue">{0}%</sys:String>
+    <sys:String x:Key="LOCCSM_ColorHex">Hex</sys:String>
+    <sys:String x:Key="LOCCSM_ColorPickerApply">Usar este color</sys:String>
+    <sys:String x:Key="LOCCSM_ColorPickerCancel">Cancelar</sys:String>
     <sys:String x:Key="LOCCSM_OverlayTitleSize">Texto del título (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerTextSize">Texto del mando (px)</sys:String><sys:String x:Key="LOCCSM_OverlayInstructionSize">Texto de instrucción (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusSize">Texto de estado (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationCornerRadius">Redondeo (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerIconSize">Icono del mando (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusIconSize">Icono de estado (px)</sys:String><sys:String x:Key="LOCCSM_OverlayPadding">Padding de la tarjeta (px)</sys:String><sys:String x:Key="LOCCSM_OverlayCornerRadius">Redondeo de esquinas (px)</sys:String><sys:String x:Key="LOCCSM_OverlayShowBorder">Mostrar el borde de la tarjeta del overlay</sys:String>
     <sys:String x:Key="LOCCSM_SupportReport">Informe de soporte</sys:String>

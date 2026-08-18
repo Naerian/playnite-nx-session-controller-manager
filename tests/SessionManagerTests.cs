@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ControllerSessionManager.Controllers;
+using ControllerSessionManager.PlayniteIntegration;
 using ControllerSessionManager.Sessions;
 
 internal static class SessionManagerTests
@@ -61,7 +62,9 @@ internal static class SessionManagerTests
             RealInputReplacesSessionStartFallback();
             NewlyConnectedControllerResolvesIncidentWithoutInput();
             AlreadyConnectedControllerStillRequiresInputForTakeover();
-            Console.WriteLine("Session manager tests passed: 50 scenarios.");
+            ColorPickerStoresOpacityInHex();
+            ColorPickerMathRoundTripsHueAndOpacity();
+            Console.WriteLine("Session manager tests passed: 52 scenarios.");
             return 0;
         }
         catch (Exception error)
@@ -795,6 +798,42 @@ internal static class SessionManagerTests
         var device = Device(key, DateTime.MinValue);
         device.LastInputUtc = null;
         return device;
+    }
+
+    private static void ColorPickerStoresOpacityInHex()
+    {
+        Equal(59, ColorPickerMath.AlphaToPercent(0x96),
+            "The default overlay dim alpha should read as 59 percent.");
+        Equal((byte)0x96, ColorPickerMath.PercentToAlpha(59),
+            "A 59 percent opacity slider should restore the overlay dim alpha.");
+        Equal("#96000000", ColorPickerMath.ToHex(0x96, 0, 0, 0),
+            "Saved colors must keep the alpha byte in #AARRGGBB form.");
+        byte alpha;
+        byte red;
+        byte green;
+        byte blue;
+        Equal(true, ColorPickerMath.TryParseHex("#80FF0000", out alpha, out red, out green, out blue),
+            "An 8-digit hex value with alpha must parse.");
+        Equal((byte)0x80, alpha, "The first two hex digits are the opacity.");
+        Equal((byte)255, red, "A semi-transparent red must keep its red channel.");
+    }
+
+    private static void ColorPickerMathRoundTripsHueAndOpacity()
+    {
+        double hue;
+        double saturation;
+        double value;
+        ColorPickerMath.RgbToHsv(0, 255, 0, out hue, out saturation, out value);
+        Equal(true, hue > 119 && hue < 121, "Pure green should sit near 120 degrees.");
+        byte red;
+        byte green;
+        byte blue;
+        ColorPickerMath.HsvToRgb(hue, saturation, value, out red, out green, out blue);
+        Equal((byte)0, red, "Green should round-trip without a red channel.");
+        Equal((byte)255, green, "Green should round-trip at full value.");
+        Equal((byte)0, blue, "Green should round-trip without a blue channel.");
+        Equal(100, ColorPickerMath.AlphaToPercent(255), "Fully opaque colors are 100 percent.");
+        Equal((byte)0, ColorPickerMath.PercentToAlpha(0), "Zero percent must be fully transparent.");
     }
 
     private static void Equal<T>(T expected, T actual, string message)

@@ -198,6 +198,12 @@
     <sys:String x:Key="LOCCSM_PreviewControllerName">Example controller</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPreviewHelp">Colors and scale update while you edit them. The actual gameplay overlay adapts to the current screen.</sys:String>
     <sys:String x:Key="LOCCSM_SelectColor">Choose color</sys:String>
+    <sys:String x:Key="LOCCSM_ColorPreview">Preview</sys:String>
+    <sys:String x:Key="LOCCSM_ColorOpacity">Opacity</sys:String>
+    <sys:String x:Key="LOCCSM_ColorOpacityValue">{0}%</sys:String>
+    <sys:String x:Key="LOCCSM_ColorHex">Hex</sys:String>
+    <sys:String x:Key="LOCCSM_ColorPickerApply">Use this color</sys:String>
+    <sys:String x:Key="LOCCSM_ColorPickerCancel">Cancel</sys:String>
     <sys:String x:Key="LOCCSM_OverlayTitleSize">Title text (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerTextSize">Controller text (px)</sys:String><sys:String x:Key="LOCCSM_OverlayInstructionSize">Instruction text (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusSize">Status text (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationCornerRadius">Corner radius (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerIconSize">Controller icon (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusIconSize">Status icon (px)</sys:String><sys:String x:Key="LOCCSM_OverlayPadding">Card padding (px)</sys:String><sys:String x:Key="LOCCSM_OverlayCornerRadius">Corner radius (px)</sys:String><sys:String x:Key="LOCCSM_OverlayShowBorder">Show overlay card border</sys:String>
     <sys:String x:Key="LOCCSM_SupportReport">Support report</sys:String>

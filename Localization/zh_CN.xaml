@@ -168,7 +168,13 @@
     <sys:String x:Key="LOCCSM_NotificationShowBorder">显示状态颜色边框</sys:String><sys:String x:Key="LOCCSM_NotificationBorderPosition">边框位置</sys:String><sys:String x:Key="LOCCSM_NotificationBorderThickness">边框宽度 (px)</sys:String>
     <sys:String x:Key="LOCCSM_BorderLeft">左</sys:String><sys:String x:Key="LOCCSM_BorderTop">上</sys:String><sys:String x:Key="LOCCSM_BorderRight">右</sys:String><sys:String x:Key="LOCCSM_BorderBottom">下</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPreview">实时预览</sys:String><sys:String x:Key="LOCCSM_PreviewControllerName">示例控制器</sys:String><sys:String x:Key="LOCCSM_OverlayPreviewHelp">编辑时颜色和缩放会实时更新。实际游戏浮层会适应当前屏幕。</sys:String>
-    <sys:String x:Key="LOCCSM_SelectColor">选择颜色</sys:String><sys:String x:Key="LOCCSM_NotificationCornerRadius">圆角半径 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayTitleSize">标题文字 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerTextSize">控制器文字 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayInstructionSize">提示文字 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusSize">状态文字 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerIconSize">控制器图标 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusIconSize">状态图标 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayPadding">卡片内边距 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayCornerRadius">圆角半径 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayShowBorder">显示浮层卡片边框</sys:String>
+    <sys:String x:Key="LOCCSM_SelectColor">选择颜色</sys:String>
+    <sys:String x:Key="LOCCSM_ColorPreview">预览</sys:String>
+    <sys:String x:Key="LOCCSM_ColorOpacity">不透明度</sys:String>
+    <sys:String x:Key="LOCCSM_ColorOpacityValue">{0}%</sys:String>
+    <sys:String x:Key="LOCCSM_ColorHex">Hex</sys:String>
+    <sys:String x:Key="LOCCSM_ColorPickerApply">使用此颜色</sys:String>
+    <sys:String x:Key="LOCCSM_ColorPickerCancel">取消</sys:String><sys:String x:Key="LOCCSM_NotificationCornerRadius">圆角半径 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayTitleSize">标题文字 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerTextSize">控制器文字 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayInstructionSize">提示文字 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusSize">状态文字 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerIconSize">控制器图标 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusIconSize">状态图标 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayPadding">卡片内边距 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayCornerRadius">圆角半径 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayShowBorder">显示浮层卡片边框</sys:String>
     <sys:String x:Key="LOCCSM_SupportReport">支持报告</sys:String>
     <sys:String x:Key="LOCCSM_SupportReportHelp">以保护隐私的方式导出设置、控制器提供程序、当前状态和最近事件。不包含 HID 路径、序列号、用户文件夹和 Playnite 日志。</sys:String>
     <sys:String x:Key="LOCCSM_ExportSupportReport">导出支持报告</sys:String>

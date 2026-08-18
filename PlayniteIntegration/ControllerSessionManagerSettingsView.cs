@@ -8,7 +8,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
 using ControllerSessionManager.Controllers;
-using Forms = System.Windows.Forms;
 
 namespace ControllerSessionManager.PlayniteIntegration
 {
@@ -332,22 +331,21 @@ namespace ControllerSessionManager.PlayniteIntegration
             Color currentColor;
             try { currentColor = (Color)ColorConverter.ConvertFromString(currentValue); }
             catch { currentColor = Colors.White; }
-            using (var dialog = new Forms.ColorDialog
+            var dialog = new ColorPickerDialog(currentColor, plugin.Loc);
+            var owner = Window.GetWindow(this);
+            if (owner != null)
             {
-                FullOpen = true,
-                AnyColor = true,
-                Color = System.Drawing.Color.FromArgb(currentColor.R, currentColor.G, currentColor.B)
-            })
-            {
-                if (dialog.ShowDialog() != Forms.DialogResult.OK)
-                {
-                    return;
-                }
-
-                var selected = dialog.Color;
-                property.SetValue(settings, string.Format("#{0:X2}{1:X2}{2:X2}{3:X2}",
-                    currentColor.A, selected.R, selected.G, selected.B), null);
+                dialog.Owner = owner;
             }
+
+            if (dialog.ShowDialog() != true)
+            {
+                return;
+            }
+
+            var selected = dialog.SelectedColor;
+            property.SetValue(settings, ColorPickerMath.ToHex(
+                selected.A, selected.R, selected.G, selected.B), null);
         }
 
         private void RefreshOverview()
