@@ -33,8 +33,8 @@
     <sys:String x:Key="LOCCSM_Connection">Conexión</sys:String>
     <sys:String x:Key="LOCCSM_Battery">Batería</sys:String>
     <sys:String x:Key="LOCCSM_TabGeneral">General</sys:String>
-    <sys:String x:Key="LOCCSM_GeneralHelp">Ajusta con qué frecuencia se vuelve a comprobar el inventario de mandos de Playnite. XInput usa un monitor independiente más rápido.</sys:String>
-    <sys:String x:Key="LOCCSM_ReconciliationHelp">Frecuencia de comprobación del inventario alternativo de Playnite. XInput utiliza un monitor independiente más rápido.</sys:String>
+    <sys:String x:Key="LOCCSM_GeneralHelp">Define cada cuánto se comprueban los mandos conectados.</sys:String>
+    <sys:String x:Key="LOCCSM_ReconciliationHelp">Un valor más bajo detecta cambios antes. El valor por defecto suele bastar.</sys:String>
     <sys:String x:Key="LOCCSM_Seconds">segundos</sys:String>
     <sys:String x:Key="LOCCSM_TabAdvanced">Avanzado</sys:String>
     <sys:String x:Key="LOCCSM_AdvancedHelp">Opciones de diagnóstico y herramientas para pruebas o resolución de problemas.</sys:String>
@@ -62,10 +62,10 @@
     <sys:String x:Key="LOCCSM_ValueUnavailable">No disponible</sys:String>
     <sys:String x:Key="LOCCSM_UserName">Nombre del usuario</sys:String>
     <sys:String x:Key="LOCCSM_HidDiagnostics">Diagnóstico HID</sys:String>
-    <sys:String x:Key="LOCCSM_HidDiagnosticsHelp">Exporta en modo de solo lectura las interfaces HID coincidentes, sus capacidades y reports actuales para desarrollar perfiles de batería validados.</sys:String>
+    <sys:String x:Key="LOCCSM_HidDiagnosticsHelp">Exporta datos técnicos HID para diagnosticar batería y conexión.</sys:String>
     <sys:String x:Key="LOCCSM_ExportHidDiagnostics">Exportar diagnóstico HID</sys:String>
     <sys:String x:Key="LOCCSM_HidDiagnosticsExported">Diagnóstico HID exportado en:\n{0}</sys:String>
-    <sys:String x:Key="LOCCSM_OverviewHelp">Vista rápida de los mandos conectados y del estado de protección. El mando en uso es el último que ha enviado input, no un mando por defecto. La protección de partida se activa al lanzar un juego y vigila esos mandos hasta que termina.</sys:String>
+    <sys:String x:Key="LOCCSM_OverviewHelp">Mandos conectados y estado de la protección de partida.</sys:String>
     <sys:String x:Key="LOCCSM_DevicesTab">Dispositivos</sys:String>
     <sys:String x:Key="LOCCSM_BatteryUnknownHint">La batería puede aparecer como Desconocida cuando el mando, el receptor o el controlador de Windows no expone su nivel mediante las API estándar. Es habitual con receptores USB propietarios.</sys:String>
     <sys:String x:Key="LOCCSM_ControllerGeneralTitle">Visualización de mandos</sys:String>
@@ -153,8 +153,8 @@
     <sys:String x:Key="LOCCSM_GamePolicyForcePauseOffline">Detener temporalmente el juego si no hay actividad de red. Mostrar solo el aviso si la hay</sys:String>
     <sys:String x:Key="LOCCSM_TabSession">Sesión</sys:String>
     <sys:String x:Key="LOCCSM_TabAppearance">Apariencia</sys:String>
-    <sys:String x:Key="LOCCSM_AdaptiveProtectionHelp">El modo automático comienza como un jugador y solo convierte la sesión en multijugador local al detectar uso alternado continuado de varios mandos. Probar un mando y cambiar después a otro no activa el cooperativo. Usa un ajuste por juego solo cuando la detección automática no sea adecuada.</sys:String>
-    <sys:String x:Key="LOCCSM_PauseModesHelp">Elige cómo reacciona el plugin cuando se desconecta un mando. El overlay se mostrará según su propia configuración. Cada juego puede tener su propio ajuste desde el menú contextual.</sys:String>
+    <sys:String x:Key="LOCCSM_AdaptiveProtectionHelp">Protege el mando que estás usando. Si hay varios jugadores en el mismo PC, protege cada uno. Puedes cambiarlo por juego desde el menú contextual.</sys:String>
+    <sys:String x:Key="LOCCSM_PauseModesHelp">Elige qué hacer si se desconecta un mando. Cada juego puede tener su propio ajuste.</sys:String>
     <sys:String x:Key="LOCCSM_NotificationWidth">Ancho (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationScale">Tamaño (%)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationDuration">Duración (ms)</sys:String>
@@ -182,7 +182,7 @@
     <sys:String x:Key="LOCCSM_NotificationPreviewMessage">Así se mostrarán las notificaciones de Controller Session Manager.</sys:String>
     <sys:String x:Key="LOCCSM_SessionAdaptiveLocal">Se han detectado varios jugadores locales. Se están protegiendo {0} mandos</sys:String>
     <sys:String x:Key="LOCCSM_Monitoring">Monitorización</sys:String>
-    <sys:String x:Key="LOCCSM_ShowControllerNameInNotifications">Mostrar el nombre del dispositivo en las notificaciones</sys:String>
+    <sys:String x:Key="LOCCSM_ShowControllerNameInNotifications">Mostrar el nombre del mando en la notificación</sys:String>
     <sys:String x:Key="LOCCSM_NotificationTitleSize">Texto del título (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationTextSize">Texto del mensaje (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationIconSize">Tamaño del icono (px)</sys:String>
@@ -198,7 +198,7 @@
     <sys:String x:Key="LOCCSM_OverlayTitleSize">Texto del título (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerTextSize">Texto del mando (px)</sys:String><sys:String x:Key="LOCCSM_OverlayInstructionSize">Texto de instrucción (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusSize">Texto de estado (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationCornerRadius">Redondeo (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerIconSize">Icono del mando (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusIconSize">Icono de estado (px)</sys:String><sys:String x:Key="LOCCSM_OverlayPadding">Padding de la tarjeta (px)</sys:String><sys:String x:Key="LOCCSM_OverlayCornerRadius">Redondeo de esquinas (px)</sys:String><sys:String x:Key="LOCCSM_OverlayShowBorder">Mostrar el borde de la tarjeta del overlay</sys:String>
     <sys:String x:Key="LOCCSM_SupportReport">Informe de soporte</sys:String>
-    <sys:String x:Key="LOCCSM_SupportReportHelp">Exporta una instantánea respetuosa con la privacidad de los ajustes, proveedores de mandos, sesión actual e incidencias recientes. Excluye rutas HID, números de serie, carpetas del usuario y registros de Playnite.</sys:String>
+    <sys:String x:Key="LOCCSM_SupportReportHelp">Exporta ajustes y estado actual, sin datos personales ni rutas del sistema.</sys:String>
     <sys:String x:Key="LOCCSM_ExportSupportReport">Exportar informe de soporte</sys:String>
     <sys:String x:Key="LOCCSM_SupportReportExported">Informe de soporte exportado en:&#10;{0}</sys:String>
     <sys:String x:Key="LOCCSM_MenuExportSupport">Exportar informe de soporte</sys:String>
@@ -216,7 +216,7 @@
     <sys:String x:Key="LOCCSM_FullscreenTabLabel">Pantalla completa</sys:String>
     <sys:String x:Key="LOCCSM_DesktopTabLabel">Escritorio</sys:String>
     <sys:String x:Key="LOCCSM_ControllerNotificationTitle">Notificacion de mando</sys:String>
-    <sys:String x:Key="LOCCSM_ShowControllerNameInDesktopNotifications">Mostrar nombre del mando en la notificacion</sys:String>
+    <sys:String x:Key="LOCCSM_ShowControllerNameInDesktopNotifications">Mostrar el nombre del mando en la notificación</sys:String>
     <sys:String x:Key="LOCCSM_BorderFull">Completo</sys:String>
     <sys:String x:Key="LOCCSM_AutoPauseModeNone">No hacer nada, solo mostrar el overlay si está activo</sys:String>
     <sys:String x:Key="LOCCSM_AutoPauseModeNoneHelp">El juego sigue en marcha tras la desconexión. El overlay de desconexión seguirá apareciendo si está activado.</sys:String>

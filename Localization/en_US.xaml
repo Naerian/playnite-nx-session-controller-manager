@@ -35,8 +35,8 @@
     <sys:String x:Key="LOCCSM_Connection">Connection</sys:String>
     <sys:String x:Key="LOCCSM_Battery">Battery</sys:String>
     <sys:String x:Key="LOCCSM_TabGeneral">General</sys:String>
-    <sys:String x:Key="LOCCSM_GeneralHelp">How often the Playnite controller inventory is rechecked. XInput uses a separate, faster monitor.</sys:String>
-    <sys:String x:Key="LOCCSM_ReconciliationHelp">How often the slower Playnite inventory fallback is checked. XInput uses a separate responsive monitor.</sys:String>
+    <sys:String x:Key="LOCCSM_GeneralHelp">How often connected controllers are rechecked.</sys:String>
+    <sys:String x:Key="LOCCSM_ReconciliationHelp">A lower value detects changes sooner. The default is usually enough.</sys:String>
     <sys:String x:Key="LOCCSM_Seconds">seconds</sys:String>
     <sys:String x:Key="LOCCSM_TabAdvanced">Advanced</sys:String>
     <sys:String x:Key="LOCCSM_AdvancedHelp">Diagnostic options and tools for testing or troubleshooting.</sys:String>
@@ -64,10 +64,10 @@
     <sys:String x:Key="LOCCSM_ValueUnavailable">Unavailable</sys:String>
     <sys:String x:Key="LOCCSM_UserName">User name</sys:String>
     <sys:String x:Key="LOCCSM_HidDiagnostics">HID diagnostics</sys:String>
-    <sys:String x:Key="LOCCSM_HidDiagnosticsHelp">Exports a read-only inventory of matching HID interfaces, capabilities and current reports for developing validated battery profiles.</sys:String>
+    <sys:String x:Key="LOCCSM_HidDiagnosticsHelp">Exports technical HID data to diagnose battery and connection issues.</sys:String>
     <sys:String x:Key="LOCCSM_ExportHidDiagnostics">Export HID diagnostics</sys:String>
     <sys:String x:Key="LOCCSM_HidDiagnosticsExported">HID diagnostics exported to:\n{0}</sys:String>
-    <sys:String x:Key="LOCCSM_OverviewHelp">A quick view of connected controllers and protection status. Controller in use is the last one that sent input, not a default device. Disconnect protection starts when you launch a game and watches those controllers until the game ends.</sys:String>
+    <sys:String x:Key="LOCCSM_OverviewHelp">Connected controllers and disconnect protection status.</sys:String>
     <sys:String x:Key="LOCCSM_DevicesTab">Devices</sys:String>
     <sys:String x:Key="LOCCSM_BatteryUnknownHint">Battery may appear as Unknown when the controller, receiver or Windows driver does not expose its charge level to standard APIs. This is common with proprietary USB receivers.</sys:String>
     <sys:String x:Key="LOCCSM_ControllerGeneralTitle">Controller display</sys:String>
@@ -155,8 +155,8 @@
     <sys:String x:Key="LOCCSM_GamePolicyForcePauseOffline">Temporarily stop the game when there is no network activity. Show only the warning when there is</sys:String>
     <sys:String x:Key="LOCCSM_TabSession">Session</sys:String>
     <sys:String x:Key="LOCCSM_TabAppearance">Appearance</sys:String>
-    <sys:String x:Key="LOCCSM_AdaptiveProtectionHelp">Automatic mode starts as single-player and promotes the current session to local multiplayer only after sustained alternating input from several controllers. Trying one controller and then switching to another does not promote the session. Use a per-game override only when automatic detection is unsuitable.</sys:String>
-    <sys:String x:Key="LOCCSM_PauseModesHelp">Choose how the plugin reacts when a controller disconnects. Each game can override this setting from its context menu.</sys:String>
+    <sys:String x:Key="LOCCSM_AdaptiveProtectionHelp">Protects the controller you are using. If several people play on this PC, each controller is protected. You can change this per game from the context menu.</sys:String>
+    <sys:String x:Key="LOCCSM_PauseModesHelp">Choose what happens if a controller disconnects. Each game can use its own setting.</sys:String>
     <sys:String x:Key="LOCCSM_NotificationWidth">Width (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationScale">Size (%)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationDuration">Duration (ms)</sys:String>
@@ -184,7 +184,7 @@
     <sys:String x:Key="LOCCSM_NotificationPreviewMessage">This is how Controller Session Manager notifications will look.</sys:String>
     <sys:String x:Key="LOCCSM_SessionAdaptiveLocal">Several local players were detected. Protecting {0} controllers</sys:String>
     <sys:String x:Key="LOCCSM_Monitoring">Monitoring</sys:String>
-    <sys:String x:Key="LOCCSM_ShowControllerNameInNotifications">Show the device name in notifications</sys:String>
+    <sys:String x:Key="LOCCSM_ShowControllerNameInNotifications">Show the controller name in the notification</sys:String>
     <sys:String x:Key="LOCCSM_NotificationTitleSize">Title text (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationTextSize">Message text (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationIconSize">Icon size (px)</sys:String>
@@ -200,7 +200,7 @@
     <sys:String x:Key="LOCCSM_OverlayTitleSize">Title text (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerTextSize">Controller text (px)</sys:String><sys:String x:Key="LOCCSM_OverlayInstructionSize">Instruction text (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusSize">Status text (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationCornerRadius">Corner radius (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerIconSize">Controller icon (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusIconSize">Status icon (px)</sys:String><sys:String x:Key="LOCCSM_OverlayPadding">Card padding (px)</sys:String><sys:String x:Key="LOCCSM_OverlayCornerRadius">Corner radius (px)</sys:String><sys:String x:Key="LOCCSM_OverlayShowBorder">Show overlay card border</sys:String>
     <sys:String x:Key="LOCCSM_SupportReport">Support report</sys:String>
-    <sys:String x:Key="LOCCSM_SupportReportHelp">Export a privacy-conscious snapshot of settings, controller providers, the current session and recent incident events. HID paths, serial numbers, user folders and Playnite logs are excluded.</sys:String>
+    <sys:String x:Key="LOCCSM_SupportReportHelp">Exports current settings and status, without personal data or system paths.</sys:String>
     <sys:String x:Key="LOCCSM_ExportSupportReport">Export support report</sys:String>
     <sys:String x:Key="LOCCSM_SupportReportExported">Support report exported to:&#10;{0}</sys:String>
     <sys:String x:Key="LOCCSM_MenuExportSupport">Export support report</sys:String>
@@ -218,7 +218,7 @@
     <sys:String x:Key="LOCCSM_FullscreenTabLabel">Fullscreen</sys:String>
     <sys:String x:Key="LOCCSM_DesktopTabLabel">Desktop</sys:String>
     <sys:String x:Key="LOCCSM_ControllerNotificationTitle">Controller Notification</sys:String>
-    <sys:String x:Key="LOCCSM_ShowControllerNameInDesktopNotifications">Show controller name in notification</sys:String>
+    <sys:String x:Key="LOCCSM_ShowControllerNameInDesktopNotifications">Show the controller name in the notification</sys:String>
     <sys:String x:Key="LOCCSM_BorderFull">Full</sys:String>
     <sys:String x:Key="LOCCSM_AutoPauseModeNone">Do nothing - only show the overlay if enabled</sys:String>
     <sys:String x:Key="LOCCSM_AutoPauseModeNoneHelp">The game keeps running after a disconnect. The disconnect overlay will still appear if the overlay option is enabled.</sys:String>
