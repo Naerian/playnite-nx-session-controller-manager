@@ -49,8 +49,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 output.AppendLine("- Grace/reconciliation: " + settings.DisconnectGracePeriodMilliseconds + " ms/" + settings.ReconciliationIntervalSeconds + " s");
                 output.AppendLine("- Overlay/Fullscreen notifications: " + settings.ShowDisconnectOverlay + "/" + settings.ShowFullscreenControllerNotifications);
                 output.AppendLine("- Adaptive local multiplayer: " + !settings.ProtectAllActiveControllers);
-                output.AppendLine("- Pause key/force-pause offline: " + settings.PauseGameOnDisconnect + "/" + settings.ForcePauseOfflineGames);
-                output.AppendLine("- Pause key: " + Safe(settings.PauseKey));
+                output.AppendLine("- Suspend on disconnect/force-pause offline: " + settings.PauseGameOnDisconnect + "/" + settings.ForcePauseOfflineGames);
                 output.AppendLine("- Controller profiles/game overrides: " +
                     (settings.ControllerProfiles == null ? 0 : settings.ControllerProfiles.Count) + "/" +
                     (settings.GameSessionOverrides == null ? 0 : settings.GameSessionOverrides.Count));

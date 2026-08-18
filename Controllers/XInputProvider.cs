@@ -133,6 +133,17 @@ namespace ControllerSessionManager.Controllers
                         : deviceMetadata.DisplayName;
                     var batteryLevel = GetBatteryLevel(deviceMetadata, batteryResult, battery,
                         wired && detectedConnection == "Unknown", wireless);
+                    // When XInput does not detect input (e.g. some BT stacks do not deliver XInput
+                    // button events), use SDL raw-joystick data as a fallback LastInputUtc.
+                    var lastInputUtc = slot.LastInputUtc;
+                    var lastInputKind = slot.LastInputKind;
+                    if (deviceMetadata != null && deviceMetadata.LastInputUtc.HasValue &&
+                        (!lastInputUtc.HasValue || deviceMetadata.LastInputUtc > lastInputUtc))
+                    {
+                        lastInputUtc = deviceMetadata.LastInputUtc;
+                        lastInputKind = deviceMetadata.LastInputKind;
+                    }
+
                     result.Add(new ControllerDeviceSnapshot
                     {
                         ControllerId = string.Format("xinput:slot:{0}", index),
@@ -152,8 +163,8 @@ namespace ControllerSessionManager.Controllers
                         BatteryLevel = batteryLevel,
                         BatteryProviderId = GetBatteryProviderId(deviceMetadata, batteryLevel),
                         LastSeenUtc = now,
-                        LastInputUtc = slot.LastInputUtc,
-                        LastInputKind = slot.LastInputKind,
+                        LastInputUtc = lastInputUtc,
+                        LastInputKind = lastInputKind,
                         IsInputNeutral = isNeutral,
                         InputNeutralSinceUtc = slot.InputNeutralSinceUtc
                     });

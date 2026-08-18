@@ -1,4 +1,4 @@
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
     <sys:String x:Key="LOCCSM_PluginName">Controller Session Manager</sys:String>
     <sys:String x:Key="LOCCSM_SettingsTitle">Controller Session Manager</sys:String>
     <sys:String x:Key="LOCCSM_EnableMonitoring">Kontrolcü izlemeyi etkinleştir</sys:String>
@@ -43,6 +43,7 @@
     <sys:String x:Key="LOCCSM_Version017">Sürüm 0.1.7</sys:String>
     <sys:String x:Key="LOCCSM_AboutPurpose">Playnite oturumları için güvenilir kontrolcü izleme.</sys:String>
     <sys:String x:Key="LOCCSM_AboutDescription">Etkin kontrolcüleri, pili, kopma korumasını, güvenli duraklatmayı ve harici oyun katmanını izlemek için Playnite olaylarını, XInput uyumlu yuvaları ve güvenli Masaüstü meta verilerini birleştirir.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutWhatItDoesTitle">What Session Controller Manager does</sys:String>
     <sys:String x:Key="LOCCSM_Unknown">Bilinmiyor</sys:String>
     <sys:String x:Key="LOCCSM_ValueWired">Kablolu</sys:String>
     <sys:String x:Key="LOCCSM_ValueWireless">Kablosuz</sys:String>
@@ -73,7 +74,7 @@
     <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanel">Ana kontrolcü simgesini ve pilini üst panelde göster</sys:String>
     <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanelHelp">Atanan simge her zaman gösterilir. Pil seviyesi yalnızca mevcut olduğunda eklenir.</sys:String>
     <sys:String x:Key="LOCCSM_ValueBluetooth">Bluetooth</sys:String>
-    <sys:String x:Key="LOCCSM_VersionAuthorFormat">Sürüm {0} | Yazar: Narian</sys:String>
+    <sys:String x:Key="LOCCSM_VersionAuthorFormat">Sürüm {0} | Narian</sys:String>
     <sys:String x:Key="LOCCSM_ProjectLinksTitle">Proje bağlantıları</sys:String>
     <sys:String x:Key="LOCCSM_OpenWiki">Wiki'yi aç</sys:String>
     <sys:String x:Key="LOCCSM_ReportIssue">Sorun bildir</sys:String>
@@ -110,27 +111,20 @@
     <sys:String x:Key="LOCCSM_ProtectAllActiveControllers">Varsayılan olarak yerel çok oyunculu korumayı kullan</sys:String>
     <sys:String x:Key="LOCCSM_ProtectAllActiveControllersHelp">Yalnızca birden fazla yerel oyuncu ayrı kontrolcüler kullanıyorsa etkinleştirin. Tek oyunculu ve çevrimiçi çok oyunculu için otomatik mod önerilir.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyLocalMultiplayer">Yerel çok oyunculu. Tüm etkin kontrolcüleri koru</sys:String>
-    <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">Bağlantı kesintisi doğrulanınca oyunu duraklatmayı dene</sys:String>
-    <sys:String x:Key="LOCCSM_PauseGameOnDisconnectHelp">Yalnızca öndeki pencere oyuna veya alt sürecine aitse yapılandırılan tuşu bir kez gönderir. Varsayılan olarak kapalıdır; otomatik devam ettirmez.</sys:String>
+    <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">Temporarily stop the game when a controller disconnects</sys:String>
+    <sys:String x:Key="LOCCSM_PauseGameOnDisconnectHelp">Suspends the game process until the controller reconnects or another one takes over. Works for all games regardless of input handling. The plugin never resumes the game automatically once the session ends.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyEnablePause">Bu oyunu otomatik duraklat</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyDisablePause">Bu oyunu otomatik duraklatma</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPauseDisabled">Otomatik duraklatma kapalı</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayPauseSent">Otomatik duraklatma istendi</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayPauseNotSent">Duraklatılamadı: oyun ön planda değildi</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayPauseFailed">Duraklatma istenemedi</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectTitle">Kontrolcü bağlantısı kesildi</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectMessage">Bağlantı kaybedildi: {0}</sys:String>
     <sys:String x:Key="LOCCSM_OverlayWaitSameController">Devam etmek için yeniden bağlayın.</sys:String>
     <sys:String x:Key="LOCCSM_OverlayAllowTakeover">Yeniden bağlayın veya başka bir kontrolcüde düğmeye basın ya da çubuğu hareket ettirin.</sys:String>
     <sys:String x:Key="LOCCSM_ColorTopPanelByBattery">Simgeyi ve pil metnini pil düzeyine göre renklendir</sys:String>
-    <sys:String x:Key="LOCCSM_PauseKey">Duraklatma tuşu</sys:String>
-    <sys:String x:Key="LOCCSM_PauseKeyHelp">Kabul edilenler: Escape, Space, Enter, Tab, Backspace, A-Z, 0-9 ve F1-F12.</sys:String>
-    <sys:String x:Key="LOCCSM_ValidationPauseKey">Tuş Escape, Space, Enter, Tab, Backspace, A-Z, 0-9 veya F1-F12 olmalıdır.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicySessionSection">Oturum koruması</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseSection">Otomatik duraklatma</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseUseGlobal">Genel duraklatma ayarlarını kullan</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyPauseEscape">Bağlantı kesilince Escape gönder</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyPauseCustom">Bağlantı kesilince yapılandırılmış tuşu ({0}) gönder</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicySuspendProcess">Temporarily stop the game when a controller disconnects</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyOverlayOnly">Yalnızca kaplama. Tuş gönderme</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectTitlePlural">{0} kontrolcünün bağlantısı kesildi</sys:String>
     <sys:String x:Key="LOCCSM_OverlayReconnectControllers">Devam etmek için yeniden bağlayın.</sys:String>
@@ -158,7 +152,7 @@
     <sys:String x:Key="LOCCSM_GamePolicyForcePauseOffline">Ağ etkinliği yoksa oyunu geçici olarak durdur. Varsa yalnızca uyarıyı göster</sys:String>
     <sys:String x:Key="LOCCSM_TabSession">Oturum</sys:String><sys:String x:Key="LOCCSM_TabAppearance">Görünüm</sys:String>
     <sys:String x:Key="LOCCSM_AdaptiveProtectionHelp">Otomatik mod tek oyunculu başlar ve yalnızca birkaç denetleyiciden sürekli dönüşümlü giriş algıladığında yerel çok oyunculuya geçer. Bir denetleyiciyi deneyip diğerine geçmek modu etkinleştirmez. Gerekirse oyun başına geçersiz kılın.</sys:String>
-    <sys:String x:Key="LOCCSM_PauseModesHelp">Kontrolcü bağlantısı kesildiğinde ne olacağını seçin: uyarı göster, duraklatmayı dene veya güvenli olduğunda oyunu geçici olarak durdur. Her oyun farklı bir ayar kullanabilir.</sys:String>
+    <sys:String x:Key="LOCCSM_PauseModesHelp">Choose how the plugin reacts when a controller disconnects. Each game can override this setting from its context menu.</sys:String>
     <sys:String x:Key="LOCCSM_NotificationWidth">Genişlik (px)</sys:String><sys:String x:Key="LOCCSM_NotificationScale">Boyut (%)</sys:String><sys:String x:Key="LOCCSM_NotificationDuration">Süre (ms)</sys:String><sys:String x:Key="LOCCSM_NotificationPosition">Konum</sys:String>
     <sys:String x:Key="LOCCSM_PositionTopRight">Sağ üst</sys:String><sys:String x:Key="LOCCSM_PositionTopLeft">Sol üst</sys:String><sys:String x:Key="LOCCSM_PositionBottomRight">Sağ alt</sys:String><sys:String x:Key="LOCCSM_PositionBottomLeft">Sol alt</sys:String>
     <sys:String x:Key="LOCCSM_ColorFormatHelp">Renkler: #RRGGBB veya #AARRGGBB (alfa, kırmızı, yeşil ve mavi).</sys:String>
@@ -173,14 +167,27 @@
     <sys:String x:Key="LOCCSM_NotificationShowBorder">Durum renginde kenarlık göster</sys:String><sys:String x:Key="LOCCSM_NotificationBorderPosition">Kenarlık konumu</sys:String><sys:String x:Key="LOCCSM_NotificationBorderThickness">Kenarlık kalınlığı (px)</sys:String>
     <sys:String x:Key="LOCCSM_BorderLeft">Sol</sys:String><sys:String x:Key="LOCCSM_BorderTop">Üst</sys:String><sys:String x:Key="LOCCSM_BorderRight">Sağ</sys:String><sys:String x:Key="LOCCSM_BorderBottom">Alt</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPreview">Canlı önizleme</sys:String><sys:String x:Key="LOCCSM_PreviewControllerName">Örnek kontrolcü</sys:String><sys:String x:Key="LOCCSM_OverlayPreviewHelp">Düzenlerken renkler ve ölçek güncellenir. Gerçek katman ekrana uyum sağlar.</sys:String>
-    <sys:String x:Key="LOCCSM_SelectColor">Renk seç</sys:String><sys:String x:Key="LOCCSM_NotificationCornerRadius">Bildirim köşe yarıçapı (px)</sys:String><sys:String x:Key="LOCCSM_OverlayTitleSize">Başlık metni (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerTextSize">Kontrolcü metni (px)</sys:String><sys:String x:Key="LOCCSM_OverlayInstructionSize">Talimat metni (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusSize">Durum metni (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerIconSize">Kontrolcü simgesi (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusIconSize">Durum simgesi (px)</sys:String><sys:String x:Key="LOCCSM_OverlayPadding">Kart iç boşluğu (px)</sys:String><sys:String x:Key="LOCCSM_OverlayCornerRadius">Köşe yarıçapı (px)</sys:String><sys:String x:Key="LOCCSM_OverlayShowBorder">Katman kartı kenarlığını göster</sys:String>
+    <sys:String x:Key="LOCCSM_SelectColor">Renk seç</sys:String><sys:String x:Key="LOCCSM_NotificationCornerRadius">Köşe yarıçapı (px)</sys:String><sys:String x:Key="LOCCSM_OverlayTitleSize">Başlık metni (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerTextSize">Kontrolcü metni (px)</sys:String><sys:String x:Key="LOCCSM_OverlayInstructionSize">Talimat metni (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusSize">Durum metni (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerIconSize">Kontrolcü simgesi (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusIconSize">Durum simgesi (px)</sys:String><sys:String x:Key="LOCCSM_OverlayPadding">Kart iç boşluğu (px)</sys:String><sys:String x:Key="LOCCSM_OverlayCornerRadius">Köşe yarıçapı (px)</sys:String><sys:String x:Key="LOCCSM_OverlayShowBorder">Katman kartı kenarlığını göster</sys:String>
     <sys:String x:Key="LOCCSM_SupportReport">Destek raporu</sys:String>
     <sys:String x:Key="LOCCSM_SupportReportHelp">Ayarları, kumanda sağlayıcılarını, geçerli oturumu ve son olayları gizliliği koruyarak dışa aktarır. HID yolları, seri numaraları, kullanıcı klasörleri ve Playnite günlükleri dahil edilmez.</sys:String>
     <sys:String x:Key="LOCCSM_ExportSupportReport">Destek raporunu dışa aktar</sys:String>
     <sys:String x:Key="LOCCSM_SupportReportExported">Rapor şuraya aktarıldı:&#10;{0}</sys:String>
     <sys:String x:Key="LOCCSM_MenuExportSupport">Destek raporunu dışa aktar</sys:String>
     <sys:String x:Key="LOCCSM_AboutCapabilities">Controller Session Manager bağlı kumandaları tanır, özel ad ve simgeleri korur, güvenilir pil durumları sunar, oyunda gerçekten kullanılan kumandaları algılar ve bir katılımcı ayrıldığında tek oyunculu veya yerel çok oyunculu oturumları korur.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutCapabilities2">When a controller disconnects during a game session, the plugin shows a full-screen external overlay with the controller name and pause status. It can suspend the game process automatically — compatible with any game, no key configuration needed — and resumes as soon as a controller reconnects or another one takes over.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutCapabilities3">Includes customizable notifications for both Desktop and Fullscreen modes: colors, font sizes, position, padding, border and icon layout are all configurable separately for each mode. The top-bar icon shows the primary controller and uses color to indicate battery level.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutCapabilities4">Battery reporting works with DualSense, DualShock 4, Xbox controllers and any SDL-supported device. Connection type (USB, Bluetooth, wireless) is detected automatically.</sys:String>
     <sys:String x:Key="LOCCSM_AboutSafety">Harici katman ve isteğe bağlı duraklatma eylemleri Playnite ile oyundan yalıtılmıştır. Girdi enjekte etmez; cihaz, işlem veya çevrimiçi oturum kanıtı eksikse temkinli davranır.</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">Kontrolcü adının yanında simgeyi göster</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowStatusIcon">Duraklatma veya uyarı durumu simgesini göster</sys:String>
+    <sys:String x:Key="LOCCSM_DesktopNotificationsTitle">Desktop notifications</sys:String>
+    <sys:String x:Key="LOCCSM_ShowDesktopControllerNotifications">Notify when a controller connects or disconnects in the Desktop interface</sys:String>
+    <sys:String x:Key="LOCCSM_ShowDesktopControllerNotificationsHelp">Shows a short notification in Playnite Desktop mode when a controller is connected or disconnected.</sys:String>
+    <sys:String x:Key="LOCCSM_EnableDisconnectOverlay">Enable the disconnect overlay</sys:String>    <sys:String x:Key="LOCCSM_FullscreenTabLabel">Fullscreen</sys:String>
+    <sys:String x:Key="LOCCSM_DesktopTabLabel">Desktop</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerNotificationTitle">Controller Notification</sys:String>
+    <sys:String x:Key="LOCCSM_ShowControllerNameInDesktopNotifications">Show controller name in notification</sys:String>
+    <sys:String x:Key="LOCCSM_BorderFull">Full</sys:String>
+    <sys:String x:Key="LOCCSM_AutoPauseModeNone">Do nothing - only show the overlay if enabled</sys:String>
+    <sys:String x:Key="LOCCSM_AutoPauseModeNoneHelp">The game keeps running after a disconnect. The disconnect overlay will still appear if the overlay option is enabled.</sys:String>
 </ResourceDictionary>

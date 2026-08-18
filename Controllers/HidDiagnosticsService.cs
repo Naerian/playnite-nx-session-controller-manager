@@ -22,6 +22,15 @@ namespace ControllerSessionManager.Controllers
         private const int ErrorIoPending = 997;
         private const uint WaitObject0 = 0;
 
+        private struct BtCacheEntry
+        {
+            public bool Result;
+            public DateTime Expiry;
+        }
+
+        private static readonly object btCacheLock = new object();
+        private static readonly Dictionary<uint, BtCacheEntry> btCache = new Dictionary<uint, BtCacheEntry>();
+
         public static string CreateReport(IEnumerable<ControllerDeviceSnapshot> controllers)
         {
             var devices = (controllers ?? Enumerable.Empty<ControllerDeviceSnapshot>())
@@ -78,6 +87,87 @@ namespace ControllerSessionManager.Controllers
                         }
                     }
                 }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Returns true when a device with the given VID/PID is currently present in the Windows
+        /// Bluetooth enumeration tree (BTHENUM). Results are cached for 5 seconds to avoid
+        /// hitting the registry on every poll cycle.
+        ///
+        /// This is used as a transport-detection fallback for XInput-backed controllers whose
+        /// SDL device path wraps the underlying HID path (e.g. paths containing &amp;ig_00) and
+        /// therefore loses the Bluetooth transport indicator that the raw HID path would carry.
+        /// Unlike vendor/PID hardcoding, this query works for any controller manufacturer.
+        /// </summary>
+        public static bool HasBluetoothInterface(ushort vendorId, ushort productId)
+        {
+            var cacheKey = (uint)(vendorId << 16) | productId;
+            lock (btCacheLock)
+            {
+                BtCacheEntry cached;
+                if (btCache.TryGetValue(cacheKey, out cached) && DateTime.UtcNow < cached.Expiry)
+                {
+                    return cached.Result;
+                }
+            }
+
+            var result = CheckBthenumPresent(vendorId, productId);
+            lock (btCacheLock)
+            {
+                btCache[cacheKey] = new BtCacheEntry
+                {
+                    Result = result,
+                    Expiry = DateTime.UtcNow.AddSeconds(5)
+                };
+            }
+
+            return result;
+        }
+
+        private static bool CheckBthenumPresent(ushort vendorId, ushort productId)
+        {
+            var marker = string.Format("VID_{0:X4}&PID_{1:X4}", vendorId, productId);
+            try
+            {
+                using (var btRoot = Registry.LocalMachine.OpenSubKey(
+                    @"SYSTEM\CurrentControlSet\Enum\BTHENUM"))
+                {
+                    if (btRoot == null)
+                    {
+                        return false;
+                    }
+
+                    foreach (var deviceName in btRoot.GetSubKeyNames().Where(a =>
+                        a.IndexOf(marker, StringComparison.OrdinalIgnoreCase) >= 0))
+                    {
+                        using (var deviceKey = btRoot.OpenSubKey(deviceName))
+                        {
+                            if (deviceKey == null)
+                            {
+                                continue;
+                            }
+
+                            foreach (var instanceName in deviceKey.GetSubKeyNames())
+                            {
+                                uint deviceInstance;
+                                var instanceId = string.Format("BTHENUM\\{0}\\{1}",
+                                    deviceName, instanceName);
+                                if (NativeMethods.CM_Locate_DevNode(
+                                    out deviceInstance, instanceId, 0) == 0)
+                                {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // Registry unavailable or access denied; treat as no BT interface.
             }
 
             return false;

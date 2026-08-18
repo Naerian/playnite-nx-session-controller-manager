@@ -24,7 +24,6 @@ internal static class SessionManagerTests
             BriefReconnectCancelsIncidentWithoutInput();
             PauseTargetMustBelongToGameProcessTree();
             PauseRejectsUnrelatedForegroundWindow();
-            PauseKeyProfilesAcceptOnlyDocumentedKeys();
             PauseAttemptIsOneShotPerIncident();
             OnlineOnlyMetadataIsStrongEvidence();
             GenericMultiplayerMetadataIsNotSessionEvidence();
@@ -217,7 +216,8 @@ internal static class SessionManagerTests
             "A USB path must remain wired even when the same product supports wireless modes.");
         Equal("Wireless", ControllerDeviceIdentity.GetConnectionType(
             "8BitDo Ultimate 2 Wireless", 0x2DC8, 0x310B, @"\\?\hid#vid_2dc8&pid_310b&ig_00"),
-            "A receiver must use generic wireless when the path provides no Bluetooth or USB evidence.");
+            "A 2.4GHz receiver PID (0x310B) is a USB device and must not appear in BTHENUM; " +
+            "the name-based heuristic must resolve it to Wireless.");
     }
 
     private static void WindowsBluetoothBatteryUsesCoarseLevels()
@@ -623,16 +623,6 @@ internal static class SessionManagerTests
         var receipt = new GamePauseService().TrySendEscape(int.MaxValue, DateTime.UtcNow);
         Equal(false, receipt.WasSent,
             "The pause service must never send input when the foreground process is unrelated.");
-    }
-
-    private static void PauseKeyProfilesAcceptOnlyDocumentedKeys()
-    {
-        Equal(true, GamePauseService.IsSupportedKey("Escape"), "Escape must be supported.");
-        Equal(true, GamePauseService.IsSupportedKey("P"), "Letter pause keys must be supported.");
-        Equal(true, GamePauseService.IsSupportedKey("F12"), "Function keys must be supported.");
-        Equal(false, GamePauseService.IsSupportedKey("Ctrl+P"),
-            "Key combinations must be rejected until modifiers are implemented safely.");
-        Equal(false, GamePauseService.IsSupportedKey("F13"), "Unsupported function keys must be rejected.");
     }
 
     private static void PauseAttemptIsOneShotPerIncident()

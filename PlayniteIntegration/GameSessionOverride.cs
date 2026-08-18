@@ -9,7 +9,6 @@ namespace ControllerSessionManager.PlayniteIntegration
             EnableSessionTracking = true;
             DisconnectGracePeriodMilliseconds = 1500;
             ProtectAllActiveControllers = true;
-            PauseKey = "Escape";
         }
 
         public Guid GameId { get; set; }
@@ -20,7 +19,6 @@ namespace ControllerSessionManager.PlayniteIntegration
         public bool ProtectAllActiveControllers { get; set; }
         public bool PauseGameOnDisconnect { get; set; }
         public bool ForcePauseOfflineGames { get; set; }
-        public string PauseKey { get; set; }
         public bool? OverrideSessionProtection { get; set; }
         public bool? OverridePauseProfile { get; set; }
     }
@@ -33,7 +31,6 @@ namespace ControllerSessionManager.PlayniteIntegration
         public bool ProtectAllActiveControllers { get; set; }
         public bool PauseGameOnDisconnect { get; set; }
         public bool ForcePauseOfflineGames { get; set; }
-        public string PauseKey { get; set; }
         public bool IsGameOverride { get; set; }
         public bool HasSessionOverride { get; set; }
         public bool HasPauseOverride { get; set; }

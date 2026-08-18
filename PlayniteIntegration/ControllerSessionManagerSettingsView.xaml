@@ -50,7 +50,7 @@
             <Setter Property="Margin" Value="0,0,0,10" />
         </Style>
         <Style x:Key="CompactSliderPanel" TargetType="StackPanel">
-            <Setter Property="Width" Value="205" />
+            <Setter Property="Width" Value="240" />
             <Setter Property="HorizontalAlignment" Value="Left" />
             <Setter Property="Margin" Value="0,0,16,10" />
         </Style>
@@ -168,6 +168,18 @@
                 <Trigger Property="AlternationIndex" Value="1">
                     <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
                 </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+                </Trigger>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsSelected" Value="True" />
+                        <Condition Property="AlternationIndex" Value="1" />
+                    </MultiTrigger.Conditions>
+                    <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
+                    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+                </MultiTrigger>
             </Style.Triggers>
         </Style>
         <Style x:Key="ControllerTable" TargetType="DataGrid">
@@ -385,15 +397,22 @@
                                 </Style>
                             </DataGrid.Resources>
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="{DynamicResource LOCCSM_DetectedName}" Binding="{Binding DetectedName}" Width="2*" IsReadOnly="True" />
-                                <DataGridTemplateColumn Header="{DynamicResource LOCCSM_UserName}" Width="2*">
+                                <DataGridTextColumn Header="{DynamicResource LOCCSM_DetectedName}" Binding="{Binding DetectedName}" Width="*" IsReadOnly="True">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+                                            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+                                <DataGridTemplateColumn Header="{DynamicResource LOCCSM_UserName}" Width="*">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <TextBox Text="{Binding Profile.CustomName, UpdateSourceTrigger=PropertyChanged}" Margin="3" />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="{DynamicResource LOCCSM_Icon}" Width="150">
+                                <DataGridTemplateColumn Header="{DynamicResource LOCCSM_Icon}" Width="130">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <ComboBox ItemsSource="{Binding DataContext.IconOptions, RelativeSource={RelativeSource AncestorType=UserControl}}"
@@ -417,8 +436,14 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTextColumn Header="{DynamicResource LOCCSM_Provider}" Binding="{Binding Provider}" Width="85" IsReadOnly="True" />
-                                <DataGridTemplateColumn Header="{DynamicResource LOCCSM_Connection}" Width="74" IsReadOnly="True">
+                                <DataGridTextColumn Header="{DynamicResource LOCCSM_Provider}" Binding="{Binding Provider}" Width="75" IsReadOnly="True">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+                                <DataGridTemplateColumn Header="{DynamicResource LOCCSM_Connection}" Width="66" IsReadOnly="True">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Grid ToolTip="{Binding Connection}">
@@ -434,30 +459,13 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="{DynamicResource LOCCSM_Battery}" Width="105" IsReadOnly="True">
+                                <DataGridTemplateColumn Header="{DynamicResource LOCCSM_Battery}" Width="95" IsReadOnly="True">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="3,0">
                                                 <Ellipse Width="9" Height="9" Fill="{Binding BatteryBrush}" Margin="0,0,7,0" />
                                                 <TextBlock Text="{Binding Battery}" Foreground="{Binding BatteryBrush}" FontWeight="SemiBold" VerticalAlignment="Center" />
                                             </StackPanel>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                                <DataGridTextColumn Header="{DynamicResource LOCCSM_LastInput}" Binding="{Binding LastInput}" Width="145" IsReadOnly="True" />
-                                <DataGridTemplateColumn Header="{DynamicResource LOCCSM_Actions}" Width="76" IsReadOnly="True">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Button Width="34" Height="30" Padding="6" HorizontalAlignment="Center"
-                                                    ToolTip="{DynamicResource LOCCSM_TestVibration}"
-                                                    Click="VibrateControllerClick">
-                                                <Viewbox Width="18" Height="18">
-                                                    <Path Data="{Binding ActionIconGeometry, Converter={StaticResource IconGeometryConverter}}"
-                                                          Stroke="{DynamicResource TextBrush}" StrokeThickness="2"
-                                                          StrokeStartLineCap="Round" StrokeEndLineCap="Round"
-                                                          StrokeLineJoin="Round" Stretch="Uniform" />
-                                                </Viewbox>
-                                            </Button>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
@@ -517,13 +525,12 @@
                                 </Border>
                                 <Border Style="{StaticResource SettingsCard}">
                                     <StackPanel>
-                                        <CheckBox Content="{DynamicResource LOCCSM_ForcePauseOfflineGames}" IsChecked="{Binding ForcePauseOfflineGames}" />
+                                        <RadioButton Content="{DynamicResource LOCCSM_AutoPauseModeNone}" IsChecked="{Binding IsAutoPauseModeNone}" GroupName="AutoPauseMode" />
+                                        <TextBlock Text="{DynamicResource LOCCSM_AutoPauseModeNoneHelp}" Style="{StaticResource HintText}" Margin="22,6,0,14" />
+                                        <RadioButton Content="{DynamicResource LOCCSM_ForcePauseOfflineGames}" IsChecked="{Binding IsAutoPauseModeOfflineOnly}" GroupName="AutoPauseMode" />
                                         <TextBlock Text="{DynamicResource LOCCSM_ForcePauseOfflineGamesHelp}" Style="{StaticResource HintText}" Margin="22,6,0,14" />
-                                        <CheckBox Content="{DynamicResource LOCCSM_PauseGameOnDisconnect}" IsChecked="{Binding PauseGameOnDisconnect}" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_PauseGameOnDisconnectHelp}" Style="{StaticResource HintText}" Margin="22,6,0,8" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_PauseKey}" Margin="22,0,0,5" />
-                                        <TextBox Width="120" HorizontalAlignment="Left" Margin="22,0,0,4" Text="{Binding PauseKey, UpdateSourceTrigger=PropertyChanged}" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_PauseKeyHelp}" Style="{StaticResource HintText}" Margin="22,0,0,0" />
+                                        <RadioButton Content="{DynamicResource LOCCSM_PauseGameOnDisconnect}" IsChecked="{Binding IsAutoPauseModeAlways}" GroupName="AutoPauseMode" />
+                                        <TextBlock Text="{DynamicResource LOCCSM_PauseGameOnDisconnectHelp}" Style="{StaticResource HintText}" Margin="22,6,0,0" />
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
@@ -575,7 +582,9 @@
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>
-                    <TabItem Header="{DynamicResource LOCCSM_FullscreenNotificationsTitle}">
+                    <TabItem Header="{DynamicResource LOCCSM_ControllerNotificationTitle}">
+                        <TabControl Style="{StaticResource TopTabs}">
+                            <TabItem Header="{DynamicResource LOCCSM_FullscreenTabLabel}">
                         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                             <StackPanel Margin="8">
                                 <Border Style="{StaticResource IntroCard}">
@@ -607,7 +616,7 @@
                                         </Border>
                                         <Border Style="{StaticResource AppearanceGroup}">
                                             <StackPanel><TextBlock Text="{DynamicResource LOCCSM_AppearanceShape}" Style="{StaticResource AppearanceGroupHeader}"/><CheckBox Content="{DynamicResource LOCCSM_NotificationShowBorder}" IsChecked="{Binding NotificationShowBorder}" Margin="0,0,0,10"/><WrapPanel>
-                                                <StackPanel Style="{StaticResource CompactChoicePanel}" IsEnabled="{Binding NotificationShowBorder}"><TextBlock Text="{DynamicResource LOCCSM_NotificationBorderPosition}"/><ComboBox SelectedValue="{Binding NotificationBorderPosition}" SelectedValuePath="Tag"><ComboBoxItem Tag="Left" Content="{DynamicResource LOCCSM_BorderLeft}"/><ComboBoxItem Tag="Top" Content="{DynamicResource LOCCSM_BorderTop}"/><ComboBoxItem Tag="Right" Content="{DynamicResource LOCCSM_BorderRight}"/><ComboBoxItem Tag="Bottom" Content="{DynamicResource LOCCSM_BorderBottom}"/></ComboBox></StackPanel>
+                                                <StackPanel Style="{StaticResource CompactChoicePanel}" IsEnabled="{Binding NotificationShowBorder}"><TextBlock Text="{DynamicResource LOCCSM_NotificationBorderPosition}"/><ComboBox SelectedValue="{Binding NotificationBorderPosition}" SelectedValuePath="Tag"><ComboBoxItem Tag="Left" Content="{DynamicResource LOCCSM_BorderLeft}"/><ComboBoxItem Tag="Top" Content="{DynamicResource LOCCSM_BorderTop}"/><ComboBoxItem Tag="Right" Content="{DynamicResource LOCCSM_BorderRight}"/><ComboBoxItem Tag="Bottom" Content="{DynamicResource LOCCSM_BorderBottom}"/><ComboBoxItem Tag="Full" Content="{DynamicResource LOCCSM_BorderFull}"/></ComboBox></StackPanel>
                                                 <StackPanel Style="{StaticResource CompactSliderPanel}" IsEnabled="{Binding NotificationShowBorder}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationBorderThickness}"/><TextBlock DockPanel.Dock="Right" Text="{Binding NotificationBorderThickness}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="0" Maximum="10" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding NotificationBorderThickness, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="0–10" Style="{StaticResource SliderRangeText}"/></StackPanel>
                                                 <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationCornerRadius}"/><TextBlock DockPanel.Dock="Right" Text="{Binding NotificationCornerRadius}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="0" Maximum="40" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding NotificationCornerRadius, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="0–40" Style="{StaticResource SliderRangeText}"/></StackPanel>
                                             </WrapPanel></StackPanel>
@@ -632,6 +641,66 @@
                                 </Border>
                             </StackPanel>
                         </ScrollViewer>
+                            </TabItem>
+                            <TabItem Header="{DynamicResource LOCCSM_DesktopTabLabel}">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel Margin="8">
+                                <Border Style="{StaticResource IntroCard}">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource LOCCSM_DesktopNotificationsTitle}" Style="{StaticResource SectionHeaderText}" />
+                                        <TextBlock Text="{DynamicResource LOCCSM_ShowDesktopControllerNotificationsHelp}" Style="{StaticResource HintText}" Margin="0,6,0,0" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{StaticResource SettingsCard}">
+                                    <StackPanel>
+                                        <CheckBox Content="{DynamicResource LOCCSM_ShowDesktopControllerNotifications}" IsChecked="{Binding ShowDesktopControllerNotifications}" />
+                                        <CheckBox Content="{DynamicResource LOCCSM_ShowControllerNameInDesktopNotifications}" IsChecked="{Binding ShowControllerNameInDesktopNotifications}" Margin="0,12,0,0" />
+                                        <Border Style="{StaticResource AppearanceGroup}">
+                                            <StackPanel><TextBlock Text="{DynamicResource LOCCSM_AppearanceLayout}" Style="{StaticResource AppearanceGroupHeader}"/><WrapPanel>
+                                                <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationWidth}"/><TextBlock DockPanel.Dock="Right" Text="{Binding DesktopNotificationWidth}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="300" Maximum="900" TickFrequency="10" IsSnapToTickEnabled="True" Value="{Binding DesktopNotificationWidth, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="300–900" Style="{StaticResource SliderRangeText}"/></StackPanel>
+                                                <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationScale}"/><TextBlock DockPanel.Dock="Right" Text="{Binding DesktopNotificationScalePercent}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="80" Maximum="160" TickFrequency="5" IsSnapToTickEnabled="True" Value="{Binding DesktopNotificationScalePercent, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="80–160" Style="{StaticResource SliderRangeText}"/></StackPanel>
+                                                <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationDuration}"/><TextBlock DockPanel.Dock="Right" Text="{Binding DesktopNotificationDurationMilliseconds}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="2000" Maximum="15000" TickFrequency="500" IsSnapToTickEnabled="True" Value="{Binding DesktopNotificationDurationMilliseconds, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="2000–15000" Style="{StaticResource SliderRangeText}"/></StackPanel>
+                                                <StackPanel Style="{StaticResource CompactChoicePanel}"><TextBlock Text="{DynamicResource LOCCSM_NotificationPosition}"/><ComboBox SelectedValue="{Binding DesktopNotificationPosition}" SelectedValuePath="Tag"><ComboBoxItem Tag="TopRight" Content="{DynamicResource LOCCSM_PositionTopRight}"/><ComboBoxItem Tag="TopLeft" Content="{DynamicResource LOCCSM_PositionTopLeft}"/><ComboBoxItem Tag="BottomRight" Content="{DynamicResource LOCCSM_PositionBottomRight}"/><ComboBoxItem Tag="BottomLeft" Content="{DynamicResource LOCCSM_PositionBottomLeft}"/></ComboBox></StackPanel>
+                                            </WrapPanel></StackPanel>
+                                        </Border>
+                                        <Border Style="{StaticResource AppearanceGroup}">
+                                            <StackPanel><TextBlock Text="{DynamicResource LOCCSM_AppearanceContent}" Style="{StaticResource AppearanceGroupHeader}"/><WrapPanel>
+                                                <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationTitleSize}"/><TextBlock DockPanel.Dock="Right" Text="{Binding DesktopNotificationTitleFontSize}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="12" Maximum="36" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding DesktopNotificationTitleFontSize, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="12–36" Style="{StaticResource SliderRangeText}"/></StackPanel>
+                                                <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationTextSize}"/><TextBlock DockPanel.Dock="Right" Text="{Binding DesktopNotificationMessageFontSize}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="10" Maximum="30" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding DesktopNotificationMessageFontSize, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="10–30" Style="{StaticResource SliderRangeText}"/></StackPanel>
+                                                <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationIconSize}"/><TextBlock DockPanel.Dock="Right" Text="{Binding DesktopNotificationIconSize}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="16" Maximum="72" TickFrequency="2" IsSnapToTickEnabled="True" Value="{Binding DesktopNotificationIconSize, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="16–72" Style="{StaticResource SliderRangeText}"/></StackPanel>
+                                                <StackPanel Style="{StaticResource CompactChoicePanel}"><TextBlock Text="{DynamicResource LOCCSM_NotificationIconPosition}"/><ComboBox SelectedValue="{Binding DesktopNotificationIconPosition}" SelectedValuePath="Tag"><ComboBoxItem Tag="Left" Content="{DynamicResource LOCCSM_BorderLeft}"/><ComboBoxItem Tag="Right" Content="{DynamicResource LOCCSM_BorderRight}"/><ComboBoxItem Tag="Top" Content="{DynamicResource LOCCSM_BorderTop}"/><ComboBoxItem Tag="Bottom" Content="{DynamicResource LOCCSM_BorderBottom}"/><ComboBoxItem Tag="Hidden" Content="{DynamicResource LOCCSM_IconHidden}"/></ComboBox></StackPanel>
+                                                <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationPadding}"/><TextBlock DockPanel.Dock="Right" Text="{Binding DesktopNotificationPadding}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="6" Maximum="40" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding DesktopNotificationPadding, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="6–40" Style="{StaticResource SliderRangeText}"/></StackPanel>
+                                            </WrapPanel></StackPanel>
+                                        </Border>
+                                        <Border Style="{StaticResource AppearanceGroup}">
+                                            <StackPanel><TextBlock Text="{DynamicResource LOCCSM_AppearanceShape}" Style="{StaticResource AppearanceGroupHeader}"/><CheckBox Content="{DynamicResource LOCCSM_NotificationShowBorder}" IsChecked="{Binding DesktopNotificationShowBorder}" Margin="0,0,0,10"/><WrapPanel>
+                                                <StackPanel Style="{StaticResource CompactChoicePanel}" IsEnabled="{Binding DesktopNotificationShowBorder}"><TextBlock Text="{DynamicResource LOCCSM_NotificationBorderPosition}"/><ComboBox SelectedValue="{Binding DesktopNotificationBorderPosition}" SelectedValuePath="Tag"><ComboBoxItem Tag="Left" Content="{DynamicResource LOCCSM_BorderLeft}"/><ComboBoxItem Tag="Top" Content="{DynamicResource LOCCSM_BorderTop}"/><ComboBoxItem Tag="Right" Content="{DynamicResource LOCCSM_BorderRight}"/><ComboBoxItem Tag="Bottom" Content="{DynamicResource LOCCSM_BorderBottom}"/><ComboBoxItem Tag="Full" Content="{DynamicResource LOCCSM_BorderFull}"/></ComboBox></StackPanel>
+                                                <StackPanel Style="{StaticResource CompactSliderPanel}" IsEnabled="{Binding DesktopNotificationShowBorder}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationBorderThickness}"/><TextBlock DockPanel.Dock="Right" Text="{Binding DesktopNotificationBorderThickness}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="0" Maximum="10" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding DesktopNotificationBorderThickness, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="0–10" Style="{StaticResource SliderRangeText}"/></StackPanel>
+                                                <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationCornerRadius}"/><TextBlock DockPanel.Dock="Right" Text="{Binding DesktopNotificationCornerRadius}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="0" Maximum="40" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding DesktopNotificationCornerRadius, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="0–40" Style="{StaticResource SliderRangeText}"/></StackPanel>
+                                            </WrapPanel></StackPanel>
+                                        </Border>
+                                        <Border Style="{StaticResource AppearanceGroup}">
+                                            <StackPanel><TextBlock Text="{DynamicResource LOCCSM_AppearanceColors}" Style="{StaticResource AppearanceGroupHeader}"/><TextBlock Text="{DynamicResource LOCCSM_ColorFormatHelp}" Style="{StaticResource HintText}" Margin="0,0,0,10"/><WrapPanel>
+                                                <StackPanel Style="{StaticResource CompactColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_BackgroundColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="DesktopNotificationBackgroundColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding DesktopNotificationBackgroundColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding DesktopNotificationBackgroundColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
+                                                <StackPanel Style="{StaticResource CompactColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_PrimaryTextColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="DesktopNotificationTextColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding DesktopNotificationTextColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding DesktopNotificationTextColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
+                                                <StackPanel Style="{StaticResource CompactColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_SecondaryTextColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="DesktopNotificationSecondaryTextColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding DesktopNotificationSecondaryTextColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding DesktopNotificationSecondaryTextColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
+                                                <StackPanel Style="{StaticResource CompactColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_ConnectedColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="DesktopNotificationConnectedColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding DesktopNotificationConnectedColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding DesktopNotificationConnectedColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
+                                                <StackPanel Style="{StaticResource CompactColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_DisconnectedColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="DesktopNotificationDisconnectedColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding DesktopNotificationDisconnectedColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding DesktopNotificationDisconnectedColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
+                                                <StackPanel Style="{StaticResource CompactColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_WarningColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="DesktopNotificationWarningColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding DesktopNotificationWarningColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding DesktopNotificationWarningColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
+                                            </WrapPanel></StackPanel>
+                                        </Border>
+                                        <TextBlock Text="{DynamicResource LOCCSM_PreviewNotification}" Style="{StaticResource SectionHeaderText}" Margin="0,14,0,8"/>
+                                        <WrapPanel>
+                                            <Button Content="{DynamicResource LOCCSM_ControllerConnectedToast}" Tag="connected" MinWidth="160" Margin="0,0,10,0" Click="PreviewDesktopNotificationClick"/>
+                                            <Button Content="{DynamicResource LOCCSM_ControllerDisconnectedToast}" Tag="disconnected" MinWidth="160" Margin="0,0,10,0" Click="PreviewDesktopNotificationClick"/>
+                                            <Button Content="{DynamicResource LOCCSM_NotificationWarningPreview}" Tag="warning" MinWidth="160" Click="PreviewDesktopNotificationClick"/>
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+                            </TabItem>
+                        </TabControl>
                     </TabItem>
                     <TabItem Header="{DynamicResource LOCCSM_OverlayAppearanceTitle}">
                         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
@@ -644,6 +713,7 @@
                                 </Border>
                                 <Border Style="{StaticResource SettingsCard}">
                                     <StackPanel>
+                                        <CheckBox Content="{DynamicResource LOCCSM_EnableDisconnectOverlay}" IsChecked="{Binding ShowDisconnectOverlay}" Margin="0,0,0,14" />
                                         <Border Style="{StaticResource AppearanceGroup}">
                                             <StackPanel><TextBlock Text="{DynamicResource LOCCSM_AppearanceLayout}" Style="{StaticResource AppearanceGroupHeader}"/><WrapPanel>
                                                 <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_OverlayScale}"/><TextBlock DockPanel.Dock="Right" Text="{Binding OverlayScalePercent}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="80" Maximum="140" TickFrequency="5" IsSnapToTickEnabled="True" Value="{Binding OverlayScalePercent, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="80–140" Style="{StaticResource SliderRangeText}"/></StackPanel>
@@ -693,7 +763,7 @@
                                                         </StackPanel>
                                                         <TextBlock Text="{DynamicResource LOCCSM_OverlayAllowTakeover}" Foreground="{Binding OverlayAccentColor, Converter={StaticResource HexColorBrushConverter}}" FontSize="{Binding OverlayInstructionFontSize}" HorizontalAlignment="Center" Margin="0,13,0,0"/>
                                                         <Border Background="#302391FF" CornerRadius="5" Padding="9,5" HorizontalAlignment="Center" Margin="0,12,0,0">
-                                                            <StackPanel Orientation="Horizontal"><Path x:Name="OverlayPreviewStatusIcon" Width="{Binding OverlayStatusIconSize}" Height="{Binding OverlayStatusIconSize}" Stretch="Uniform" Stroke="{Binding OverlayWarningColor, Converter={StaticResource HexColorBrushConverter}}" StrokeThickness="2" Margin="0,0,7,0"><Path.Style><Style TargetType="Path"><Setter Property="Visibility" Value="Visible"/><Style.Triggers><DataTrigger Binding="{Binding OverlayShowStatusIcon}" Value="False"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers></Style></Path.Style></Path><TextBlock Text="{DynamicResource LOCCSM_OverlayPauseSent}" Foreground="{Binding OverlayWarningColor, Converter={StaticResource HexColorBrushConverter}}" FontSize="{Binding OverlayStatusFontSize}"/></StackPanel>
+                                                            <StackPanel Orientation="Horizontal"><Path x:Name="OverlayPreviewStatusIcon" Width="{Binding OverlayStatusIconSize}" Height="{Binding OverlayStatusIconSize}" Stretch="Uniform" Stroke="{Binding OverlayWarningColor, Converter={StaticResource HexColorBrushConverter}}" StrokeThickness="2" Margin="0,0,7,0"><Path.Style><Style TargetType="Path"><Setter Property="Visibility" Value="Visible"/><Style.Triggers><DataTrigger Binding="{Binding OverlayShowStatusIcon}" Value="False"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers></Style></Path.Style></Path><TextBlock Text="{DynamicResource LOCCSM_OverlayForcePaused}" Foreground="{Binding OverlayWarningColor, Converter={StaticResource HexColorBrushConverter}}" FontSize="{Binding OverlayStatusFontSize}"/></StackPanel>
                                                         </Border>
                                                     </StackPanel>
                                                 </Border>
@@ -754,16 +824,17 @@
                     <StackPanel Margin="8">
                         <Border Style="{StaticResource IntroCard}">
                             <StackPanel>
-                                <TextBlock Text="{DynamicResource LOCCSM_AboutPurpose}" FontSize="22" FontWeight="SemiBold" />
-                                <TextBlock Text="{DynamicResource LOCCSM_AboutDescription}" TextWrapping="Wrap" Margin="0,8,0,10" />
+                                <TextBlock Text="{DynamicResource LOCCSM_AboutDescription}" TextWrapping="Wrap" Margin="0,0,0,10" />
                                 <TextBlock x:Name="AboutVersionText" FontWeight="SemiBold" />
                             </StackPanel>
                         </Border>
                         <Border Style="{StaticResource SettingsCard}">
                             <StackPanel>
-                                <TextBlock Text="{DynamicResource LOCCSM_AboutPurpose}" Style="{StaticResource SectionHeaderText}" />
-                                <TextBlock Text="{DynamicResource LOCCSM_AboutCapabilities}" TextWrapping="Wrap" Margin="0,7,0,0" />
-                                <TextBlock Text="{DynamicResource LOCCSM_AboutSafety}" Style="{StaticResource HintText}" Margin="0,10,0,0" />
+                                <TextBlock Text="{DynamicResource LOCCSM_AboutWhatItDoesTitle}" Style="{StaticResource SectionHeaderText}" />
+                                <TextBlock Text="{DynamicResource LOCCSM_AboutCapabilities}" TextWrapping="Wrap" Margin="0,10,0,0" />
+                                <TextBlock Text="{DynamicResource LOCCSM_AboutCapabilities2}" TextWrapping="Wrap" Margin="0,10,0,0" />
+                                <TextBlock Text="{DynamicResource LOCCSM_AboutCapabilities3}" TextWrapping="Wrap" Margin="0,10,0,0" />
+                                <TextBlock Text="{DynamicResource LOCCSM_AboutCapabilities4}" TextWrapping="Wrap" Margin="0,10,0,0" />
                             </StackPanel>
                         </Border>
                         <Grid>

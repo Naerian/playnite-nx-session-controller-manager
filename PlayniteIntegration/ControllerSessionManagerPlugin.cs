@@ -53,6 +53,8 @@ namespace ControllerSessionManager.PlayniteIntegration
         private readonly Dictionary<string, ControllerToastCandidate> pendingToastControllers =
             new Dictionary<string, ControllerToastCandidate>(StringComparer.OrdinalIgnoreCase);
         private bool connectionToastStateInitialized;
+        private readonly DateTime pluginStartedUtc = DateTime.UtcNow;
+        private static readonly TimeSpan ToastStartupGracePeriod = TimeSpan.FromSeconds(8);
         private List<string> activeGameOnlineMetadata = new List<string>();
         private bool adaptiveLocalScopeLogged;
         private SessionProtectionPolicy activeSessionPolicy;
@@ -519,29 +521,16 @@ namespace ControllerSessionManager.PlayniteIntegration
                 CheckedLabel(policies.All(a => a.HasPauseOverride && !a.PauseGameOnDisconnect &&
                     !a.ForcePauseOfflineGames),
                     Loc("LOCCSM_GamePolicyOverlayOnly")), args,
-                delegate(Guid id, string name) { settings.SetGamePauseOverride(id, name, false, false, settings.PauseKey); });
+                delegate(Guid id, string name) { settings.SetGamePauseOverride(id, name, "None"); });
             yield return CreateGamePolicyMenuItem(pauseSection,
                 CheckedLabel(policies.All(a => a.HasPauseOverride && a.ForcePauseOfflineGames),
                     Loc("LOCCSM_GamePolicyForcePauseOffline")), args,
-                delegate(Guid id, string name) { settings.SetGamePauseOverride(id, name, false, true, settings.PauseKey); });
+                delegate(Guid id, string name) { settings.SetGamePauseOverride(id, name, "OfflineOnly"); });
             yield return CreateGamePolicyMenuItem(pauseSection,
                 CheckedLabel(policies.All(a => a.HasPauseOverride && a.PauseGameOnDisconnect &&
-                    !a.ForcePauseOfflineGames &&
-                    string.Equals(a.PauseKey, "Escape", StringComparison.OrdinalIgnoreCase)),
-                    Loc("LOCCSM_GamePolicyPauseEscape")), args,
-                delegate(Guid id, string name) { settings.SetGamePauseOverride(id, name, true, false, "Escape"); });
-            if (!string.Equals(settings.PauseKey, "Escape", StringComparison.OrdinalIgnoreCase))
-            {
-                yield return CreateGamePolicyMenuItem(pauseSection,
-                    CheckedLabel(policies.All(a => a.HasPauseOverride && a.PauseGameOnDisconnect &&
-                        !a.ForcePauseOfflineGames &&
-                        string.Equals(a.PauseKey, settings.PauseKey, StringComparison.OrdinalIgnoreCase)),
-                        string.Format(Loc("LOCCSM_GamePolicyPauseCustom"), settings.PauseKey)), args,
-                    delegate(Guid id, string name)
-                    {
-                        settings.SetGamePauseOverride(id, name, true, false, settings.PauseKey);
-                    });
-            }
+                    !a.ForcePauseOfflineGames),
+                    Loc("LOCCSM_GamePolicySuspendProcess")), args,
+                delegate(Guid id, string name) { settings.SetGamePauseOverride(id, name, "Always"); });
         }
 
         public override void OnApplicationStarted(OnApplicationStartedEventArgs args)
@@ -609,13 +598,12 @@ namespace ControllerSessionManager.PlayniteIntegration
                     GetControllerSnapshot(), sessionStartedUtc);
                 overlayClient.Prepare(activeSessionId);
                 sessionTimer.Start();
-                logger.Info(string.Format("session.started game={0} scope={1} takeover={2} pause={3} forcePauseOffline={4} pauseKey={5}",
+                logger.Info(string.Format("session.started game={0} scope={1} takeover={2} pause={3} forcePauseOffline={4}",
                     activeGameId.Value,
                     activeSessionPolicy.ProtectAllActiveControllers ? "all-active" : "most-recent",
                     activeSessionPolicy.AllowControllerTakeover,
                     activeSessionPolicy.PauseGameOnDisconnect,
-                    activeSessionPolicy.ForcePauseOfflineGames,
-                    activeSessionPolicy.PauseKey));
+                    activeSessionPolicy.ForcePauseOfflineGames));
                 if (!seededInitialController)
                 {
                     logger.Info("session.initialControllerPending reason=no-connected-controller");
@@ -908,8 +896,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 return;
             }
 
-            controllerTopPanelItem.Visible = settings != null && settings.ShowPrimaryControllerInTopPanel &&
-                Theme.HasConnectedControllers;
+            controllerTopPanelItem.Visible = settings != null && settings.ShowPrimaryControllerInTopPanel;
             controllerTopPanelItem.Title = Theme.PrimaryControllerTooltip;
         }
 
@@ -1040,16 +1027,23 @@ namespace ControllerSessionManager.PlayniteIntegration
                 return;
             }
 
+            // Both PauseGameOnDisconnect and ForcePauseOfflineGames use NtSuspendProcess.
+            // ForcePauseOfflineGames additionally checks for network activity before suspending.
+            if (!activeSessionPolicy.PauseGameOnDisconnect && !activeSessionPolicy.ForcePauseOfflineGames)
+            {
+                return;
+            }
+
+            activePauseReceipt = gamePauseService.ResolveForegroundTarget(activeGameProcessId, DateTime.UtcNow);
+            if (activePauseReceipt.Status != PauseAttemptStatus.Sent)
+            {
+                logger.Info(string.Format("session.suspendPause targetUnavailable={0}", activePauseReceipt.Status));
+                diagnosticEvents.Add("pause", "Suspend target unavailable: " + activePauseReceipt.Status);
+                return;
+            }
+
             if (activeSessionPolicy.ForcePauseOfflineGames)
             {
-                activePauseReceipt = gamePauseService.ResolveForegroundTarget(activeGameProcessId, DateTime.UtcNow);
-                if (activePauseReceipt.Status != PauseAttemptStatus.Sent)
-                {
-                    logger.Info(string.Format("session.forcePause targetUnavailable={0}", activePauseReceipt.Status));
-                    diagnosticEvents.Add("pause", "Force-pause target unavailable: " + activePauseReceipt.Status);
-                    return;
-                }
-
                 var online = onlineSessionDetector.Detect(activeGameOnlineMetadata,
                     gamePauseService.GetProcessTree(activeGameProcessId));
                 logger.Info(string.Format("session.onlineDetection evidence={0} detail={1}",
@@ -1066,32 +1060,18 @@ namespace ControllerSessionManager.PlayniteIntegration
                             Loc("LOCCSM_OnlineFallbackToastTitle"), Loc("LOCCSM_OnlineFallbackToastMessage"),
                             SvgIconGeometryLoader.GetPathData("alert-triangle.svg"),
                             settings.NotificationDurationMilliseconds, GetToastStylePayload());
-                        diagnosticEvents.Add("pause", "Force-pause replaced by strong online safety notification");
+                        diagnosticEvents.Add("pause", "Suspend skipped: strong online session detected");
                     }
                     else
                     {
-                        diagnosticEvents.Add("pause", "Force-pause skipped for weak network evidence; disconnect overlay retained");
+                        diagnosticEvents.Add("pause", "Suspend skipped: weak network evidence; disconnect overlay retained");
                     }
                     return;
                 }
-
-                activeForcePauseRequested = true;
-                diagnosticEvents.Add("pause", "Offline force-pause lease requested");
-                return;
             }
 
-            if (!activeSessionPolicy.PauseGameOnDisconnect)
-            {
-                return;
-            }
-
-            activePauseReceipt = gamePauseService.TrySendKey(activeGameProcessId,
-                activeSessionPolicy.PauseKey, DateTime.UtcNow);
-            logger.Info(string.Format("session.pause status={0} key={1} targetPid={2} targetWindow={3}",
-                activePauseReceipt.Status, activeSessionPolicy.PauseKey, activePauseReceipt.TargetProcessId,
-                activePauseReceipt.TargetWindow.ToInt64()));
-            diagnosticEvents.Add("pause", string.Format("Key={0} status={1}",
-                activeSessionPolicy.PauseKey, activePauseReceipt.Status));
+            activeForcePauseRequested = true;
+            diagnosticEvents.Add("pause", "Process suspension requested");
         }
 
         private string GetOverlayPauseStatus()
@@ -1101,27 +1081,19 @@ namespace ControllerSessionManager.PlayniteIntegration
             {
                 return Loc("LOCCSM_SessionGracePeriod");
             }
-            if (activeSessionPolicy != null && activeSessionPolicy.ForcePauseOfflineGames)
-            {
-                if (activeNetworkSafetyDetected)
-                {
-                    return Loc("LOCCSM_OnlineFallbackToastMessage");
-                }
-                return activeForcePauseRequested
-                    ? Loc("LOCCSM_OverlayForcePaused")
-                    : Loc("LOCCSM_OverlayForcePauseFailed");
-            }
-            if (activeSessionPolicy == null || !activeSessionPolicy.PauseGameOnDisconnect)
+            var wantsSuspend = activeSessionPolicy != null &&
+                (activeSessionPolicy.PauseGameOnDisconnect || activeSessionPolicy.ForcePauseOfflineGames);
+            if (!wantsSuspend)
             {
                 return Loc("LOCCSM_OverlayPauseDisabled");
             }
-            if (activePauseReceipt != null && activePauseReceipt.WasSent)
+            if (activeNetworkSafetyDetected)
             {
-                return Loc("LOCCSM_OverlayPauseSent");
+                return Loc("LOCCSM_OnlineFallbackToastMessage");
             }
-            return activePauseReceipt != null && activePauseReceipt.Status == PauseAttemptStatus.SendFailed
-                ? Loc("LOCCSM_OverlayPauseFailed")
-                : Loc("LOCCSM_OverlayPauseNotSent");
+            return activeForcePauseRequested
+                ? Loc("LOCCSM_OverlayForcePaused")
+                : Loc("LOCCSM_OverlayForcePauseFailed");
         }
 
         private string GetOverlayPauseStatusKind()
@@ -1131,15 +1103,13 @@ namespace ControllerSessionManager.PlayniteIntegration
             {
                 return "neutral";
             }
-            if (activeSessionPolicy != null && activeSessionPolicy.ForcePauseOfflineGames)
-            {
-                return activeForcePauseRequested && !activeNetworkSafetyDetected ? "pause" : "warning";
-            }
-            if (activeSessionPolicy == null || !activeSessionPolicy.PauseGameOnDisconnect)
+            var wantsSuspend = activeSessionPolicy != null &&
+                (activeSessionPolicy.PauseGameOnDisconnect || activeSessionPolicy.ForcePauseOfflineGames);
+            if (!wantsSuspend)
             {
                 return "neutral";
             }
-            return activePauseReceipt != null && activePauseReceipt.WasSent ? "pause" : "warning";
+            return activeForcePauseRequested && !activeNetworkSafetyDetected ? "pause" : "warning";
         }
 
         private string GetOverlayPauseStatusIcon()
@@ -1173,7 +1143,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 .Where(a => a.IsConnected)
                 .GroupBy(GetToastControllerKey, StringComparer.OrdinalIgnoreCase)
                 .ToDictionary(a => a.Key, a => CreateToastIdentity(a.First()), StringComparer.OrdinalIgnoreCase);
-            if (!connectionToastStateInitialized)
+            if (!connectionToastStateInitialized || (DateTime.UtcNow - pluginStartedUtc) < ToastStartupGracePeriod)
             {
                 connectedToastControllers.Clear();
                 foreach (var item in current)
@@ -1181,11 +1151,14 @@ namespace ControllerSessionManager.PlayniteIntegration
                     connectedToastControllers[item.Key] = item.Value;
                 }
                 connectionToastStateInitialized = true;
+                pendingToastControllers.Clear();
                 return;
             }
 
             var show = settings != null && settings.ShowFullscreenControllerNotifications &&
-                PlayniteApi.ApplicationInfo.Mode == ApplicationMode.Fullscreen && !activeGameId.HasValue;
+                PlayniteApi.ApplicationInfo.Mode == ApplicationMode.Fullscreen;
+            var showDesktop = settings != null && settings.ShowDesktopControllerNotifications &&
+                PlayniteApi.ApplicationInfo.Mode == ApplicationMode.Desktop;
             var keys = new HashSet<string>(connectedToastControllers.Keys, StringComparer.OrdinalIgnoreCase);
             keys.UnionWith(current.Keys);
             keys.UnionWith(pendingToastControllers.Keys);
@@ -1233,6 +1206,17 @@ namespace ControllerSessionManager.PlayniteIntegration
                         Loc(isCurrentlyConnected ? "LOCCSM_ControllerConnectedToast" : "LOCCSM_ControllerDisconnectedToast"),
                         GetToastControllerName(candidate.Identity.Name), candidate.Identity.IconGeometry,
                         settings.NotificationDurationMilliseconds, GetToastStylePayload());
+                }
+
+                if (showDesktop)
+                {
+                    overlayClient.ShowToast(notificationSessionId, 0,
+                        isCurrentlyConnected ? "connected" : "disconnected",
+                        Loc(isCurrentlyConnected ? "LOCCSM_ControllerConnectedToast" : "LOCCSM_ControllerDisconnectedToast"),
+                        settings.ShowControllerNameInDesktopNotifications
+                            ? GetToastControllerName(candidate.Identity.Name) : string.Empty,
+                        candidate.Identity.IconGeometry,
+                        settings.DesktopNotificationDurationMilliseconds, GetDesktopToastStylePayload());
                 }
 
                 if (isCurrentlyConnected)
@@ -1299,6 +1283,40 @@ namespace ControllerSessionManager.PlayniteIntegration
                 settings.NotificationBorderThickness.ToString(), settings.NotificationCornerRadius.ToString(),
                 settings.NotificationIconPosition ?? "Left"
             });
+        }
+
+        private string GetDesktopToastStylePayload()
+        {
+            return string.Join(";", new[]
+            {
+                settings.DesktopNotificationWidth.ToString(), settings.DesktopNotificationScalePercent.ToString(),
+                settings.DesktopNotificationPosition ?? "BottomRight", settings.DesktopNotificationBackgroundColor,
+                settings.DesktopNotificationTextColor, settings.DesktopNotificationSecondaryTextColor,
+                settings.DesktopNotificationConnectedColor, settings.DesktopNotificationDisconnectedColor,
+                settings.DesktopNotificationWarningColor, settings.DesktopNotificationTitleFontSize.ToString(),
+                settings.DesktopNotificationMessageFontSize.ToString(), settings.DesktopNotificationIconSize.ToString(),
+                settings.DesktopNotificationPadding.ToString(), settings.DesktopNotificationShowBorder.ToString(),
+                settings.DesktopNotificationBorderPosition ?? "Bottom",
+                settings.DesktopNotificationBorderThickness.ToString(), settings.DesktopNotificationCornerRadius.ToString(),
+                settings.DesktopNotificationIconPosition ?? "Left"
+            });
+        }
+
+        public void ShowDesktopNotificationPreview(string kind)
+        {
+            var previewKind = string.Equals(kind, "disconnected", StringComparison.OrdinalIgnoreCase)
+                ? "disconnected"
+                : string.Equals(kind, "warning", StringComparison.OrdinalIgnoreCase) ? "warning" : "connected";
+            var isWarning = previewKind == "warning";
+            var title = isWarning
+                ? Loc("LOCCSM_OnlineFallbackToastTitle")
+                : Loc(previewKind == "connected" ? "LOCCSM_ControllerConnectedToast" : "LOCCSM_ControllerDisconnectedToast");
+            var message = isWarning
+                ? Loc("LOCCSM_OnlineFallbackToastMessage")
+                : settings.ShowControllerNameInDesktopNotifications ? Loc("LOCCSM_NotificationPreviewMessage") : string.Empty;
+            overlayClient.ShowToastPreview(notificationSessionId, 0, previewKind, title, message,
+                SvgIconGeometryLoader.GetPathData(isWarning ? "alert-triangle.svg" : "device-gamepad-4.svg"),
+                settings.DesktopNotificationDurationMilliseconds, GetDesktopToastStylePayload());
         }
 
         private string GetToastControllerName(string name)

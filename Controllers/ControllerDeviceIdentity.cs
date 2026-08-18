@@ -98,6 +98,19 @@ namespace ControllerSessionManager.Controllers
                 return HidDiagnosticsService.HasUsbInterface(vendorId, productId) ? "Wired" : "Bluetooth";
             }
 
+            // When the SDL device path uses the XInput wrapper (e.g. paths containing &ig_00)
+            // the underlying HID transport is hidden and path-based BT detection cannot work.
+            // Query the Windows BTHENUM registry tree to determine generically whether a device
+            // with this VID/PID is currently present as a Bluetooth HID device. This covers
+            // any manufacturer: 8BitDo in BT+XInput mode, Xbox controllers via BT, etc.
+            // Dongle/receiver PIDs are USB devices and never appear in BTHENUM, so they fall
+            // through to the name-based heuristic below.
+            if (vendorId != 0 && productId != 0 &&
+                HidDiagnosticsService.HasBluetoothInterface(vendorId, productId))
+            {
+                return "Bluetooth";
+            }
+
             if (Contains(deviceName, "bluetooth"))
             {
                 return "Bluetooth";

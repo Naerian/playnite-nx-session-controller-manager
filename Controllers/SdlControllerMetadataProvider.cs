@@ -37,14 +37,16 @@ namespace ControllerSessionManager.Controllers
                 var count = NativeMethods.SDL_NumJoysticks();
                 for (var index = 0; index < count; index++)
                 {
-                    if (NativeMethods.SDL_IsGameController(index) != 1)
-                    {
-                        continue;
-                    }
+                    var isGameController = NativeMethods.SDL_IsGameController(index) == 1;
 
                     var instanceId = NativeMethods.SDL_JoystickGetDeviceInstanceID(index);
                     observedInstances.Add(instanceId);
-                    var rawName = Marshal.PtrToStringAnsi(NativeMethods.SDL_GameControllerNameForIndex(index));
+                    // For devices in the game controller database, use the canonical mapped name.
+                    // For raw joysticks (e.g. BT DInput controllers not yet in gamecontrollerdb),
+                    // fall back to the raw joystick name so they still appear and get input sampled.
+                    var rawName = isGameController
+                        ? Marshal.PtrToStringAnsi(NativeMethods.SDL_GameControllerNameForIndex(index))
+                        : Marshal.PtrToStringAnsi(NativeMethods.SDL_JoystickNameForIndex(index));
                     var devicePath = GetDevicePath(index);
                     var vendorId = NativeMethods.SDL_JoystickGetDeviceVendor(index);
                     var productId = NativeMethods.SDL_JoystickGetDeviceProduct(index);
@@ -58,8 +60,15 @@ namespace ControllerSessionManager.Controllers
                     var isXInputBacked = playerIndex >= 0 ||
                         (!string.IsNullOrWhiteSpace(rawName) &&
                          rawName.IndexOf("XInput", StringComparison.OrdinalIgnoreCase) >= 0);
-                    var shouldSampleDevice = sampleInput && !isXInputBacked;
-                    var gameController = shouldSampleDevice
+                    // Sample SDL input for all devices. For XInput-backed devices this acts as a
+                    // secondary path in case the XInput driver does not report input over BT.
+                    var shouldSampleDevice = sampleInput;
+                    // Use the canonical SDL game-controller button mapping only for XInput-backed
+                    // devices, where SDL's controller-db entry reliably maps to the physical layout.
+                    // For DInput and BT-DInput devices, the same SDL entry often targets a different
+                    // firmware mode (XInput) and maps to wrong physical button indices; raw joystick
+                    // button reads reflect the actual HID report, so they work regardless of SDL db.
+                    var gameController = (shouldSampleDevice && isGameController && isXInputBacked)
                         ? GetOrOpenGameController(index, instanceId)
                         : IntPtr.Zero;
                     var inputState = shouldSampleDevice
@@ -403,6 +412,9 @@ namespace ControllerSessionManager.Controllers
 
             [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
             public static extern IntPtr SDL_GameControllerNameForIndex(int joystickIndex);
+
+            [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
+            public static extern IntPtr SDL_JoystickNameForIndex(int joystickIndex);
 
             [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
             public static extern IntPtr SDL_JoystickPathForIndex(int joystickIndex);

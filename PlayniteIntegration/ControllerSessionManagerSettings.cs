@@ -18,7 +18,8 @@ namespace ControllerSessionManager.PlayniteIntegration
         private bool enableSessionTracking = true;
         private bool showDisconnectOverlay = true;
         private bool showFullscreenControllerNotifications = true;
-        private bool forcePauseOfflineGames;
+        private bool showDesktopControllerNotifications = true;
+        private bool forcePauseOfflineGames = true;
         private int notificationWidth = 520;
         private int notificationScalePercent = 110;
         private int notificationDurationMilliseconds = 5000;
@@ -39,6 +40,26 @@ namespace ControllerSessionManager.PlayniteIntegration
         private int notificationBorderThickness = 3;
         private int notificationCornerRadius = 10;
         private bool showControllerNameInNotifications = true;
+        private bool showControllerNameInDesktopNotifications = true;
+        private int desktopNotificationWidth = 420;
+        private int desktopNotificationScalePercent = 100;
+        private int desktopNotificationDurationMilliseconds = 4000;
+        private string desktopNotificationPosition = "BottomRight";
+        private string desktopNotificationBackgroundColor = "#F4121418";
+        private string desktopNotificationTextColor = "#FFFFFFFF";
+        private string desktopNotificationSecondaryTextColor = "#FFC6CBD4";
+        private string desktopNotificationConnectedColor = "#FF4FC27E";
+        private string desktopNotificationDisconnectedColor = "#FF50AAFF";
+        private string desktopNotificationWarningColor = "#FFF5B542";
+        private int desktopNotificationTitleFontSize = 17;
+        private int desktopNotificationMessageFontSize = 14;
+        private int desktopNotificationIconSize = 28;
+        private string desktopNotificationIconPosition = "Left";
+        private int desktopNotificationPadding = 14;
+        private bool desktopNotificationShowBorder = true;
+        private string desktopNotificationBorderPosition = "Bottom";
+        private int desktopNotificationBorderThickness = 3;
+        private int desktopNotificationCornerRadius = 8;
         private int overlayScalePercent = 100;
         private string overlayDimColor = "#96000000";
         private string overlayCardColor = "#EB121418";
@@ -61,7 +82,6 @@ namespace ControllerSessionManager.PlayniteIntegration
         private bool protectAllActiveControllers;
         private int settingsSchemaVersion;
         private bool pauseGameOnDisconnect;
-        private string pauseKey = "Escape";
         private int disconnectGracePeriodMilliseconds = 1500;
         private int reconciliationIntervalSeconds = 5;
         private List<ControllerProfile> controllerProfiles = new List<ControllerProfile>();
@@ -149,6 +169,12 @@ namespace ControllerSessionManager.PlayniteIntegration
             set { SetValue(ref showFullscreenControllerNotifications, value); }
         }
 
+        public bool ShowDesktopControllerNotifications
+        {
+            get { return showDesktopControllerNotifications; }
+            set { SetValue(ref showDesktopControllerNotifications, value); }
+        }
+
         public bool ForcePauseOfflineGames
         {
             get { return forcePauseOfflineGames; }
@@ -175,6 +201,26 @@ namespace ControllerSessionManager.PlayniteIntegration
         public int NotificationBorderThickness { get { return notificationBorderThickness; } set { SetValue(ref notificationBorderThickness, value); } }
         public int NotificationCornerRadius { get { return notificationCornerRadius; } set { SetValue(ref notificationCornerRadius, value); } }
         public bool ShowControllerNameInNotifications { get { return showControllerNameInNotifications; } set { SetValue(ref showControllerNameInNotifications, value); } }
+        public bool ShowControllerNameInDesktopNotifications { get { return showControllerNameInDesktopNotifications; } set { SetValue(ref showControllerNameInDesktopNotifications, value); } }
+        public int DesktopNotificationWidth { get { return desktopNotificationWidth; } set { SetValue(ref desktopNotificationWidth, value); } }
+        public int DesktopNotificationScalePercent { get { return desktopNotificationScalePercent; } set { SetValue(ref desktopNotificationScalePercent, value); } }
+        public int DesktopNotificationDurationMilliseconds { get { return desktopNotificationDurationMilliseconds; } set { SetValue(ref desktopNotificationDurationMilliseconds, value); } }
+        public string DesktopNotificationPosition { get { return desktopNotificationPosition; } set { SetValue(ref desktopNotificationPosition, value); } }
+        public string DesktopNotificationBackgroundColor { get { return desktopNotificationBackgroundColor; } set { SetValue(ref desktopNotificationBackgroundColor, value); } }
+        public string DesktopNotificationTextColor { get { return desktopNotificationTextColor; } set { SetValue(ref desktopNotificationTextColor, value); } }
+        public string DesktopNotificationSecondaryTextColor { get { return desktopNotificationSecondaryTextColor; } set { SetValue(ref desktopNotificationSecondaryTextColor, value); } }
+        public string DesktopNotificationConnectedColor { get { return desktopNotificationConnectedColor; } set { SetValue(ref desktopNotificationConnectedColor, value); } }
+        public string DesktopNotificationDisconnectedColor { get { return desktopNotificationDisconnectedColor; } set { SetValue(ref desktopNotificationDisconnectedColor, value); } }
+        public string DesktopNotificationWarningColor { get { return desktopNotificationWarningColor; } set { SetValue(ref desktopNotificationWarningColor, value); } }
+        public int DesktopNotificationTitleFontSize { get { return desktopNotificationTitleFontSize; } set { SetValue(ref desktopNotificationTitleFontSize, value); } }
+        public int DesktopNotificationMessageFontSize { get { return desktopNotificationMessageFontSize; } set { SetValue(ref desktopNotificationMessageFontSize, value); } }
+        public int DesktopNotificationIconSize { get { return desktopNotificationIconSize; } set { SetValue(ref desktopNotificationIconSize, value); } }
+        public string DesktopNotificationIconPosition { get { return desktopNotificationIconPosition; } set { SetValue(ref desktopNotificationIconPosition, value); } }
+        public int DesktopNotificationPadding { get { return desktopNotificationPadding; } set { SetValue(ref desktopNotificationPadding, value); } }
+        public bool DesktopNotificationShowBorder { get { return desktopNotificationShowBorder; } set { SetValue(ref desktopNotificationShowBorder, value); } }
+        public string DesktopNotificationBorderPosition { get { return desktopNotificationBorderPosition; } set { SetValue(ref desktopNotificationBorderPosition, value); } }
+        public int DesktopNotificationBorderThickness { get { return desktopNotificationBorderThickness; } set { SetValue(ref desktopNotificationBorderThickness, value); } }
+        public int DesktopNotificationCornerRadius { get { return desktopNotificationCornerRadius; } set { SetValue(ref desktopNotificationCornerRadius, value); } }
         public int OverlayScalePercent { get { return overlayScalePercent; } set { SetValue(ref overlayScalePercent, value); } }
         public string OverlayDimColor { get { return overlayDimColor; } set { SetValue(ref overlayDimColor, value); } }
         public string OverlayCardColor { get { return overlayCardColor; } set { SetValue(ref overlayCardColor, value); } }
@@ -206,10 +252,45 @@ namespace ControllerSessionManager.PlayniteIntegration
             set { SetValue(ref pauseGameOnDisconnect, value); }
         }
 
-        public string PauseKey
+        // Computed: which auto-pause strategy is active. Derives from the two bool fields.
+        // Not serialized — the underlying bools are persisted.
+        public string AutoPauseMode
         {
-            get { return pauseKey; }
-            set { SetValue(ref pauseKey, value); }
+            get
+            {
+                if (forcePauseOfflineGames) return "OfflineOnly";
+                if (pauseGameOnDisconnect) return "Always";
+                return "None";
+            }
+            set
+            {
+                forcePauseOfflineGames = value == "OfflineOnly";
+                pauseGameOnDisconnect = value == "Always";
+                OnPropertyChanged("ForcePauseOfflineGames");
+                OnPropertyChanged("PauseGameOnDisconnect");
+                OnPropertyChanged("AutoPauseMode");
+                OnPropertyChanged("IsAutoPauseModeNone");
+                OnPropertyChanged("IsAutoPauseModeAlways");
+                OnPropertyChanged("IsAutoPauseModeOfflineOnly");
+            }
+        }
+
+        public bool IsAutoPauseModeNone
+        {
+            get { return !forcePauseOfflineGames && !pauseGameOnDisconnect; }
+            set { if (value) AutoPauseMode = "None"; }
+        }
+
+        public bool IsAutoPauseModeOfflineOnly
+        {
+            get { return forcePauseOfflineGames; }
+            set { if (value) AutoPauseMode = "OfflineOnly"; }
+        }
+
+        public bool IsAutoPauseModeAlways
+        {
+            get { return pauseGameOnDisconnect && !forcePauseOfflineGames; }
+            set { if (value) AutoPauseMode = "Always"; }
         }
 
         public List<GameSessionOverride> GameSessionOverrides
@@ -354,7 +435,6 @@ namespace ControllerSessionManager.PlayniteIntegration
                     gameOverride.PauseGameOnDisconnect,
                 ForcePauseOfflineGames = !hasPauseOverride ? ForcePauseOfflineGames :
                     gameOverride.ForcePauseOfflineGames,
-                PauseKey = NormalizePauseKey(!hasPauseOverride ? PauseKey : gameOverride.PauseKey),
                 IsGameOverride = hasSessionOverride || hasPauseOverride,
                 HasSessionOverride = hasSessionOverride,
                 HasPauseOverride = hasPauseOverride
@@ -371,7 +451,6 @@ namespace ControllerSessionManager.PlayniteIntegration
                 {
                     GameId = gameId,
                     PauseGameOnDisconnect = enabled && PauseGameOnDisconnect,
-                    PauseKey = NormalizePauseKey(PauseKey),
                     OverrideSessionProtection = true,
                     OverridePauseProfile = false
                 };
@@ -386,9 +465,10 @@ namespace ControllerSessionManager.PlayniteIntegration
             value.OverrideSessionProtection = true;
         }
 
-        internal void SetGamePauseOverride(System.Guid gameId, string gameName, bool pauseGame,
-            bool forcePauseOffline, string keyName)
+        internal void SetGamePauseOverride(System.Guid gameId, string gameName, string autoPauseMode)
         {
+            var pauseGame = autoPauseMode == "Always";
+            var forcePauseOffline = autoPauseMode == "OfflineOnly";
             var value = GameSessionOverrides.FirstOrDefault(a => a.GameId == gameId);
             if (value == null)
             {
@@ -408,7 +488,6 @@ namespace ControllerSessionManager.PlayniteIntegration
             value.GameName = gameName;
             value.PauseGameOnDisconnect = pauseGame;
             value.ForcePauseOfflineGames = forcePauseOffline;
-            value.PauseKey = NormalizePauseKey(keyName);
             value.OverridePauseProfile = true;
         }
 
@@ -537,13 +616,6 @@ namespace ControllerSessionManager.PlayniteIntegration
                     : plugin.Loc("LOCCSM_ValidationGracePeriod"));
             }
 
-            if (!GamePauseService.IsSupportedKey(PauseKey))
-            {
-                errors.Add(plugin == null
-                    ? "The pause key must be Escape, Space, Enter, Tab, Backspace, A-Z, 0-9 or F1-F12."
-                    : plugin.Loc("LOCCSM_ValidationPauseKey"));
-            }
-
             if (NotificationWidth < 300 || NotificationWidth > 900 ||
                 NotificationScalePercent < 80 || NotificationScalePercent > 160 ||
                 NotificationDurationMilliseconds < 2000 || NotificationDurationMilliseconds > 15000 ||
@@ -632,7 +704,6 @@ namespace ControllerSessionManager.PlayniteIntegration
                 AllowControllerTakeover = AllowControllerTakeover,
                 ProtectAllActiveControllers = ProtectAllActiveControllers,
                 PauseGameOnDisconnect = PauseGameOnDisconnect,
-                PauseKey = PauseKey,
                 DisconnectGracePeriodMilliseconds = DisconnectGracePeriodMilliseconds,
                 ReconciliationIntervalSeconds = ReconciliationIntervalSeconds,
                 ControllerProfiles = CloneProfiles(ControllerProfiles),
@@ -650,6 +721,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             EnableSessionTracking = source.EnableSessionTracking;
             ShowDisconnectOverlay = source.ShowDisconnectOverlay;
             ShowFullscreenControllerNotifications = source.ShowFullscreenControllerNotifications;
+            ShowDesktopControllerNotifications = source.ShowDesktopControllerNotifications;
             ForcePauseOfflineGames = source.ForcePauseOfflineGames;
             NotificationWidth = source.NotificationWidth;
             NotificationScalePercent = source.NotificationScalePercent;
@@ -671,6 +743,26 @@ namespace ControllerSessionManager.PlayniteIntegration
             NotificationBorderThickness = source.NotificationBorderThickness;
             NotificationCornerRadius = source.NotificationCornerRadius;
             ShowControllerNameInNotifications = source.ShowControllerNameInNotifications;
+            ShowControllerNameInDesktopNotifications = source.ShowControllerNameInDesktopNotifications;
+            DesktopNotificationWidth = source.DesktopNotificationWidth;
+            DesktopNotificationScalePercent = source.DesktopNotificationScalePercent;
+            DesktopNotificationDurationMilliseconds = source.DesktopNotificationDurationMilliseconds;
+            DesktopNotificationPosition = source.DesktopNotificationPosition;
+            DesktopNotificationBackgroundColor = source.DesktopNotificationBackgroundColor;
+            DesktopNotificationTextColor = source.DesktopNotificationTextColor;
+            DesktopNotificationSecondaryTextColor = source.DesktopNotificationSecondaryTextColor;
+            DesktopNotificationConnectedColor = source.DesktopNotificationConnectedColor;
+            DesktopNotificationDisconnectedColor = source.DesktopNotificationDisconnectedColor;
+            DesktopNotificationWarningColor = source.DesktopNotificationWarningColor;
+            DesktopNotificationTitleFontSize = source.DesktopNotificationTitleFontSize;
+            DesktopNotificationMessageFontSize = source.DesktopNotificationMessageFontSize;
+            DesktopNotificationIconSize = source.DesktopNotificationIconSize;
+            DesktopNotificationIconPosition = source.DesktopNotificationIconPosition;
+            DesktopNotificationPadding = source.DesktopNotificationPadding;
+            DesktopNotificationShowBorder = source.DesktopNotificationShowBorder;
+            DesktopNotificationBorderPosition = source.DesktopNotificationBorderPosition;
+            DesktopNotificationBorderThickness = source.DesktopNotificationBorderThickness;
+            DesktopNotificationCornerRadius = source.DesktopNotificationCornerRadius;
             OverlayScalePercent = source.OverlayScalePercent;
             OverlayDimColor = source.OverlayDimColor;
             OverlayCardColor = source.OverlayCardColor;
@@ -692,7 +784,6 @@ namespace ControllerSessionManager.PlayniteIntegration
             AllowControllerTakeover = source.AllowControllerTakeover;
             ProtectAllActiveControllers = source.ProtectAllActiveControllers;
             PauseGameOnDisconnect = source.PauseGameOnDisconnect;
-            PauseKey = NormalizePauseKey(source.PauseKey);
             DisconnectGracePeriodMilliseconds = source.DisconnectGracePeriodMilliseconds;
             ReconciliationIntervalSeconds = source.ReconciliationIntervalSeconds;
             ControllerProfiles = CloneProfiles(source.ControllerProfiles);
@@ -753,15 +844,9 @@ namespace ControllerSessionManager.PlayniteIntegration
                 ProtectAllActiveControllers = a.ProtectAllActiveControllers,
                 PauseGameOnDisconnect = a.PauseGameOnDisconnect,
                 ForcePauseOfflineGames = a.ForcePauseOfflineGames,
-                PauseKey = NormalizePauseKey(a.PauseKey),
                 OverrideSessionProtection = a.OverrideSessionProtection,
                 OverridePauseProfile = a.OverridePauseProfile
             }).ToList();
-        }
-
-        private static string NormalizePauseKey(string value)
-        {
-            return GamePauseService.IsSupportedKey(value) ? value.Trim() : "Escape";
         }
 
         private IEnumerable<string> AppearanceColors()
@@ -787,7 +872,7 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private static bool IsSupportedBorderPosition(string value)
         {
-            return value == "Left" || value == "Top" || value == "Right" || value == "Bottom";
+            return value == "Left" || value == "Top" || value == "Right" || value == "Bottom" || value == "Full";
         }
 
         private static bool IsSupportedIconPosition(string value)

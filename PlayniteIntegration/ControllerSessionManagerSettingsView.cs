@@ -213,6 +213,13 @@ namespace ControllerSessionManager.PlayniteIntegration
             row.Profile.IconId = option.Id;
         }
 
+        private void PreviewDesktopNotificationClick(object sender, RoutedEventArgs args)
+        {
+            var button = sender as Button;
+            var kind = button == null ? "connected" : button.Tag as string ?? "connected";
+            plugin.ShowDesktopNotificationPreview(kind);
+        }
+
         private void OpenExternalButton(object sender, RoutedEventArgs args)
         {
             var button = sender as Button;

@@ -40,12 +40,18 @@ namespace ControllerSessionManager.Sessions
     public sealed class GameSessionManager
     {
         private static readonly TimeSpan PreSessionInputGrace = TimeSpan.FromSeconds(10);
+        private static readonly TimeSpan TakeoverDriftGrace = TimeSpan.FromSeconds(5);
         private readonly Dictionary<string, SessionControllerSnapshot> activeControllers =
             new Dictionary<string, SessionControllerSnapshot>(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, DateTime> activationFloors =
             new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
         private readonly HashSet<string> knownConnectedKeys =
             new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        // Tracks when a newly connected controller first appeared while a session controller was
+        // missing. After TakeoverDriftGrace elapses, the candidate is accepted as a takeover
+        // regardless of input neutrality, covering the case where BT reconnection causes drift.
+        private readonly Dictionary<string, DateTime> pendingTakeoverCandidates =
+            new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
 
         public event EventHandler<SessionEventArgs> EventOccurred;
 
@@ -76,6 +82,7 @@ namespace ControllerSessionManager.Sessions
             activeControllers.Clear();
             activationFloors.Clear();
             knownConnectedKeys.Clear();
+            pendingTakeoverCandidates.Clear();
             GameId = gameId;
             StartedUtc = nowUtc;
             IsRunning = true;
@@ -86,6 +93,7 @@ namespace ControllerSessionManager.Sessions
             activeControllers.Clear();
             activationFloors.Clear();
             knownConnectedKeys.Clear();
+            pendingTakeoverCandidates.Clear();
             IsRunning = false;
             GameId = Guid.Empty;
         }
@@ -183,6 +191,7 @@ namespace ControllerSessionManager.Sessions
                         active.MissingSinceUtc = null;
                         active.ConfirmedUtc = null;
                         active.DisconnectConfirmed = false;
+                        pendingTakeoverCandidates.Clear();
                         Raise(wasConfirmed ? SessionEventType.DisconnectResolved :
                             SessionEventType.DisconnectCancelled, active);
                     }
@@ -197,7 +206,30 @@ namespace ControllerSessionManager.Sessions
 
             if (allowControllerTakeover)
             {
+                // Register newly connected controllers as pending takeover candidates so that
+                // after TakeoverDriftGrace they can take over even if their axes are drifting.
+                var hasMissing = activeControllers.Values.Any(a => a.MissingSinceUtc.HasValue);
+                if (hasMissing)
+                {
+                    foreach (var key in newlyConnectedKeys)
+                    {
+                        if (!pendingTakeoverCandidates.ContainsKey(key))
+                        {
+                            pendingTakeoverCandidates[key] = nowUtc;
+                        }
+                    }
+                }
+
                 ResolveTakeovers(connected, newlyConnectedKeys, protectAllActiveControllers, nowUtc);
+            }
+
+            // Remove candidates that are no longer connected or have already taken over.
+            var staleKeys = pendingTakeoverCandidates.Keys
+                .Where(k => !connected.ContainsKey(k) || activeControllers.ContainsKey(k))
+                .ToList();
+            foreach (var key in staleKeys)
+            {
+                pendingTakeoverCandidates.Remove(key);
             }
 
             knownConnectedKeys.Clear();
@@ -339,7 +371,8 @@ namespace ControllerSessionManager.Sessions
                         IsAvailableReplacement(a.Key, missing, protectAllActiveControllers) &&
                         ((a.Value.LastInputUtc.HasValue && IsReplacementSettled(a.Value, nowUtc) &&
                             a.Value.LastInputUtc.Value > missing.MissingSinceUtc.Value) ||
-                         (newlyConnectedKeys.Contains(a.Key) && a.Value.IsInputNeutral != false)))
+                         (newlyConnectedKeys.Contains(a.Key) && a.Value.IsInputNeutral != false) ||
+                         IsSettledByDriftGrace(a.Key, nowUtc)))
                     .OrderByDescending(a => a.Value.LastInputUtc)
                     .FirstOrDefault();
                 if (string.IsNullOrWhiteSpace(replacement.Key))
@@ -393,6 +426,13 @@ namespace ControllerSessionManager.Sessions
             // another established player. Retain a small tolerance for poll/event ordering.
             return missing.MissingSinceUtc.HasValue && candidate.ActivatedUtc.HasValue &&
                 candidate.ActivatedUtc.Value >= missing.MissingSinceUtc.Value.AddMilliseconds(-500);
+        }
+
+        private bool IsSettledByDriftGrace(string key, DateTime nowUtc)
+        {
+            DateTime firstSeen;
+            return pendingTakeoverCandidates.TryGetValue(key, out firstSeen) &&
+                nowUtc - firstSeen >= TakeoverDriftGrace;
         }
 
         private static bool IsReplacementSettled(ControllerDeviceSnapshot candidate, DateTime nowUtc)

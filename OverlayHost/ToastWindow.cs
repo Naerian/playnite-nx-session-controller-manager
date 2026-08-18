@@ -371,6 +371,7 @@ namespace ControllerSessionManager.OverlayHost
             if (string.Equals(position, "Left", StringComparison.OrdinalIgnoreCase)) return new Thickness(value, 0, 0, 0);
             if (string.Equals(position, "Top", StringComparison.OrdinalIgnoreCase)) return new Thickness(0, value, 0, 0);
             if (string.Equals(position, "Right", StringComparison.OrdinalIgnoreCase)) return new Thickness(0, 0, value, 0);
+            if (string.Equals(position, "Full", StringComparison.OrdinalIgnoreCase)) return new Thickness(value);
             return new Thickness(0, 0, 0, value);
         }
 

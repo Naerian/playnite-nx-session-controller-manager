@@ -63,3 +63,14 @@ foreach ($fileName in $expectedFiles) {
 }
 
 Write-Host "Verification passed: $($expectedFiles.Count) locales, $($englishKeys.Count) keys each, plugin $($assemblyName.Version), overlay $($overlayName.Version)."
+
+$distDir = Join-Path $root "dist"
+if (-not (Test-Path -LiteralPath $distDir)) {
+    New-Item -ItemType Directory -Path $distDir | Out-Null
+}
+$toolbox = "C:\Playnite\Toolbox.exe"
+if (Test-Path -LiteralPath $toolbox) {
+    & $toolbox pack (Join-Path $root "bin\$Configuration") $distDir
+} else {
+    Write-Warning "Toolbox.exe not found at $toolbox - skipping .pext generation."
+}
