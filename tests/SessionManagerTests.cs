@@ -35,7 +35,15 @@ internal static class SessionManagerTests
             DualShock4UsbBatteryReportIsParsed();
             UnknownPlayStationReportIsRejected();
             BluetoothTransportOverridesEightBitDoReceiverHint();
+            HidPathMetadataRestoresConnectionWithoutSdl();
+            BluetoothLeHidPathExposesVidPid();
+            PointerDevicesAreNotTreatedAsControllers();
+            GenericHidNameDoesNotReplacePlayniteIdentity();
             WindowsBluetoothBatteryUsesCoarseLevels();
+            XInputWrapperIsNotUsedAsBluetoothBatteryContainer();
+            BluetoothLeBatteryAddressIsParsedFromSiblingNodes();
+            PlayniteBluetoothRowReceivesHidBatteryWithoutXInput();
+            BluetoothHardwareIdsAcceptVendorEncodings();
             EquivalentHidPathsAreDeduplicated();
             PlayniteLifecycleOverridesSupplementalPresence();
             PlayniteLifecycleReceivesSupplementalCapabilities();
@@ -53,7 +61,7 @@ internal static class SessionManagerTests
             RealInputReplacesSessionStartFallback();
             NewlyConnectedControllerResolvesIncidentWithoutInput();
             AlreadyConnectedControllerStillRequiresInputForTakeover();
-            Console.WriteLine("Session manager tests passed: 42 scenarios.");
+            Console.WriteLine("Session manager tests passed: 50 scenarios.");
             return 0;
         }
         catch (Exception error)
@@ -220,6 +228,71 @@ internal static class SessionManagerTests
             "the name-based heuristic must resolve it to Wireless.");
     }
 
+    private static void HidPathMetadataRestoresConnectionWithoutSdl()
+    {
+        ControllerMetadata metadata;
+        Equal(true, HidDiagnosticsService.TryBuildMetadataFromPath(
+            @"\\?\hid#vid_2dc8&pid_310a&ig_01#8&3946da90&0&0000", null, out metadata),
+            "An XInput wrapper path should yield HID metadata without opening SDL.");
+        Equal((ushort)0x2DC8, metadata.VendorId, "The 8BitDo vendor ID should be parsed from the HID path.");
+        Equal((ushort)0x310A, metadata.ProductId, "The Ultimate 2C XInput PID should be parsed from the HID path.");
+        Equal(false, HidDiagnosticsService.TryBuildMetadataFromPath(
+            @"\\?\hid#vid_2dc8&pid_310a&mi_01&col01#7&184bcbf2&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}\kbd",
+            null, out metadata),
+            "Keyboard collections on the same receiver must not become controller rows.");
+        Equal(false, HidDiagnosticsService.TryBuildMetadataFromPath(
+            @"\\?\hid#vid_046d&pid_c092#hid_device_system_mouse",
+            null, out metadata),
+            "A Windows mouse collection must not become a controller row.");
+    }
+
+    private static void PointerDevicesAreNotTreatedAsControllers()
+    {
+        Equal(true, ControllerDeviceIdentity.IsLikelyNonController(
+            "HID-compliant mouse", @"\\?\HID#VID_046D&PID_C092"),
+            "A mouse product string must not enter the controller inventory.");
+        Equal(true, ControllerDeviceIdentity.IsLikelyNonController(
+            "Ratón USB", @"\\?\HID#VID_046D&PID_C539"),
+            "A Spanish mouse label must not enter the controller inventory.");
+        Equal(false, ControllerDeviceIdentity.IsLikelyNonController(
+            "DualSense Wireless Controller", @"\\?\HID#VID_054C&PID_0CE6"),
+            "A real gamepad must keep passing the non-controller filter.");
+    }
+
+    private static void GenericHidNameDoesNotReplacePlayniteIdentity()
+    {
+        var sdk = Snapshot("playnite:path:HID#VID_054C&PID_0CE6", "Playnite", 3,
+            "DualSense Wireless Controller", @"HID#VID_054C&PID_0CE6", true);
+        var hid = Snapshot("hid:hardware:054C:0CE6:1", "HID", 0, "Game Controller",
+            @"\\?\hid#vid_054c&pid_0ce6", true);
+        hid.VendorId = 0x054C;
+        hid.ProductId = 0x0CE6;
+        var merged = ControllerSnapshotMerger.Merge(new[] { sdk, hid }, true).Single();
+        Equal("DualSense Wireless Controller", merged.Name,
+            "A generic HID fallback name must not replace the Playnite identity.");
+    }
+
+    private static void BluetoothLeHidPathExposesVidPid()
+    {
+        ushort vendor;
+        ushort product;
+        Equal(true, ControllerBridgeIdentity.TryGetVidPid(
+            @"\\?\hid#{00001812-0000-1000-8000-00805f9b34fb}_dev_vid&022dc8_pid&301b",
+            out vendor, out product),
+            "Bluetooth LE HID paths encode VID/PID after VID& and PID&.");
+        Equal((ushort)0x2DC8, vendor, "The trailing four VID& digits are the USB vendor ID.");
+        Equal((ushort)0x301B, product, "The PID& value should identify the Bluetooth 8BitDo endpoint.");
+        ControllerMetadata metadata;
+        Equal(true, HidDiagnosticsService.TryBuildMetadataFromPath(
+            @"\\?\hid#{00001812-0000-1000-8000-00805f9b34fb}_dev_vid&022dc8_pid&301b",
+            null, out metadata),
+            "A Bluetooth LE HID gamepad path should be accepted without SDL.");
+        Equal("Bluetooth", metadata.ConnectionType,
+            "The Bluetooth HID service UUID must classify the transport.");
+        Equal("8BitDo Ultimate 2C Wireless", metadata.DisplayName,
+            "PID 301B should keep the friendly Ultimate 2C name.");
+    }
+
     private static void WindowsBluetoothBatteryUsesCoarseLevels()
     {
         Equal("Low", WindowsBluetoothBatteryProvider.ToLevel(24),
@@ -229,6 +302,73 @@ internal static class SessionManagerTests
         Equal(true, WindowsBluetoothBatteryProvider.IsBluetoothPath(
             @"HID\{00001812-0000-1000-8000-00805F9B34FB}_DEV_VID&122DC8_PID&6012"),
             "The Bluetooth LE HID service UUID must be recognized.");
+    }
+
+    private static void XInputWrapperIsNotUsedAsBluetoothBatteryContainer()
+    {
+        Equal(true, WindowsBluetoothBatteryProvider.IsXInputWrapperPath(
+            @"\\?\hid#vid_2dc8&pid_310a&ig_00"),
+            "The XInput IG wrapper must not be treated as the Bluetooth device node.");
+        Equal(false, WindowsBluetoothBatteryProvider.IsXInputWrapperPath(
+            @"HID\{00001812-0000-1000-8000-00805F9B34FB}_DEV_VID&122DC8_PID&301B"),
+            "A Bluetooth HID path must remain eligible for Windows battery lookup.");
+    }
+
+    private static void BluetoothLeBatteryAddressIsParsedFromSiblingNodes()
+    {
+        string address;
+        Equal(true, WindowsBluetoothBatteryProvider.TryExtractBluetoothAddress(
+            @"BTHLE\DEV_E417D8BCF47A\6&2F1A9C3&0&01", out address),
+            "The BLE battery node stores the device address after DEV_.");
+        Equal("E417D8BCF47A", address, "BTHLE DEV_ should yield the 12-hex Bluetooth address.");
+        Equal(true, WindowsBluetoothBatteryProvider.TryExtractBluetoothAddress(
+            @"HID\{00001812-0000-1000-8000-00805F9B34FB}_DEV_VID&122DC8_PID&6012_8&1_E417D8BCF47A",
+            out address),
+            "The HID gamepad path should expose the same address as the BTHLE battery node.");
+        Equal("E417D8BCF47A", address,
+            "The Bluetooth base UUID tail must not be mistaken for the device address.");
+        Equal(true, WindowsBluetoothBatteryProvider.TryExtractBluetoothAddress(
+            "E4:17:D8:BC:F4:7A", out address),
+            "Colon-separated Bluetooth addresses should normalize to 12 hex digits.");
+        Equal("E417D8BCF47A", address, "Colon MAC values should drop separators.");
+        Equal(false, WindowsBluetoothBatteryProvider.TryExtractBluetoothAddress(
+            @"\\?\hid#vid_2dc8&pid_310a&ig_00", out address),
+            "An XInput wrapper path should not invent a Bluetooth address.");
+    }
+
+    private static void PlayniteBluetoothRowReceivesHidBatteryWithoutXInput()
+    {
+        var sdk = Snapshot("playnite:instance:3", "Playnite", 3,
+            "8BitDo Ultimate 2 Wireless", "SDL#JOYSTICK", true);
+        var hid = Snapshot("hardware:2DC8:6012:1", "HID", 0, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#{00001812-0000-1000-8000-00805f9b34fb}_dev_vid&122dc8_pid&6012_e417d8bcf47a",
+            true);
+        hid.VendorId = 0x2DC8;
+        hid.ProductId = 0x6012;
+        hid.BatteryLevel = "Full";
+        hid.BatteryProviderId = "Windows.BluetoothPnP";
+        hid.ConnectionType = "Bluetooth";
+        var merged = ControllerSnapshotMerger.Merge(new[] { sdk, hid }, true).Single();
+        Equal("Full", merged.BatteryLevel,
+            "A Playnite DInput/BLE row should inherit Windows battery from the HID observation.");
+        Equal("Bluetooth", merged.ConnectionType,
+            "The BLE HID service path should classify the Playnite row as Bluetooth.");
+        Equal(1, ControllerSnapshotMerger.Merge(new[] { sdk, hid }, true).Count,
+            "The HID capability row must enrich Playnite instead of appearing as a second controller.");
+    }
+
+    private static void BluetoothHardwareIdsAcceptVendorEncodings()
+    {
+        Equal(true, HidDiagnosticsService.HardwareIdContainsVid(
+            "{00001124-0000-1000-8000-00805f9b34fb}_VID&122DC8_PID&301B", 0x2DC8),
+            "BTHENUM keys encode the 8BitDo vendor as VID&12.");
+        Equal(true, HidDiagnosticsService.HardwareIdContainsPid(
+            "{00001124-0000-1000-8000-00805f9b34fb}_VID&122DC8_PID&301B", 0x301B),
+            "BTHENUM keys encode the Bluetooth PID as PID&.");
+        var aliases = new List<ushort>(
+            ControllerDeviceIdentity.GetBluetoothAliasProductIds(0x2DC8, 0x310A));
+        Equal(true, aliases.Contains(0x301B),
+            "Ultimate 2C XInput PID 310A shares a Bluetooth identity with DInput PID 301B.");
     }
 
     private static void EquivalentHidPathsAreDeduplicated()

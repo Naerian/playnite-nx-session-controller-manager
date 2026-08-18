@@ -48,8 +48,47 @@ namespace ControllerSessionManager.Controllers
             }
 
             var normalized = Normalize(path);
-            return TryReadHexId(normalized, "VID_", out vendorId) &&
-                TryReadHexId(normalized, "PID_", out productId);
+            if (TryReadHexId(normalized, "VID_", out vendorId) &&
+                TryReadHexId(normalized, "PID_", out productId))
+            {
+                return true;
+            }
+
+            return TryReadBluetoothHidId(normalized, "VID&", out vendorId) &&
+                TryReadBluetoothHidId(normalized, "PID&", out productId);
+        }
+
+        private static bool TryReadBluetoothHidId(string value, string marker, out ushort id)
+        {
+            id = 0;
+            var index = value.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
+            if (index < 0)
+            {
+                return false;
+            }
+
+            var start = index + marker.Length;
+            var length = 0;
+            while (start + length < value.Length && IsHexDigit(value[start + length]))
+            {
+                length++;
+            }
+
+            if (length < 4)
+            {
+                return false;
+            }
+
+            return ushort.TryParse(value.Substring(start + length - 4, 4),
+                System.Globalization.NumberStyles.HexNumber,
+                System.Globalization.CultureInfo.InvariantCulture, out id);
+        }
+
+        private static bool IsHexDigit(char value)
+        {
+            return (value >= '0' && value <= '9') ||
+                (value >= 'A' && value <= 'F') ||
+                (value >= 'a' && value <= 'f');
         }
 
         private static bool TryReadHexId(string value, string marker, out ushort id)

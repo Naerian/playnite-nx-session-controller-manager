@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace ControllerSessionManager.Controllers
 {
@@ -74,7 +75,21 @@ namespace ControllerSessionManager.Controllers
                 return "Steam Controller";
             }
 
-            return IsGenericName(rawName) ? "Game Controller" : rawName;
+            return IsGenericDisplayName(rawName) ? "Game Controller" : rawName;
+        }
+
+        public static bool IsGenericDisplayName(string rawName)
+        {
+            return string.IsNullOrWhiteSpace(rawName) || Contains(rawName, "xinput controller") ||
+                string.Equals(rawName, "controller", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(rawName, "game controller", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(rawName, "usb gamepad", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(rawName, "unknown controller", StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static bool IsLikelyNonController(string name, string path)
+        {
+            return LooksLikePointerOrKeyboard(name) || LooksLikePointerOrKeyboard(path);
         }
 
         public static string GetConnectionType(string deviceName, ushort vendorId, ushort productId,
@@ -92,6 +107,27 @@ namespace ControllerSessionManager.Controllers
                 return "Wired";
             }
 
+            if (Contains(devicePath, "&ig_"))
+            {
+                if (vendorId != 0 && productId != 0 &&
+                    HasBluetoothPresence(vendorId, productId))
+                {
+                    return "Bluetooth";
+                }
+
+                if (Contains(deviceName, "bluetooth"))
+                {
+                    return "Bluetooth";
+                }
+
+                if (Contains(deviceName, "wireless"))
+                {
+                    return "Wireless";
+                }
+
+                return "Unknown";
+            }
+
             if (vendorId == 0x054C && (productId == 0x05C4 || productId == 0x09CC ||
                 productId == 0x0CE6 || productId == 0x0DF2))
             {
@@ -106,7 +142,7 @@ namespace ControllerSessionManager.Controllers
             // Dongle/receiver PIDs are USB devices and never appear in BTHENUM, so they fall
             // through to the name-based heuristic below.
             if (vendorId != 0 && productId != 0 &&
-                HidDiagnosticsService.HasBluetoothInterface(vendorId, productId))
+                HasBluetoothPresence(vendorId, productId))
             {
                 return "Bluetooth";
             }
@@ -124,12 +160,44 @@ namespace ControllerSessionManager.Controllers
             return "Unknown";
         }
 
-        private static bool IsGenericName(string rawName)
+        internal static bool HasBluetoothPresence(ushort vendorId, ushort productId)
         {
-            return string.IsNullOrWhiteSpace(rawName) || Contains(rawName, "xinput controller") ||
-                string.Equals(rawName, "controller", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(rawName, "game controller", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(rawName, "usb gamepad", StringComparison.OrdinalIgnoreCase);
+            foreach (var alias in GetBluetoothAliasProductIds(vendorId, productId))
+            {
+                if (HidDiagnosticsService.HasBluetoothInterface(vendorId, alias))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        internal static IEnumerable<ushort> GetBluetoothAliasProductIds(ushort vendorId, ushort productId)
+        {
+            yield return productId;
+            if (vendorId != 0x2DC8)
+            {
+                yield break;
+            }
+
+            if (productId == 0x310A)
+            {
+                yield return 0x301B;
+            }
+            else if (productId == 0x301B)
+            {
+                yield return 0x310A;
+            }
+        }
+
+        private static bool LooksLikePointerOrKeyboard(string value)
+        {
+            return Contains(value, "mouse") || Contains(value, "ratón") || Contains(value, "raton") ||
+                Contains(value, "keyboard") || Contains(value, "teclado") || Contains(value, "touchpad") ||
+                Contains(value, "trackpad") || Contains(value, "trackball") || Contains(value, "digitizer") ||
+                Contains(value, "hid_device_system_mouse") || Contains(value, "hid_device_system_keyboard") ||
+                Contains(value, "\\kbd") || Contains(value, "\\mou");
         }
 
         private static bool Contains(string value, string fragment)

@@ -39,6 +39,8 @@ namespace ControllerSessionManager.PlayniteIntegration
         private bool playniteBridgeAvailable = true;
         private bool playniteBridgeWarningLogged;
         private string lastXInputSignature;
+        private DateTime sdlQuietUntilUtc;
+        private static readonly TimeSpan SdlHotPlugQuietPeriod = TimeSpan.FromSeconds(2);
         private Guid? activeGameId;
         private Guid activeSessionId;
         private Guid? activeDisconnectIncidentId;
@@ -160,12 +162,15 @@ namespace ControllerSessionManager.PlayniteIntegration
                 return;
             }
 
-            if (playniteBridgeAvailable)
+            if (playniteBridgeAvailable && DateTime.UtcNow >= sdlQuietUntilUtc)
             {
                 try
                 {
                     // Establish the authoritative SDK inventory before supplemental polling can
                     // publish a startup transition or stale transport observation.
+                    // Skip this during the hot-plug quiet window: Playnite's controller API is
+                    // SDL-backed, and enumerating joysticks while a pad is appearing or vanishing
+                    // can abort the process with no managed exception.
                     controllerManager.Reconcile(PlayniteApi.GetConnectedControllers());
                 }
                 catch (NullReferenceException ex)
@@ -417,7 +422,15 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         public override UserControl GetSettingsView(bool firstRunSettings)
         {
-            return new ControllerSessionManagerSettingsView(this);
+            try
+            {
+                return new ControllerSessionManagerSettingsView(this);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Failed to create the settings view.");
+                throw;
+            }
         }
 
         public override Control GetGameViewControl(GetGameViewControlArgs args)
@@ -546,21 +559,41 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         public override void OnControllerConnected(OnControllerConnectedArgs args)
         {
-            if (settings.EnableMonitoring && args != null)
+            try
             {
+                if (settings == null || !settings.EnableMonitoring || args == null)
+                {
+                    return;
+                }
+
+                QuiesceSdl(true);
                 controllerManager.RecordConnected(args.Controller);
                 logger.Info(string.Format("Controller connected: {0}", SafeName(args.Controller)));
                 diagnosticEvents.Add("controller", "Connected: " + SafeName(args.Controller));
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Failed to handle a controller connection.");
             }
         }
 
         public override void OnControllerDisconnected(OnControllerDisconnectedArgs args)
         {
-            if (settings.EnableMonitoring && args != null)
+            try
             {
+                if (settings == null || !settings.EnableMonitoring || args == null)
+                {
+                    return;
+                }
+
+                QuiesceSdl(true);
                 controllerManager.RecordDisconnected(args.Controller);
                 logger.Info(string.Format("Controller disconnected: {0}", SafeName(args.Controller)));
                 diagnosticEvents.Add("controller", "Disconnected: " + SafeName(args.Controller));
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Failed to handle a controller disconnection.");
             }
         }
 
@@ -663,17 +696,24 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private void RecordControllerInput(OnControllerButtonStateChangedArgs args)
         {
-            if (!settings.EnableMonitoring || args == null || args.Controller == null ||
-                args.State != ControllerInputState.Pressed ||
-                string.Equals(args.Button.ToString(), "Guide", StringComparison.OrdinalIgnoreCase))
+            try
             {
-                return;
-            }
+                if (settings == null || !settings.EnableMonitoring || args == null || args.Controller == null ||
+                    args.State != ControllerInputState.Pressed ||
+                    string.Equals(args.Button.ToString(), "Guide", StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
 
-            controllerManager.RecordInput(args.Controller);
-            if (settings.EnableDebugLogging && args.State == ControllerInputState.Pressed)
+                controllerManager.RecordInput(args.Controller);
+                if (settings.EnableDebugLogging && args.State == ControllerInputState.Pressed)
+                {
+                    logger.Debug(string.Format("Controller input: {0}, {1}.", SafeName(args.Controller), args.Button));
+                }
+            }
+            catch (Exception ex)
             {
-                logger.Debug(string.Format("Controller input: {0}, {1}.", SafeName(args.Controller), args.Button));
+                logger.Error(ex, "Failed to record controller input.");
             }
         }
 
@@ -739,13 +779,37 @@ namespace ControllerSessionManager.PlayniteIntegration
                 return;
             }
 
-            // SDL is completely excluded from the Fullscreen process. Even metadata-only SDL
-            // enumeration shares Playnite's process-wide native event loop and has been observed
-            // to terminate the process on hot-unplug with no managed exception or crash event.
-            // XInput and Playnite's own controller callbacks remain available in Fullscreen.
-            var sampleSdlInput = PlayniteApi.ApplicationInfo.Mode != ApplicationMode.Fullscreen;
-            var observations = xInputProvider.Poll(sampleSdlInput);
-            if (sampleSdlInput && settings.SyncControllerProfiles(observations.Where(a => a.IsConnected)))
+            try
+            {
+                PollXInputCore();
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Controller provider polling failed and was safely contained.");
+            }
+        }
+
+        private void QuiesceSdl(bool abandonHandles)
+        {
+            sdlQuietUntilUtc = DateTime.UtcNow.Add(SdlHotPlugQuietPeriod);
+            if (abandonHandles)
+            {
+                xInputProvider.AbandonSdlHandles();
+            }
+        }
+
+        private void PollXInputCore()
+        {
+            // Never call SDL from this plugin. Playnite's "game controller API" setting owns a
+            // process-wide SDL loop; a second initiator (InitSubSystem/PumpEvents/JoystickOpen)
+            // has been observed to terminate Desktop and Fullscreen on hot-plug with no managed
+            // exception. XInput and Playnite connect/disconnect callbacks remain in use.
+            var observations = xInputProvider.Poll(false);
+            if (xInputProvider.LastPollXInputTopologyChanged)
+            {
+                QuiesceSdl(true);
+            }
+            if (settings.SyncControllerProfiles(observations.Where(a => a.IsConnected)))
             {
                 // Persist the friendly Desktop identity and its XInput slot so the separate
                 // Fullscreen process can reuse it without initializing SDL.
@@ -775,17 +839,20 @@ namespace ControllerSessionManager.PlayniteIntegration
             lastXInputSignature = signature;
             controllerManager.ReconcileProvider(XInputProvider.ProviderId,
                 observations.Where(a => a.ProviderId == XInputProvider.ProviderId));
+            controllerManager.ReconcileProvider(XInputProvider.HidProviderId,
+                observations.Where(a => a.ProviderId == XInputProvider.HidProviderId));
             controllerManager.ReconcileProvider(XInputProvider.SdlProviderId,
                 observations.Where(a => a.ProviderId == XInputProvider.SdlProviderId));
         }
 
         private void OnManagerSnapshotChanged(object sender, EventArgs args)
         {
-            if (PlayniteApi.MainView != null && !PlayniteApi.MainView.UIDispatcher.CheckAccess())
+            var dispatcher = GetUiDispatcher();
+            if (dispatcher != null && !dispatcher.CheckAccess())
             {
                 try
                 {
-                    PlayniteApi.MainView.UIDispatcher.BeginInvoke(new Action(SafeUpdateAndPublishSnapshot));
+                    dispatcher.BeginInvoke(new Action(SafeUpdateAndPublishSnapshot));
                 }
                 catch (Exception ex)
                 {
@@ -795,6 +862,11 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
 
             SafeUpdateAndPublishSnapshot();
+        }
+
+        private static Dispatcher GetUiDispatcher()
+        {
+            return Application.Current == null ? null : Application.Current.Dispatcher;
         }
 
         private void SafeUpdateAndPublishSnapshot()
@@ -912,16 +984,33 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
         }
 
+        private static readonly Brush BatteryEmptyBrush = CreateFrozenBrush(224, 82, 82);
+        private static readonly Brush BatteryLowBrush = CreateFrozenBrush(242, 153, 74);
+        private static readonly Brush BatteryMediumBrush = CreateFrozenBrush(242, 201, 76);
+        private static readonly Brush BatteryFullBrush = CreateFrozenBrush(79, 194, 126);
+        private static readonly Brush BatteryUnknownBrush = CreateFrozenBrush(138, 143, 152);
+
         private static Brush GetBatteryBrush(string value)
         {
             switch (value)
             {
-                case "Empty": return new SolidColorBrush(Color.FromRgb(224, 82, 82));
-                case "Low": return new SolidColorBrush(Color.FromRgb(242, 153, 74));
-                case "Medium": return new SolidColorBrush(Color.FromRgb(242, 201, 76));
-                case "Full": return new SolidColorBrush(Color.FromRgb(79, 194, 126));
-                default: return new SolidColorBrush(Color.FromRgb(138, 143, 152));
+                case "Empty": return BatteryEmptyBrush;
+                case "Low": return BatteryLowBrush;
+                case "Medium": return BatteryMediumBrush;
+                case "Full": return BatteryFullBrush;
+                default: return BatteryUnknownBrush;
             }
+        }
+
+        private static Brush CreateFrozenBrush(byte r, byte g, byte b)
+        {
+            var brush = new SolidColorBrush(Color.FromRgb(r, g, b));
+            if (brush.CanFreeze)
+            {
+                brush.Freeze();
+            }
+
+            return brush;
         }
 
         private void ShowDiagnostics()
@@ -1432,9 +1521,16 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private static string SafeName(GamepadController controller)
         {
-            return controller == null || string.IsNullOrWhiteSpace(controller.Name)
-                ? "Unknown controller"
-                : controller.Name;
+            try
+            {
+                return controller == null || string.IsNullOrWhiteSpace(controller.Name)
+                    ? "Unknown controller"
+                    : controller.Name;
+            }
+            catch (Exception)
+            {
+                return "Unknown controller";
+            }
         }
     }
 }

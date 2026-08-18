@@ -104,6 +104,18 @@ namespace ControllerSessionManager.Controllers
                     return namedHardwareMatches[0];
                 }
             }
+
+            if (!ControllerDeviceIdentity.IsGenericDisplayName(authoritative.DetectedName))
+            {
+                var namedMatches = candidates.Where(a =>
+                    !ControllerDeviceIdentity.IsGenericDisplayName(a.DetectedName) &&
+                    string.Equals(a.DetectedName, authoritative.DetectedName,
+                        StringComparison.CurrentCultureIgnoreCase)).ToList();
+                if (namedMatches.Count == 1)
+                {
+                    return namedMatches[0];
+                }
+            }
             // Playnite's non-XInput controller instance IDs originate from its SDL registry.
             // Never compare an SDL instance ID with an XInput slot merely because both are ints.
             return candidates.FirstOrDefault(a =>
@@ -208,6 +220,12 @@ namespace ControllerSessionManager.Controllers
 
         private static string Prefer(string candidate, string fallback)
         {
+            if (ControllerDeviceIdentity.IsGenericDisplayName(candidate) &&
+                !ControllerDeviceIdentity.IsGenericDisplayName(fallback))
+            {
+                return fallback;
+            }
+
             return string.IsNullOrWhiteSpace(candidate) ? fallback : candidate;
         }
 

@@ -11,6 +11,7 @@ namespace ControllerSessionManager.Controllers
     {
         public const string ProviderId = "XInput";
         public const string SdlProviderId = "SDL";
+        public const string HidProviderId = "HID";
         private const uint ErrorSuccess = 0;
         private const byte BatteryDeviceTypeGamepad = 0;
         private const byte BatteryTypeWired = 1;
@@ -25,6 +26,7 @@ namespace ControllerSessionManager.Controllers
                 new PlayStationHidBatteryProvider()
             };
         private bool unavailable;
+        public bool LastPollXInputTopologyChanged { get; private set; }
 
         public XInputProvider()
         {
@@ -46,6 +48,7 @@ namespace ControllerSessionManager.Controllers
 
         public IReadOnlyList<ControllerDeviceSnapshot> Poll(bool sampleSdlInput)
         {
+            LastPollXInputTopologyChanged = false;
             var result = new List<ControllerDeviceSnapshot>();
             if (unavailable)
             {
@@ -54,28 +57,43 @@ namespace ControllerSessionManager.Controllers
 
             try
             {
-                // A false value is a hard process-safety boundary: do not initialize SDL or
-                // call any SDL entry point. Fullscreen uses this mode because Playnite owns a
-                // process-wide SDL event loop and some drivers terminate that process during
-                // hot-unplug even when this plugin only performs device-level enumeration.
-                var metadata = sampleSdlInput
-                    ? metadataProvider.GetControllers(true)
-                    : new List<ControllerMetadata>();
-                if (sampleSdlInput)
+                var slotStates = new XInputState[4];
+                var slotConnected = new bool[4];
+                var topologyChanged = false;
+                for (uint index = 0; index < 4; index++)
                 {
+                    slotConnected[index] = NativeMethods.XInputGetState(index, out slotStates[index]) ==
+                        ErrorSuccess;
+                    if (slotConnected[index] != slots[index].WasConnected)
+                    {
+                        topologyChanged = true;
+                    }
+                }
+
+                LastPollXInputTopologyChanged = topologyChanged;
+                IReadOnlyList<ControllerMetadata> metadata;
+                if (topologyChanged)
+                {
+                    HidDiagnosticsService.InvalidatePresentControllerMetadata();
+                    metadata = new List<ControllerMetadata>();
+                }
+                else
+                {
+                    metadata = HidDiagnosticsService.GetPresentControllerMetadata();
                     EnrichKnownBatteryProtocols(metadata);
                 }
                 var usedMetadata = new HashSet<ControllerMetadata>();
+                var connectedSlotCount = slotConnected.Count(a => a);
                 for (uint index = 0; index < 4; index++)
                 {
-                    XInputState state;
-                    if (NativeMethods.XInputGetState(index, out state) != ErrorSuccess)
+                    if (!slotConnected[index])
                     {
                         slots[index].WasConnected = false;
                         slots[index].HasGamepadState = false;
                         continue;
                     }
 
+                    var state = slotStates[index];
                     var now = DateTime.UtcNow;
                     var slot = slots[index];
                     if (slot.WasConnected && slot.HasGamepadState)
@@ -105,14 +123,7 @@ namespace ControllerSessionManager.Controllers
                         slot.InputNeutralSinceUtc = null;
                     }
 
-                    var deviceMetadata = metadata.FirstOrDefault(a => a.PlayerIndex == (int)index);
-                    if (deviceMetadata == null)
-                    {
-                        deviceMetadata = metadata.FirstOrDefault(a => !usedMetadata.Contains(a) &&
-                            !string.IsNullOrWhiteSpace(a.RawName) &&
-                            a.RawName.IndexOf("XInput", StringComparison.OrdinalIgnoreCase) >= 0);
-                    }
-
+                    var deviceMetadata = MatchHidMetadata(metadata, usedMetadata, connectedSlotCount);
                     if (deviceMetadata != null)
                     {
                         usedMetadata.Add(deviceMetadata);
@@ -170,32 +181,7 @@ namespace ControllerSessionManager.Controllers
                     });
                 }
 
-                foreach (var sdlDevice in metadata.Where(a => !usedMetadata.Contains(a)))
-                {
-                    result.Add(new ControllerDeviceSnapshot
-                    {
-                        ControllerId = string.Format("sdl:instance:{0}", sdlDevice.InstanceId),
-                        ProviderId = SdlProviderId,
-                        ProviderInstanceId = sdlDevice.InstanceId,
-                        Name = sdlDevice.DisplayName,
-                        DetectedName = sdlDevice.DisplayName,
-                        HardwareId = sdlDevice.HardwareId,
-                        VendorId = sdlDevice.VendorId,
-                        ProductId = sdlDevice.ProductId,
-                        Path = sdlDevice.DevicePath ?? string.Empty,
-                        IsConnected = true,
-                        IsEnabled = true,
-                        ConnectionType = sdlDevice.ConnectionType,
-                        BatteryLevel = sdlDevice.BatteryLevel,
-                        BatteryProviderId = string.IsNullOrWhiteSpace(sdlDevice.BatteryProviderId)
-                            ? "None" : sdlDevice.BatteryProviderId,
-                        LastSeenUtc = DateTime.UtcNow,
-                        LastInputUtc = sdlDevice.LastInputUtc,
-                        LastInputKind = sdlDevice.LastInputKind,
-                        IsInputNeutral = sdlDevice.IsInputNeutral,
-                        InputNeutralSinceUtc = sdlDevice.InputNeutralSinceUtc
-                    });
-                }
+                AppendUnusedHidObservations(result, metadata, usedMetadata);
             }
             catch (DllNotFoundException)
             {
@@ -205,24 +191,116 @@ namespace ControllerSessionManager.Controllers
             {
                 unavailable = true;
             }
+            catch (Exception)
+            {
+            }
 
             return result;
         }
 
+        public void AbandonSdlHandles()
+        {
+            metadataProvider.AbandonOpenHandles();
+            HidDiagnosticsService.InvalidatePresentControllerMetadata();
+        }
+
+        private static ControllerMetadata MatchHidMetadata(IReadOnlyList<ControllerMetadata> metadata,
+            HashSet<ControllerMetadata> usedMetadata, int connectedSlotCount)
+        {
+            var unused = metadata.Where(a => a != null && !usedMetadata.Contains(a)).ToList();
+            var xinputWrappers = unused.Where(a =>
+                !string.IsNullOrWhiteSpace(a.DevicePath) &&
+                a.DevicePath.IndexOf("&ig_", StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+            if (xinputWrappers.Count == 1 && (connectedSlotCount == 1 || unused.Count == 1))
+            {
+                return xinputWrappers[0];
+            }
+
+            if (xinputWrappers.Count > 0)
+            {
+                return xinputWrappers[0];
+            }
+
+            var bluetoothHid = unused.Where(a =>
+                WindowsBluetoothBatteryProvider.IsBluetoothPath(a.DevicePath)).ToList();
+            if (bluetoothHid.Count == 1 && connectedSlotCount == 1)
+            {
+                return bluetoothHid[0];
+            }
+
+            return null;
+        }
+
+        private static void AppendUnusedHidObservations(IList<ControllerDeviceSnapshot> result,
+            IReadOnlyList<ControllerMetadata> metadata, HashSet<ControllerMetadata> usedMetadata)
+        {
+            if (result == null || metadata == null || usedMetadata == null)
+            {
+                return;
+            }
+
+            var now = DateTime.UtcNow;
+            foreach (var leftover in metadata)
+            {
+                if (leftover == null || usedMetadata.Contains(leftover) ||
+                    IsXInputWrapperMetadata(leftover) ||
+                    ControllerDeviceIdentity.IsLikelyNonController(leftover.DisplayName,
+                        leftover.DevicePath))
+                {
+                    continue;
+                }
+
+                result.Add(new ControllerDeviceSnapshot
+                {
+                    ControllerId = string.IsNullOrWhiteSpace(leftover.HardwareId)
+                        ? leftover.DevicePath : leftover.HardwareId,
+                    ProviderId = HidProviderId,
+                    ProviderInstanceId = 0,
+                    Name = leftover.DisplayName,
+                    DetectedName = leftover.DisplayName,
+                    HardwareId = leftover.HardwareId,
+                    VendorId = leftover.VendorId,
+                    ProductId = leftover.ProductId,
+                    Path = leftover.DevicePath ?? string.Empty,
+                    IsConnected = true,
+                    IsEnabled = true,
+                    ConnectionType = leftover.ConnectionType,
+                    BatteryLevel = leftover.BatteryLevel,
+                    BatteryProviderId = leftover.BatteryProviderId,
+                    LastSeenUtc = now,
+                    LastInputUtc = leftover.LastInputUtc,
+                    LastInputKind = leftover.LastInputKind
+                });
+            }
+        }
+
+        private static bool IsXInputWrapperMetadata(ControllerMetadata metadata)
+        {
+            return metadata != null &&
+                WindowsBluetoothBatteryProvider.IsXInputWrapperPath(metadata.DevicePath);
+        }
+
         private void EnrichKnownBatteryProtocols(IEnumerable<ControllerMetadata> controllers)
         {
-            foreach (var controller in controllers.Where(a => a != null &&
+            foreach (var controller in controllers.Where(a => a != null && a.IsSettled &&
                 (string.IsNullOrWhiteSpace(a.BatteryLevel) || a.BatteryLevel == "Unknown" ||
                  a.BatteryLevel == "Unavailable")))
             {
                 foreach (var provider in batteryProviders.Where(a => a.Supports(controller)))
                 {
-                    string level;
-                    if (provider.TryGetBatteryLevel(controller, out level))
+                    try
                     {
-                        controller.BatteryLevel = level;
-                        controller.BatteryProviderId = provider.Id;
-                        break;
+                        string level;
+                        if (provider.TryGetBatteryLevel(controller, out level))
+                        {
+                            controller.BatteryLevel = level;
+                            controller.BatteryProviderId = provider.Id;
+                            break;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        // HID/PnP reads during Bluetooth bring-up can throw; skip this provider.
                     }
                 }
             }

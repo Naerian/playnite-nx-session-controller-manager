@@ -69,6 +69,23 @@ namespace ControllerSessionManager.PlayniteIntegration
         }
     }
 
+    public sealed class EqualityToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var left = value == null ? string.Empty : value.ToString();
+            var right = parameter == null ? string.Empty : parameter.ToString();
+            return string.Equals(left, right, StringComparison.Ordinal)
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
     public sealed class OptionalBorderThicknessConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)

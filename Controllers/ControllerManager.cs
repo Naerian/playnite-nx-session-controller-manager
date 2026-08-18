@@ -40,6 +40,11 @@ namespace ControllerSessionManager.Controllers
                 playniteAuthorityInitialized = true;
                 foreach (var controller in connectedControllers ?? Enumerable.Empty<GamepadController>())
                 {
+                    if (ControllerDeviceIdentity.IsLikelyNonController(controller.Name, controller.Path))
+                    {
+                        continue;
+                    }
+
                     var key = GetProviderKey(controller);
                     observedKeys.Add(key);
                     missingInventoryObservations.Remove(key);
@@ -140,7 +145,8 @@ namespace ControllerSessionManager.Controllers
 
         public void RecordConnected(GamepadController controller)
         {
-            if (controller == null)
+            if (controller == null ||
+                ControllerDeviceIdentity.IsLikelyNonController(controller.Name, controller.Path))
             {
                 return;
             }
@@ -198,7 +204,8 @@ namespace ControllerSessionManager.Controllers
 
         public void RecordInput(GamepadController controller)
         {
-            if (controller == null)
+            if (controller == null ||
+                ControllerDeviceIdentity.IsLikelyNonController(controller.Name, controller.Path))
             {
                 return;
             }

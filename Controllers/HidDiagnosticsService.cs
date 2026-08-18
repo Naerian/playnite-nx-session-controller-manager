@@ -104,7 +104,44 @@ namespace ControllerSessionManager.Controllers
         /// </summary>
         public static bool HasBluetoothInterface(ushort vendorId, ushort productId)
         {
-            var cacheKey = (uint)(vendorId << 16) | productId;
+            return HasCachedBluetoothPresence((uint)(vendorId << 16) | productId,
+                delegate { return CheckBluetoothPresent(vendorId, productId); });
+        }
+
+        public static bool HasBluetoothVendorPresent(ushort vendorId)
+        {
+            return HasCachedBluetoothPresence((uint)(vendorId << 16),
+                delegate { return CheckBluetoothPresent(vendorId, null); });
+        }
+
+        internal static bool HardwareIdContainsVid(string hardwareId, ushort vendorId)
+        {
+            if (string.IsNullOrWhiteSpace(hardwareId) || vendorId == 0)
+            {
+                return false;
+            }
+
+            var needle = vendorId.ToString("X4");
+            return ContainsPath(hardwareId, "VID_" + needle) ||
+                ContainsPath(hardwareId, "VID&" + needle) ||
+                ContainsPath(hardwareId, "VID&12" + needle) ||
+                ContainsPath(hardwareId, "VID&02" + needle);
+        }
+
+        internal static bool HardwareIdContainsPid(string hardwareId, ushort productId)
+        {
+            if (string.IsNullOrWhiteSpace(hardwareId) || productId == 0)
+            {
+                return false;
+            }
+
+            var needle = productId.ToString("X4");
+            return ContainsPath(hardwareId, "PID_" + needle) ||
+                ContainsPath(hardwareId, "PID&" + needle);
+        }
+
+        private static bool HasCachedBluetoothPresence(uint cacheKey, Func<bool> query)
+        {
             lock (btCacheLock)
             {
                 BtCacheEntry cached;
@@ -114,7 +151,7 @@ namespace ControllerSessionManager.Controllers
                 }
             }
 
-            var result = CheckBthenumPresent(vendorId, productId);
+            var result = query();
             lock (btCacheLock)
             {
                 btCache[cacheKey] = new BtCacheEntry
@@ -127,38 +164,53 @@ namespace ControllerSessionManager.Controllers
             return result;
         }
 
-        private static bool CheckBthenumPresent(ushort vendorId, ushort productId)
+        private static bool CheckBluetoothPresent(ushort vendorId, ushort? productId)
         {
-            var marker = string.Format("VID_{0:X4}&PID_{1:X4}", vendorId, productId);
+            var roots = new[] { "BTHENUM", "BTHLEENUM", "BTHLEDEVICE", "BTHLE", "HID" };
             try
             {
-                using (var btRoot = Registry.LocalMachine.OpenSubKey(
-                    @"SYSTEM\CurrentControlSet\Enum\BTHENUM"))
+                foreach (var root in roots)
                 {
-                    if (btRoot == null)
+                    using (var btRoot = Registry.LocalMachine.OpenSubKey(
+                        @"SYSTEM\CurrentControlSet\Enum\" + root))
                     {
-                        return false;
-                    }
-
-                    foreach (var deviceName in btRoot.GetSubKeyNames().Where(a =>
-                        a.IndexOf(marker, StringComparison.OrdinalIgnoreCase) >= 0))
-                    {
-                        using (var deviceKey = btRoot.OpenSubKey(deviceName))
+                        if (btRoot == null)
                         {
-                            if (deviceKey == null)
+                            continue;
+                        }
+
+                        foreach (var deviceName in btRoot.GetSubKeyNames())
+                        {
+                            if (string.Equals(root, "HID", StringComparison.OrdinalIgnoreCase) &&
+                                deviceName.IndexOf("00001812-", StringComparison.OrdinalIgnoreCase) < 0)
                             {
                                 continue;
                             }
 
-                            foreach (var instanceName in deviceKey.GetSubKeyNames())
+                            if (!HardwareIdContainsVid(deviceName, vendorId) ||
+                                (productId.HasValue &&
+                                 !HardwareIdContainsPid(deviceName, productId.Value)))
                             {
-                                uint deviceInstance;
-                                var instanceId = string.Format("BTHENUM\\{0}\\{1}",
-                                    deviceName, instanceName);
-                                if (NativeMethods.CM_Locate_DevNode(
-                                    out deviceInstance, instanceId, 0) == 0)
+                                continue;
+                            }
+
+                            using (var deviceKey = btRoot.OpenSubKey(deviceName))
+                            {
+                                if (deviceKey == null)
                                 {
-                                    return true;
+                                    continue;
+                                }
+
+                                foreach (var instanceName in deviceKey.GetSubKeyNames())
+                                {
+                                    uint deviceInstance;
+                                    var instanceId = string.Format("{0}\\{1}\\{2}",
+                                        root, deviceName, instanceName);
+                                    if (NativeMethods.CM_Locate_DevNode(
+                                        out deviceInstance, instanceId, 0) == 0)
+                                    {
+                                        return true;
+                                    }
                                 }
                             }
                         }
@@ -173,7 +225,228 @@ namespace ControllerSessionManager.Controllers
             return false;
         }
 
+        public static void InvalidatePresentControllerMetadata()
+        {
+            lock (hidMetaLock)
+            {
+                hidMetaCache = null;
+                hidMetaExpiry = DateTime.MinValue;
+            }
+        }
+
+        public static IReadOnlyList<ControllerMetadata> GetPresentControllerMetadata()
+        {
+            lock (hidMetaLock)
+            {
+                if (hidMetaCache != null && DateTime.UtcNow < hidMetaExpiry)
+                {
+                    return hidMetaCache;
+                }
+
+                var enumerated = EnumeratePresentControllerMetadata();
+                hidMetaCache = enumerated;
+                hidMetaExpiry = DateTime.UtcNow.AddSeconds(2);
+                return hidMetaCache;
+            }
+        }
+
+        internal static bool TryBuildMetadataFromPath(string path, IDictionary<string, int> duplicateCounts,
+            out ControllerMetadata metadata)
+        {
+            metadata = null;
+            ushort vendorId;
+            ushort productId;
+            if (string.IsNullOrWhiteSpace(path) ||
+                ScoreHidPath(path) < 0 ||
+                !ControllerBridgeIdentity.TryGetVidPid(path, out vendorId, out productId) ||
+                vendorId == 0 || productId == 0)
+            {
+                return false;
+            }
+
+            var displayName = ControllerDeviceIdentity.GetDisplayName(string.Empty, vendorId, productId);
+            var connection = ControllerDeviceIdentity.GetConnectionType(displayName, vendorId, productId, path);
+            var baseId = string.Format("hardware:{0:X4}:{1:X4}", vendorId, productId);
+            int ordinal = 0;
+            if (duplicateCounts != null)
+            {
+                duplicateCounts.TryGetValue(baseId, out ordinal);
+                ordinal++;
+                duplicateCounts[baseId] = ordinal;
+            }
+            else
+            {
+                ordinal = 1;
+            }
+
+            metadata = new ControllerMetadata
+            {
+                DevicePath = path,
+                DisplayName = displayName,
+                RawName = displayName,
+                VendorId = vendorId,
+                ProductId = productId,
+                HardwareId = string.Format("{0}:{1}", baseId, ordinal),
+                ConnectionType = connection,
+                BatteryLevel = "Unknown",
+                IsSettled = true
+            };
+            return true;
+        }
+
+        private static readonly object hidMetaLock = new object();
+        private static List<ControllerMetadata> hidMetaCache;
+        private static DateTime hidMetaExpiry = DateTime.MinValue;
+
+        private static int ScoreHidPath(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path) ||
+                ContainsPath(path, "\\kbd") ||
+                ContainsPath(path, "\\mou") ||
+                ContainsPath(path, "mouse") ||
+                ContainsPath(path, "keyboard") ||
+                ContainsPath(path, "hid_device_system_mouse") ||
+                ContainsPath(path, "hid_device_system_keyboard") ||
+                ContainsPath(path, "&col02") ||
+                ContainsPath(path, "&col03"))
+            {
+                return -1;
+            }
+
+            if (ContainsPath(path, "00001812-0000-1000-8000-00805f9b34fb"))
+            {
+                return 100;
+            }
+
+            if (ContainsPath(path, "&ig_"))
+            {
+                return 90;
+            }
+
+            if (ContainsPath(path, "&mi_02") || ContainsPath(path, "&col01"))
+            {
+                return -1;
+            }
+
+            return 40;
+        }
+
+        private static bool ContainsPath(string path, string fragment)
+        {
+            return path.IndexOf(fragment, StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        private static readonly Guid MouseClassGuid = new Guid("4d36e96f-e325-11ce-bfc1-08002be10318");
+        private static readonly Guid KeyboardClassGuid = new Guid("4d36e96b-e325-11ce-bfc1-08002be10318");
+
+        private static bool IsMouseOrKeyboardClass(Guid classGuid)
+        {
+            return classGuid == MouseClassGuid || classGuid == KeyboardClassGuid;
+        }
+
+        private static List<ControllerMetadata> EnumeratePresentControllerMetadata()
+        {
+            var bestByHardware = new Dictionary<string, ControllerMetadata>(StringComparer.OrdinalIgnoreCase);
+            var scores = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            var duplicateCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            Guid hidGuid;
+            NativeMethods.HidD_GetHidGuid(out hidGuid);
+            var deviceInfoSet = NativeMethods.SetupDiGetClassDevs(
+                ref hidGuid, IntPtr.Zero, IntPtr.Zero, DigcfPresent | DigcfDeviceInterface);
+            if (deviceInfoSet == new IntPtr(-1))
+            {
+                return new List<ControllerMetadata>();
+            }
+
+            try
+            {
+                for (uint index = 0; ; index++)
+                {
+                    var interfaceData = new SpDeviceInterfaceData
+                    {
+                        Size = Marshal.SizeOf(typeof(SpDeviceInterfaceData))
+                    };
+                    if (!NativeMethods.SetupDiEnumDeviceInterfaces(
+                        deviceInfoSet, IntPtr.Zero, ref hidGuid, index, ref interfaceData))
+                    {
+                        break;
+                    }
+
+                    uint requiredSize;
+                    NativeMethods.SetupDiGetDeviceInterfaceDetail(
+                        deviceInfoSet, ref interfaceData, IntPtr.Zero, 0, out requiredSize, IntPtr.Zero);
+                    if (requiredSize == 0)
+                    {
+                        continue;
+                    }
+
+                    var detail = Marshal.AllocHGlobal((int)requiredSize);
+                    try
+                    {
+                        Marshal.WriteInt32(detail, IntPtr.Size == 8 ? 8 : 6);
+                        var info = new SpDevinfoData
+                        {
+                            Size = Marshal.SizeOf(typeof(SpDevinfoData))
+                        };
+                        if (!NativeMethods.SetupDiGetDeviceInterfaceDetailWithInfo(
+                            deviceInfoSet, ref interfaceData, detail, requiredSize, out requiredSize, ref info))
+                        {
+                            continue;
+                        }
+
+                        if (IsMouseOrKeyboardClass(info.ClassGuid))
+                        {
+                            continue;
+                        }
+
+                        var pathOffset = IntPtr.Size == 8 ? 8 : 4;
+                        var path = Marshal.PtrToStringUni(IntPtr.Add(detail, pathOffset));
+                        ControllerMetadata metadata;
+                        if (!TryBuildMetadataFromPath(path, duplicateCounts, out metadata))
+                        {
+                            continue;
+                        }
+
+                        var key = string.Format("{0:X4}:{1:X4}", metadata.VendorId, metadata.ProductId);
+                        var score = ScoreHidPath(path);
+                        int previousScore;
+                        if (!bestByHardware.ContainsKey(key) ||
+                            (scores.TryGetValue(key, out previousScore) && score > previousScore))
+                        {
+                            bestByHardware[key] = metadata;
+                            scores[key] = score;
+                        }
+                    }
+                    finally
+                    {
+                        Marshal.FreeHGlobal(detail);
+                    }
+                }
+            }
+            finally
+            {
+                NativeMethods.SetupDiDestroyDeviceInfoList(deviceInfoSet);
+            }
+
+            return bestByHardware.Values.ToList();
+        }
+
         public static bool TryReadInputReport(ushort vendorId, ushort productId,
+            int timeoutMilliseconds, out byte[] report)
+        {
+            report = null;
+            try
+            {
+                return TryReadInputReportCore(vendorId, productId, timeoutMilliseconds, out report);
+            }
+            catch (Exception)
+            {
+                report = null;
+                return false;
+            }
+        }
+
+        private static bool TryReadInputReportCore(ushort vendorId, ushort productId,
             int timeoutMilliseconds, out byte[] report)
         {
             report = null;
@@ -611,6 +884,12 @@ namespace ControllerSessionManager.Controllers
             public static extern bool SetupDiGetDeviceInterfaceDetail(IntPtr deviceInfoSet,
                 ref SpDeviceInterfaceData deviceInterfaceData, IntPtr detailData, uint detailDataSize,
                 out uint requiredSize, IntPtr deviceInfoData);
+
+            [DllImport("setupapi.dll", CharSet = CharSet.Unicode, SetLastError = true,
+                EntryPoint = "SetupDiGetDeviceInterfaceDetail")]
+            public static extern bool SetupDiGetDeviceInterfaceDetailWithInfo(IntPtr deviceInfoSet,
+                ref SpDeviceInterfaceData deviceInterfaceData, IntPtr detailData, uint detailDataSize,
+                out uint requiredSize, ref SpDevinfoData deviceInfoData);
 
             [DllImport("setupapi.dll")]
             public static extern bool SetupDiDestroyDeviceInfoList(IntPtr deviceInfoSet);

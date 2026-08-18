@@ -1,6 +1,21 @@
 # Changelog
 
 ## 1.0.6 — Unreleased test build
+- Recovered Windows Bluetooth battery for BLE HID pads such as the 8BitDo Ultimate 2 Wireless, whose percentage lives on a `BTHLE\DEV_{address}` node that does not share a PnP container or VID/PID with the gamepad HID path.
+- Recovered Windows Bluetooth battery for XInput-wrapped pads such as 8BitDo, whose `&ig_` HID path is not the device node that Settings uses for the percentage.
+- Let the disconnect-overlay preview fill the remaining settings height so the mockup has more room around the card.
+- Made the fullscreen and desktop notification rows look expandable, with a configure hint and a chevron control while they are collapsed.
+- Restyled fullscreen/desktop notification expanders to match the side navigation, restored Overview cards, and added title underlines plus more page spacing.
+- Grouped overlay icon/border checkboxes with their sliders and tightened those rows so the live preview can stay on screen.
+- Ignored HID mice/keyboards and leftover generic HID rows so Mandos no longer lists pointers as "Game Controller".
+- Tightened the settings appearance layout: controller icons sit unboxed and centered, notification/overlay colors sit in a right-hand column, and preview buttons follow the active Playnite theme.
+- Renamed the controller-notification expanders to fullscreen/desktop notification and dropped the Ko-fi helper text so that card is only the support button.
+- Stopped every in-process SDL call from this plugin. Playnite's Input setting "Enable game controller API support" already owns the process-wide SDL loop; sharing it was aborting Desktop on controller connect/disconnect.
+- Restored connection type, VID/PID and battery from Windows HID/PnP (and XInput battery) so Desktop no longer needs in-process SDL for that metadata.
+- Stopped in-process SDL during game sessions and for two seconds after a controller connect/disconnect, and polled XInput before any SDL call so USB/dongle unplug cannot hit Playnite's native event loop.
+- Abandoned SDL joystick references without closing them when the XInput topology changes, and never opened native SDL handles for XInput-backed pads.
+- Deferred native SDL joystick opens and HID battery reads until a newly connected controller has been seen on a later poll, so turning a pad on in Desktop cannot terminate Playnite the way hot-unplug already could in Fullscreen.
+- Contained Playnite controller callbacks, provider polling and settings overview refreshes so a hardware notification cannot take down the UI thread.
 - Replaced middle-dot message fragments with complete sentences and rewrote protection/pause labels in plain, action-oriented language.
 - Added independent overlay appearance options for the controller-name icon and the pause/warning status icon, including live preview support.
 - Displayed the disconnect overlay as soon as a tracked controller becomes suspect while keeping pause actions behind the configured confirmation grace period.

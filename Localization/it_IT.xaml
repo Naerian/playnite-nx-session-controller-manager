@@ -10,7 +10,7 @@
     <sys:String x:Key="LOCCSM_NoControllers">Nessun controller connesso</sys:String>
     <sys:String x:Key="LOCCSM_NoInputYet">Nessun input ancora rilevato</sys:String>
     <sys:String x:Key="LOCCSM_LastInput">Ultimo input</sys:String>
-    <sys:String x:Key="LOCCSM_FoundationNotice">Inventario, monitoraggio sessione e overlay di disconnessione sono attivi. Pausa sicura e altri provider batteria restano pianificati.</sys:String>
+    <sys:String x:Key="LOCCSM_FoundationNotice">Inventario, monitoraggio in partita e overlay di disconnessione sono attivi. Pausa sicura e altri provider batteria restano pianificati.</sys:String>
     <sys:String x:Key="LOCCSM_MenuDiagnostics">Diagnostica controller</sys:String>
     <sys:String x:Key="LOCCSM_MenuRefresh">Aggiorna controller</sys:String>
     <sys:String x:Key="LOCCSM_DiagnosticsTitle">Diagnostica controller</sys:String>
@@ -41,7 +41,7 @@
     <sys:String x:Key="LOCCSM_FoundationTitle">Stato dello sviluppo</sys:String>
     <sys:String x:Key="LOCCSM_TabAbout">Informazioni</sys:String>
     <sys:String x:Key="LOCCSM_Version017">Versione 0.1.7</sys:String>
-    <sys:String x:Key="LOCCSM_AboutPurpose">Monitoraggio affidabile dei controller per le sessioni Playnite.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutPurpose">Gestione dei controller in partita in stile console per Playnite.</sys:String>
     <sys:String x:Key="LOCCSM_AboutDescription">Combina eventi controller di Playnite, slot compatibili XInput e metadati Desktop sicuri per attività, batteria, protezione dalle disconnessioni, pausa sicura e overlay esterno.</sys:String>
     <sys:String x:Key="LOCCSM_AboutWhatItDoesTitle">What Session Controller Manager does</sys:String>
     <sys:String x:Key="LOCCSM_Unknown">Sconosciuto</sys:String>
@@ -84,25 +84,26 @@
     <sys:String x:Key="LOCCSM_Actions">Azioni</sys:String>
     <sys:String x:Key="LOCCSM_TestVibration">Prova vibrazione</sys:String>
     <sys:String x:Key="LOCCSM_VibrationUnavailable">Questo controller non ha accettato il comando di vibrazione con la modalità di connessione o il driver attuale.</sys:String>
-    <sys:String x:Key="LOCCSM_SessionStatus">Sessione di gioco</sys:String>
-    <sys:String x:Key="LOCCSM_ActiveSessionControllers">Controller attivi della sessione</sys:String>
+    <sys:String x:Key="LOCCSM_SessionStatus">Protezione in partita</sys:String>
+    <sys:String x:Key="LOCCSM_ActiveSessionControllers">Controller protetti ora</sys:String>
     <sys:String x:Key="LOCCSM_SessionProtectionTitle">Base della protezione disconnessioni</sys:String>
     <sys:String x:Key="LOCCSM_SessionProtectionHelp">Traccia i controller usati, conferma la disconnessione dopo un’attesa configurabile e può mostrare un overlay esterno o eseguire l’azione di pausa sicura configurata.</sys:String>
-    <sys:String x:Key="LOCCSM_EnableSessionTracking">Traccia i controller attivi durante le sessioni di gioco</sys:String>
+    <sys:String x:Key="LOCCSM_EnableSessionTracking">Traccia i controller attivi durante la partita</sys:String>
+    <sys:String x:Key="LOCCSM_EnableSessionTrackingHelp">Tracks which controllers are active while a game is running.</sys:String>
     <sys:String x:Key="LOCCSM_DisconnectGracePeriod">Intervallo di tolleranza disconnessione</sys:String>
     <sys:String x:Key="LOCCSM_DisconnectGracePeriodHelp">Tempo concesso per brevi interruzioni o riconnessioni immediate prima di confermare una disconnessione.</sys:String>
     <sys:String x:Key="LOCCSM_ValidationGracePeriod">L'intervallo di disconnessione deve essere compreso tra 250 e 10000 millisecondi.</sys:String>
-    <sys:String x:Key="LOCCSM_SessionIdle">Nessuna sessione di gioco attiva</sys:String>
+    <sys:String x:Key="LOCCSM_SessionIdle">Nessun gioco in corso. La protezione si attiva all'avvio di un titolo</sys:String>
     <sys:String x:Key="LOCCSM_SessionDisconnectConfirmed">Disconnessioni confermate: {0}</sys:String>
     <sys:String x:Key="LOCCSM_SessionGracePeriod">Controller disconnesso. Attesa di qualche secondo per la riconnessione</sys:String>
-    <sys:String x:Key="LOCCSM_SessionWaitingForInput">Sessione avviata. In attesa di input</sys:String>
-    <sys:String x:Key="LOCCSM_SessionTracking">Monitoraggio dei controller attivi della sessione</sys:String>
-    <sys:String x:Key="LOCCSM_NoActiveSessionControllers">Nessun controller ha fornito input in questa sessione</sys:String>
+    <sys:String x:Key="LOCCSM_SessionWaitingForInput">Protezione attiva. Usa un controller per iniziare a monitorarlo</sys:String>
+    <sys:String x:Key="LOCCSM_SessionTracking">Monitoraggio dei controller usati in questa partita</sys:String>
+    <sys:String x:Key="LOCCSM_NoActiveSessionControllers">Nessun controller è ancora protetto. Usa un controller durante la partita per iniziare a monitorarlo</sys:String>
     <sys:String x:Key="LOCCSM_AllowControllerTakeover">Consenti a un altro controller di subentrare dopo una disconnessione confermata</sys:String>
     <sys:String x:Key="LOCCSM_AllowControllerTakeoverHelp">Se attivato, un nuovo input da un altro controller può sostituire quello disconnesso. Nel multigiocatore locale, un giocatore già attivo non ne sostituisce mai un altro.</sys:String>
     <sys:String x:Key="LOCCSM_GameOverridesHelp">Usa il menu contestuale del gioco per scegliere l'assegnazione automatica per giocatore singolo o la protezione multigiocatore locale esplicita.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyUseGlobal">Usa impostazioni globali</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyDisable">Disattiva la protezione della sessione</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyDisable">Disattiva la protezione in partita</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyRequireSame">Automatico / adattivo</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyAllowTakeover">Giocatore singolo. Consenti il subentro di un altro controller</sys:String>
     <sys:String x:Key="LOCCSM_MenuSettings">Impostazioni</sys:String>
@@ -112,7 +113,7 @@
     <sys:String x:Key="LOCCSM_ProtectAllActiveControllersHelp">Attivala solo quando più giocatori locali usano controller distinti. La modalità automatica è consigliata per giocatore singolo e multigiocatore online.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyLocalMultiplayer">Multigiocatore locale. Proteggi tutti i controller attivi</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">Temporarily stop the game when a controller disconnects</sys:String>
-    <sys:String x:Key="LOCCSM_PauseGameOnDisconnectHelp">Suspends the game process until the controller reconnects or another one takes over. Works for all games regardless of input handling. The plugin never resumes the game automatically once the session ends.</sys:String>
+    <sys:String x:Key="LOCCSM_PauseGameOnDisconnectHelp">Suspends the game process every time a controller disconnects, without checking for network activity. Works for all games regardless of input handling. The plugin never resumes the game automatically once the game ends.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyEnablePause">Metti automaticamente in pausa questo gioco</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyDisablePause">Non mettere automaticamente in pausa questo gioco</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPauseDisabled">Pausa automatica disattivata</sys:String>
@@ -121,7 +122,7 @@
     <sys:String x:Key="LOCCSM_OverlayWaitSameController">Riconnettilo per continuare.</sys:String>
     <sys:String x:Key="LOCCSM_OverlayAllowTakeover">Riconnettilo oppure premi un pulsante o muovi una levetta su un altro controller.</sys:String>
     <sys:String x:Key="LOCCSM_ColorTopPanelByBattery">Colora icona e testo della batteria in base al livello</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicySessionSection">Protezione della sessione</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicySessionSection">Protezione in partita</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseSection">Pausa automatica</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseUseGlobal">Usa le impostazioni globali di pausa</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicySuspendProcess">Temporarily stop the game when a controller disconnects</sys:String>
@@ -130,7 +131,7 @@
     <sys:String x:Key="LOCCSM_OverlayReconnectControllers">Riconnettili per continuare.</sys:String>
     <sys:String x:Key="LOCCSM_ForcePauseOfflineGames">Arresta temporaneamente il gioco quando non viene rilevata attività di rete</sys:String>
     <sys:String x:Key="LOCCSM_ForcePauseOfflineGamesHelp">Quando un controller si disconnette, arresta temporaneamente il gioco finché torna o ne viene usato un altro. Se rileva attività di rete, lascia il gioco in esecuzione per non interrompere una partita online. Il rilevamento non è sempre preciso.</sys:String>
-    <sys:String x:Key="LOCCSM_FullscreenNotificationsTitle">Notifica su schermo</sys:String>
+    <sys:String x:Key="LOCCSM_FullscreenNotificationsTitle">Notifica a schermo intero</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceLayout">Layout</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceContent">Contenuto</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceShape">Forma e bordo</sys:String>
@@ -150,7 +151,7 @@
     <sys:String x:Key="LOCCSM_ControllerConnectedToast">Controller connesso</sys:String>
     <sys:String x:Key="LOCCSM_ControllerDisconnectedToast">Controller disconnesso</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyForcePauseOffline">Arresta temporaneamente il gioco senza attività di rete. Altrimenti mostra solo l’avviso</sys:String>
-    <sys:String x:Key="LOCCSM_TabSession">Sessione</sys:String><sys:String x:Key="LOCCSM_TabAppearance">Aspetto</sys:String>
+    <sys:String x:Key="LOCCSM_TabSession">In partita</sys:String><sys:String x:Key="LOCCSM_TabAppearance">Aspetto</sys:String>
     <sys:String x:Key="LOCCSM_AdaptiveProtectionHelp">La modalità automatica parte come giocatore singolo e passa al multigiocatore locale solo dopo input alternati e continui da più controller. Provare un controller e poi cambiarlo non attiva la modalità. Usa un'eccezione per gioco solo se necessario.</sys:String>
     <sys:String x:Key="LOCCSM_PauseModesHelp">Choose how the plugin reacts when a controller disconnects. Each game can override this setting from its context menu.</sys:String>
     <sys:String x:Key="LOCCSM_NotificationWidth">Larghezza (px)</sys:String><sys:String x:Key="LOCCSM_NotificationScale">Dimensione (%)</sys:String><sys:String x:Key="LOCCSM_NotificationDuration">Durata (ms)</sys:String><sys:String x:Key="LOCCSM_NotificationPosition">Posizione</sys:String>
@@ -169,23 +170,26 @@
     <sys:String x:Key="LOCCSM_OverlayPreview">Anteprima in tempo reale</sys:String><sys:String x:Key="LOCCSM_PreviewControllerName">Controller di esempio</sys:String><sys:String x:Key="LOCCSM_OverlayPreviewHelp">Colori e scala si aggiornano durante la modifica. L’overlay reale si adatta allo schermo.</sys:String>
     <sys:String x:Key="LOCCSM_SelectColor">Scegli colore</sys:String><sys:String x:Key="LOCCSM_NotificationCornerRadius">Raggio angoli (px)</sys:String><sys:String x:Key="LOCCSM_OverlayTitleSize">Testo titolo (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerTextSize">Testo controller (px)</sys:String><sys:String x:Key="LOCCSM_OverlayInstructionSize">Testo istruzione (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusSize">Testo stato (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerIconSize">Icona controller (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusIconSize">Icona stato (px)</sys:String><sys:String x:Key="LOCCSM_OverlayPadding">Spaziatura scheda (px)</sys:String><sys:String x:Key="LOCCSM_OverlayCornerRadius">Raggio angoli (px)</sys:String><sys:String x:Key="LOCCSM_OverlayShowBorder">Mostra bordo della scheda overlay</sys:String>
     <sys:String x:Key="LOCCSM_SupportReport">Rapporto di supporto</sys:String>
-    <sys:String x:Key="LOCCSM_SupportReportHelp">Esporta un riepilogo rispettoso della privacy di impostazioni, provider, sessione e incidenti recenti. Esclude percorsi HID, numeri di serie, cartelle utente e log di Playnite.</sys:String>
+    <sys:String x:Key="LOCCSM_SupportReportHelp">Esporta un riepilogo rispettoso della privacy di impostazioni, provider, stato attuale e incidenti recenti. Esclude percorsi HID, numeri di serie, cartelle utente e log di Playnite.</sys:String>
     <sys:String x:Key="LOCCSM_ExportSupportReport">Esporta rapporto</sys:String>
     <sys:String x:Key="LOCCSM_SupportReportExported">Rapporto esportato in:&#10;{0}</sys:String>
     <sys:String x:Key="LOCCSM_MenuExportSupport">Esporta rapporto</sys:String>
-    <sys:String x:Key="LOCCSM_AboutCapabilities">Controller Session Manager identifica i controller connessi, conserva nomi e icone personalizzati, mostra stati batteria affidabili, rileva i controller realmente usati e protegge sessioni singole o multigiocatore locale in caso di disconnessione.</sys:String>
-    <sys:String x:Key="LOCCSM_AboutCapabilities2">When a controller disconnects during a game session, the plugin shows a full-screen external overlay with the controller name and pause status. It can suspend the game process automatically — compatible with any game, no key configuration needed — and resumes as soon as a controller reconnects or another one takes over.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutCapabilities">Controller Session Manager identifica i controller connessi, conserva nomi e icone personalizzati, mostra stati batteria affidabili, rileva i controller realmente usati e protegge le partite in singolo o in multigiocatore locale in caso di disconnessione.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutCapabilities2">When a controller disconnects during a game, the plugin shows a full-screen external overlay with the controller name and pause status. It can suspend the game process automatically — compatible with any game, no key configuration needed — and resumes as soon as a controller reconnects or another one takes over.</sys:String>
     <sys:String x:Key="LOCCSM_AboutCapabilities3">Includes customizable notifications for both Desktop and Fullscreen modes: colors, font sizes, position, padding, border and icon layout are all configurable separately for each mode. The top-bar icon shows the primary controller and uses color to indicate battery level.</sys:String>
     <sys:String x:Key="LOCCSM_AboutCapabilities4">Battery reporting works with DualSense, DualShock 4, Xbox controllers and any SDL-supported device. Connection type (USB, Bluetooth, wireless) is detected automatically.</sys:String>
-    <sys:String x:Key="LOCCSM_AboutSafety">Overlay esterno e azioni di pausa opzionali sono isolati da Playnite e dal gioco. Non inietta input e agisce in modo prudente quando le prove su dispositivo, processo o sessione online sono incomplete.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutSafety">Overlay esterno e azioni di pausa opzionali sono isolati da Playnite e dal gioco. Non inietta input e agisce in modo prudente quando le prove su dispositivo, processo o partita online sono incomplete.</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">Mostra l’icona accanto al nome del controller</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowStatusIcon">Mostra l’icona di pausa o avviso</sys:String>
-    <sys:String x:Key="LOCCSM_DesktopNotificationsTitle">Desktop notifications</sys:String>
+    <sys:String x:Key="LOCCSM_DesktopNotificationsTitle">Notifica desktop</sys:String>
     <sys:String x:Key="LOCCSM_ShowDesktopControllerNotifications">Notify when a controller connects or disconnects in the Desktop interface</sys:String>
     <sys:String x:Key="LOCCSM_ShowDesktopControllerNotificationsHelp">Shows a short notification in Playnite Desktop mode when a controller is connected or disconnected.</sys:String>
     <sys:String x:Key="LOCCSM_EnableDisconnectOverlay">Enable the disconnect overlay</sys:String>    <sys:String x:Key="LOCCSM_FullscreenTabLabel">Fullscreen</sys:String>
     <sys:String x:Key="LOCCSM_DesktopTabLabel">Desktop</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationSurface">Edit notifications for</sys:String>
     <sys:String x:Key="LOCCSM_ControllerNotificationTitle">Controller Notification</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerNotificationHelp">Customize the toast shown when a controller connects or disconnects in Fullscreen and Desktop.</sys:String>
+    <sys:String x:Key="LOCCSM_ExpandSectionHint">Espandi per configurare questa notifica.</sys:String>
     <sys:String x:Key="LOCCSM_ShowControllerNameInDesktopNotifications">Show controller name in notification</sys:String>
     <sys:String x:Key="LOCCSM_BorderFull">Completo</sys:String>
     <sys:String x:Key="LOCCSM_AutoPauseModeNone">Do nothing - only show the overlay if enabled</sys:String>

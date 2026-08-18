@@ -18,6 +18,9 @@ namespace ControllerSessionManager.Controllers
             new Guid("104EA319-6EE2-4701-BD47-8DDBF425BBE5"), 2);
         private static DevPropKey DeviceBatteryLifeProperty = new DevPropKey(
             new Guid("49CD1F76-5626-4B17-A4E8-18B4AA1A2213"), 10);
+        private static DevPropKey BluetoothDeviceAddressProperty = new DevPropKey(
+            new Guid("2BD67D8B-8BEB-48D5-87E0-6CDA3428040A"), 1);
+        private const string BluetoothBaseUuidTail = "00805F9B34FB";
         private readonly Dictionary<string, CachedReading> cache =
             new Dictionary<string, CachedReading>(StringComparer.OrdinalIgnoreCase);
 
@@ -28,9 +31,19 @@ namespace ControllerSessionManager.Controllers
 
         public bool Supports(ControllerMetadata controller)
         {
-            return controller != null &&
-                (string.Equals(controller.ConnectionType, "Bluetooth", StringComparison.OrdinalIgnoreCase) ||
-                 IsBluetoothPath(controller.DevicePath));
+            if (controller == null ||
+                string.Equals(controller.ConnectionType, "Wired", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(controller.ConnectionType, "WirelessReceiver",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            return string.Equals(controller.ConnectionType, "Bluetooth",
+                    StringComparison.OrdinalIgnoreCase) ||
+                IsBluetoothPath(controller.DevicePath) ||
+                ControllerDeviceIdentity.HasBluetoothPresence(controller.VendorId,
+                    controller.ProductId);
         }
 
         public bool TryGetBatteryLevel(ControllerMetadata controller, out string level)
@@ -51,11 +64,8 @@ namespace ControllerSessionManager.Controllers
                 return cached.Success;
             }
 
-            Guid containerId;
             var percent = 0;
-            var success = (TryGetContainerFromHidPath(controller.DevicePath, out containerId) ||
-                TryGetUniqueBluetoothContainer(controller, out containerId)) &&
-                TryReadBatteryPercent(containerId, out percent);
+            var success = TryReadBatteryForController(controller, out percent);
             if (success)
             {
                 level = ToLevel(percent);
@@ -88,6 +98,104 @@ namespace ControllerSessionManager.Controllers
                 path.IndexOf("BLUETOOTH", StringComparison.OrdinalIgnoreCase) >= 0 ||
                 path.IndexOf("00001812-0000-1000-8000-00805F9B34FB",
                     StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        internal static bool IsXInputWrapperPath(string path)
+        {
+            return !string.IsNullOrWhiteSpace(path) &&
+                (path.IndexOf("&ig_", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                 path.IndexOf("xusb", StringComparison.OrdinalIgnoreCase) >= 0);
+        }
+
+        internal static bool TryExtractBluetoothAddress(string value, out string address)
+        {
+            address = null;
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return false;
+            }
+
+            var normalized = value.Trim().ToUpperInvariant();
+            var searchFrom = 0;
+            while (true)
+            {
+                var marker = normalized.IndexOf("DEV_", searchFrom, StringComparison.Ordinal);
+                if (marker < 0)
+                {
+                    break;
+                }
+
+                string candidate;
+                if (TryReadExactly12Hex(normalized, marker + 4, out candidate) &&
+                    candidate != BluetoothBaseUuidTail)
+                {
+                    address = candidate;
+                    return true;
+                }
+
+                searchFrom = marker + 4;
+            }
+
+            string colonAddress;
+            if (TryExtractColonAddress(normalized, out colonAddress))
+            {
+                address = colonAddress;
+                return true;
+            }
+
+            var tokens = new List<string>();
+            var current = new StringBuilder();
+            for (var index = 0; index <= normalized.Length; index++)
+            {
+                var character = index < normalized.Length ? normalized[index] : '\0';
+                if (index < normalized.Length && IsHexDigit(character))
+                {
+                    current.Append(character);
+                    continue;
+                }
+
+                if (current.Length == 12)
+                {
+                    var token = current.ToString();
+                    if (token != BluetoothBaseUuidTail)
+                    {
+                        tokens.Add(token);
+                    }
+                }
+
+                current.Length = 0;
+            }
+
+            if (tokens.Count == 0)
+            {
+                return false;
+            }
+
+            address = tokens[tokens.Count - 1];
+            return true;
+        }
+
+        private bool TryReadBatteryForController(ControllerMetadata controller, out int percent)
+        {
+            percent = 0;
+            var records = EnumeratePresentDevices();
+            Guid containerId;
+            if (!IsXInputWrapperPath(controller.DevicePath) &&
+                TryGetContainerFromHidPath(controller.DevicePath, out containerId) &&
+                TryReadBatteryPercentFromRecords(records, containerId, out percent))
+            {
+                return true;
+            }
+
+            string address;
+            if (TryExtractBluetoothAddress(controller.DevicePath, out address) &&
+                TryReadBatteryPercentForAddress(records, address, out percent))
+            {
+                return true;
+            }
+
+            return TryReadBatteryPercentForVendor(records, controller.VendorId,
+                controller.ProductId, out percent);
         }
 
         private static bool TryGetContainerFromHidPath(string devicePath, out Guid containerId)
@@ -164,61 +272,214 @@ namespace ControllerSessionManager.Controllers
             return false;
         }
 
-        private static bool TryGetUniqueBluetoothContainer(ControllerMetadata controller,
-            out Guid containerId)
-        {
-            containerId = Guid.Empty;
-            var matches = new HashSet<Guid>();
-            var infoSet = SetupDiGetClassDevsAll(IntPtr.Zero, null, IntPtr.Zero,
-                DigcfPresent | DigcfAllClasses);
-            if (infoSet == InvalidHandleValue)
-            {
-                return false;
-            }
-            try
-            {
-                for (uint index = 0; ; index++)
-                {
-                    var deviceInfo = new SpDevInfoData
-                    {
-                        Size = (uint)Marshal.SizeOf(typeof(SpDevInfoData))
-                    };
-                    if (!SetupDiEnumDeviceInfo(infoSet, index, ref deviceInfo))
-                    {
-                        break;
-                    }
-                    var instanceId = GetDeviceInstanceId(infoSet, ref deviceInfo);
-                    Guid candidate;
-                    if (IsMatchingBluetoothInstance(instanceId, controller.VendorId,
-                        controller.ProductId) && TryGetGuidProperty(infoSet, ref deviceInfo,
-                            ref ContainerIdProperty, out candidate))
-                    {
-                        matches.Add(candidate);
-                    }
-                }
-            }
-            finally
-            {
-                SetupDiDestroyDeviceInfoList(infoSet);
-            }
-
-            if (matches.Count != 1)
-            {
-                return false;
-            }
-            containerId = matches.First();
-            return true;
-        }
-
-        private static bool TryReadBatteryPercent(Guid containerId, out int percent)
+        private static bool TryReadBatteryPercentFromRecords(IList<PresentDeviceRecord> records,
+            Guid containerId, out int percent)
         {
             percent = 0;
+            if (records == null || containerId == Guid.Empty)
+            {
+                return false;
+            }
+
+            var values = new List<int>();
+            for (var index = 0; index < records.Count; index++)
+            {
+                var record = records[index];
+                if (record.ContainerId == containerId && record.BatteryPercent.HasValue)
+                {
+                    values.Add(record.BatteryPercent.Value);
+                }
+            }
+
+            return TryChooseUniquePercent(values, out percent);
+        }
+
+        private static bool TryReadBatteryPercentForAddress(IList<PresentDeviceRecord> records,
+            string address, out int percent)
+        {
+            percent = 0;
+            if (records == null || string.IsNullOrWhiteSpace(address))
+            {
+                return false;
+            }
+
+            var values = new List<int>();
+            for (var index = 0; index < records.Count; index++)
+            {
+                var record = records[index];
+                if (string.Equals(record.BluetoothAddress, address, StringComparison.OrdinalIgnoreCase) &&
+                    record.BatteryPercent.HasValue)
+                {
+                    values.Add(record.BatteryPercent.Value);
+                }
+            }
+
+            return TryChooseUniquePercent(values, out percent);
+        }
+
+        private static bool TryReadBatteryPercentForVendor(IList<PresentDeviceRecord> records,
+            ushort vendorId, ushort productId, out int percent)
+        {
+            percent = 0;
+            if (records == null || vendorId == 0)
+            {
+                return false;
+            }
+
+            if (TryReadBatteryPercentForVendorGroups(records.GroupBy(a => a.ContainerId),
+                vendorId, productId, true, out percent))
+            {
+                return true;
+            }
+
+            return TryReadBatteryPercentForVendorGroups(
+                records.Where(a => !string.IsNullOrWhiteSpace(a.BluetoothAddress))
+                    .GroupBy(a => a.BluetoothAddress, StringComparer.OrdinalIgnoreCase),
+                vendorId, productId, false, out percent);
+        }
+
+        private static bool TryReadBatteryPercentForVendorGroups(
+            IEnumerable<IGrouping<string, PresentDeviceRecord>> groups,
+            ushort vendorId, ushort productId, bool skipEmptyKey, out int percent)
+        {
+            percent = 0;
+            if (groups == null)
+            {
+                return false;
+            }
+
+            var vendorPercents = new List<int>();
+            var productPercents = new List<int>();
+            foreach (var group in groups)
+            {
+                if (skipEmptyKey && string.IsNullOrWhiteSpace(group.Key))
+                {
+                    continue;
+                }
+
+                var battery = group.Select(a => a.BatteryPercent).FirstOrDefault(a => a.HasValue);
+                if (!battery.HasValue)
+                {
+                    continue;
+                }
+
+                var vendorMatch = false;
+                var productMatch = false;
+                foreach (var record in group)
+                {
+                    if (HidDiagnosticsService.HardwareIdContainsVid(record.InstanceId, vendorId))
+                    {
+                        vendorMatch = true;
+                        if (productId != 0 &&
+                            HidDiagnosticsService.HardwareIdContainsPid(record.InstanceId, productId))
+                        {
+                            productMatch = true;
+                        }
+                    }
+                }
+
+                if (!vendorMatch)
+                {
+                    continue;
+                }
+
+                vendorPercents.Add(battery.Value);
+                if (productMatch)
+                {
+                    productPercents.Add(battery.Value);
+                }
+            }
+
+            var chosen = productPercents.Count > 0 ? productPercents : vendorPercents;
+            return TryChooseUniquePercent(chosen, out percent);
+        }
+
+        private static bool TryReadBatteryPercentForVendorGroups(
+            IEnumerable<IGrouping<Guid, PresentDeviceRecord>> groups,
+            ushort vendorId, ushort productId, bool skipEmptyKey, out int percent)
+        {
+            percent = 0;
+            if (groups == null)
+            {
+                return false;
+            }
+
+            var vendorPercents = new List<int>();
+            var productPercents = new List<int>();
+            foreach (var group in groups)
+            {
+                if (skipEmptyKey && group.Key == Guid.Empty)
+                {
+                    continue;
+                }
+
+                var battery = group.Select(a => a.BatteryPercent).FirstOrDefault(a => a.HasValue);
+                if (!battery.HasValue)
+                {
+                    continue;
+                }
+
+                var vendorMatch = false;
+                var productMatch = false;
+                foreach (var record in group)
+                {
+                    if (HidDiagnosticsService.HardwareIdContainsVid(record.InstanceId, vendorId))
+                    {
+                        vendorMatch = true;
+                        if (productId != 0 &&
+                            HidDiagnosticsService.HardwareIdContainsPid(record.InstanceId, productId))
+                        {
+                            productMatch = true;
+                        }
+                    }
+                }
+
+                if (!vendorMatch)
+                {
+                    continue;
+                }
+
+                vendorPercents.Add(battery.Value);
+                if (productMatch)
+                {
+                    productPercents.Add(battery.Value);
+                }
+            }
+
+            var chosen = productPercents.Count > 0 ? productPercents : vendorPercents;
+            return TryChooseUniquePercent(chosen, out percent);
+        }
+
+        private static bool TryChooseUniquePercent(IList<int> values, out int percent)
+        {
+            percent = 0;
+            if (values == null || values.Count == 0)
+            {
+                return false;
+            }
+
+            percent = values[0];
+            for (var index = 1; index < values.Count; index++)
+            {
+                if (values[index] != percent)
+                {
+                    return false;
+                }
+            }
+
+            return percent <= 100;
+        }
+
+        private static List<PresentDeviceRecord> EnumeratePresentDevices()
+        {
+            var records = new List<PresentDeviceRecord>();
             var infoSet = SetupDiGetClassDevsAll(IntPtr.Zero, null, IntPtr.Zero,
                 DigcfPresent | DigcfAllClasses);
             if (infoSet == InvalidHandleValue)
             {
-                return false;
+                return records;
             }
+
             try
             {
                 for (uint index = 0; ; index++)
@@ -231,44 +492,42 @@ namespace ControllerSessionManager.Controllers
                     {
                         break;
                     }
-                    Guid candidate;
-                    if (!TryGetGuidProperty(infoSet, ref deviceInfo, ref ContainerIdProperty,
-                        out candidate) || candidate != containerId)
+
+                    Guid containerId;
+                    TryGetGuidProperty(infoSet, ref deviceInfo, ref ContainerIdProperty,
+                        out containerId);
+                    int batteryPercent;
+                    int? battery = null;
+                    if (TryGetPercentProperty(infoSet, ref deviceInfo,
+                            ref BluetoothBatteryLifeProperty, out batteryPercent) ||
+                        TryGetPercentProperty(infoSet, ref deviceInfo,
+                            ref DeviceBatteryLifeProperty, out batteryPercent))
                     {
-                        continue;
+                        battery = batteryPercent;
                     }
-                    if ((TryGetByteProperty(infoSet, ref deviceInfo,
-                            ref BluetoothBatteryLifeProperty, out percent) ||
-                         TryGetByteProperty(infoSet, ref deviceInfo,
-                            ref DeviceBatteryLifeProperty, out percent)) && percent <= 100)
+
+                    var instanceId = GetDeviceInstanceId(infoSet, ref deviceInfo);
+                    string address;
+                    if (!TryExtractBluetoothAddress(instanceId, out address))
                     {
-                        return true;
+                        TryGetBluetoothAddressProperty(infoSet, ref deviceInfo, out address);
                     }
+
+                    records.Add(new PresentDeviceRecord
+                    {
+                        ContainerId = containerId,
+                        InstanceId = instanceId,
+                        BluetoothAddress = address,
+                        BatteryPercent = battery
+                    });
                 }
             }
             finally
             {
                 SetupDiDestroyDeviceInfoList(infoSet);
             }
-            return false;
-        }
 
-        private static bool IsMatchingBluetoothInstance(string instanceId, ushort vendorId,
-            ushort productId)
-        {
-            if (string.IsNullOrWhiteSpace(instanceId) ||
-                (instanceId.IndexOf("BTH", StringComparison.OrdinalIgnoreCase) < 0 &&
-                 instanceId.IndexOf("00001812-0000-1000-8000-00805F9B34FB",
-                    StringComparison.OrdinalIgnoreCase) < 0))
-            {
-                return false;
-            }
-            var vendor = vendorId.ToString("X4");
-            var product = productId.ToString("X4");
-            return (instanceId.IndexOf("VID_" + vendor, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    instanceId.IndexOf("VID&12" + vendor, StringComparison.OrdinalIgnoreCase) >= 0) &&
-                (instanceId.IndexOf("PID_" + product, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                 instanceId.IndexOf("PID&" + product, StringComparison.OrdinalIgnoreCase) >= 0);
+            return records;
         }
 
         private static bool PathsReferToSameInterface(string left, string right)
@@ -283,6 +542,112 @@ namespace ControllerSessionManager.Controllers
         {
             return string.IsNullOrWhiteSpace(value) ? string.Empty :
                 value.Trim().Replace('/', '\\').ToUpperInvariant();
+        }
+
+        private static bool TryReadExactly12Hex(string value, int start, out string address)
+        {
+            address = null;
+            if (string.IsNullOrEmpty(value) || start < 0 || start + 12 > value.Length)
+            {
+                return false;
+            }
+
+            for (var index = 0; index < 12; index++)
+            {
+                if (!IsHexDigit(value[start + index]))
+                {
+                    return false;
+                }
+            }
+
+            if (start + 12 < value.Length && IsHexDigit(value[start + 12]))
+            {
+                return false;
+            }
+
+            address = value.Substring(start, 12);
+            return true;
+        }
+
+        private static bool TryExtractColonAddress(string value, out string address)
+        {
+            address = null;
+            if (string.IsNullOrEmpty(value))
+            {
+                return false;
+            }
+
+            for (var index = 0; index + 17 <= value.Length; index++)
+            {
+                var match = true;
+                var digits = new StringBuilder(12);
+                for (var offset = 0; offset < 17; offset++)
+                {
+                    var character = value[index + offset];
+                    if (offset % 3 == 2)
+                    {
+                        if (character != ':')
+                        {
+                            match = false;
+                            break;
+                        }
+                    }
+                    else if (IsHexDigit(character))
+                    {
+                        digits.Append(character);
+                    }
+                    else
+                    {
+                        match = false;
+                        break;
+                    }
+                }
+
+                if (match && digits.Length == 12)
+                {
+                    address = digits.ToString();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool IsHexDigit(char value)
+        {
+            return (value >= '0' && value <= '9') ||
+                (value >= 'A' && value <= 'F') ||
+                (value >= 'a' && value <= 'f');
+        }
+
+        private static bool TryGetBluetoothAddressProperty(IntPtr infoSet, ref SpDevInfoData deviceInfo,
+            out string address)
+        {
+            address = null;
+            var buffer = new byte[32];
+            uint requiredSize;
+            uint propertyType;
+            if (!SetupDiGetDeviceProperty(infoSet, ref deviceInfo, ref BluetoothDeviceAddressProperty,
+                out propertyType, buffer, (uint)buffer.Length, out requiredSize, 0) ||
+                requiredSize == 0)
+            {
+                return false;
+            }
+
+            if (requiredSize >= 6 && requiredSize <= 8)
+            {
+                address = string.Format("{0:X2}{1:X2}{2:X2}{3:X2}{4:X2}{5:X2}",
+                    buffer[0], buffer[1], buffer[2], buffer[3], buffer[4], buffer[5]);
+                return address != BluetoothBaseUuidTail;
+            }
+
+            if (requiredSize >= 12)
+            {
+                var text = Encoding.Unicode.GetString(buffer, 0, (int)requiredSize).Trim('\0');
+                return TryExtractBluetoothAddress(text, out address);
+            }
+
+            return false;
         }
 
         private static bool TryGetGuidProperty(IntPtr infoSet, ref SpDevInfoData deviceInfo,
@@ -301,20 +666,32 @@ namespace ControllerSessionManager.Controllers
             return value != Guid.Empty;
         }
 
-        private static bool TryGetByteProperty(IntPtr infoSet, ref SpDevInfoData deviceInfo,
+        private static bool TryGetPercentProperty(IntPtr infoSet, ref SpDevInfoData deviceInfo,
             ref DevPropKey key, out int value)
         {
             value = 0;
-            var buffer = new byte[1];
+            var buffer = new byte[8];
             uint requiredSize;
             uint propertyType;
             if (!SetupDiGetDeviceProperty(infoSet, ref deviceInfo, ref key, out propertyType,
-                buffer, 1, out requiredSize, 0) || requiredSize < 1)
+                buffer, (uint)buffer.Length, out requiredSize, 0) || requiredSize < 1)
             {
                 return false;
             }
-            value = buffer[0];
-            return true;
+
+            if (requiredSize == 1)
+            {
+                value = buffer[0];
+                return true;
+            }
+
+            if (requiredSize >= 4)
+            {
+                value = BitConverter.ToInt32(buffer, 0);
+                return value >= 0 && value <= 100;
+            }
+
+            return false;
         }
 
         private static string GetDeviceInstanceId(IntPtr infoSet, ref SpDevInfoData deviceInfo)
@@ -323,6 +700,14 @@ namespace ControllerSessionManager.Controllers
             uint requiredSize;
             return SetupDiGetDeviceInstanceId(infoSet, ref deviceInfo, buffer,
                 (uint)buffer.Capacity, out requiredSize) ? buffer.ToString() : null;
+        }
+
+        private sealed class PresentDeviceRecord
+        {
+            public Guid ContainerId { get; set; }
+            public string InstanceId { get; set; }
+            public string BluetoothAddress { get; set; }
+            public int? BatteryPercent { get; set; }
         }
 
         private sealed class CachedReading

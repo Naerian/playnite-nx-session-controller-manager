@@ -14,6 +14,8 @@ namespace ControllerSessionManager.Controllers
         private readonly Dictionary<int, IntPtr> openJoysticks = new Dictionary<int, IntPtr>();
         private readonly Dictionary<int, IntPtr> openGameControllers = new Dictionary<int, IntPtr>();
         private readonly Dictionary<int, SdlInputState> inputStates = new Dictionary<int, SdlInputState>();
+        private readonly HashSet<int> previouslyObservedInstances = new HashSet<int>();
+        private int lastJoystickCount = -1;
 
         public IReadOnlyList<ControllerMetadata> GetControllers()
         {
@@ -35,70 +37,98 @@ namespace ControllerSessionManager.Controllers
                 var duplicateCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
                 var observedInstances = new HashSet<int>();
                 var count = NativeMethods.SDL_NumJoysticks();
+                // Opening a native joystick on the same tick a pad appears (or disappears) has
+                // been observed to terminate Playnite with no managed exception. Keep metadata
+                // reads, but delay JoystickOpen/GameControllerOpen until the instance survived
+                // at least one later poll and the SDL inventory is no longer changing.
+                var inventoryChanged = lastJoystickCount >= 0 && count != lastJoystickCount;
+                lastJoystickCount = count;
                 for (var index = 0; index < count; index++)
                 {
-                    var isGameController = NativeMethods.SDL_IsGameController(index) == 1;
-
-                    var instanceId = NativeMethods.SDL_JoystickGetDeviceInstanceID(index);
-                    observedInstances.Add(instanceId);
-                    // For devices in the game controller database, use the canonical mapped name.
-                    // For raw joysticks (e.g. BT DInput controllers not yet in gamecontrollerdb),
-                    // fall back to the raw joystick name so they still appear and get input sampled.
-                    var rawName = isGameController
-                        ? Marshal.PtrToStringAnsi(NativeMethods.SDL_GameControllerNameForIndex(index))
-                        : Marshal.PtrToStringAnsi(NativeMethods.SDL_JoystickNameForIndex(index));
-                    var devicePath = GetDevicePath(index);
-                    var vendorId = NativeMethods.SDL_JoystickGetDeviceVendor(index);
-                    var productId = NativeMethods.SDL_JoystickGetDeviceProduct(index);
-                    var baseId = string.Format("hardware:{0:X4}:{1:X4}", vendorId, productId);
-                    int ordinal;
-                    duplicateCounts.TryGetValue(baseId, out ordinal);
-                    ordinal++;
-                    duplicateCounts[baseId] = ordinal;
-                    var displayName = ControllerDeviceIdentity.GetDisplayName(rawName, vendorId, productId);
-                    var playerIndex = NativeMethods.SDL_JoystickGetDevicePlayerIndex(index);
-                    var isXInputBacked = playerIndex >= 0 ||
-                        (!string.IsNullOrWhiteSpace(rawName) &&
-                         rawName.IndexOf("XInput", StringComparison.OrdinalIgnoreCase) >= 0);
-                    // Sample SDL input for all devices. For XInput-backed devices this acts as a
-                    // secondary path in case the XInput driver does not report input over BT.
-                    var shouldSampleDevice = sampleInput;
-                    // Use the canonical SDL game-controller button mapping only for XInput-backed
-                    // devices, where SDL's controller-db entry reliably maps to the physical layout.
-                    // For DInput and BT-DInput devices, the same SDL entry often targets a different
-                    // firmware mode (XInput) and maps to wrong physical button indices; raw joystick
-                    // button reads reflect the actual HID report, so they work regardless of SDL db.
-                    var gameController = (shouldSampleDevice && isGameController && isXInputBacked)
-                        ? GetOrOpenGameController(index, instanceId)
-                        : IntPtr.Zero;
-                    var inputState = shouldSampleDevice
-                        ? GetInputState(index, instanceId, gameController)
-                        : null;
-                    var batteryLevel = shouldSampleDevice
-                        ? GetBatteryLevel(index, instanceId)
-                        : "Unknown";
-                    result.Add(new ControllerMetadata
+                    int instanceId;
+                    try
                     {
-                        Index = index,
-                        InstanceId = instanceId,
-                        PlayerIndex = playerIndex,
-                        RawName = rawName,
-                        DevicePath = devicePath,
-                        DisplayName = displayName,
-                        VendorId = vendorId,
-                        ProductId = productId,
-                        HardwareId = string.Format("{0}:{1}", baseId, ordinal),
-                        ConnectionType = ControllerDeviceIdentity.GetConnectionType(
-                            string.Format("{0} {1}", rawName, displayName), vendorId, productId, devicePath),
-                        BatteryLevel = batteryLevel,
-                        BatteryProviderId = batteryLevel == "Unknown" || batteryLevel == "Unavailable"
-                            ? null : "SDL",
-                        LastInputUtc = inputState == null ? null : inputState.LastInputUtc,
-                        LastInputKind = inputState == null ? null : inputState.LastInputKind,
-                        IsInputNeutral = inputState == null ? (bool?)null : inputState.IsInputNeutral,
-                        InputNeutralSinceUtc = inputState == null ? null : inputState.InputNeutralSinceUtc
-                    });
+                        instanceId = NativeMethods.SDL_JoystickGetDeviceInstanceID(index);
+                    }
+                    catch (Exception)
+                    {
+                        continue;
+                    }
+
+                    observedInstances.Add(instanceId);
+                    try
+                    {
+                        var isGameController = NativeMethods.SDL_IsGameController(index) == 1;
+                        // For devices in the game controller database, use the canonical mapped name.
+                        // For raw joysticks (e.g. BT DInput controllers not yet in gamecontrollerdb),
+                        // fall back to the raw joystick name so they still appear and get input sampled.
+                        var rawName = isGameController
+                            ? Marshal.PtrToStringAnsi(NativeMethods.SDL_GameControllerNameForIndex(index))
+                            : Marshal.PtrToStringAnsi(NativeMethods.SDL_JoystickNameForIndex(index));
+                        var devicePath = GetDevicePath(index);
+                        var vendorId = NativeMethods.SDL_JoystickGetDeviceVendor(index);
+                        var productId = NativeMethods.SDL_JoystickGetDeviceProduct(index);
+                        var baseId = string.Format("hardware:{0:X4}:{1:X4}", vendorId, productId);
+                        int ordinal;
+                        duplicateCounts.TryGetValue(baseId, out ordinal);
+                        ordinal++;
+                        duplicateCounts[baseId] = ordinal;
+                        var displayName = ControllerDeviceIdentity.GetDisplayName(rawName, vendorId, productId);
+                        var playerIndex = NativeMethods.SDL_JoystickGetDevicePlayerIndex(index);
+                        var isXInputBacked = playerIndex >= 0 ||
+                            (!string.IsNullOrWhiteSpace(rawName) &&
+                             rawName.IndexOf("XInput", StringComparison.OrdinalIgnoreCase) >= 0);
+                        var isSettled = previouslyObservedInstances.Contains(instanceId) && !inventoryChanged;
+                        // Never open a native SDL handle for an XInput-backed pad. USB and 2.4 GHz
+                        // dongle unplug of those devices shares Playnite's SDL loop and can abort
+                        // the process. XInput already supplies input and battery for that path.
+                        // Sample raw joysticks only after the instance has survived a later poll.
+                        var shouldSampleDevice = sampleInput && isSettled && !isXInputBacked;
+                        // Use the canonical SDL game-controller button mapping only for XInput-backed
+                        // devices, where SDL's controller-db entry reliably maps to the physical layout.
+                        // For DInput and BT-DInput devices, the same SDL entry often targets a different
+                        // firmware mode (XInput) and maps to wrong physical button indices; raw joystick
+                        // button reads reflect the actual HID report, so they work regardless of SDL db.
+                        var gameController = (shouldSampleDevice && isGameController && isXInputBacked)
+                            ? GetOrOpenGameController(index, instanceId)
+                            : IntPtr.Zero;
+                        var inputState = shouldSampleDevice
+                            ? GetInputState(index, instanceId, gameController)
+                            : null;
+                        var batteryLevel = shouldSampleDevice
+                            ? GetBatteryLevel(index, instanceId)
+                            : "Unknown";
+                        result.Add(new ControllerMetadata
+                        {
+                            Index = index,
+                            InstanceId = instanceId,
+                            PlayerIndex = playerIndex,
+                            RawName = rawName,
+                            DevicePath = devicePath,
+                            DisplayName = displayName,
+                            VendorId = vendorId,
+                            ProductId = productId,
+                            HardwareId = string.Format("{0}:{1}", baseId, ordinal),
+                            ConnectionType = ControllerDeviceIdentity.GetConnectionType(
+                                string.Format("{0} {1}", rawName, displayName), vendorId, productId, devicePath),
+                            BatteryLevel = batteryLevel,
+                            BatteryProviderId = batteryLevel == "Unknown" || batteryLevel == "Unavailable"
+                                ? null : "SDL",
+                            LastInputUtc = inputState == null ? null : inputState.LastInputUtc,
+                            LastInputKind = inputState == null ? null : inputState.LastInputKind,
+                            IsInputNeutral = inputState == null ? (bool?)null : inputState.IsInputNeutral,
+                            InputNeutralSinceUtc = inputState == null ? null : inputState.InputNeutralSinceUtc,
+                            IsSettled = isSettled
+                        });
+                    }
+                    catch (Exception)
+                    {
+                        // A half-initialized device must not abort the rest of Desktop polling.
+                    }
                 }
+
+                previouslyObservedInstances.IntersectWith(observedInstances);
+                previouslyObservedInstances.UnionWith(observedInstances);
 
                 foreach (var staleInstance in openJoysticks.Keys.Where(a => !observedInstances.Contains(a)).ToList())
                 {
@@ -124,6 +154,11 @@ namespace ControllerSessionManager.Controllers
             {
                 unavailable = true;
             }
+            catch (Exception)
+            {
+                // Transient native enumeration failures during hot-plug must not disable SDL
+                // for the rest of the Desktop session.
+            }
 
             return result.OrderBy(a => a.Index).ToList();
         }
@@ -141,6 +176,19 @@ namespace ControllerSessionManager.Controllers
             }
             openJoysticks.Clear();
             inputStates.Clear();
+            previouslyObservedInstances.Clear();
+            lastJoystickCount = -1;
+        }
+
+        public void AbandonOpenHandles()
+        {
+            // Drop native references without SDL_JoystickClose. Closing during hot-unplug has
+            // been observed to terminate Playnite; the OS reclaims the handles later.
+            openGameControllers.Clear();
+            openJoysticks.Clear();
+            inputStates.Clear();
+            previouslyObservedInstances.Clear();
+            lastJoystickCount = -1;
         }
 
         public bool TryRumble(int instanceId, ushort lowFrequency, ushort highFrequency, uint durationMs)
@@ -240,7 +288,14 @@ namespace ControllerSessionManager.Controllers
                 return joystick;
             }
 
-            joystick = NativeMethods.SDL_JoystickOpen(index);
+            try
+            {
+                joystick = NativeMethods.SDL_JoystickOpen(index);
+            }
+            catch (Exception)
+            {
+                return IntPtr.Zero;
+            }
             if (joystick != IntPtr.Zero)
             {
                 openJoysticks[instanceId] = joystick;
@@ -269,7 +324,14 @@ namespace ControllerSessionManager.Controllers
                 return controller;
             }
 
-            controller = NativeMethods.SDL_GameControllerOpen(index);
+            try
+            {
+                controller = NativeMethods.SDL_GameControllerOpen(index);
+            }
+            catch (Exception)
+            {
+                return IntPtr.Zero;
+            }
             if (controller != IntPtr.Zero)
             {
                 openGameControllers[instanceId] = controller;

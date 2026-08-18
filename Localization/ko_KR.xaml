@@ -10,7 +10,7 @@
     <sys:String x:Key="LOCCSM_NoControllers">연결된 컨트롤러 없음</sys:String>
     <sys:String x:Key="LOCCSM_NoInputYet">아직 입력이 감지되지 않음</sys:String>
     <sys:String x:Key="LOCCSM_LastInput">마지막 입력</sys:String>
-    <sys:String x:Key="LOCCSM_FoundationNotice">컨트롤러 목록, 세션 추적 및 연결 끊김 오버레이가 활성화되었습니다. 안전한 일시 정지와 추가 배터리 기능은 추후 제공됩니다.</sys:String>
+    <sys:String x:Key="LOCCSM_FoundationNotice">컨트롤러 목록, 플레이 중 추적 및 연결 끊김 오버레이가 활성화되었습니다. 안전한 일시 정지와 추가 배터리 기능은 추후 제공됩니다.</sys:String>
     <sys:String x:Key="LOCCSM_MenuDiagnostics">컨트롤러 진단</sys:String>
     <sys:String x:Key="LOCCSM_MenuRefresh">컨트롤러 새로 고침</sys:String>
     <sys:String x:Key="LOCCSM_DiagnosticsTitle">컨트롤러 진단</sys:String>
@@ -41,7 +41,7 @@
     <sys:String x:Key="LOCCSM_FoundationTitle">개발 상태</sys:String>
     <sys:String x:Key="LOCCSM_TabAbout">정보</sys:String>
     <sys:String x:Key="LOCCSM_Version017">버전 0.1.7</sys:String>
-    <sys:String x:Key="LOCCSM_AboutPurpose">Playnite 세션을 위한 안정적인 컨트롤러 모니터링.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutPurpose">Playnite를 위한 콘솔 스타일 플레이 중 컨트롤러 관리.</sys:String>
     <sys:String x:Key="LOCCSM_AboutDescription">Playnite 컨트롤러 이벤트, XInput 호환 슬롯 및 안전한 데스크톱 메타데이터를 결합하여 활성 컨트롤러, 배터리, 연결 해제 보호, 안전한 일시 정지 및 외부 오버레이를 관리합니다.</sys:String>
     <sys:String x:Key="LOCCSM_AboutWhatItDoesTitle">What Session Controller Manager does</sys:String>
     <sys:String x:Key="LOCCSM_Unknown">알 수 없음</sys:String>
@@ -84,25 +84,26 @@
     <sys:String x:Key="LOCCSM_Actions">작업</sys:String>
     <sys:String x:Key="LOCCSM_TestVibration">진동 테스트</sys:String>
     <sys:String x:Key="LOCCSM_VibrationUnavailable">현재 연결 모드 또는 드라이버에서 이 컨트롤러가 진동 명령을 수락하지 않았습니다.</sys:String>
-    <sys:String x:Key="LOCCSM_SessionStatus">게임 세션</sys:String>
-    <sys:String x:Key="LOCCSM_ActiveSessionControllers">세션 활성 컨트롤러</sys:String>
+    <sys:String x:Key="LOCCSM_SessionStatus">플레이 중 보호</sys:String>
+    <sys:String x:Key="LOCCSM_ActiveSessionControllers">지금 보호 중인 컨트롤러</sys:String>
     <sys:String x:Key="LOCCSM_SessionProtectionTitle">연결 끊김 보호 기반</sys:String>
     <sys:String x:Key="LOCCSM_SessionProtectionHelp">게임 중 사용한 컨트롤러를 추적하고 설정된 대기 시간 후 연결 끊김을 확인하여 외부 오버레이를 표시하거나 구성된 안전한 일시 정지 작업을 수행할 수 있습니다.</sys:String>
-    <sys:String x:Key="LOCCSM_EnableSessionTracking">게임 세션 중 활성 컨트롤러 추적</sys:String>
+    <sys:String x:Key="LOCCSM_EnableSessionTracking">플레이 중 활성 컨트롤러 추적</sys:String>
+    <sys:String x:Key="LOCCSM_EnableSessionTrackingHelp">Tracks which controllers are active while a game is running.</sys:String>
     <sys:String x:Key="LOCCSM_DisconnectGracePeriod">연결 끊김 유예 시간</sys:String>
     <sys:String x:Key="LOCCSM_DisconnectGracePeriodHelp">연결 끊김을 확인하기 전에 짧은 끊김이나 즉시 재연결을 허용하는 시간입니다.</sys:String>
     <sys:String x:Key="LOCCSM_ValidationGracePeriod">연결 끊김 유예 시간은 250~10000밀리초여야 합니다.</sys:String>
-    <sys:String x:Key="LOCCSM_SessionIdle">활성 게임 세션 없음</sys:String>
+    <sys:String x:Key="LOCCSM_SessionIdle">실행 중인 게임이 없습니다. 타이틀을 실행하면 보호가 시작됩니다</sys:String>
     <sys:String x:Key="LOCCSM_SessionDisconnectConfirmed">확인된 연결 끊김: {0}</sys:String>
     <sys:String x:Key="LOCCSM_SessionGracePeriod">컨트롤러 연결이 끊어졌습니다. 다시 연결되는지 잠시 기다리는 중입니다</sys:String>
-    <sys:String x:Key="LOCCSM_SessionWaitingForInput">세션 시작됨. 컨트롤러 입력 대기 중</sys:String>
-    <sys:String x:Key="LOCCSM_SessionTracking">세션 활성 컨트롤러 추적 중</sys:String>
-    <sys:String x:Key="LOCCSM_NoActiveSessionControllers">이 세션에서 컨트롤러 입력이 아직 없습니다</sys:String>
+    <sys:String x:Key="LOCCSM_SessionWaitingForInput">보호가 켜져 있습니다. 컨트롤러를 사용하면 감시를 시작합니다</sys:String>
+    <sys:String x:Key="LOCCSM_SessionTracking">이 게임에서 사용하는 컨트롤러를 감시 중</sys:String>
+    <sys:String x:Key="LOCCSM_NoActiveSessionControllers">아직 보호 중인 컨트롤러가 없습니다. 게임 중에 컨트롤러를 사용하면 감시를 시작합니다</sys:String>
     <sys:String x:Key="LOCCSM_AllowControllerTakeover">연결 끊김 확인 후 다른 컨트롤러가 제어하도록 허용</sys:String>
     <sys:String x:Key="LOCCSM_AllowControllerTakeoverHelp">활성화하면 다른 컨트롤러의 새로운 입력으로 연결이 끊긴 컨트롤러를 대체할 수 있습니다. 로컬 멀티플레이에서는 이미 활성인 플레이어가 다른 플레이어를 대체하지 않습니다.</sys:String>
     <sys:String x:Key="LOCCSM_GameOverridesHelp">게임 컨텍스트 메뉴에서 자동 싱글 플레이 할당 또는 명시적 로컬 멀티플레이 보호를 선택하세요.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyUseGlobal">전역 설정 사용</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyDisable">세션 보호 비활성화</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyDisable">플레이 중 보호 비활성화</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyRequireSame">자동 / 적응형</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyAllowTakeover">싱글 플레이. 다른 컨트롤러의 전환 허용</sys:String>
     <sys:String x:Key="LOCCSM_MenuSettings">설정</sys:String>
@@ -112,7 +113,7 @@
     <sys:String x:Key="LOCCSM_ProtectAllActiveControllersHelp">여러 로컬 플레이어가 별도 컨트롤러를 사용할 때만 활성화하세요. 싱글 플레이와 온라인 멀티플레이에는 자동 모드를 권장합니다.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyLocalMultiplayer">로컬 멀티플레이. 모든 활성 컨트롤러 보호</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">Temporarily stop the game when a controller disconnects</sys:String>
-    <sys:String x:Key="LOCCSM_PauseGameOnDisconnectHelp">Suspends the game process until the controller reconnects or another one takes over. Works for all games regardless of input handling. The plugin never resumes the game automatically once the session ends.</sys:String>
+    <sys:String x:Key="LOCCSM_PauseGameOnDisconnectHelp">Suspends the game process every time a controller disconnects, without checking for network activity. Works for all games regardless of input handling. The plugin never resumes the game automatically once the game ends.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyEnablePause">이 게임 자동 일시 정지</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyDisablePause">이 게임을 자동 일시 정지하지 않음</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPauseDisabled">자동 일시 정지 꺼짐</sys:String>
@@ -121,7 +122,7 @@
     <sys:String x:Key="LOCCSM_OverlayWaitSameController">다시 연결하여 계속하세요.</sys:String>
     <sys:String x:Key="LOCCSM_OverlayAllowTakeover">다시 연결하거나 다른 컨트롤러의 버튼을 누르거나 스틱을 움직이세요.</sys:String>
     <sys:String x:Key="LOCCSM_ColorTopPanelByBattery">배터리 수준에 따라 아이콘과 텍스트 색상 지정</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicySessionSection">세션 보호</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicySessionSection">플레이 중 보호</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseSection">자동 일시 정지</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseUseGlobal">전역 일시 정지 설정 사용</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicySuspendProcess">Temporarily stop the game when a controller disconnects</sys:String>
@@ -130,7 +131,7 @@
     <sys:String x:Key="LOCCSM_OverlayReconnectControllers">다시 연결하여 계속하세요.</sys:String>
     <sys:String x:Key="LOCCSM_ForcePauseOfflineGames">네트워크 활동이 없을 때 게임을 일시적으로 중지</sys:String>
     <sys:String x:Key="LOCCSM_ForcePauseOfflineGamesHelp">컨트롤러 연결이 끊어지면 다시 연결되거나 다른 컨트롤러를 사용할 때까지 게임을 일시적으로 중지합니다. 네트워크 활동이 감지되면 온라인 플레이를 방해하지 않도록 게임을 계속 실행합니다. 감지가 항상 정확한 것은 아닙니다.</sys:String>
-    <sys:String x:Key="LOCCSM_FullscreenNotificationsTitle">화면 알림</sys:String>
+    <sys:String x:Key="LOCCSM_FullscreenNotificationsTitle">전체 화면 알림</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceLayout">레이아웃</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceContent">콘텐츠</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceShape">모양 및 테두리</sys:String>
@@ -150,7 +151,7 @@
     <sys:String x:Key="LOCCSM_ControllerConnectedToast">컨트롤러 연결됨</sys:String>
     <sys:String x:Key="LOCCSM_ControllerDisconnectedToast">컨트롤러 연결 끊김</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyForcePauseOffline">네트워크 활동이 없으면 게임을 일시적으로 중지. 활동이 있으면 경고만 표시</sys:String>
-    <sys:String x:Key="LOCCSM_TabSession">세션</sys:String><sys:String x:Key="LOCCSM_TabAppearance">모양</sys:String>
+    <sys:String x:Key="LOCCSM_TabSession">플레이 중</sys:String><sys:String x:Key="LOCCSM_TabAppearance">모양</sys:String>
     <sys:String x:Key="LOCCSM_AdaptiveProtectionHelp">자동 모드는 싱글 플레이로 시작하며 여러 컨트롤러의 지속적인 교대 입력을 감지한 경우에만 로컬 멀티플레이로 전환합니다. 컨트롤러를 한 번 바꾸는 것만으로는 전환되지 않습니다. 필요한 게임에만 별도 설정을 사용하세요.</sys:String>
     <sys:String x:Key="LOCCSM_PauseModesHelp">Choose how the plugin reacts when a controller disconnects. Each game can override this setting from its context menu.</sys:String>
     <sys:String x:Key="LOCCSM_NotificationWidth">너비 (px)</sys:String><sys:String x:Key="LOCCSM_NotificationScale">크기 (%)</sys:String><sys:String x:Key="LOCCSM_NotificationDuration">표시 시간 (ms)</sys:String><sys:String x:Key="LOCCSM_NotificationPosition">위치</sys:String>
@@ -169,23 +170,26 @@
     <sys:String x:Key="LOCCSM_OverlayPreview">실시간 미리보기</sys:String><sys:String x:Key="LOCCSM_PreviewControllerName">예시 컨트롤러</sys:String><sys:String x:Key="LOCCSM_OverlayPreviewHelp">편집하는 동안 색상과 크기가 업데이트됩니다. 실제 오버레이는 화면에 맞게 조정됩니다.</sys:String>
     <sys:String x:Key="LOCCSM_SelectColor">색상 선택</sys:String><sys:String x:Key="LOCCSM_NotificationCornerRadius">모서리 반경 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayTitleSize">제목 텍스트 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerTextSize">컨트롤러 텍스트 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayInstructionSize">안내 텍스트 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusSize">상태 텍스트 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayControllerIconSize">컨트롤러 아이콘 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayStatusIconSize">상태 아이콘 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayPadding">카드 여백 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayCornerRadius">모서리 반경 (px)</sys:String><sys:String x:Key="LOCCSM_OverlayShowBorder">오버레이 카드 테두리 표시</sys:String>
     <sys:String x:Key="LOCCSM_SupportReport">지원 보고서</sys:String>
-    <sys:String x:Key="LOCCSM_SupportReportHelp">설정, 컨트롤러 공급자, 현재 세션 및 최근 문제를 개인정보 보호 방식으로 내보냅니다. HID 경로, 일련번호, 사용자 폴더 및 Playnite 로그는 제외됩니다.</sys:String>
+    <sys:String x:Key="LOCCSM_SupportReportHelp">설정, 컨트롤러 공급자, 현재 상태 및 최근 문제를 개인정보 보호 방식으로 내보냅니다. HID 경로, 일련번호, 사용자 폴더 및 Playnite 로그는 제외됩니다.</sys:String>
     <sys:String x:Key="LOCCSM_ExportSupportReport">지원 보고서 내보내기</sys:String>
     <sys:String x:Key="LOCCSM_SupportReportExported">보고서를 내보냈습니다:&#10;{0}</sys:String>
     <sys:String x:Key="LOCCSM_MenuExportSupport">지원 보고서 내보내기</sys:String>
-    <sys:String x:Key="LOCCSM_AboutCapabilities">Controller Session Manager는 연결된 컨트롤러를 식별하고 사용자 지정 이름과 아이콘을 유지하며 신뢰할 수 있는 배터리 상태를 표시합니다. 게임에서 실제로 사용되는 컨트롤러를 감지하고 참가자가 끊기면 싱글 플레이 또는 로컬 멀티플레이 세션을 보호합니다.</sys:String>
-    <sys:String x:Key="LOCCSM_AboutCapabilities2">When a controller disconnects during a game session, the plugin shows a full-screen external overlay with the controller name and pause status. It can suspend the game process automatically — compatible with any game, no key configuration needed — and resumes as soon as a controller reconnects or another one takes over.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutCapabilities">Controller Session Manager는 연결된 컨트롤러를 식별하고 사용자 지정 이름과 아이콘을 유지하며 신뢰할 수 있는 배터리 상태를 표시합니다. 게임에서 실제로 사용되는 컨트롤러를 감지하고 참가자가 끊기면 싱글 플레이 또는 로컬 멀티플레이를 보호합니다.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutCapabilities2">When a controller disconnects during a game, the plugin shows a full-screen external overlay with the controller name and pause status. It can suspend the game process automatically — compatible with any game, no key configuration needed — and resumes as soon as a controller reconnects or another one takes over.</sys:String>
     <sys:String x:Key="LOCCSM_AboutCapabilities3">Includes customizable notifications for both Desktop and Fullscreen modes: colors, font sizes, position, padding, border and icon layout are all configurable separately for each mode. The top-bar icon shows the primary controller and uses color to indicate battery level.</sys:String>
     <sys:String x:Key="LOCCSM_AboutCapabilities4">Battery reporting works with DualSense, DualShock 4, Xbox controllers and any SDL-supported device. Connection type (USB, Bluetooth, wireless) is detected automatically.</sys:String>
-    <sys:String x:Key="LOCCSM_AboutSafety">외부 오버레이와 선택적 일시 정지는 Playnite 및 게임과 격리됩니다. 입력을 주입하지 않으며 장치, 프로세스 또는 온라인 세션 근거가 불완전하면 보수적으로 동작합니다.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutSafety">외부 오버레이와 선택적 일시 정지는 Playnite 및 게임과 격리됩니다. 입력을 주입하지 않으며 장치, 프로세스 또는 온라인 플레이 근거가 불완전하면 보수적으로 동작합니다.</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">컨트롤러 이름 옆에 아이콘 표시</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowStatusIcon">일시 중지 또는 경고 상태 아이콘 표시</sys:String>
-    <sys:String x:Key="LOCCSM_DesktopNotificationsTitle">Desktop notifications</sys:String>
+    <sys:String x:Key="LOCCSM_DesktopNotificationsTitle">데스크톱 알림</sys:String>
     <sys:String x:Key="LOCCSM_ShowDesktopControllerNotifications">Notify when a controller connects or disconnects in the Desktop interface</sys:String>
     <sys:String x:Key="LOCCSM_ShowDesktopControllerNotificationsHelp">Shows a short notification in Playnite Desktop mode when a controller is connected or disconnected.</sys:String>
     <sys:String x:Key="LOCCSM_EnableDisconnectOverlay">Enable the disconnect overlay</sys:String>    <sys:String x:Key="LOCCSM_FullscreenTabLabel">Fullscreen</sys:String>
     <sys:String x:Key="LOCCSM_DesktopTabLabel">Desktop</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationSurface">Edit notifications for</sys:String>
     <sys:String x:Key="LOCCSM_ControllerNotificationTitle">Controller Notification</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerNotificationHelp">Customize the toast shown when a controller connects or disconnects in Fullscreen and Desktop.</sys:String>
+    <sys:String x:Key="LOCCSM_ExpandSectionHint">펼쳐서 이 알림을 구성하세요.</sys:String>
     <sys:String x:Key="LOCCSM_ShowControllerNameInDesktopNotifications">Show controller name in notification</sys:String>
     <sys:String x:Key="LOCCSM_BorderFull">Full</sys:String>
     <sys:String x:Key="LOCCSM_AutoPauseModeNone">Do nothing - only show the overlay if enabled</sys:String>

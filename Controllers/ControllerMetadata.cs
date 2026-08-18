@@ -20,5 +20,6 @@ namespace ControllerSessionManager.Controllers
         public string LastInputKind { get; set; }
         public bool? IsInputNeutral { get; set; }
         public DateTime? InputNeutralSinceUtc { get; set; }
+        public bool IsSettled { get; set; }
     }
 }

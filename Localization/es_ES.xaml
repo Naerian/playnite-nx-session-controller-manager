@@ -1,5 +1,5 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
-    <sys:String x:Key="LOCCSM_PluginName">Gestor de sesiones de mandos</sys:String>
+    <sys:String x:Key="LOCCSM_PluginName">Gestor de mandos en partida</sys:String>
     <sys:String x:Key="LOCCSM_SettingsTitle">Controller Session Manager</sys:String>
     <sys:String x:Key="LOCCSM_EnableMonitoring">Activar la monitorización de mandos</sys:String>
     <sys:String x:Key="LOCCSM_EnableDebugLogging">Activar el registro de diagnóstico detallado</sys:String>
@@ -10,7 +10,7 @@
     <sys:String x:Key="LOCCSM_NoControllers">No hay ningún mando conectado</sys:String>
     <sys:String x:Key="LOCCSM_NoInputYet">Aún no se ha detectado input</sys:String>
     <sys:String x:Key="LOCCSM_LastInput">Último input</sys:String>
-    <sys:String x:Key="LOCCSM_FoundationNotice">El inventario, el seguimiento de sesión y el overlay de desconexión están activos. La pausa segura y más proveedores de batería siguen planificados.</sys:String>
+    <sys:String x:Key="LOCCSM_FoundationNotice">El inventario, el seguimiento en partida y el overlay de desconexión están activos. La pausa segura y más proveedores de batería siguen planificados.</sys:String>
     <sys:String x:Key="LOCCSM_MenuDiagnostics">Diagnóstico de mandos</sys:String>
     <sys:String x:Key="LOCCSM_MenuRefresh">Actualizar mandos</sys:String>
     <sys:String x:Key="LOCCSM_DiagnosticsTitle">Diagnóstico de mandos</sys:String>
@@ -41,8 +41,8 @@
     <sys:String x:Key="LOCCSM_FoundationTitle">Estado del desarrollo</sys:String>
     <sys:String x:Key="LOCCSM_TabAbout">Acerca de</sys:String>
     <sys:String x:Key="LOCCSM_Version017">Versión 0.1.7</sys:String>
-    <sys:String x:Key="LOCCSM_AboutPurpose">Gestión de sesiones de mandos estilo consola para Playnite</sys:String>
-    <sys:String x:Key="LOCCSM_AboutDescription">Gestión de sesión de mando al estilo consola para Playnite. Detecta los mandos activos, protege la sesión de juego ante desconexiones y puede pausar el juego automáticamente hasta que vuelvas a conectarte.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutPurpose">Gestión de mandos en partida al estilo consola para Playnite</sys:String>
+    <sys:String x:Key="LOCCSM_AboutDescription">Gestión de mandos en partida al estilo consola para Playnite. Detecta los mandos activos, protege la partida ante desconexiones y puede pausar el juego automáticamente hasta que vuelvas a conectarte.</sys:String>
     <sys:String x:Key="LOCCSM_AboutWhatItDoesTitle">Qué hace Session Controller Manager</sys:String>
     <sys:String x:Key="LOCCSM_Unknown">Desconocido</sys:String>
     <sys:String x:Key="LOCCSM_ValueWired">Cable</sys:String>
@@ -88,7 +88,8 @@
     <sys:String x:Key="LOCCSM_ActiveSessionControllers">Mandos protegidos ahora</sys:String>
     <sys:String x:Key="LOCCSM_SessionProtectionTitle">Base de protección ante desconexiones</sys:String>
     <sys:String x:Key="LOCCSM_SessionProtectionHelp">Registra los mandos usados durante una partida, confirma su desconexión tras una espera configurable y puede mostrar un overlay externo o realizar la acción de pausa segura configurada.</sys:String>
-    <sys:String x:Key="LOCCSM_EnableSessionTracking">Seguir los mandos activos durante las sesiones de juego</sys:String>
+    <sys:String x:Key="LOCCSM_EnableSessionTracking">Seguir los mandos activos durante la partida</sys:String>
+    <sys:String x:Key="LOCCSM_EnableSessionTrackingHelp">Registra qué mandos están activos mientras corre un juego.</sys:String>
     <sys:String x:Key="LOCCSM_DisconnectGracePeriod">Margen de desconexión</sys:String>
     <sys:String x:Key="LOCCSM_DisconnectGracePeriodHelp">Tiempo permitido para microcortes o reconexiones inmediatas antes de confirmar una desconexión.</sys:String>
     <sys:String x:Key="LOCCSM_ValidationGracePeriod">El margen de desconexión debe estar entre 250 y 10000 milisegundos.</sys:String>
@@ -102,7 +103,7 @@
     <sys:String x:Key="LOCCSM_AllowControllerTakeoverHelp">Si está activado, el input nuevo de otro mando puede sustituir al desconectado. En multijugador local, el mando de un jugador ya activo nunca sustituye a otro jugador.</sys:String>
     <sys:String x:Key="LOCCSM_GameOverridesHelp">Usa el menú contextual del juego para elegir el control automático de un jugador o la protección explícita del multijugador local.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyUseGlobal">Usar ajustes globales</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyDisable">Desactivar la protección de sesión</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicyDisable">Desactivar la protección en partida</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyRequireSame">Automático / adaptativo</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyAllowTakeover">Un jugador. Permitir continuar con otro mando</sys:String>
     <sys:String x:Key="LOCCSM_MenuSettings">Configuración</sys:String>
@@ -112,7 +113,7 @@
     <sys:String x:Key="LOCCSM_ProtectAllActiveControllersHelp">Actívala solo cuando varios jugadores locales usen mandos distintos. El modo automático es el recomendado para un jugador y multijugador en línea.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyLocalMultiplayer">Varios jugadores en el mismo equipo. Proteger el mando de cada jugador</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">Suspender el proceso siempre, independientemente de la red</sys:String>
-    <sys:String x:Key="LOCCSM_PauseGameOnDisconnectHelp">Suspende el proceso del juego cada vez que se desconecta un mando, sin comprobar si hay actividad de red. Funciona con todos los juegos. El plugin nunca reanuda el juego automáticamente una vez finalizada la sesión.</sys:String>
+    <sys:String x:Key="LOCCSM_PauseGameOnDisconnectHelp">Suspende el proceso del juego cada vez que se desconecta un mando, sin comprobar si hay actividad de red. Funciona con todos los juegos. El plugin nunca reanuda el juego automáticamente cuando termina la partida.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyEnablePause">Pausar automáticamente en este juego</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyDisablePause">No pausar automáticamente en este juego</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPauseDisabled">Pausa automática desactivada</sys:String>
@@ -121,7 +122,7 @@
     <sys:String x:Key="LOCCSM_OverlayWaitSameController">Vuelve a conectarlo para continuar.</sys:String>
     <sys:String x:Key="LOCCSM_OverlayAllowTakeover">Reconéctalo, o pulsa un botón o mueve un stick en otro mando.</sys:String>
     <sys:String x:Key="LOCCSM_ColorTopPanelByBattery">Colorear el icono y el texto según el nivel de batería</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicySessionSection">Protección de sesión</sys:String>
+    <sys:String x:Key="LOCCSM_GamePolicySessionSection">Protección en partida</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseSection">Pausa automática</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseUseGlobal">Usar ajustes globales de pausa</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicySuspendProcess">Pausar el juego temporalmente al desconectarse un mando</sys:String>
@@ -131,7 +132,7 @@
     <sys:String x:Key="LOCCSM_ForcePauseOfflineGames">Suspender el proceso solo si el juego no tiene actividad de red</sys:String>
     <sys:String x:Key="LOCCSM_ForcePauseOfflineGamesHelp">Suspende el juego al desconectarse un mando, pero si detecta actividad de red, no lo detiene para evitar problemas en partidas online.</sys:String>
     <sys:String x:Key="LOCCSM_ForcePauseOfflineGamesWarning">La detección no siempre es exacta.</sys:String>
-    <sys:String x:Key="LOCCSM_FullscreenNotificationsTitle">Notificación en pantalla</sys:String>
+    <sys:String x:Key="LOCCSM_FullscreenNotificationsTitle">Notificación de pantalla completa</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceLayout">Distribución</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceContent">Contenido</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceShape">Forma y borde</sys:String>
@@ -151,7 +152,7 @@
     <sys:String x:Key="LOCCSM_ControllerConnectedToast">Mando conectado</sys:String>
     <sys:String x:Key="LOCCSM_ControllerDisconnectedToast">Mando desconectado</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyForcePauseOffline">Detener temporalmente el juego si no hay actividad de red. Mostrar solo el aviso si la hay</sys:String>
-    <sys:String x:Key="LOCCSM_TabSession">Sesión</sys:String>
+    <sys:String x:Key="LOCCSM_TabSession">En partida</sys:String>
     <sys:String x:Key="LOCCSM_TabAppearance">Apariencia</sys:String>
     <sys:String x:Key="LOCCSM_AdaptiveProtectionHelp">Protege el mando que estás usando. Si hay varios jugadores en el mismo PC, protege cada uno. Puedes cambiarlo por juego desde el menú contextual.</sys:String>
     <sys:String x:Key="LOCCSM_PauseModesHelp">Elige qué hacer si se desconecta un mando. Cada juego puede tener su propio ajuste.</sys:String>
@@ -206,16 +207,19 @@
     <sys:String x:Key="LOCCSM_AboutCapabilities2">Cuando un mando se desconecta durante una partida, el plugin muestra un overlay externo a pantalla completa con el nombre del mando y el estado de pausa. Puede suspender el proceso del juego automáticamente —compatible con cualquier juego, sin configurar teclas— y lo retoma en cuanto el mando se reconecta o otro toma el relevo.</sys:String>
     <sys:String x:Key="LOCCSM_AboutCapabilities3">Incluye notificaciones personalizables para los modos Escritorio y Pantalla completa: colores, tamaños de fuente, posición, relleno, borde y posición del icono son configurables por separado en cada modo. El icono de la barra superior muestra el mando principal e indica el nivel de batería mediante color.</sys:String>
     <sys:String x:Key="LOCCSM_AboutCapabilities4">La información de batería funciona con DualSense, DualShock 4, mandos Xbox y cualquier dispositivo compatible con SDL. El tipo de conexión (USB, Bluetooth, inalámbrico) se detecta automáticamente.</sys:String>
-    <sys:String x:Key="LOCCSM_AboutSafety">El overlay externo y las acciones de pausa opcionales están aislados de Playnite y del juego. No inyecta entradas y actúa de forma conservadora cuando las pruebas sobre dispositivo, proceso o sesión en línea son incompletas.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutSafety">El overlay externo y las acciones de pausa opcionales están aislados de Playnite y del juego. No inyecta entradas y actúa de forma conservadora cuando las pruebas sobre dispositivo, proceso o partida en línea son incompletas.</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">Mostrar el icono junto al nombre del mando</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowStatusIcon">Mostrar el icono del estado de pausa o aviso</sys:String>
-    <sys:String x:Key="LOCCSM_DesktopNotificationsTitle">Notificaciones de escritorio</sys:String>
+    <sys:String x:Key="LOCCSM_DesktopNotificationsTitle">Notificación de escritorio</sys:String>
     <sys:String x:Key="LOCCSM_ShowDesktopControllerNotifications">Avisar al conectar o desconectar un mando en escritorio</sys:String>
     <sys:String x:Key="LOCCSM_ShowDesktopControllerNotificationsHelp">Muestra una notificación breve cuando se conecta o desconecta un mando en el modo escritorio de Playnite.</sys:String>
     <sys:String x:Key="LOCCSM_EnableDisconnectOverlay">Activar el overlay de desconexión</sys:String>
     <sys:String x:Key="LOCCSM_FullscreenTabLabel">Pantalla completa</sys:String>
     <sys:String x:Key="LOCCSM_DesktopTabLabel">Escritorio</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationSurface">Editar notificaciones de</sys:String>
     <sys:String x:Key="LOCCSM_ControllerNotificationTitle">Notificacion de mando</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerNotificationHelp">Personaliza el aviso que aparece al conectar o desconectar un mando en pantalla completa y escritorio.</sys:String>
+    <sys:String x:Key="LOCCSM_ExpandSectionHint">Despliega para configurar este aviso.</sys:String>
     <sys:String x:Key="LOCCSM_ShowControllerNameInDesktopNotifications">Mostrar el nombre del mando en la notificación</sys:String>
     <sys:String x:Key="LOCCSM_BorderFull">Completo</sys:String>
     <sys:String x:Key="LOCCSM_AutoPauseModeNone">No hacer nada, solo mostrar el overlay si está activo</sys:String>

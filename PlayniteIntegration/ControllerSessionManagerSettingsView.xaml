@@ -4,7 +4,9 @@
              xmlns:local="clr-namespace:ControllerSessionManager.PlayniteIntegration"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             mc:Ignorable="d" MinWidth="980" MinHeight="640" d:DesignHeight="780" d:DesignWidth="1100">
+             mc:Ignorable="d" MinWidth="980" MinHeight="640" d:DesignHeight="780" d:DesignWidth="1100"
+             HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+             TextElement.Foreground="{DynamicResource TextBrush}">
     <UserControl.Resources>
         <local:IconGeometryConverter x:Key="IconGeometryConverter" />
         <local:HexColorBrushConverter x:Key="HexColorBrushConverter" />
@@ -12,26 +14,43 @@
         <local:NumberToThicknessConverter x:Key="NumberToThicknessConverter" />
         <local:NumberToCornerRadiusConverter x:Key="NumberToCornerRadiusConverter" />
         <local:OptionalBorderThicknessConverter x:Key="OptionalBorderThicknessConverter" />
+        <Style x:Key="SettingsToggleTitle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
         <Style x:Key="ColorPickerButton" TargetType="Button">
             <Setter Property="Width" Value="34" />
             <Setter Property="Height" Value="28" />
+            <Setter Property="MinWidth" Value="34" />
             <Setter Property="Padding" Value="4" />
             <Setter Property="Margin" Value="6,0,0,0" />
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource GlyphBrush}" />
             <Setter Property="ToolTip" Value="{DynamicResource LOCCSM_SelectColor}" />
         </Style>
         <Style x:Key="SectionHeaderText" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource GlyphBrush}" />
             <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontSize" Value="20" />
+        </Style>
+        <Style x:Key="PageHeader" TargetType="Border">
+            <Setter Property="BorderBrush" Value="{DynamicResource GlyphBrush}" />
+            <Setter Property="BorderThickness" Value="0,0,0,1" />
+            <Setter Property="Padding" Value="0,0,0,10" />
+            <Setter Property="Margin" Value="0,0,0,14" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
         </Style>
         <Style x:Key="HintText" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
             <Setter Property="TextWrapping" Value="Wrap" />
             <Setter Property="Opacity" Value="0.78" />
         </Style>
         <Style x:Key="SectionSubtitleText" TargetType="TextBlock" BasedOn="{StaticResource HintText}">
             <Setter Property="FontStyle" Value="Italic" />
             <Setter Property="FontSize" Value="13" />
-            <Setter Property="Margin" Value="0,6,0,0" />
+            <Setter Property="Margin" Value="0,0,0,0" />
         </Style>
         <Style x:Key="NoteText" TargetType="TextBlock" BasedOn="{StaticResource HintText}">
             <Setter Property="FontStyle" Value="Italic" />
@@ -56,63 +75,79 @@
             <Setter Property="Margin" Value="0,2,0,0" />
         </Style>
         <Style x:Key="AppearanceGroup" TargetType="Border">
-            <Setter Property="Background" Value="{DynamicResource PopupBackgroundBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource GlyphBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
-            <Setter Property="Padding" Value="12,10" />
-            <Setter Property="Margin" Value="0,14,0,0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0,18,0,0" />
         </Style>
-        <Style x:Key="AppearanceGroupHeader" TargetType="TextBlock" BasedOn="{StaticResource SectionHeaderText}">
+        <Style x:Key="OverlayAppearanceGroup" TargetType="Border" BasedOn="{StaticResource AppearanceGroup}">
+            <Setter Property="Margin" Value="0,8,0,0" />
+        </Style>
+        <Style x:Key="AppearanceGroupHeader" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource GlyphBrush}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="14" />
             <Setter Property="Margin" Value="0,0,0,10" />
+        </Style>
+        <Style x:Key="OverlayAppearanceGroupHeader" TargetType="TextBlock" BasedOn="{StaticResource AppearanceGroupHeader}">
+            <Setter Property="Margin" Value="0,0,0,6" />
+        </Style>
+        <Style x:Key="FillScrollViewer" TargetType="ScrollViewer">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalScrollBarVisibility" Value="Disabled" />
+            <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+        </Style>
+        <Style x:Key="PageSection" TargetType="StackPanel">
+            <Setter Property="Margin" Value="0,0,0,22" />
         </Style>
         <Style x:Key="FieldLabel" TargetType="TextBlock" BasedOn="{StaticResource HintText}">
             <Setter Property="FontSize" Value="11" />
             <Setter Property="Margin" Value="0,0,0,5" />
         </Style>
-        <Style x:Key="ControllerCard" TargetType="Border" BasedOn="{StaticResource IntroCard}">
-            <Setter Property="Margin" Value="0,0,0,12" />
-            <Setter Property="Padding" Value="16,14" />
+        <Style x:Key="SettingsCard" TargetType="Border">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0,0,0,20" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource TextBrush}" />
+        </Style>
+        <Style x:Key="ControllerCard" TargetType="Border" BasedOn="{StaticResource SettingsCard}">
+            <Setter Property="Margin" Value="0,0,0,28" />
+            <Setter Property="Padding" Value="0,0,8,0" />
+        </Style>
+        <Style x:Key="SummaryCard" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource PopupBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource HighlightGlyphBrush}" />
+            <Setter Property="BorderThickness" Value="4,1,1,1" />
+            <Setter Property="Padding" Value="14,12" />
+            <Setter Property="Margin" Value="0,0,0,16" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="MinHeight" Value="92" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource TextBrush}" />
         </Style>
         <Style x:Key="CompactSliderPanel" TargetType="StackPanel">
             <Setter Property="Width" Value="240" />
             <Setter Property="HorizontalAlignment" Value="Left" />
-            <Setter Property="Margin" Value="0,0,16,10" />
+            <Setter Property="Margin" Value="0,0,18,12" />
+        </Style>
+        <Style x:Key="OverlaySliderPanel" TargetType="StackPanel">
+            <Setter Property="Width" Value="232" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="Margin" Value="0,0,12,4" />
         </Style>
         <Style x:Key="CompactChoicePanel" TargetType="StackPanel">
             <Setter Property="Width" Value="205" />
-            <Setter Property="Margin" Value="0,0,16,10" />
+            <Setter Property="Margin" Value="0,0,18,12" />
         </Style>
-        <Style x:Key="CompactColorPanel" TargetType="StackPanel">
-            <Setter Property="Width" Value="190" />
-            <Setter Property="Margin" Value="0,0,14,10" />
-        </Style>
-        <Style x:Key="IntroCard" TargetType="Border">
-            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource HighlightGlyphBrush}" />
-            <Setter Property="BorderThickness" Value="4,1,1,1" />
-            <Setter Property="Padding" Value="16,13" />
-            <Setter Property="Margin" Value="0,0,0,14" />
-            <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
-        </Style>
-        <Style x:Key="SettingsCard" TargetType="Border">
-            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource HighlightGlyphBrush}" />
-            <Setter Property="BorderThickness" Value="4,1,1,1" />
-            <Setter Property="Padding" Value="16,14" />
-            <Setter Property="Margin" Value="0,0,0,14" />
-            <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
-            <Setter Property="SnapsToDevicePixels" Value="True" />
-        </Style>
-        <Style x:Key="SummaryCard" TargetType="Border">
-            <Setter Property="Background" Value="{DynamicResource PopupBackgroundBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource GlyphBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="Padding" Value="0" />
+        <Style x:Key="StackedColorPanel" TargetType="StackPanel">
             <Setter Property="Margin" Value="0,0,0,12" />
-            <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
-            <Setter Property="MinHeight" Value="92" />
-            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+        </Style>
+        <Style x:Key="OverlayColorPanel" TargetType="StackPanel" BasedOn="{StaticResource StackedColorPanel}">
+            <Setter Property="Margin" Value="0,0,0,6" />
         </Style>
         <Style x:Key="SummaryCardTitle" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
@@ -126,6 +161,7 @@
             <Setter Property="Margin" Value="0,0,0,10" />
         </Style>
         <Style x:Key="SummaryCardValue" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
             <Setter Property="TextWrapping" Value="Wrap" />
             <Setter Property="Margin" Value="0" />
         </Style>
@@ -133,7 +169,7 @@
             <Setter Property="Background" Value="{DynamicResource PopupBackgroundBrush}" />
             <Setter Property="BorderBrush" Value="{DynamicResource DetailsViewBannerPanelBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
+            <Setter Property="CornerRadius" Value="4" />
             <Setter Property="SnapsToDevicePixels" Value="True" />
         </Style>
         <Style x:Key="ControllerTableHeader" TargetType="DataGridColumnHeader">
@@ -221,27 +257,187 @@
             <Setter Property="SelectionMode" Value="Single" />
             <Setter Property="SelectionUnit" Value="Cell" />
         </Style>
-        <Style x:Key="SettingsNavigationTabItem" TargetType="TabItem">
-            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+        <Style x:Key="TabGlyph" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets" />
             <Setter Property="FontSize" Value="16" />
-            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-            <Setter Property="Margin" Value="0,0,0,8" />
-            <Setter Property="MinHeight" Value="48" />
+            <Setter Property="Width" Value="20" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,0,8,0" />
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+        </Style>
+        <Style x:Key="TabHeaderLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="PreviewActionButton" TargetType="Button">
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="36" />
+            <Setter Property="Padding" Value="12,6" />
+            <Setter Property="Margin" Value="4,0" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource GlyphBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="TabItem">
-                        <Border x:Name="NavigationItemBorder" Background="Transparent" BorderBrush="Transparent"
-                                BorderThickness="4,0,0,0" Padding="16,14,18,14">
-                            <ContentPresenter x:Name="NavigationHeader" ContentSource="Header"
-                                              HorizontalAlignment="Left" VerticalAlignment="Center" />
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="PreviewButtonBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="3"
+                                Padding="{TemplateBinding Padding}"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                              TextElement.Foreground="{TemplateBinding Foreground}" />
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="NavigationItemBorder" Property="Background" Value="{DynamicResource HoverBrush}" />
+                                <Setter TargetName="PreviewButtonBorder" Property="Background" Value="{DynamicResource HoverBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="PreviewButtonBorder" Property="Opacity" Value="0.86" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ExpanderHeaderButton" TargetType="ToggleButton">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border Background="Transparent">
+                            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                                              TextElement.Foreground="{TemplateBinding Foreground}" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="SettingsExpander" TargetType="Expander">
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="Margin" Value="0,0,0,8" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HeaderTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" Foreground="{DynamicResource TextBrush}"
+                                   FontSize="16" TextWrapping="Wrap" />
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Expander">
+                        <DockPanel LastChildFill="True">
+                            <Border x:Name="HeaderChrome" DockPanel.Dock="Top" MinHeight="52" ClipToBounds="False"
+                                    Cursor="Hand">
+                                <Grid ClipToBounds="False">
+                                    <Rectangle x:Name="ExpanderFill" RadiusX="4" RadiusY="4"
+                                               Fill="{DynamicResource ControlBackgroundBrush}" />
+                                    <Rectangle x:Name="ExpanderAccent" Width="4" HorizontalAlignment="Left"
+                                               RadiusX="4" RadiusY="4" Fill="Transparent" />
+                                    <ToggleButton Style="{StaticResource ExpanderHeaderButton}"
+                                                  Foreground="{DynamicResource TextBrush}"
+                                                  IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Margin="16,10,8,10" VerticalAlignment="Center">
+                                                <ContentPresenter x:Name="ExpanderHeader" ContentSource="Header"
+                                                                  RecognizesAccessKey="True"
+                                                                  TextElement.Foreground="{DynamicResource TextBrush}" />
+                                                <TextBlock x:Name="ExpanderHint"
+                                                           Text="{DynamicResource LOCCSM_ExpandSectionHint}"
+                                                           Style="{StaticResource HintText}" FontSize="12"
+                                                           Margin="0,3,0,0" />
+                                            </StackPanel>
+                                            <Border x:Name="ExpanderChevron" Grid.Column="1" Width="32" Height="32"
+                                                    CornerRadius="4" VerticalAlignment="Center" Margin="0,0,12,0"
+                                                    BorderBrush="{DynamicResource GlyphBrush}" BorderThickness="1">
+                                                <TextBlock x:Name="ExpanderArrow"
+                                                           FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                                           Text="&#xE70D;" FontSize="14"
+                                                           Foreground="{DynamicResource TextBrush}"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Border>
+                                        </Grid>
+                                    </ToggleButton>
+                                </Grid>
+                            </Border>
+                            <Border x:Name="ExpanderContent" Visibility="Collapsed" Padding="16,14,8,12"
+                                    TextElement.Foreground="{DynamicResource TextBrush}">
+                                <ContentPresenter HorizontalAlignment="Stretch" />
+                            </Border>
+                        </DockPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger SourceName="HeaderChrome" Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ExpanderFill" Property="Fill" Value="{DynamicResource HoverBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsExpanded" Value="True">
+                                <Setter TargetName="ExpanderContent" Property="Visibility" Value="Visible" />
+                                <Setter TargetName="ExpanderFill" Property="Fill" Value="{DynamicResource HoverBrush}" />
+                                <Setter TargetName="ExpanderAccent" Property="Fill" Value="{DynamicResource GlyphBrush}" />
+                                <Setter TargetName="ExpanderHint" Property="Visibility" Value="Collapsed" />
+                                <Setter TargetName="ExpanderArrow" Property="Text" Value="&#xE70E;" />
+                                <Setter TargetName="ExpanderHeader" Property="TextElement.FontWeight" Value="SemiBold" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="SettingsNavigationTabItem" TargetType="TabItem">
+            <Setter Property="OverridesDefaultStyle" Value="True" />
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+            <Setter Property="TextBlock.Foreground" Value="{DynamicResource TextBrush}" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="Margin" Value="0,0,0,6" />
+            <Setter Property="MinHeight" Value="44" />
+            <Setter Property="ClipToBounds" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Grid ClipToBounds="False">
+                            <Rectangle x:Name="NavigationFill" RadiusX="4" RadiusY="4" Fill="Transparent" />
+                            <Rectangle x:Name="NavigationAccent" Width="4" HorizontalAlignment="Left"
+                                       RadiusX="4" RadiusY="4" Fill="Transparent" />
+                            <ContentPresenter x:Name="NavigationHeader" ContentSource="Header"
+                                              HorizontalAlignment="Left" VerticalAlignment="Center"
+                                              Margin="16,12,16,12"
+                                              TextElement.Foreground="{DynamicResource TextBrush}" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="NavigationFill" Property="Fill" Value="{DynamicResource HoverBrush}" />
                             </Trigger>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="NavigationItemBorder" Property="Background" Value="{DynamicResource HoverBrush}" />
-                                <Setter TargetName="NavigationItemBorder" Property="BorderBrush" Value="{DynamicResource GlyphBrush}" />
+                                <Setter TargetName="NavigationFill" Property="Fill" Value="{DynamicResource HoverBrush}" />
+                                <Setter TargetName="NavigationAccent" Property="Fill" Value="{DynamicResource GlyphBrush}" />
                                 <Setter TargetName="NavigationHeader" Property="TextElement.FontWeight" Value="SemiBold" />
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -250,51 +446,68 @@
             </Setter>
         </Style>
         <Style x:Key="SettingsNavigationTabControl" TargetType="TabControl">
+            <Setter Property="OverridesDefaultStyle" Value="True" />
             <Setter Property="TabStripPlacement" Value="Left" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
             <Setter Property="ItemContainerStyle" Value="{StaticResource SettingsNavigationTabItem}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TabControl">
-                        <Grid KeyboardNavigation.TabNavigation="Local">
+                        <Grid KeyboardNavigation.TabNavigation="Local" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="248" />
-                                <ColumnDefinition Width="22" />
+                                <ColumnDefinition Width="268" />
+                                <ColumnDefinition Width="20" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <Border Background="{DynamicResource PopupBackgroundBrush}"
-                                    BorderBrush="{DynamicResource PanelSeparatorBrush}"
-                                    BorderThickness="0,0,1,0"
-                                    Padding="8,10,8,10">
-                                <TabPanel x:Name="HeaderPanel" IsItemsHost="True" />
+                            <Border Background="{DynamicResource PopupBackgroundBrush}" CornerRadius="4"
+                                    Padding="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                <DockPanel LastChildFill="True">
+                                    <TextBlock DockPanel.Dock="Top" Text="{TemplateBinding Tag}"
+                                               Foreground="{DynamicResource TextBrush}" FontSize="16" FontWeight="SemiBold"
+                                               Margin="8,4,8,12" TextWrapping="Wrap" />
+                                    <StackPanel x:Name="HeaderPanel" IsItemsHost="True" />
+                                </DockPanel>
                             </Border>
-                            <ContentPresenter x:Name="PART_SelectedContentHost" Grid.Column="2"
-                                              ContentSource="SelectedContent" />
+                            <Grid Grid.Column="2">
+                                <ContentPresenter x:Name="PART_SelectedContentHost"
+                                                  ContentSource="SelectedContent"
+                                                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                            </Grid>
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
         <Style x:Key="TopTabItem" TargetType="TabItem">
+            <Setter Property="OverridesDefaultStyle" Value="True" />
             <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+            <Setter Property="TextBlock.Foreground" Value="{DynamicResource TextBrush}" />
             <Setter Property="FontSize" Value="16" />
-            <Setter Property="Margin" Value="0,0,10,0" />
-            <Setter Property="MinWidth" Value="156" />
-            <Setter Property="MinHeight" Value="48" />
+            <Setter Property="Margin" Value="0,0,6,0" />
+            <Setter Property="MinWidth" Value="148" />
+            <Setter Property="MinHeight" Value="44" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
+            <Setter Property="ClipToBounds" Value="False" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TabItem">
-                        <Border x:Name="TabBorder" Background="Transparent" BorderBrush="Transparent"
-                                BorderThickness="0,0,0,4" Padding="22,14,22,12">
+                        <Grid ClipToBounds="False">
+                            <Rectangle x:Name="TabFill" RadiusX="4" RadiusY="4" Fill="Transparent" />
                             <ContentPresenter x:Name="Header" ContentSource="Header"
-                                              HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
+                                              HorizontalAlignment="Center" VerticalAlignment="Center"
+                                              Margin="16,12"
+                                              TextElement.Foreground="{DynamicResource TextBrush}" />
+                        </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="TabBorder" Property="Background" Value="{DynamicResource HoverBrush}" />
+                                <Setter TargetName="TabFill" Property="Fill" Value="{DynamicResource HoverBrush}" />
                             </Trigger>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="TabBorder" Property="Background" Value="{DynamicResource HoverBrush}" />
-                                <Setter TargetName="TabBorder" Property="BorderBrush" Value="{DynamicResource GlyphBrush}" />
+                                <Setter TargetName="TabFill" Property="Fill" Value="{DynamicResource HoverBrush}" />
                                 <Setter TargetName="Header" Property="TextElement.FontWeight" Value="SemiBold" />
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -303,17 +516,27 @@
             </Setter>
         </Style>
         <Style x:Key="TopTabs" TargetType="TabControl">
+            <Setter Property="OverridesDefaultStyle" Value="True" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
             <Setter Property="ItemContainerStyle" Value="{StaticResource TopTabItem}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TabControl">
-                        <Grid>
+                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
-                            <Border BorderBrush="{DynamicResource GlyphBrush}" BorderThickness="0,0,0,1">
-                                <TabPanel x:Name="HeaderPanel" IsItemsHost="True" />
+                            <Border Background="{DynamicResource PopupBackgroundBrush}" CornerRadius="4"
+                                    Padding="6" ClipToBounds="False"
+                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                <WrapPanel x:Name="HeaderPanel" IsItemsHost="True" />
                             </Border>
-                            <ContentPresenter x:Name="PART_SelectedContentHost" Grid.Row="1"
-                                              ContentSource="SelectedContent" Margin="0,10,0,0" />
+                            <Grid Grid.Row="1" Margin="0,12,0,0">
+                                <ContentPresenter x:Name="PART_SelectedContentHost"
+                                                  ContentSource="SelectedContent"
+                                                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                            </Grid>
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
@@ -321,38 +544,44 @@
         </Style>
     </UserControl.Resources>
 
-    <Grid Margin="16,14">
-        <TabControl Style="{StaticResource TopTabs}">
-            <TabItem Header="{DynamicResource LOCCSM_TabOverview}">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                    <StackPanel Margin="8">
-                        <Border Style="{StaticResource IntroCard}">
-                            <StackPanel>
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="16,14">
+        <TabControl x:Name="RootTabs" Style="{StaticResource TopTabs}" SelectionChanged="RootTabsSelectionChanged">
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource TabGlyph}" Text="&#xE80F;" />
+                        <TextBlock Text="{DynamicResource LOCCSM_TabOverview}" Style="{StaticResource TabHeaderLabel}" />
+                    </StackPanel>
+                </TabItem.Header>
+                <ScrollViewer Style="{StaticResource FillScrollViewer}">
+                    <StackPanel Margin="8,4,8,16">
+                        <StackPanel Style="{StaticResource PageSection}">
+                            <Border Style="{StaticResource PageHeader}">
                                 <TextBlock Text="{DynamicResource LOCCSM_TabOverview}" Style="{StaticResource SectionHeaderText}" />
-                                <TextBlock Text="{DynamicResource LOCCSM_OverviewHelp}" Style="{StaticResource SectionSubtitleText}" />
-                            </StackPanel>
-                        </Border>
+                            </Border>
+                            <TextBlock Text="{DynamicResource LOCCSM_OverviewHelp}" Style="{StaticResource SectionSubtitleText}" />
+                        </StackPanel>
                         <Grid>
-                            <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="14"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                            <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="20"/><ColumnDefinition/></Grid.ColumnDefinitions>
                             <StackPanel>
-                                <Border Style="{StaticResource SummaryCard}" BorderBrush="{DynamicResource HighlightGlyphBrush}" BorderThickness="4,1,1,1">
-                                    <StackPanel Margin="14,12">
+                                <Border Style="{StaticResource SummaryCard}">
+                                    <StackPanel>
                                         <Border Style="{StaticResource SummaryTitleSeparator}">
                                             <TextBlock Text="{DynamicResource LOCCSM_ConnectedControllers}" Style="{StaticResource SummaryCardTitle}" />
                                         </Border>
                                         <TextBlock x:Name="ConnectedCountText" Style="{StaticResource SummaryCardValue}" />
                                     </StackPanel>
                                 </Border>
-                                <Border Style="{StaticResource SummaryCard}" BorderBrush="{DynamicResource HighlightGlyphBrush}" BorderThickness="4,1,1,1">
-                                    <StackPanel Margin="14,12">
+                                <Border Style="{StaticResource SummaryCard}">
+                                    <StackPanel>
                                         <Border Style="{StaticResource SummaryTitleSeparator}">
                                             <TextBlock Text="{DynamicResource LOCCSM_SessionStatus}" Style="{StaticResource SummaryCardTitle}" />
                                         </Border>
                                         <TextBlock x:Name="SessionStatusText" Style="{StaticResource SummaryCardValue}" />
                                     </StackPanel>
                                 </Border>
-                                <Border Style="{StaticResource SummaryCard}" BorderBrush="{DynamicResource HighlightGlyphBrush}" BorderThickness="4,1,1,1">
-                                    <StackPanel Margin="14,12">
+                                <Border Style="{StaticResource SummaryCard}">
+                                    <StackPanel>
                                         <Border Style="{StaticResource SummaryTitleSeparator}">
                                             <TextBlock Text="{DynamicResource LOCCSM_XInputProvider}" Style="{StaticResource SummaryCardTitle}" />
                                         </Border>
@@ -361,24 +590,24 @@
                                 </Border>
                             </StackPanel>
                             <StackPanel Grid.Column="2">
-                                <Border Style="{StaticResource SummaryCard}" BorderBrush="{DynamicResource HighlightGlyphBrush}" BorderThickness="4,1,1,1">
-                                    <StackPanel Margin="14,12">
+                                <Border Style="{StaticResource SummaryCard}">
+                                    <StackPanel>
                                         <Border Style="{StaticResource SummaryTitleSeparator}">
                                             <TextBlock Text="{DynamicResource LOCCSM_PrimaryController}" Style="{StaticResource SummaryCardTitle}" />
                                         </Border>
                                         <TextBlock x:Name="PrimaryControllerText" Style="{StaticResource SummaryCardValue}" />
                                     </StackPanel>
                                 </Border>
-                                <Border Style="{StaticResource SummaryCard}" BorderBrush="{DynamicResource HighlightGlyphBrush}" BorderThickness="4,1,1,1">
-                                    <StackPanel Margin="14,12">
+                                <Border Style="{StaticResource SummaryCard}">
+                                    <StackPanel>
                                         <Border Style="{StaticResource SummaryTitleSeparator}">
                                             <TextBlock Text="{DynamicResource LOCCSM_LastRefresh}" Style="{StaticResource SummaryCardTitle}" />
                                         </Border>
                                         <TextBlock x:Name="LastRefreshText" Style="{StaticResource SummaryCardValue}" />
                                     </StackPanel>
                                 </Border>
-                                <Border Style="{StaticResource SummaryCard}" BorderBrush="{DynamicResource HighlightGlyphBrush}" BorderThickness="4,1,1,1">
-                                    <StackPanel Margin="14,12">
+                                <Border Style="{StaticResource SummaryCard}">
+                                    <StackPanel>
                                         <Border Style="{StaticResource SummaryTitleSeparator}">
                                             <TextBlock Text="{DynamicResource LOCCSM_ActiveSessionControllers}" Style="{StaticResource SummaryCardTitle}" />
                                         </Border>
@@ -391,32 +620,37 @@
                 </ScrollViewer>
             </TabItem>
 
-            <TabItem Header="{DynamicResource LOCCSM_TabControllers}">
-                <Grid Margin="8">
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource TabGlyph}" Text="&#xE7FC;" />
+                        <TextBlock Text="{DynamicResource LOCCSM_TabControllers}" Style="{StaticResource TabHeaderLabel}" />
+                    </StackPanel>
+                </TabItem.Header>
+                <Grid Margin="8,4,8,0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
                             <StackPanel Grid.Row="0">
-                            <Border Style="{StaticResource IntroCard}" Margin="0,0,0,8">
-                                <DockPanel LastChildFill="True">
-                                    <Button DockPanel.Dock="Right" Content="{DynamicResource LOCCSM_Refresh}"
-                                            Style="{DynamicResource BottomButton}" Margin="16,0,0,0"
-                                            VerticalAlignment="Center" HorizontalAlignment="Right"
-                                            Click="RefreshControllersClick" />
-                                    <StackPanel>
-                                        <TextBlock Text="{DynamicResource LOCCSM_ConnectedControllers}" Style="{StaticResource SectionHeaderText}" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_ControllersHelp}" Style="{StaticResource SectionSubtitleText}" />
-                                    </StackPanel>
-                                </DockPanel>
+                            <Border Style="{StaticResource PageHeader}">
+                            <DockPanel LastChildFill="True">
+                                <Button DockPanel.Dock="Right" Content="{DynamicResource LOCCSM_Refresh}"
+                                        Style="{DynamicResource BottomButton}" Margin="16,0,0,0"
+                                        VerticalAlignment="Center" HorizontalAlignment="Right"
+                                        Click="RefreshControllersClick" />
+                                <TextBlock Text="{DynamicResource LOCCSM_ConnectedControllers}" Style="{StaticResource SectionHeaderText}"
+                                           VerticalAlignment="Center" />
+                            </DockPanel>
                             </Border>
+                            <TextBlock Text="{DynamicResource LOCCSM_ControllersHelp}" Style="{StaticResource SectionSubtitleText}" Margin="0,0,0,12" />
                             <TextBlock Style="{StaticResource NoteText}" Margin="4,0,4,12">
                                 <Run FontWeight="SemiBold" Text="{DynamicResource LOCCSM_NotePrefix}" />
                                 <Run Text=" " />
                                 <Run Text="{DynamicResource LOCCSM_BatteryUnknownHint}" />
                             </TextBlock>
                             </StackPanel>
-                            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <ScrollViewer Grid.Row="1" Style="{StaticResource FillScrollViewer}">
                                 <StackPanel>
                                     <Grid MinHeight="120">
                                         <ItemsControl x:Name="ControllerList">
@@ -428,22 +662,20 @@
                                                                 <ColumnDefinition Width="Auto" />
                                                                 <ColumnDefinition Width="*" />
                                                             </Grid.ColumnDefinitions>
-                                                            <Border Width="56" Height="56" Margin="0,0,16,0"
-                                                                    VerticalAlignment="Top"
-                                                                    Background="{DynamicResource ControlBackgroundBrush}"
-                                                                    CornerRadius="{DynamicResource ControlCornerRadius}">
-                                                                <Viewbox Width="32" Height="32">
-                                                                    <Path Data="{Binding IconGeometry, Converter={StaticResource IconGeometryConverter}}"
-                                                                          Stroke="{DynamicResource TextBrush}" StrokeThickness="2"
-                                                                          StrokeStartLineCap="Round" StrokeEndLineCap="Round"
-                                                                          StrokeLineJoin="Round" Stretch="Uniform" />
-                                                                </Viewbox>
-                                                            </Border>
+                                                            <Viewbox Width="80" Height="80" Margin="0,0,18,0"
+                                                                     VerticalAlignment="Center"
+                                                                     HorizontalAlignment="Center">
+                                                                <Path Data="{Binding IconGeometry, Converter={StaticResource IconGeometryConverter}}"
+                                                                      Stroke="{DynamicResource TextBrush}" StrokeThickness="2"
+                                                                      StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                                                      StrokeLineJoin="Round" Stretch="Uniform" />
+                                                            </Viewbox>
                                                             <StackPanel Grid.Column="1">
-                                                                <TextBlock Text="{Binding DetectedName}" Style="{StaticResource SectionHeaderText}"
+                                                                <TextBlock Text="{Binding DetectedName}" Foreground="{DynamicResource TextBrush}"
+                                                                           FontWeight="SemiBold" FontSize="16"
                                                                            TextTrimming="CharacterEllipsis" />
                                                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,14">
-                                                                    <Grid ToolTip="{Binding Connection}" Margin="0,0,14,0">
+                                                                    <Grid ToolTip="{Binding ConnectionTooltip}" Margin="0,0,14,0">
                                                                         <StackPanel Orientation="Horizontal">
                                                                             <Viewbox Width="16" Height="16" Margin="0,0,6,0">
                                                                                 <Path Data="{Binding ConnectionIconGeometry, Converter={StaticResource IconGeometryConverter}}"
@@ -455,14 +687,16 @@
                                                                                        Style="{StaticResource HintText}" />
                                                                         </StackPanel>
                                                                     </Grid>
-                                                                    <StackPanel Orientation="Horizontal" Margin="0,0,14,0">
+                                                                    <StackPanel Orientation="Horizontal" Margin="0,0,14,0"
+                                                                                ToolTip="{Binding BatteryTooltip}">
                                                                         <Ellipse Width="8" Height="8" Fill="{Binding BatteryBrush}" Margin="0,0,6,0"
                                                                                  VerticalAlignment="Center" />
                                                                         <TextBlock Text="{Binding Battery}" Foreground="{Binding BatteryBrush}"
                                                                                    FontWeight="SemiBold" VerticalAlignment="Center" />
                                                                     </StackPanel>
                                                                     <TextBlock Text="{Binding Provider}" Style="{StaticResource HintText}"
-                                                                               VerticalAlignment="Center" />
+                                                                               VerticalAlignment="Center"
+                                                                               ToolTip="{Binding ProviderTooltip}" />
                                                                 </StackPanel>
                                                                 <Grid>
                                                                     <Grid.ColumnDefinitions>
@@ -510,113 +744,148 @@
                 </Grid>
             </TabItem>
 
-            <TabItem Header="{DynamicResource LOCCSM_TabSession}">
-                <TabControl Style="{StaticResource SettingsNavigationTabControl}">
-                    <TabItem Header="{DynamicResource LOCCSM_GamePolicySessionSection}">
-                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                            <StackPanel Margin="8">
-                                <Border Style="{StaticResource IntroCard}">
-                                    <StackPanel>
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource TabGlyph}" Text="&#xE768;" />
+                        <TextBlock Text="{DynamicResource LOCCSM_TabSession}" Style="{StaticResource TabHeaderLabel}" />
+                    </StackPanel>
+                </TabItem.Header>
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <TabControl Style="{StaticResource SettingsNavigationTabControl}" Tag="{DynamicResource LOCCSM_TabSession}">
+                    <TabItem>
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource TabGlyph}" Text="&#xEA18;" />
+                                <TextBlock Text="{DynamicResource LOCCSM_GamePolicySessionSection}" Style="{StaticResource TabHeaderLabel}" />
+                            </StackPanel>
+                        </TabItem.Header>
+                        <ScrollViewer Style="{StaticResource FillScrollViewer}">
+                            <StackPanel Margin="24,18,24,24">
+                                <StackPanel Style="{StaticResource PageSection}">
+                                    <Border Style="{StaticResource PageHeader}">
                                         <TextBlock Text="{DynamicResource LOCCSM_SessionProtectionTitle}" Style="{StaticResource SectionHeaderText}" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_AdaptiveProtectionHelp}" Style="{StaticResource SectionSubtitleText}" />
-                                    </StackPanel>
-                                </Border>
-                                <Border Style="{StaticResource SettingsCard}">
-                                    <StackPanel>
-                                        <CheckBox Content="{DynamicResource LOCCSM_EnableSessionTracking}" IsChecked="{Binding EnableSessionTracking}" />
-                                        <StackPanel Margin="22,14,0,0" IsEnabled="{Binding EnableSessionTracking}">
-                                            <CheckBox Content="{DynamicResource LOCCSM_ShowDisconnectOverlay}" IsChecked="{Binding ShowDisconnectOverlay}" />
-                                            <TextBlock Text="{DynamicResource LOCCSM_ShowDisconnectOverlayHelp}" Style="{StaticResource HintText}" Margin="22,6,0,16" />
-                                            <TextBlock Text="{DynamicResource LOCCSM_DisconnectGracePeriod}" Style="{StaticResource SectionHeaderText}" />
-                                            <TextBlock Text="{DynamicResource LOCCSM_DisconnectGracePeriodHelp}" Style="{StaticResource HintText}" Margin="0,5,0,8" />
-                                            <DockPanel LastChildFill="False">
-                                                <TextBox Width="82" Text="{Binding DisconnectGracePeriodMilliseconds, UpdateSourceTrigger=PropertyChanged}" />
-                                                <TextBlock Text="ms" VerticalAlignment="Center" Margin="8,0,0,0" />
-                                            </DockPanel>
-                                            <TextBlock Text="{DynamicResource LOCCSM_GameOverridesHelp}" Style="{StaticResource HintText}" Margin="0,16,0,0" />
-                                        </StackPanel>
-                                    </StackPanel>
-                                </Border>
+                                    </Border>
+                                    <TextBlock Text="{DynamicResource LOCCSM_AdaptiveProtectionHelp}" Style="{StaticResource SectionSubtitleText}" />
+                                </StackPanel>
+                                <CheckBox Content="{DynamicResource LOCCSM_EnableSessionTracking}"
+                                          IsChecked="{Binding EnableSessionTracking}" />
+                                <TextBlock Text="{DynamicResource LOCCSM_EnableSessionTrackingHelp}" Style="{StaticResource SectionSubtitleText}" Margin="22,8,0,20" />
+                                <StackPanel IsEnabled="{Binding EnableSessionTracking}">
+                                    <CheckBox Content="{DynamicResource LOCCSM_ShowDisconnectOverlay}" IsChecked="{Binding ShowDisconnectOverlay}" />
+                                    <TextBlock Text="{DynamicResource LOCCSM_ShowDisconnectOverlayHelp}" Style="{StaticResource HintText}" Margin="22,8,0,20" />
+                                    <TextBlock Text="{DynamicResource LOCCSM_DisconnectGracePeriod}" Style="{StaticResource SettingsToggleTitle}" />
+                                    <TextBlock Text="{DynamicResource LOCCSM_DisconnectGracePeriodHelp}" Style="{StaticResource HintText}" Margin="0,6,0,10" />
+                                    <DockPanel LastChildFill="False">
+                                        <TextBox Width="82" Text="{Binding DisconnectGracePeriodMilliseconds, UpdateSourceTrigger=PropertyChanged}" />
+                                        <TextBlock Text="ms" VerticalAlignment="Center" Margin="8,0,0,0" />
+                                    </DockPanel>
+                                    <TextBlock Text="{DynamicResource LOCCSM_GameOverridesHelp}" Style="{StaticResource HintText}" Margin="0,20,0,0" />
+                                </StackPanel>
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>
-                    <TabItem Header="{DynamicResource LOCCSM_GamePolicyPauseSection}">
-                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                            <StackPanel Margin="8">
-                                <Border Style="{StaticResource IntroCard}">
-                                    <StackPanel>
+                    <TabItem>
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource TabGlyph}" Text="&#xE769;" />
+                                <TextBlock Text="{DynamicResource LOCCSM_GamePolicyPauseSection}" Style="{StaticResource TabHeaderLabel}" />
+                            </StackPanel>
+                        </TabItem.Header>
+                        <ScrollViewer Style="{StaticResource FillScrollViewer}">
+                            <StackPanel Margin="24,18,24,24">
+                                <StackPanel Style="{StaticResource PageSection}">
+                                    <Border Style="{StaticResource PageHeader}">
                                         <TextBlock Text="{DynamicResource LOCCSM_GamePolicyPauseSection}" Style="{StaticResource SectionHeaderText}" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_PauseModesHelp}" Style="{StaticResource SectionSubtitleText}" />
-                                    </StackPanel>
-                                </Border>
-                                <Border Style="{StaticResource SettingsCard}">
-                                    <StackPanel>
-                                        <RadioButton Content="{DynamicResource LOCCSM_AutoPauseModeNone}" IsChecked="{Binding IsAutoPauseModeNone}" GroupName="AutoPauseMode" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_AutoPauseModeNoneHelp}" Style="{StaticResource HintText}" Margin="22,6,0,14" />
-                                        <RadioButton Content="{DynamicResource LOCCSM_ForcePauseOfflineGames}" IsChecked="{Binding IsAutoPauseModeOfflineOnly}" GroupName="AutoPauseMode" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_ForcePauseOfflineGamesHelp}" Style="{StaticResource HintText}" Margin="22,6,0,4" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_ForcePauseOfflineGamesWarning}" Style="{StaticResource WarningHintText}" Margin="22,0,0,14" />
-                                        <RadioButton Content="{DynamicResource LOCCSM_PauseGameOnDisconnect}" IsChecked="{Binding IsAutoPauseModeAlways}" GroupName="AutoPauseMode" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_PauseGameOnDisconnectHelp}" Style="{StaticResource HintText}" Margin="22,6,0,0" />
-                                    </StackPanel>
-                                </Border>
+                                    </Border>
+                                    <TextBlock Text="{DynamicResource LOCCSM_PauseModesHelp}" Style="{StaticResource SectionSubtitleText}" />
+                                </StackPanel>
+                                <RadioButton Content="{DynamicResource LOCCSM_AutoPauseModeNone}" IsChecked="{Binding IsAutoPauseModeNone}" GroupName="AutoPauseMode" />
+                                <TextBlock Text="{DynamicResource LOCCSM_AutoPauseModeNoneHelp}" Style="{StaticResource HintText}" Margin="22,8,0,18" />
+                                <RadioButton Content="{DynamicResource LOCCSM_ForcePauseOfflineGames}" IsChecked="{Binding IsAutoPauseModeOfflineOnly}" GroupName="AutoPauseMode" />
+                                <TextBlock Text="{DynamicResource LOCCSM_ForcePauseOfflineGamesHelp}" Style="{StaticResource HintText}" Margin="22,8,0,4" />
+                                <TextBlock Text="{DynamicResource LOCCSM_ForcePauseOfflineGamesWarning}" Style="{StaticResource WarningHintText}" Margin="22,0,0,18" />
+                                <RadioButton Content="{DynamicResource LOCCSM_PauseGameOnDisconnect}" IsChecked="{Binding IsAutoPauseModeAlways}" GroupName="AutoPauseMode" />
+                                <TextBlock Text="{DynamicResource LOCCSM_PauseGameOnDisconnectHelp}" Style="{StaticResource HintText}" Margin="22,8,0,0" />
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>
                 </TabControl>
+                </Grid>
             </TabItem>
 
-            <TabItem Header="{DynamicResource LOCCSM_TabAppearance}">
-                <TabControl Style="{StaticResource SettingsNavigationTabControl}">
-                    <TabItem Header="{DynamicResource LOCCSM_DesktopIntegrationTitle}">
-                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                            <StackPanel Margin="8">
-                                <Border Style="{StaticResource IntroCard}">
-                                    <StackPanel>
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource TabGlyph}" Text="&#xE790;" />
+                        <TextBlock Text="{DynamicResource LOCCSM_TabAppearance}" Style="{StaticResource TabHeaderLabel}" />
+                    </StackPanel>
+                </TabItem.Header>
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <TabControl Style="{StaticResource SettingsNavigationTabControl}" Tag="{DynamicResource LOCCSM_TabAppearance}">
+                    <TabItem>
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource TabGlyph}" Text="&#xE7F4;" />
+                                <TextBlock Text="{DynamicResource LOCCSM_DesktopIntegrationTitle}" Style="{StaticResource TabHeaderLabel}" />
+                            </StackPanel>
+                        </TabItem.Header>
+                        <ScrollViewer Style="{StaticResource FillScrollViewer}">
+                            <StackPanel Margin="24,18,24,24">
+                                <StackPanel Style="{StaticResource PageSection}">
+                                    <Border Style="{StaticResource PageHeader}">
                                         <TextBlock Text="{DynamicResource LOCCSM_DesktopIntegrationTitle}" Style="{StaticResource SectionHeaderText}" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_ShowPrimaryInTopPanelHelp}" Style="{StaticResource SectionSubtitleText}" />
-                                    </StackPanel>
-                                </Border>
-                                <Border Style="{StaticResource SettingsCard}">
-                                    <StackPanel>
-                                        <CheckBox Content="{DynamicResource LOCCSM_ShowPrimaryInTopPanel}" IsChecked="{Binding ShowPrimaryControllerInTopPanel}" />
-                                        <CheckBox Content="{DynamicResource LOCCSM_ColorTopPanelByBattery}" IsChecked="{Binding ColorTopPanelIndicatorByBattery}"
-                                                  Margin="22,14,0,0" IsEnabled="{Binding ShowPrimaryControllerInTopPanel}" />
-                                    </StackPanel>
-                                </Border>
+                                    </Border>
+                                    <TextBlock Text="{DynamicResource LOCCSM_ShowPrimaryInTopPanelHelp}" Style="{StaticResource SectionSubtitleText}" />
+                                </StackPanel>
+                                <CheckBox Content="{DynamicResource LOCCSM_ShowPrimaryInTopPanel}" IsChecked="{Binding ShowPrimaryControllerInTopPanel}" />
+                                <CheckBox Content="{DynamicResource LOCCSM_ColorTopPanelByBattery}" IsChecked="{Binding ColorTopPanelIndicatorByBattery}"
+                                          Margin="22,16,0,0" IsEnabled="{Binding ShowPrimaryControllerInTopPanel}" />
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>
-                    <TabItem Header="{DynamicResource LOCCSM_ControllerNotificationTitle}">
-                        <TabControl Style="{StaticResource TopTabs}">
-                            <TabItem Header="{DynamicResource LOCCSM_FullscreenTabLabel}">
-                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                            <StackPanel Margin="8">
-                                <Border Style="{StaticResource IntroCard}">
-                                    <StackPanel>
-                                        <TextBlock Text="{DynamicResource LOCCSM_FullscreenNotificationsTitle}" Style="{StaticResource SectionHeaderText}" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_ShowFullscreenControllerNotificationsHelp}" Style="{StaticResource SectionSubtitleText}" />
-                                    </StackPanel>
-                                </Border>
-                                <Border Style="{StaticResource SettingsCard}">
-                                    <StackPanel>
+                    <TabItem>
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource TabGlyph}" Text="&#xEA8F;" />
+                                <TextBlock Text="{DynamicResource LOCCSM_ControllerNotificationTitle}" Style="{StaticResource TabHeaderLabel}" />
+                            </StackPanel>
+                        </TabItem.Header>
+                        <ScrollViewer Style="{StaticResource FillScrollViewer}">
+                            <StackPanel Margin="24,18,24,24">
+                                <StackPanel Style="{StaticResource PageSection}">
+                                    <Border Style="{StaticResource PageHeader}">
+                                        <TextBlock Text="{DynamicResource LOCCSM_ControllerNotificationTitle}" Style="{StaticResource SectionHeaderText}" />
+                                    </Border>
+                                    <TextBlock Text="{DynamicResource LOCCSM_ControllerNotificationHelp}" Style="{StaticResource SectionSubtitleText}" />
+                                </StackPanel>
+                                <Expander Style="{StaticResource SettingsExpander}" IsExpanded="False"
+                                          Header="{DynamicResource LOCCSM_FullscreenNotificationsTitle}">
+                                <StackPanel>
                                         <CheckBox Content="{DynamicResource LOCCSM_ShowFullscreenControllerNotifications}" IsChecked="{Binding ShowFullscreenControllerNotifications}" />
-                                        <StackPanel Margin="0,12,0,0" IsEnabled="{Binding ShowFullscreenControllerNotifications}">
-                                        <CheckBox Content="{DynamicResource LOCCSM_ShowControllerNameInNotifications}" IsChecked="{Binding ShowControllerNameInNotifications}" />
-                                        <Border Style="{StaticResource AppearanceGroup}">
+                                        <StackPanel Margin="0,16,0,0" IsEnabled="{Binding ShowFullscreenControllerNotifications}">
+                                        <CheckBox Content="{DynamicResource LOCCSM_ShowControllerNameInNotifications}" IsChecked="{Binding ShowControllerNameInNotifications}" Margin="0,0,0,4" />
+                                        <Grid Margin="0,16,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="20" />
+                                                <ColumnDefinition Width="252" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel>
+                                        <Border Style="{StaticResource AppearanceGroup}" Margin="0">
                                             <StackPanel><TextBlock Text="{DynamicResource LOCCSM_AppearanceLayout}" Style="{StaticResource AppearanceGroupHeader}"/><WrapPanel>
+                                                <StackPanel Style="{StaticResource CompactChoicePanel}"><TextBlock Text="{DynamicResource LOCCSM_NotificationPosition}"/><ComboBox SelectedValue="{Binding NotificationPosition}" SelectedValuePath="Tag"><ComboBoxItem Tag="TopRight" Content="{DynamicResource LOCCSM_PositionTopRight}"/><ComboBoxItem Tag="TopLeft" Content="{DynamicResource LOCCSM_PositionTopLeft}"/><ComboBoxItem Tag="BottomRight" Content="{DynamicResource LOCCSM_PositionBottomRight}"/><ComboBoxItem Tag="BottomLeft" Content="{DynamicResource LOCCSM_PositionBottomLeft}"/></ComboBox></StackPanel>
                                                 <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationWidth}"/><TextBlock DockPanel.Dock="Right" Text="{Binding NotificationWidth}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="300" Maximum="900" TickFrequency="10" IsSnapToTickEnabled="True" Value="{Binding NotificationWidth, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="300–900" Style="{StaticResource SliderRangeText}"/></StackPanel>
                                                 <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationScale}"/><TextBlock DockPanel.Dock="Right" Text="{Binding NotificationScalePercent}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="80" Maximum="160" TickFrequency="5" IsSnapToTickEnabled="True" Value="{Binding NotificationScalePercent, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="80–160" Style="{StaticResource SliderRangeText}"/></StackPanel>
                                                 <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationDuration}"/><TextBlock DockPanel.Dock="Right" Text="{Binding NotificationDurationMilliseconds}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="2000" Maximum="15000" TickFrequency="500" IsSnapToTickEnabled="True" Value="{Binding NotificationDurationMilliseconds, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="2000–15000" Style="{StaticResource SliderRangeText}"/></StackPanel>
-                                                <StackPanel Style="{StaticResource CompactChoicePanel}"><TextBlock Text="{DynamicResource LOCCSM_NotificationPosition}"/><ComboBox SelectedValue="{Binding NotificationPosition}" SelectedValuePath="Tag"><ComboBoxItem Tag="TopRight" Content="{DynamicResource LOCCSM_PositionTopRight}"/><ComboBoxItem Tag="TopLeft" Content="{DynamicResource LOCCSM_PositionTopLeft}"/><ComboBoxItem Tag="BottomRight" Content="{DynamicResource LOCCSM_PositionBottomRight}"/><ComboBoxItem Tag="BottomLeft" Content="{DynamicResource LOCCSM_PositionBottomLeft}"/></ComboBox></StackPanel>
                                             </WrapPanel></StackPanel>
                                         </Border>
                                         <Border Style="{StaticResource AppearanceGroup}">
                                             <StackPanel><TextBlock Text="{DynamicResource LOCCSM_AppearanceContent}" Style="{StaticResource AppearanceGroupHeader}"/><WrapPanel>
+                                                <StackPanel Style="{StaticResource CompactChoicePanel}"><TextBlock Text="{DynamicResource LOCCSM_NotificationIconPosition}"/><ComboBox SelectedValue="{Binding NotificationIconPosition}" SelectedValuePath="Tag"><ComboBoxItem Tag="Left" Content="{DynamicResource LOCCSM_BorderLeft}"/><ComboBoxItem Tag="Right" Content="{DynamicResource LOCCSM_BorderRight}"/><ComboBoxItem Tag="Top" Content="{DynamicResource LOCCSM_BorderTop}"/><ComboBoxItem Tag="Bottom" Content="{DynamicResource LOCCSM_BorderBottom}"/><ComboBoxItem Tag="Hidden" Content="{DynamicResource LOCCSM_IconHidden}"/></ComboBox></StackPanel>
                                                 <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationTitleSize}"/><TextBlock DockPanel.Dock="Right" Text="{Binding NotificationTitleFontSize}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="12" Maximum="36" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding NotificationTitleFontSize, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="12–36" Style="{StaticResource SliderRangeText}"/></StackPanel>
                                                 <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationTextSize}"/><TextBlock DockPanel.Dock="Right" Text="{Binding NotificationMessageFontSize}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="10" Maximum="30" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding NotificationMessageFontSize, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="10–30" Style="{StaticResource SliderRangeText}"/></StackPanel>
                                                 <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationIconSize}"/><TextBlock DockPanel.Dock="Right" Text="{Binding NotificationIconSize}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="16" Maximum="72" TickFrequency="2" IsSnapToTickEnabled="True" Value="{Binding NotificationIconSize, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="16–72" Style="{StaticResource SliderRangeText}"/></StackPanel>
-                                                <StackPanel Style="{StaticResource CompactChoicePanel}"><TextBlock Text="{DynamicResource LOCCSM_NotificationIconPosition}"/><ComboBox SelectedValue="{Binding NotificationIconPosition}" SelectedValuePath="Tag"><ComboBoxItem Tag="Left" Content="{DynamicResource LOCCSM_BorderLeft}"/><ComboBoxItem Tag="Right" Content="{DynamicResource LOCCSM_BorderRight}"/><ComboBoxItem Tag="Top" Content="{DynamicResource LOCCSM_BorderTop}"/><ComboBoxItem Tag="Bottom" Content="{DynamicResource LOCCSM_BorderBottom}"/><ComboBoxItem Tag="Hidden" Content="{DynamicResource LOCCSM_IconHidden}"/></ComboBox></StackPanel>
                                                 <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationPadding}"/><TextBlock DockPanel.Dock="Right" Text="{Binding NotificationPadding}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="6" Maximum="40" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding NotificationPadding, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="6–40" Style="{StaticResource SliderRangeText}"/></StackPanel>
                                             </WrapPanel></StackPanel>
                                         </Border>
@@ -627,56 +896,60 @@
                                                 <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationCornerRadius}"/><TextBlock DockPanel.Dock="Right" Text="{Binding NotificationCornerRadius}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="0" Maximum="40" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding NotificationCornerRadius, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="0–40" Style="{StaticResource SliderRangeText}"/></StackPanel>
                                             </WrapPanel></StackPanel>
                                         </Border>
-                                        <Border Style="{StaticResource AppearanceGroup}">
-                                            <StackPanel><TextBlock Text="{DynamicResource LOCCSM_AppearanceColors}" Style="{StaticResource AppearanceGroupHeader}"/><TextBlock Text="{DynamicResource LOCCSM_ColorFormatHelp}" Style="{StaticResource HintText}" Margin="0,0,0,10"/><WrapPanel>
-                                                <StackPanel Style="{StaticResource CompactColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_BackgroundColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="NotificationBackgroundColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding NotificationBackgroundColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding NotificationBackgroundColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
-                                                <StackPanel Style="{StaticResource CompactColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_PrimaryTextColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="NotificationTextColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding NotificationTextColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding NotificationTextColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
-                                                <StackPanel Style="{StaticResource CompactColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_SecondaryTextColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="NotificationSecondaryTextColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding NotificationSecondaryTextColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding NotificationSecondaryTextColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
-                                                <StackPanel Style="{StaticResource CompactColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_ConnectedColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="NotificationConnectedColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding NotificationConnectedColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding NotificationConnectedColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
-                                                <StackPanel Style="{StaticResource CompactColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_DisconnectedColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="NotificationDisconnectedColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding NotificationDisconnectedColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding NotificationDisconnectedColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
-                                                <StackPanel Style="{StaticResource CompactColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_WarningColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="NotificationWarningColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding NotificationWarningColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding NotificationWarningColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
-                                            </WrapPanel></StackPanel>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2">
+                                        <Border Style="{StaticResource AppearanceGroup}" Margin="0">
+                                            <StackPanel>
+                                                <TextBlock Text="{DynamicResource LOCCSM_AppearanceColors}" Style="{StaticResource AppearanceGroupHeader}"/>
+                                                <StackPanel Style="{StaticResource StackedColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_BackgroundColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="NotificationBackgroundColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding NotificationBackgroundColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding NotificationBackgroundColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
+                                                <StackPanel Style="{StaticResource StackedColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_PrimaryTextColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="NotificationTextColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding NotificationTextColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding NotificationTextColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
+                                                <StackPanel Style="{StaticResource StackedColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_SecondaryTextColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="NotificationSecondaryTextColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding NotificationSecondaryTextColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding NotificationSecondaryTextColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
+                                                <StackPanel Style="{StaticResource StackedColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_ConnectedColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="NotificationConnectedColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding NotificationConnectedColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding NotificationConnectedColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
+                                                <StackPanel Style="{StaticResource StackedColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_DisconnectedColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="NotificationDisconnectedColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding NotificationDisconnectedColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding NotificationDisconnectedColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
+                                                <StackPanel Style="{StaticResource StackedColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_WarningColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="NotificationWarningColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding NotificationWarningColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding NotificationWarningColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
+                                            </StackPanel>
                                         </Border>
-                                        <TextBlock Text="{DynamicResource LOCCSM_PreviewNotification}" Style="{StaticResource SectionHeaderText}" Margin="0,14,0,8"/>
-                                        <WrapPanel>
-                                            <Button Content="{DynamicResource LOCCSM_ControllerConnectedToast}" Tag="connected" MinWidth="160" Margin="0,0,10,0" Click="PreviewNotificationClick"/>
-                                            <Button Content="{DynamicResource LOCCSM_ControllerDisconnectedToast}" Tag="disconnected" MinWidth="160" Margin="0,0,10,0" Click="PreviewNotificationClick"/>
-                                            <Button Content="{DynamicResource LOCCSM_NotificationWarningPreview}" Tag="warning" MinWidth="160" Click="PreviewNotificationClick"/>
-                                        </WrapPanel>
+                                            </StackPanel>
+                                        </Grid>
+                                        <TextBlock Text="{DynamicResource LOCCSM_PreviewNotification}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,14,0,8"/>
+                                        <UniformGrid Columns="3" Margin="-4,0">
+                                            <Button Content="{DynamicResource LOCCSM_ControllerConnectedToast}" Tag="connected"
+                                                    Style="{StaticResource PreviewActionButton}" Click="PreviewNotificationClick"/>
+                                            <Button Content="{DynamicResource LOCCSM_ControllerDisconnectedToast}" Tag="disconnected"
+                                                    Style="{StaticResource PreviewActionButton}" Click="PreviewNotificationClick"/>
+                                            <Button Content="{DynamicResource LOCCSM_NotificationWarningPreview}" Tag="warning"
+                                                    Style="{StaticResource PreviewActionButton}" Click="PreviewNotificationClick"/>
+                                        </UniformGrid>
                                         </StackPanel>
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
-                        </ScrollViewer>
-                            </TabItem>
-                            <TabItem Header="{DynamicResource LOCCSM_DesktopTabLabel}">
-                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                            <StackPanel Margin="8">
-                                <Border Style="{StaticResource IntroCard}">
-                                    <StackPanel>
-                                        <TextBlock Text="{DynamicResource LOCCSM_DesktopNotificationsTitle}" Style="{StaticResource SectionHeaderText}" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_ShowDesktopControllerNotificationsHelp}" Style="{StaticResource SectionSubtitleText}" />
-                                    </StackPanel>
-                                </Border>
-                                <Border Style="{StaticResource SettingsCard}">
-                                    <StackPanel>
+                                </StackPanel>
+                                </Expander>
+                                <Expander Style="{StaticResource SettingsExpander}" IsExpanded="False"
+                                          Header="{DynamicResource LOCCSM_DesktopNotificationsTitle}">
+                                <StackPanel>
                                         <CheckBox Content="{DynamicResource LOCCSM_ShowDesktopControllerNotifications}" IsChecked="{Binding ShowDesktopControllerNotifications}" />
-                                        <StackPanel Margin="0,12,0,0" IsEnabled="{Binding ShowDesktopControllerNotifications}">
-                                        <CheckBox Content="{DynamicResource LOCCSM_ShowControllerNameInNotifications}" IsChecked="{Binding ShowControllerNameInDesktopNotifications}" />
-                                        <Border Style="{StaticResource AppearanceGroup}">
+                                        <StackPanel Margin="0,16,0,0" IsEnabled="{Binding ShowDesktopControllerNotifications}">
+                                        <CheckBox Content="{DynamicResource LOCCSM_ShowControllerNameInNotifications}" IsChecked="{Binding ShowControllerNameInDesktopNotifications}" Margin="0,0,0,4" />
+                                        <Grid Margin="0,16,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="20" />
+                                                <ColumnDefinition Width="252" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel>
+                                        <Border Style="{StaticResource AppearanceGroup}" Margin="0">
                                             <StackPanel><TextBlock Text="{DynamicResource LOCCSM_AppearanceLayout}" Style="{StaticResource AppearanceGroupHeader}"/><WrapPanel>
+                                                <StackPanel Style="{StaticResource CompactChoicePanel}"><TextBlock Text="{DynamicResource LOCCSM_NotificationPosition}"/><ComboBox SelectedValue="{Binding DesktopNotificationPosition}" SelectedValuePath="Tag"><ComboBoxItem Tag="TopRight" Content="{DynamicResource LOCCSM_PositionTopRight}"/><ComboBoxItem Tag="TopLeft" Content="{DynamicResource LOCCSM_PositionTopLeft}"/><ComboBoxItem Tag="BottomRight" Content="{DynamicResource LOCCSM_PositionBottomRight}"/><ComboBoxItem Tag="BottomLeft" Content="{DynamicResource LOCCSM_PositionBottomLeft}"/></ComboBox></StackPanel>
                                                 <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationWidth}"/><TextBlock DockPanel.Dock="Right" Text="{Binding DesktopNotificationWidth}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="300" Maximum="900" TickFrequency="10" IsSnapToTickEnabled="True" Value="{Binding DesktopNotificationWidth, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="300–900" Style="{StaticResource SliderRangeText}"/></StackPanel>
                                                 <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationScale}"/><TextBlock DockPanel.Dock="Right" Text="{Binding DesktopNotificationScalePercent}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="80" Maximum="160" TickFrequency="5" IsSnapToTickEnabled="True" Value="{Binding DesktopNotificationScalePercent, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="80–160" Style="{StaticResource SliderRangeText}"/></StackPanel>
                                                 <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationDuration}"/><TextBlock DockPanel.Dock="Right" Text="{Binding DesktopNotificationDurationMilliseconds}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="2000" Maximum="15000" TickFrequency="500" IsSnapToTickEnabled="True" Value="{Binding DesktopNotificationDurationMilliseconds, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="2000–15000" Style="{StaticResource SliderRangeText}"/></StackPanel>
-                                                <StackPanel Style="{StaticResource CompactChoicePanel}"><TextBlock Text="{DynamicResource LOCCSM_NotificationPosition}"/><ComboBox SelectedValue="{Binding DesktopNotificationPosition}" SelectedValuePath="Tag"><ComboBoxItem Tag="TopRight" Content="{DynamicResource LOCCSM_PositionTopRight}"/><ComboBoxItem Tag="TopLeft" Content="{DynamicResource LOCCSM_PositionTopLeft}"/><ComboBoxItem Tag="BottomRight" Content="{DynamicResource LOCCSM_PositionBottomRight}"/><ComboBoxItem Tag="BottomLeft" Content="{DynamicResource LOCCSM_PositionBottomLeft}"/></ComboBox></StackPanel>
                                             </WrapPanel></StackPanel>
                                         </Border>
                                         <Border Style="{StaticResource AppearanceGroup}">
                                             <StackPanel><TextBlock Text="{DynamicResource LOCCSM_AppearanceContent}" Style="{StaticResource AppearanceGroupHeader}"/><WrapPanel>
+                                                <StackPanel Style="{StaticResource CompactChoicePanel}"><TextBlock Text="{DynamicResource LOCCSM_NotificationIconPosition}"/><ComboBox SelectedValue="{Binding DesktopNotificationIconPosition}" SelectedValuePath="Tag"><ComboBoxItem Tag="Left" Content="{DynamicResource LOCCSM_BorderLeft}"/><ComboBoxItem Tag="Right" Content="{DynamicResource LOCCSM_BorderRight}"/><ComboBoxItem Tag="Top" Content="{DynamicResource LOCCSM_BorderTop}"/><ComboBoxItem Tag="Bottom" Content="{DynamicResource LOCCSM_BorderBottom}"/><ComboBoxItem Tag="Hidden" Content="{DynamicResource LOCCSM_IconHidden}"/></ComboBox></StackPanel>
                                                 <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationTitleSize}"/><TextBlock DockPanel.Dock="Right" Text="{Binding DesktopNotificationTitleFontSize}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="12" Maximum="36" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding DesktopNotificationTitleFontSize, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="12–36" Style="{StaticResource SliderRangeText}"/></StackPanel>
                                                 <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationTextSize}"/><TextBlock DockPanel.Dock="Right" Text="{Binding DesktopNotificationMessageFontSize}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="10" Maximum="30" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding DesktopNotificationMessageFontSize, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="10–30" Style="{StaticResource SliderRangeText}"/></StackPanel>
                                                 <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationIconSize}"/><TextBlock DockPanel.Dock="Right" Text="{Binding DesktopNotificationIconSize}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="16" Maximum="72" TickFrequency="2" IsSnapToTickEnabled="True" Value="{Binding DesktopNotificationIconSize, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="16–72" Style="{StaticResource SliderRangeText}"/></StackPanel>
-                                                <StackPanel Style="{StaticResource CompactChoicePanel}"><TextBlock Text="{DynamicResource LOCCSM_NotificationIconPosition}"/><ComboBox SelectedValue="{Binding DesktopNotificationIconPosition}" SelectedValuePath="Tag"><ComboBoxItem Tag="Left" Content="{DynamicResource LOCCSM_BorderLeft}"/><ComboBoxItem Tag="Right" Content="{DynamicResource LOCCSM_BorderRight}"/><ComboBoxItem Tag="Top" Content="{DynamicResource LOCCSM_BorderTop}"/><ComboBoxItem Tag="Bottom" Content="{DynamicResource LOCCSM_BorderBottom}"/><ComboBoxItem Tag="Hidden" Content="{DynamicResource LOCCSM_IconHidden}"/></ComboBox></StackPanel>
                                                 <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationPadding}"/><TextBlock DockPanel.Dock="Right" Text="{Binding DesktopNotificationPadding}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="6" Maximum="40" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding DesktopNotificationPadding, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="6–40" Style="{StaticResource SliderRangeText}"/></StackPanel>
                                             </WrapPanel></StackPanel>
                                         </Border>
@@ -687,78 +960,126 @@
                                                 <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationCornerRadius}"/><TextBlock DockPanel.Dock="Right" Text="{Binding DesktopNotificationCornerRadius}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="0" Maximum="40" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding DesktopNotificationCornerRadius, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="0–40" Style="{StaticResource SliderRangeText}"/></StackPanel>
                                             </WrapPanel></StackPanel>
                                         </Border>
-                                        <Border Style="{StaticResource AppearanceGroup}">
-                                            <StackPanel><TextBlock Text="{DynamicResource LOCCSM_AppearanceColors}" Style="{StaticResource AppearanceGroupHeader}"/><TextBlock Text="{DynamicResource LOCCSM_ColorFormatHelp}" Style="{StaticResource HintText}" Margin="0,0,0,10"/><WrapPanel>
-                                                <StackPanel Style="{StaticResource CompactColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_BackgroundColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="DesktopNotificationBackgroundColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding DesktopNotificationBackgroundColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding DesktopNotificationBackgroundColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
-                                                <StackPanel Style="{StaticResource CompactColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_PrimaryTextColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="DesktopNotificationTextColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding DesktopNotificationTextColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding DesktopNotificationTextColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
-                                                <StackPanel Style="{StaticResource CompactColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_SecondaryTextColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="DesktopNotificationSecondaryTextColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding DesktopNotificationSecondaryTextColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding DesktopNotificationSecondaryTextColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
-                                                <StackPanel Style="{StaticResource CompactColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_ConnectedColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="DesktopNotificationConnectedColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding DesktopNotificationConnectedColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding DesktopNotificationConnectedColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
-                                                <StackPanel Style="{StaticResource CompactColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_DisconnectedColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="DesktopNotificationDisconnectedColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding DesktopNotificationDisconnectedColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding DesktopNotificationDisconnectedColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
-                                                <StackPanel Style="{StaticResource CompactColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_WarningColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="DesktopNotificationWarningColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding DesktopNotificationWarningColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding DesktopNotificationWarningColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
-                                            </WrapPanel></StackPanel>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2">
+                                        <Border Style="{StaticResource AppearanceGroup}" Margin="0">
+                                            <StackPanel>
+                                                <TextBlock Text="{DynamicResource LOCCSM_AppearanceColors}" Style="{StaticResource AppearanceGroupHeader}"/>
+                                                <StackPanel Style="{StaticResource StackedColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_BackgroundColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="DesktopNotificationBackgroundColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding DesktopNotificationBackgroundColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding DesktopNotificationBackgroundColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
+                                                <StackPanel Style="{StaticResource StackedColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_PrimaryTextColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="DesktopNotificationTextColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding DesktopNotificationTextColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding DesktopNotificationTextColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
+                                                <StackPanel Style="{StaticResource StackedColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_SecondaryTextColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="DesktopNotificationSecondaryTextColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding DesktopNotificationSecondaryTextColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding DesktopNotificationSecondaryTextColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
+                                                <StackPanel Style="{StaticResource StackedColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_ConnectedColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="DesktopNotificationConnectedColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding DesktopNotificationConnectedColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding DesktopNotificationConnectedColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
+                                                <StackPanel Style="{StaticResource StackedColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_DisconnectedColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="DesktopNotificationDisconnectedColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding DesktopNotificationDisconnectedColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding DesktopNotificationDisconnectedColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
+                                                <StackPanel Style="{StaticResource StackedColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_WarningColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="DesktopNotificationWarningColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding DesktopNotificationWarningColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding DesktopNotificationWarningColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
+                                            </StackPanel>
                                         </Border>
-                                        <TextBlock Text="{DynamicResource LOCCSM_PreviewNotification}" Style="{StaticResource SectionHeaderText}" Margin="0,14,0,8"/>
-                                        <WrapPanel>
-                                            <Button Content="{DynamicResource LOCCSM_ControllerConnectedToast}" Tag="connected" MinWidth="160" Margin="0,0,10,0" Click="PreviewDesktopNotificationClick"/>
-                                            <Button Content="{DynamicResource LOCCSM_ControllerDisconnectedToast}" Tag="disconnected" MinWidth="160" Margin="0,0,10,0" Click="PreviewDesktopNotificationClick"/>
-                                            <Button Content="{DynamicResource LOCCSM_NotificationWarningPreview}" Tag="warning" MinWidth="160" Click="PreviewDesktopNotificationClick"/>
-                                        </WrapPanel>
+                                            </StackPanel>
+                                        </Grid>
+                                        <TextBlock Text="{DynamicResource LOCCSM_PreviewNotification}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,14,0,8"/>
+                                        <UniformGrid Columns="3" Margin="-4,0">
+                                            <Button Content="{DynamicResource LOCCSM_ControllerConnectedToast}" Tag="connected"
+                                                    Style="{StaticResource PreviewActionButton}" Click="PreviewDesktopNotificationClick"/>
+                                            <Button Content="{DynamicResource LOCCSM_ControllerDisconnectedToast}" Tag="disconnected"
+                                                    Style="{StaticResource PreviewActionButton}" Click="PreviewDesktopNotificationClick"/>
+                                            <Button Content="{DynamicResource LOCCSM_NotificationWarningPreview}" Tag="warning"
+                                                    Style="{StaticResource PreviewActionButton}" Click="PreviewDesktopNotificationClick"/>
+                                        </UniformGrid>
                                         </StackPanel>
-                                    </StackPanel>
-                                </Border>
+                                </StackPanel>
+                                </Expander>
                             </StackPanel>
                         </ScrollViewer>
-                            </TabItem>
-                        </TabControl>
                     </TabItem>
-                    <TabItem Header="{DynamicResource LOCCSM_OverlayAppearanceTitle}">
-                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                            <StackPanel Margin="8">
-                                <Border Style="{StaticResource IntroCard}">
-                                    <StackPanel>
+                    <TabItem>
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource TabGlyph}" Text="&#xE740;" />
+                                <TextBlock Text="{DynamicResource LOCCSM_OverlayAppearanceTitle}" Style="{StaticResource TabHeaderLabel}" />
+                            </StackPanel>
+                        </TabItem.Header>
+                        <Grid Margin="20,12,20,16" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                                <StackPanel Grid.Row="0" Style="{StaticResource PageSection}" Margin="0,0,0,14">
+                                    <Border Style="{StaticResource PageHeader}" Margin="0,0,0,10" Padding="0,0,0,8">
                                         <TextBlock Text="{DynamicResource LOCCSM_OverlayAppearanceTitle}" Style="{StaticResource SectionHeaderText}" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_OverlayAppearanceHelp}" Style="{StaticResource SectionSubtitleText}" />
-                                    </StackPanel>
-                                </Border>
-                                <Border Style="{StaticResource SettingsCard}">
-                                    <StackPanel>
-                                        <CheckBox Content="{DynamicResource LOCCSM_EnableDisconnectOverlay}" IsChecked="{Binding ShowDisconnectOverlay}" />
-                                        <StackPanel Margin="0,14,0,0" IsEnabled="{Binding ShowDisconnectOverlay}">
-                                        <Border Style="{StaticResource AppearanceGroup}">
-                                            <StackPanel><TextBlock Text="{DynamicResource LOCCSM_AppearanceLayout}" Style="{StaticResource AppearanceGroupHeader}"/><WrapPanel>
-                                                <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_OverlayScale}"/><TextBlock DockPanel.Dock="Right" Text="{Binding OverlayScalePercent}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="80" Maximum="140" TickFrequency="5" IsSnapToTickEnabled="True" Value="{Binding OverlayScalePercent, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="80–140" Style="{StaticResource SliderRangeText}"/></StackPanel>
-                                                <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_OverlayPadding}"/><TextBlock DockPanel.Dock="Right" Text="{Binding OverlayPadding}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="12" Maximum="80" TickFrequency="2" IsSnapToTickEnabled="True" Value="{Binding OverlayPadding, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="12–80" Style="{StaticResource SliderRangeText}"/></StackPanel>
-                                                <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_OverlayCornerRadius}"/><TextBlock DockPanel.Dock="Right" Text="{Binding OverlayCornerRadius}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="0" Maximum="40" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding OverlayCornerRadius, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="0–40" Style="{StaticResource SliderRangeText}"/></StackPanel>
+                                    </Border>
+                                    <TextBlock Text="{DynamicResource LOCCSM_OverlayAppearanceHelp}" Style="{StaticResource SectionSubtitleText}" />
+                                </StackPanel>
+                                <CheckBox Grid.Row="1" Content="{DynamicResource LOCCSM_EnableDisconnectOverlay}" IsChecked="{Binding ShowDisconnectOverlay}" Margin="0,0,0,10" />
+                                <Grid Grid.Row="2" IsEnabled="{Binding ShowDisconnectOverlay}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                        <Grid Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="14" />
+                                                <ColumnDefinition Width="240" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel>
+                                        <Border Style="{StaticResource OverlayAppearanceGroup}" Margin="0">
+                                            <StackPanel><TextBlock Text="{DynamicResource LOCCSM_AppearanceLayout}" Style="{StaticResource OverlayAppearanceGroupHeader}"/><WrapPanel>
+                                                <StackPanel Style="{StaticResource OverlaySliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_OverlayScale}"/><TextBlock DockPanel.Dock="Right" Text="{Binding OverlayScalePercent}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="80" Maximum="140" TickFrequency="5" IsSnapToTickEnabled="True" Value="{Binding OverlayScalePercent, UpdateSourceTrigger=PropertyChanged}"/></StackPanel>
+                                                <StackPanel Style="{StaticResource OverlaySliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_OverlayPadding}"/><TextBlock DockPanel.Dock="Right" Text="{Binding OverlayPadding}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="12" Maximum="80" TickFrequency="2" IsSnapToTickEnabled="True" Value="{Binding OverlayPadding, UpdateSourceTrigger=PropertyChanged}"/></StackPanel>
+                                                <StackPanel Style="{StaticResource OverlaySliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_OverlayCornerRadius}"/><TextBlock DockPanel.Dock="Right" Text="{Binding OverlayCornerRadius}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="0" Maximum="40" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding OverlayCornerRadius, UpdateSourceTrigger=PropertyChanged}"/></StackPanel>
                                             </WrapPanel></StackPanel>
                                         </Border>
-                                        <Border Style="{StaticResource AppearanceGroup}">
-                                            <StackPanel><TextBlock Text="{DynamicResource LOCCSM_AppearanceTypography}" Style="{StaticResource AppearanceGroupHeader}"/><WrapPanel>
-                                                <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_OverlayTitleSize}"/><TextBlock DockPanel.Dock="Right" Text="{Binding OverlayTitleFontSize}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="18" Maximum="64" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding OverlayTitleFontSize, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="18–64" Style="{StaticResource SliderRangeText}"/></StackPanel>
-                                                <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_OverlayControllerTextSize}"/><TextBlock DockPanel.Dock="Right" Text="{Binding OverlayControllerFontSize}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="12" Maximum="48" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding OverlayControllerFontSize, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="12–48" Style="{StaticResource SliderRangeText}"/></StackPanel>
-                                                <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_OverlayInstructionSize}"/><TextBlock DockPanel.Dock="Right" Text="{Binding OverlayInstructionFontSize}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="12" Maximum="40" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding OverlayInstructionFontSize, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="12–40" Style="{StaticResource SliderRangeText}"/></StackPanel>
-                                                <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_OverlayStatusSize}"/><TextBlock DockPanel.Dock="Right" Text="{Binding OverlayStatusFontSize}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="10" Maximum="30" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding OverlayStatusFontSize, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="10–30" Style="{StaticResource SliderRangeText}"/></StackPanel>
+                                        <Border Style="{StaticResource OverlayAppearanceGroup}">
+                                            <StackPanel><TextBlock Text="{DynamicResource LOCCSM_AppearanceTypography}" Style="{StaticResource OverlayAppearanceGroupHeader}"/><WrapPanel>
+                                                <StackPanel Style="{StaticResource OverlaySliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_OverlayTitleSize}"/><TextBlock DockPanel.Dock="Right" Text="{Binding OverlayTitleFontSize}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="18" Maximum="64" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding OverlayTitleFontSize, UpdateSourceTrigger=PropertyChanged}"/></StackPanel>
+                                                <StackPanel Style="{StaticResource OverlaySliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_OverlayControllerTextSize}"/><TextBlock DockPanel.Dock="Right" Text="{Binding OverlayControllerFontSize}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="12" Maximum="48" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding OverlayControllerFontSize, UpdateSourceTrigger=PropertyChanged}"/></StackPanel>
+                                                <StackPanel Style="{StaticResource OverlaySliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_OverlayInstructionSize}"/><TextBlock DockPanel.Dock="Right" Text="{Binding OverlayInstructionFontSize}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="12" Maximum="40" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding OverlayInstructionFontSize, UpdateSourceTrigger=PropertyChanged}"/></StackPanel>
+                                                <StackPanel Style="{StaticResource OverlaySliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_OverlayStatusSize}"/><TextBlock DockPanel.Dock="Right" Text="{Binding OverlayStatusFontSize}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="10" Maximum="30" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding OverlayStatusFontSize, UpdateSourceTrigger=PropertyChanged}"/></StackPanel>
                                             </WrapPanel></StackPanel>
                                         </Border>
-                                        <Border Style="{StaticResource AppearanceGroup}">
-                                            <StackPanel><TextBlock Text="{DynamicResource LOCCSM_AppearanceIconsBorder}" Style="{StaticResource AppearanceGroupHeader}"/><WrapPanel>
-                                                <StackPanel Style="{StaticResource CompactSliderPanel}" IsEnabled="{Binding OverlayShowControllerIcon}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_OverlayControllerIconSize}"/><TextBlock DockPanel.Dock="Right" Text="{Binding OverlayControllerIconSize}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="16" Maximum="72" TickFrequency="2" IsSnapToTickEnabled="True" Value="{Binding OverlayControllerIconSize, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="16–72" Style="{StaticResource SliderRangeText}"/></StackPanel>
-                                                <StackPanel Style="{StaticResource CompactSliderPanel}" IsEnabled="{Binding OverlayShowStatusIcon}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_OverlayStatusIconSize}"/><TextBlock DockPanel.Dock="Right" Text="{Binding OverlayStatusIconSize}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="12" Maximum="48" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding OverlayStatusIconSize, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="12–48" Style="{StaticResource SliderRangeText}"/></StackPanel>
-                                            </WrapPanel><WrapPanel Margin="0,2,0,10"><CheckBox Content="{DynamicResource LOCCSM_OverlayShowControllerIcon}" IsChecked="{Binding OverlayShowControllerIcon}" Margin="0,0,18,0"/><CheckBox Content="{DynamicResource LOCCSM_OverlayShowStatusIcon}" IsChecked="{Binding OverlayShowStatusIcon}"/></WrapPanel><CheckBox Content="{DynamicResource LOCCSM_OverlayShowBorder}" IsChecked="{Binding OverlayShowBorder}" Margin="0,2,0,10"/><WrapPanel><StackPanel Style="{StaticResource CompactSliderPanel}" IsEnabled="{Binding OverlayShowBorder}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationBorderThickness}"/><TextBlock DockPanel.Dock="Right" Text="{Binding OverlayBorderThickness}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="0" Maximum="10" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding OverlayBorderThickness, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="0–10" Style="{StaticResource SliderRangeText}"/></StackPanel></WrapPanel></StackPanel>
+                                        <Border Style="{StaticResource OverlayAppearanceGroup}">
+                                            <StackPanel>
+                                                <TextBlock Text="{DynamicResource LOCCSM_AppearanceIconsBorder}" Style="{StaticResource OverlayAppearanceGroupHeader}"/>
+                                                <WrapPanel>
+                                                    <StackPanel Style="{StaticResource OverlaySliderPanel}">
+                                                        <CheckBox Content="{DynamicResource LOCCSM_OverlayShowControllerIcon}" IsChecked="{Binding OverlayShowControllerIcon}" Margin="0,0,0,4" />
+                                                        <DockPanel IsEnabled="{Binding OverlayShowControllerIcon}"><TextBlock Text="{DynamicResource LOCCSM_OverlayControllerIconSize}"/><TextBlock DockPanel.Dock="Right" Text="{Binding OverlayControllerIconSize}" Style="{StaticResource SliderValueText}"/></DockPanel>
+                                                        <Slider Minimum="16" Maximum="72" TickFrequency="2" IsSnapToTickEnabled="True" IsEnabled="{Binding OverlayShowControllerIcon}" Value="{Binding OverlayControllerIconSize, UpdateSourceTrigger=PropertyChanged}"/>
+                                                    </StackPanel>
+                                                    <StackPanel Style="{StaticResource OverlaySliderPanel}">
+                                                        <CheckBox Content="{DynamicResource LOCCSM_OverlayShowStatusIcon}" IsChecked="{Binding OverlayShowStatusIcon}" Margin="0,0,0,4" />
+                                                        <DockPanel IsEnabled="{Binding OverlayShowStatusIcon}"><TextBlock Text="{DynamicResource LOCCSM_OverlayStatusIconSize}"/><TextBlock DockPanel.Dock="Right" Text="{Binding OverlayStatusIconSize}" Style="{StaticResource SliderValueText}"/></DockPanel>
+                                                        <Slider Minimum="12" Maximum="48" TickFrequency="1" IsSnapToTickEnabled="True" IsEnabled="{Binding OverlayShowStatusIcon}" Value="{Binding OverlayStatusIconSize, UpdateSourceTrigger=PropertyChanged}"/>
+                                                    </StackPanel>
+                                                    <StackPanel Style="{StaticResource OverlaySliderPanel}">
+                                                        <CheckBox Content="{DynamicResource LOCCSM_OverlayShowBorder}" IsChecked="{Binding OverlayShowBorder}" Margin="0,0,0,4" />
+                                                        <DockPanel IsEnabled="{Binding OverlayShowBorder}"><TextBlock Text="{DynamicResource LOCCSM_NotificationBorderThickness}"/><TextBlock DockPanel.Dock="Right" Text="{Binding OverlayBorderThickness}" Style="{StaticResource SliderValueText}"/></DockPanel>
+                                                        <Slider Minimum="0" Maximum="10" TickFrequency="1" IsSnapToTickEnabled="True" IsEnabled="{Binding OverlayShowBorder}" Value="{Binding OverlayBorderThickness, UpdateSourceTrigger=PropertyChanged}"/>
+                                                    </StackPanel>
+                                                </WrapPanel>
+                                            </StackPanel>
                                         </Border>
-                                        <Border Style="{StaticResource AppearanceGroup}">
-                                            <StackPanel><TextBlock Text="{DynamicResource LOCCSM_AppearanceColors}" Style="{StaticResource AppearanceGroupHeader}"/><TextBlock Text="{DynamicResource LOCCSM_ColorFormatHelp}" Style="{StaticResource HintText}" Margin="0,0,0,6"/><TextBlock Text="{DynamicResource LOCCSM_BackdropHelp}" Style="{StaticResource HintText}" Margin="0,0,0,10"/><WrapPanel>
-                                                <StackPanel Style="{StaticResource CompactColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_DimColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="OverlayDimColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding OverlayDimColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding OverlayDimColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
-                                                <StackPanel Style="{StaticResource CompactColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_CardColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="OverlayCardColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding OverlayCardColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding OverlayCardColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
-                                                <StackPanel Style="{StaticResource CompactColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_AccentColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="OverlayAccentColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding OverlayAccentColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding OverlayAccentColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
-                                                <StackPanel Style="{StaticResource CompactColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_PrimaryTextColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="OverlayTextColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding OverlayTextColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding OverlayTextColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
-                                                <StackPanel Style="{StaticResource CompactColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_WarningColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="OverlayWarningColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding OverlayWarningColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding OverlayWarningColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
-                                            </WrapPanel></StackPanel>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2">
+                                        <Border Style="{StaticResource OverlayAppearanceGroup}" Margin="0">
+                                            <StackPanel>
+                                                <TextBlock Text="{DynamicResource LOCCSM_AppearanceColors}" Style="{StaticResource OverlayAppearanceGroupHeader}"/>
+                                                <StackPanel Style="{StaticResource OverlayColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_DimColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="OverlayDimColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding OverlayDimColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding OverlayDimColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
+                                                <StackPanel Style="{StaticResource OverlayColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_CardColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="OverlayCardColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding OverlayCardColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding OverlayCardColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
+                                                <StackPanel Style="{StaticResource OverlayColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_AccentColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="OverlayAccentColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding OverlayAccentColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding OverlayAccentColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
+                                                <StackPanel Style="{StaticResource OverlayColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_PrimaryTextColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="OverlayTextColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding OverlayTextColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding OverlayTextColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
+                                                <StackPanel Style="{StaticResource OverlayColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_WarningColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="OverlayWarningColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding OverlayWarningColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding OverlayWarningColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
+                                            </StackPanel>
                                         </Border>
-                                        <TextBlock Text="{DynamicResource LOCCSM_OverlayPreview}" Style="{StaticResource SectionHeaderText}" Margin="0,14,0,8"/>
-                                        <Border Height="320" Background="{Binding OverlayDimColor, Converter={StaticResource HexColorBrushConverter}}" CornerRadius="8" ClipToBounds="True">
+                                            </StackPanel>
+                                        </Grid>
+                                        <TextBlock Grid.Row="1" Text="{DynamicResource LOCCSM_OverlayPreview}" Style="{StaticResource OverlayAppearanceGroupHeader}" Margin="0,10,0,8"/>
+                                        <Border Grid.Row="2" MinHeight="300" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                                Background="{Binding OverlayDimColor, Converter={StaticResource HexColorBrushConverter}}" CornerRadius="4" ClipToBounds="True">
                                             <Grid>
-                                                <Border Width="510" HorizontalAlignment="Center" VerticalAlignment="Center"
-                                                        Margin="20,34"
+                                                <Border MaxWidth="560" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                        Margin="28,36"
                                                         RenderTransformOrigin="0.5,0.5" RenderTransform="{Binding OverlayScalePercent, Converter={StaticResource PreviewScaleConverter}}"
                                                         Background="{Binding OverlayCardColor, Converter={StaticResource HexColorBrushConverter}}"
                                                         BorderBrush="{Binding OverlayAccentColor, Converter={StaticResource HexColorBrushConverter}}"
@@ -772,128 +1093,150 @@
                                                             <TextBlock Text="{DynamicResource LOCCSM_PreviewControllerName}" Foreground="{Binding OverlayTextColor, Converter={StaticResource HexColorBrushConverter}}" FontSize="{Binding OverlayControllerFontSize}"/>
                                                         </StackPanel>
                                                         <TextBlock Text="{DynamicResource LOCCSM_OverlayAllowTakeover}" Foreground="{Binding OverlayAccentColor, Converter={StaticResource HexColorBrushConverter}}" FontSize="{Binding OverlayInstructionFontSize}" HorizontalAlignment="Center" Margin="0,13,0,0"/>
-                                                        <Border Background="#302391FF" CornerRadius="5" Padding="9,5" HorizontalAlignment="Center" Margin="0,12,0,0">
+                                                        <Border Background="#302391FF" CornerRadius="4" Padding="9,5" HorizontalAlignment="Center" Margin="0,12,0,0">
                                                             <StackPanel Orientation="Horizontal"><Path x:Name="OverlayPreviewStatusIcon" Width="{Binding OverlayStatusIconSize}" Height="{Binding OverlayStatusIconSize}" Stretch="Uniform" Stroke="{Binding OverlayWarningColor, Converter={StaticResource HexColorBrushConverter}}" StrokeThickness="2" Margin="0,0,7,0"><Path.Style><Style TargetType="Path"><Setter Property="Visibility" Value="Visible"/><Style.Triggers><DataTrigger Binding="{Binding OverlayShowStatusIcon}" Value="False"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers></Style></Path.Style></Path><TextBlock Text="{DynamicResource LOCCSM_OverlayForcePaused}" Foreground="{Binding OverlayWarningColor, Converter={StaticResource HexColorBrushConverter}}" FontSize="{Binding OverlayStatusFontSize}"/></StackPanel>
                                                         </Border>
                                                     </StackPanel>
                                                 </Border>
                                             </Grid>
                                         </Border>
-                                        <TextBlock Text="{DynamicResource LOCCSM_OverlayPreviewHelp}" Style="{StaticResource HintText}" Margin="0,7,0,0"/>
-                                        </StackPanel>
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
-                        </ScrollViewer>
+                                </Grid>
+                        </Grid>
                     </TabItem>
                 </TabControl>
+                </Grid>
             </TabItem>
 
-            <TabItem Header="{DynamicResource LOCCSM_TabAdvanced}">
-                <TabControl Style="{StaticResource SettingsNavigationTabControl}">
-                    <TabItem Header="{DynamicResource LOCCSM_Monitoring}">
-                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                            <StackPanel Margin="8">
-                                <Border Style="{StaticResource IntroCard}">
-                                    <StackPanel>
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource TabGlyph}" Text="&#xEC7A;" />
+                        <TextBlock Text="{DynamicResource LOCCSM_TabAdvanced}" Style="{StaticResource TabHeaderLabel}" />
+                    </StackPanel>
+                </TabItem.Header>
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <TabControl Style="{StaticResource SettingsNavigationTabControl}" Tag="{DynamicResource LOCCSM_TabAdvanced}">
+                    <TabItem>
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource TabGlyph}" Text="&#xEC4A;" />
+                                <TextBlock Text="{DynamicResource LOCCSM_Monitoring}" Style="{StaticResource TabHeaderLabel}" />
+                            </StackPanel>
+                        </TabItem.Header>
+                        <ScrollViewer Style="{StaticResource FillScrollViewer}">
+                            <StackPanel Margin="24,18,24,24">
+                                <StackPanel Style="{StaticResource PageSection}">
+                                    <Border Style="{StaticResource PageHeader}">
                                         <TextBlock Text="{DynamicResource LOCCSM_Monitoring}" Style="{StaticResource SectionHeaderText}" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_GeneralHelp}" Style="{StaticResource SectionSubtitleText}" />
-                                    </StackPanel>
-                                </Border>
-                                <Border Style="{StaticResource SettingsCard}">
-                                    <StackPanel>
-                                        <CheckBox Content="{DynamicResource LOCCSM_ReconciliationInterval}" IsChecked="{Binding EnableMonitoring}" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_ReconciliationHelp}" Style="{StaticResource HintText}" Margin="22,6,0,8" />
-                                        <DockPanel LastChildFill="False" Margin="22,0,0,0" IsEnabled="{Binding EnableMonitoring}">
-                                            <TextBox Width="72" Text="{Binding ReconciliationIntervalSeconds, UpdateSourceTrigger=PropertyChanged}" />
-                                            <TextBlock Text="{DynamicResource LOCCSM_Seconds}" VerticalAlignment="Center" Margin="8,0,0,0" />
-                                        </DockPanel>
-                                    </StackPanel>
-                                </Border>
+                                    </Border>
+                                    <TextBlock Text="{DynamicResource LOCCSM_GeneralHelp}" Style="{StaticResource SectionSubtitleText}" />
+                                </StackPanel>
+                                <CheckBox Content="{DynamicResource LOCCSM_ReconciliationInterval}" IsChecked="{Binding EnableMonitoring}" />
+                                <TextBlock Text="{DynamicResource LOCCSM_ReconciliationHelp}" Style="{StaticResource HintText}" Margin="22,8,0,10" />
+                                <DockPanel LastChildFill="False" Margin="22,0,0,0" IsEnabled="{Binding EnableMonitoring}">
+                                    <TextBox Width="72" Text="{Binding ReconciliationIntervalSeconds, UpdateSourceTrigger=PropertyChanged}" />
+                                    <TextBlock Text="{DynamicResource LOCCSM_Seconds}" VerticalAlignment="Center" Margin="8,0,0,0" />
+                                </DockPanel>
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>
-                    <TabItem Header="{DynamicResource LOCCSM_DiagnosticsTitle}">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                    <StackPanel Margin="8">
-                        <Border Style="{StaticResource IntroCard}">
-                            <StackPanel>
+                    <TabItem>
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource TabGlyph}" Text="&#xE9D9;" />
+                                <TextBlock Text="{DynamicResource LOCCSM_DiagnosticsTitle}" Style="{StaticResource TabHeaderLabel}" />
+                            </StackPanel>
+                        </TabItem.Header>
+                <ScrollViewer Style="{StaticResource FillScrollViewer}">
+                    <StackPanel Margin="24,18,24,24">
+                        <StackPanel Style="{StaticResource PageSection}">
+                            <Border Style="{StaticResource PageHeader}">
                                 <TextBlock Text="{DynamicResource LOCCSM_DiagnosticsTitle}" Style="{StaticResource SectionHeaderText}" />
-                                <TextBlock Text="{DynamicResource LOCCSM_AdvancedHelp}" Style="{StaticResource SectionSubtitleText}" />
-                            </StackPanel>
-                        </Border>
-                        <Border Style="{StaticResource SettingsCard}">
-                            <StackPanel>
-                                <CheckBox Content="{DynamicResource LOCCSM_EnableDebugLogging}" IsChecked="{Binding EnableDebugLogging}" />
-                            </StackPanel>
-                        </Border>
-                        <Border Style="{StaticResource SettingsCard}">
-                            <StackPanel>
+                            </Border>
+                            <TextBlock Text="{DynamicResource LOCCSM_AdvancedHelp}" Style="{StaticResource SectionSubtitleText}" />
+                        </StackPanel>
+                        <CheckBox Content="{DynamicResource LOCCSM_EnableDebugLogging}" IsChecked="{Binding EnableDebugLogging}" Margin="0,0,0,8" />
+                        <StackPanel Style="{StaticResource PageSection}" Margin="0,16,0,22">
+                            <Border Style="{StaticResource PageHeader}">
                                 <TextBlock Text="{DynamicResource LOCCSM_SupportReport}" Style="{StaticResource SectionHeaderText}" />
-                                <TextBlock Text="{DynamicResource LOCCSM_SupportReportHelp}" Style="{StaticResource HintText}" Margin="0,6,0,12" />
-                                <Button Content="{DynamicResource LOCCSM_ExportSupportReport}" HorizontalAlignment="Left"
-                                        MinWidth="180" Click="ExportSupportReportClick" />
-                            </StackPanel>
-                        </Border>
-                        <Border Style="{StaticResource SettingsCard}">
-                            <StackPanel>
+                            </Border>
+                            <TextBlock Text="{DynamicResource LOCCSM_SupportReportHelp}" Style="{StaticResource SectionSubtitleText}" />
+                        </StackPanel>
+                        <Button Content="{DynamicResource LOCCSM_ExportSupportReport}" HorizontalAlignment="Left"
+                                MinWidth="180" Style="{DynamicResource BottomButton}" Click="ExportSupportReportClick" />
+                        <StackPanel Style="{StaticResource PageSection}" Margin="0,28,0,22">
+                            <Border Style="{StaticResource PageHeader}">
                                 <TextBlock Text="{DynamicResource LOCCSM_HidDiagnostics}" Style="{StaticResource SectionHeaderText}" />
-                                <TextBlock Text="{DynamicResource LOCCSM_HidDiagnosticsHelp}" Style="{StaticResource HintText}" Margin="0,6,0,12" />
-                                <Button Content="{DynamicResource LOCCSM_ExportHidDiagnostics}" HorizontalAlignment="Left"
-                                        MinWidth="180" Click="ExportHidDiagnosticsClick" />
-                            </StackPanel>
-                        </Border>
+                            </Border>
+                            <TextBlock Text="{DynamicResource LOCCSM_HidDiagnosticsHelp}" Style="{StaticResource SectionSubtitleText}" />
+                        </StackPanel>
+                        <Button Content="{DynamicResource LOCCSM_ExportHidDiagnostics}" HorizontalAlignment="Left"
+                                MinWidth="180" Style="{DynamicResource BottomButton}" Click="ExportHidDiagnosticsClick" />
                     </StackPanel>
                 </ScrollViewer>
                     </TabItem>
                 </TabControl>
+                </Grid>
             </TabItem>
 
-            <TabItem Header="{DynamicResource LOCCSM_TabAbout}">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                    <StackPanel Margin="8">
-                        <Border Style="{StaticResource IntroCard}">
-                            <StackPanel>
-                                <TextBlock Text="{DynamicResource LOCCSM_AboutDescription}" TextWrapping="Wrap" Margin="0,0,0,10" />
-                                <TextBlock x:Name="AboutVersionText" FontWeight="SemiBold" />
-                            </StackPanel>
-                        </Border>
-                        <Border Style="{StaticResource SettingsCard}">
-                            <StackPanel>
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource TabGlyph}" Text="&#xE946;" />
+                        <TextBlock Text="{DynamicResource LOCCSM_TabAbout}" Style="{StaticResource TabHeaderLabel}" />
+                    </StackPanel>
+                </TabItem.Header>
+                <ScrollViewer Style="{StaticResource FillScrollViewer}">
+                    <StackPanel Margin="8,4,8,16">
+                        <StackPanel Style="{StaticResource PageSection}">
+                            <Border Style="{StaticResource PageHeader}">
+                                <TextBlock Text="{DynamicResource LOCCSM_TabAbout}" Style="{StaticResource SectionHeaderText}" />
+                            </Border>
+                            <TextBlock Text="{DynamicResource LOCCSM_AboutPurpose}" Style="{StaticResource SectionSubtitleText}" />
+                        </StackPanel>
+                        <TextBlock Text="{DynamicResource LOCCSM_AboutDescription}" TextWrapping="Wrap" Margin="0,0,0,12"
+                                   Foreground="{DynamicResource TextBrush}" />
+                        <TextBlock x:Name="AboutVersionText" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}" Margin="0,0,0,8" />
+                        <StackPanel Style="{StaticResource PageSection}" Margin="0,20,0,22">
+                            <Border Style="{StaticResource PageHeader}">
                                 <TextBlock Text="{DynamicResource LOCCSM_AboutWhatItDoesTitle}" Style="{StaticResource SectionHeaderText}" />
-                                <TextBlock Text="{DynamicResource LOCCSM_AboutCapabilities}" TextWrapping="Wrap" Margin="0,10,0,0" />
-                                <TextBlock Text="{DynamicResource LOCCSM_AboutCapabilities2}" TextWrapping="Wrap" Margin="0,10,0,0" />
-                                <TextBlock Text="{DynamicResource LOCCSM_AboutCapabilities3}" TextWrapping="Wrap" Margin="0,10,0,0" />
-                                <TextBlock Text="{DynamicResource LOCCSM_AboutCapabilities4}" TextWrapping="Wrap" Margin="0,10,0,0" />
-                            </StackPanel>
-                        </Border>
-                        <Grid>
+                            </Border>
+                        </StackPanel>
+                        <TextBlock Text="{DynamicResource LOCCSM_AboutCapabilities}" TextWrapping="Wrap" />
+                        <TextBlock Text="{DynamicResource LOCCSM_AboutCapabilities2}" TextWrapping="Wrap" Margin="0,12,0,0" />
+                        <TextBlock Text="{DynamicResource LOCCSM_AboutCapabilities3}" TextWrapping="Wrap" Margin="0,12,0,0" />
+                        <TextBlock Text="{DynamicResource LOCCSM_AboutCapabilities4}" TextWrapping="Wrap" Margin="0,12,0,0" />
+                        <Grid Margin="0,28,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="14" />
+                                <ColumnDefinition Width="20" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <Border Grid.Column="0" Style="{StaticResource SettingsCard}">
-                                <StackPanel>
-                                    <TextBlock Text="{DynamicResource LOCCSM_ProjectLinksTitle}" Style="{StaticResource SectionHeaderText}" Margin="0,0,0,12" />
-                                    <WrapPanel>
-                                        <Button Content="GitHub" Tag="https://github.com/Naerian/playnite-nx-session-controller-manager"
-                                                MinWidth="100" Margin="0,0,8,8" Click="OpenExternalButton" />
-                                        <Button Content="{DynamicResource LOCCSM_OpenWiki}" Tag="https://github.com/Naerian/playnite-nx-session-controller-manager/wiki"
-                                                MinWidth="100" Margin="0,0,8,8" Click="OpenExternalButton" />
-                                        <Button Content="{DynamicResource LOCCSM_ReportIssue}" Tag="https://github.com/Naerian/playnite-nx-session-controller-manager/issues/new"
-                                                MinWidth="140" Margin="0,0,0,8" Click="OpenExternalButton" />
-                                    </WrapPanel>
+                            <StackPanel Grid.Column="0">
+                                <StackPanel Style="{StaticResource PageSection}" Margin="0,0,0,16">
+                                    <Border Style="{StaticResource PageHeader}">
+                                        <TextBlock Text="{DynamicResource LOCCSM_ProjectLinksTitle}" Style="{StaticResource SectionHeaderText}" />
+                                    </Border>
                                 </StackPanel>
-                            </Border>
-                            <Border Grid.Column="2" Style="{StaticResource SettingsCard}">
-                                <StackPanel>
-                                    <TextBlock Text="{DynamicResource LOCCSM_SupportTitle}" Style="{StaticResource SectionHeaderText}" Margin="0,0,0,10" />
-                                    <TextBlock Text="{DynamicResource LOCCSM_KoFiSupportHelp}" Style="{StaticResource HintText}" Margin="0,0,0,14" />
-                                    <Button Content="{DynamicResource LOCCSM_KoFiSupport}" Tag="https://ko-fi.com/naerian"
-                                            HorizontalAlignment="Left" MinWidth="150" Padding="16,7" Click="OpenExternalButton" />
+                                <WrapPanel>
+                                    <Button Content="GitHub" Tag="https://github.com/Naerian/playnite-nx-session-controller-manager"
+                                            MinWidth="100" Margin="0,0,8,8" Style="{DynamicResource BottomButton}" Click="OpenExternalButton" />
+                                    <Button Content="{DynamicResource LOCCSM_OpenWiki}" Tag="https://github.com/Naerian/playnite-nx-session-controller-manager/wiki"
+                                            MinWidth="100" Margin="0,0,8,8" Style="{DynamicResource BottomButton}" Click="OpenExternalButton" />
+                                    <Button Content="{DynamicResource LOCCSM_ReportIssue}" Tag="https://github.com/Naerian/playnite-nx-session-controller-manager/issues/new"
+                                            MinWidth="140" Margin="0,0,0,8" Style="{DynamicResource BottomButton}" Click="OpenExternalButton" />
+                                </WrapPanel>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <StackPanel Style="{StaticResource PageSection}" Margin="0,0,0,16">
+                                    <Border Style="{StaticResource PageHeader}">
+                                        <TextBlock Text="{DynamicResource LOCCSM_SupportTitle}" Style="{StaticResource SectionHeaderText}" />
+                                    </Border>
                                 </StackPanel>
-                            </Border>
+                                <Button Content="{DynamicResource LOCCSM_KoFiSupport}" Tag="https://ko-fi.com/naerian"
+                                        HorizontalAlignment="Left" MinWidth="150" Padding="16,7"
+                                        Style="{DynamicResource BottomButton}" Click="OpenExternalButton" />
+                            </StackPanel>
                         </Grid>
                     </StackPanel>
                 </ScrollViewer>

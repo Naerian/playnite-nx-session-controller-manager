@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Threading;
 using ControllerSessionManager.Controllers;
 using Forms = System.Windows.Forms;
 
@@ -18,7 +19,20 @@ namespace ControllerSessionManager.PlayniteIntegration
         public ControllerSessionManagerSettingsView(ControllerSessionManagerPlugin sourcePlugin)
         {
             plugin = sourcePlugin;
-            InitializeComponent();
+            try
+            {
+                InitializeComponent();
+            }
+            catch (Exception ex)
+            {
+                Content = new TextBlock
+                {
+                    Text = ex.ToString(),
+                    TextWrapping = TextWrapping.Wrap,
+                    Margin = new Thickness(16)
+                };
+                return;
+            }
             try
             {
                 OverlayPreviewControllerIcon.Data = Geometry.Parse(
@@ -37,11 +51,209 @@ namespace ControllerSessionManager.PlayniteIntegration
             Unloaded += OnUnloaded;
         }
 
+        private ScrollViewer hostScrollViewer;
+        private Window hostWindow;
+
         private void OnLoaded(object sender, RoutedEventArgs args)
         {
             plugin.ControllerSnapshotChanged += OnControllerSnapshotChanged;
             ApplyPreferredWindowSize();
+            AttachToHost();
+            Dispatcher.BeginInvoke(new Action(AttachToHost), DispatcherPriority.Loaded);
+            Dispatcher.BeginInvoke(new Action(AttachToHost), DispatcherPriority.ApplicationIdle);
+            Dispatcher.BeginInvoke(new Action(FillSelectedContentHosts), DispatcherPriority.Loaded);
+            Dispatcher.BeginInvoke(new Action(FillSelectedContentHosts), DispatcherPriority.ApplicationIdle);
             RefreshOverview();
+        }
+
+        private void AttachToHost()
+        {
+            DetachFromHost();
+            hostScrollViewer = FindAncestorScrollViewer();
+            if (hostScrollViewer != null)
+            {
+                hostScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
+                hostScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
+                hostScrollViewer.SizeChanged += OnHostSizeChanged;
+            }
+
+            hostWindow = Window.GetWindow(this);
+            if (hostWindow != null)
+            {
+                hostWindow.SizeChanged += OnHostSizeChanged;
+            }
+
+            ApplyViewportSize();
+        }
+
+        private void DetachFromHost()
+        {
+            if (hostScrollViewer != null)
+            {
+                hostScrollViewer.SizeChanged -= OnHostSizeChanged;
+                hostScrollViewer = null;
+            }
+
+            if (hostWindow != null)
+            {
+                hostWindow.SizeChanged -= OnHostSizeChanged;
+                hostWindow = null;
+            }
+        }
+
+        private void OnHostSizeChanged(object sender, SizeChangedEventArgs args)
+        {
+            ApplyViewportSize();
+            FillSelectedContentHosts();
+        }
+
+        private void RootTabsSelectionChanged(object sender, SelectionChangedEventArgs args)
+        {
+            Dispatcher.BeginInvoke(new Action(FillSelectedContentHosts), DispatcherPriority.Loaded);
+        }
+
+        private void FillSelectedContentHosts()
+        {
+            StretchSelectedContent(this);
+        }
+
+        private static void StretchSelectedContent(DependencyObject root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+
+            var count = VisualTreeHelper.GetChildrenCount(root);
+            for (var i = 0; i < count; i++)
+            {
+                var child = VisualTreeHelper.GetChild(root, i);
+                var presenter = child as ContentPresenter;
+                if (presenter != null && presenter.Name == "PART_SelectedContentHost")
+                {
+                    presenter.HorizontalAlignment = HorizontalAlignment.Stretch;
+                    presenter.VerticalAlignment = VerticalAlignment.Stretch;
+                    var content = presenter.Content as FrameworkElement;
+                    if (content == null && VisualTreeHelper.GetChildrenCount(presenter) > 0)
+                    {
+                        content = VisualTreeHelper.GetChild(presenter, 0) as FrameworkElement;
+                    }
+
+                    if (content != null)
+                    {
+                        content.HorizontalAlignment = HorizontalAlignment.Stretch;
+                        content.VerticalAlignment = VerticalAlignment.Stretch;
+                        content.ClearValue(WidthProperty);
+                        content.ClearValue(HeightProperty);
+                    }
+                }
+
+                StretchSelectedContent(child);
+            }
+        }
+
+        private void ApplyViewportSize()
+        {
+            double width = 0;
+            double height = 0;
+            if (hostScrollViewer != null)
+            {
+                width = hostScrollViewer.ViewportWidth > 8
+                    ? hostScrollViewer.ViewportWidth
+                    : hostScrollViewer.ActualWidth;
+                height = hostScrollViewer.ViewportHeight > 8
+                    ? hostScrollViewer.ViewportHeight
+                    : hostScrollViewer.ActualHeight;
+            }
+
+            if (width < 8 || height < 8)
+            {
+                var slot = FindWindowGridSlot();
+                if (slot.Width > 8)
+                {
+                    width = slot.Width;
+                }
+                if (slot.Height > 8)
+                {
+                    height = slot.Height;
+                }
+            }
+
+            if ((width < 8 || height < 8) && hostWindow != null)
+            {
+                var content = hostWindow.Content as FrameworkElement;
+                if (content != null)
+                {
+                    if (width < 8)
+                    {
+                        width = content.ActualWidth;
+                    }
+                    if (height < 8)
+                    {
+                        height = content.ActualHeight;
+                    }
+                }
+            }
+
+            if (width > 8 && Math.Abs(Width - width) > 1)
+            {
+                Width = width;
+            }
+
+            if (height > 8 && Math.Abs(Height - height) > 1)
+            {
+                Height = height;
+            }
+
+            FillSelectedContentHosts();
+        }
+
+        private Size FindWindowGridSlot()
+        {
+            for (var parent = VisualTreeHelper.GetParent(this);
+                 parent != null;
+                 parent = VisualTreeHelper.GetParent(parent))
+            {
+                if (parent is Window)
+                {
+                    break;
+                }
+
+                var grid = parent as Grid;
+                if (grid == null || grid.RowDefinitions.Count < 2 || grid.ActualWidth < 400)
+                {
+                    continue;
+                }
+
+                var rowHeight = grid.RowDefinitions[0].ActualHeight;
+                if (rowHeight > 200)
+                {
+                    return new Size(grid.ActualWidth, rowHeight);
+                }
+            }
+
+            return new Size(0, 0);
+        }
+
+        private ScrollViewer FindAncestorScrollViewer()
+        {
+            for (var parent = VisualTreeHelper.GetParent(this);
+                 parent != null;
+                 parent = VisualTreeHelper.GetParent(parent))
+            {
+                var scrollViewer = parent as ScrollViewer;
+                if (scrollViewer != null)
+                {
+                    return scrollViewer;
+                }
+
+                if (parent is Window)
+                {
+                    return null;
+                }
+            }
+
+            return null;
         }
 
         private void ApplyPreferredWindowSize()
@@ -74,6 +286,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private void OnUnloaded(object sender, RoutedEventArgs args)
         {
             plugin.ControllerSnapshotChanged -= OnControllerSnapshotChanged;
+            DetachFromHost();
         }
 
         private void OnControllerSnapshotChanged(object sender, EventArgs args)
@@ -139,6 +352,18 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private void RefreshOverview()
         {
+            try
+            {
+                RefreshOverviewCore();
+            }
+            catch (Exception)
+            {
+                // A controller list rebind must not close Playnite's settings window.
+            }
+        }
+
+        private void RefreshOverviewCore()
+        {
             var connected = plugin.GetControllerSnapshot().Where(a => a.IsConnected).ToList();
             var settings = DataContext as ControllerSessionManagerSettings;
             if (settings != null)
@@ -163,17 +388,23 @@ namespace ControllerSessionManager.PlayniteIntegration
             var currentSettings = DataContext as ControllerSessionManagerSettings;
             var profile = currentSettings == null ? null : currentSettings.GetControllerProfile(
                 string.IsNullOrWhiteSpace(controller.HardwareId) ? controller.ControllerId : controller.HardwareId);
+            var connection = LocalizeValue(controller.ConnectionType);
+            var battery = LocalizeValue(controller.BatteryLevel);
+            var provider = controller.ProviderId;
             return new ControllerRow
             {
                 Name = controller.Name,
                 DetectedName = controller.DetectedName ?? controller.Name,
                 Profile = profile,
-                Provider = controller.ProviderId,
-                Connection = LocalizeValue(controller.ConnectionType),
+                Provider = provider,
+                ProviderTooltip = LabeledTooltip("LOCCSM_Provider", provider),
+                Connection = connection,
+                ConnectionTooltip = LabeledTooltip("LOCCSM_Connection", connection),
                 ConnectionIconGeometry = GetConnectionIconGeometry(controller.ConnectionType),
                 ConnectionFallback = string.Equals(controller.ConnectionType, "Unknown", StringComparison.OrdinalIgnoreCase)
                     ? "?" : string.Empty,
-                Battery = LocalizeValue(controller.BatteryLevel),
+                Battery = battery,
+                BatteryTooltip = LabeledTooltip("LOCCSM_Battery", battery),
                 BatteryBrush = GetBatteryBrush(controller.BatteryLevel),
                 IconGeometry = GetControllerIconGeometry(profile),
                 Controller = controller,
@@ -184,16 +415,38 @@ namespace ControllerSessionManager.PlayniteIntegration
             };
         }
 
+        private static readonly Brush BatteryEmptyBrush = CreateFrozenBrush(224, 82, 82);
+        private static readonly Brush BatteryLowBrush = CreateFrozenBrush(242, 153, 74);
+        private static readonly Brush BatteryMediumBrush = CreateFrozenBrush(242, 201, 76);
+        private static readonly Brush BatteryFullBrush = CreateFrozenBrush(79, 194, 126);
+        private static readonly Brush BatteryUnknownBrush = CreateFrozenBrush(138, 143, 152);
+
         private static Brush GetBatteryBrush(string value)
         {
             switch (value)
             {
-                case "Empty": return new SolidColorBrush(Color.FromRgb(224, 82, 82));
-                case "Low": return new SolidColorBrush(Color.FromRgb(242, 153, 74));
-                case "Medium": return new SolidColorBrush(Color.FromRgb(242, 201, 76));
-                case "Full": return new SolidColorBrush(Color.FromRgb(79, 194, 126));
-                default: return new SolidColorBrush(Color.FromRgb(138, 143, 152));
+                case "Empty": return BatteryEmptyBrush;
+                case "Low": return BatteryLowBrush;
+                case "Medium": return BatteryMediumBrush;
+                case "Full": return BatteryFullBrush;
+                default: return BatteryUnknownBrush;
             }
+        }
+
+        private static Brush CreateFrozenBrush(byte r, byte g, byte b)
+        {
+            var brush = new SolidColorBrush(Color.FromRgb(r, g, b));
+            if (brush.CanFreeze)
+            {
+                brush.Freeze();
+            }
+
+            return brush;
+        }
+
+        private string LabeledTooltip(string labelKey, string value)
+        {
+            return plugin.Loc(labelKey) + ": " + value;
         }
 
         private string LocalizeValue(string value)
@@ -307,10 +560,13 @@ namespace ControllerSessionManager.PlayniteIntegration
             public string DetectedName { get; set; }
             public ControllerProfile Profile { get; set; }
             public string Provider { get; set; }
+            public string ProviderTooltip { get; set; }
             public string Connection { get; set; }
+            public string ConnectionTooltip { get; set; }
             public string ConnectionIconGeometry { get; set; }
             public string ConnectionFallback { get; set; }
             public string Battery { get; set; }
+            public string BatteryTooltip { get; set; }
             public Brush BatteryBrush { get; set; }
             public string LastInput { get; set; }
             public ControllerDeviceSnapshot Controller { get; set; }
