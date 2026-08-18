@@ -27,6 +27,13 @@
     <sys:String x:Key="LOCCSM_LastRefresh">最終更新</sys:String>
     <sys:String x:Key="LOCCSM_ProviderActive">有効</sys:String>
     <sys:String x:Key="LOCCSM_ProviderReady">準備完了</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeActive">有効</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeReady">準備完了</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeIdle">待機</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeWatching">監視中</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeWaiting">入力待ち</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeAlert">警告</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeLocal">ローカル</sys:String>
     <sys:String x:Key="LOCCSM_TabControllers">コントローラー</sys:String>
     <sys:String x:Key="LOCCSM_ControllersHelp">有効な Playnite、XInput、デスクトップメタデータプロバイダーで認識されているコントローラーです。</sys:String>
     <sys:String x:Key="LOCCSM_ControllerName">コントローラー</sys:String>

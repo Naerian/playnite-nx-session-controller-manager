@@ -1,5 +1,15 @@
 AddonId: ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc
 Packages:
+  - Version: 1.0.7
+    RequiredApiVersion: 6.16.0
+    ReleaseDate: 2026-08-18
+    PackageUrl: https://github.com/Naerian/playnite-nx-session-controller-manager/releases/download/v1.0.7/ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc_1_0_7.pext
+    Changelog:
+      - Fixed XInput dongle and cable pads being labelled Bluetooth when a sibling BLE interface was present; Xbox-licensed pads remain the Bluetooth exception.
+      - Stopped Windows Bluetooth battery from sticking to XInput wrappers after a transport change.
+      - Recovered BLE battery from Windows BTHLE nodes and hid unnamed USB HID leftovers such as generic Game Controller rows.
+      - Replaced the Windows color dialog with a themed picker, including opacity, and applied a consistent settings type and spacing scale.
+      - Removed in-process SDL from the plugin and kept Playnite SDK inventory as the connection-state authority.
   - Version: 1.0.0
     RequiredApiVersion: 6.16.0
     ReleaseDate: 2026-08-16

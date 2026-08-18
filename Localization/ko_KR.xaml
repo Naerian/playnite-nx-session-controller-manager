@@ -27,6 +27,13 @@
     <sys:String x:Key="LOCCSM_LastRefresh">마지막 새로 고침</sys:String>
     <sys:String x:Key="LOCCSM_ProviderActive">활성</sys:String>
     <sys:String x:Key="LOCCSM_ProviderReady">준비됨</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeActive">활성</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeReady">준비됨</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeIdle">대기</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeWatching">감시 중</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeWaiting">입력 대기</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeAlert">경고</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeLocal">로컬</sys:String>
     <sys:String x:Key="LOCCSM_TabControllers">컨트롤러</sys:String>
     <sys:String x:Key="LOCCSM_ControllersHelp">활성 Playnite, XInput 및 데스크톱 메타데이터 공급자에 표시되는 컨트롤러입니다.</sys:String>
     <sys:String x:Key="LOCCSM_ControllerName">컨트롤러</sys:String>

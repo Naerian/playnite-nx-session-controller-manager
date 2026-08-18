@@ -27,6 +27,13 @@
     <sys:String x:Key="LOCCSM_LastRefresh">上次刷新</sys:String>
     <sys:String x:Key="LOCCSM_ProviderActive">已启用</sys:String>
     <sys:String x:Key="LOCCSM_ProviderReady">就绪</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeActive">活动</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeReady">就绪</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeIdle">空闲</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeWatching">监视中</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeWaiting">等待</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeAlert">警报</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeLocal">本地</sys:String>
     <sys:String x:Key="LOCCSM_TabControllers">控制器</sys:String>
     <sys:String x:Key="LOCCSM_ControllersHelp">通过已启用的 Playnite、XInput 和桌面元数据提供程序检测到的控制器。</sys:String>
     <sys:String x:Key="LOCCSM_ControllerName">控制器</sys:String>

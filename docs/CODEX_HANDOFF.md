@@ -18,14 +18,14 @@ important decisions that should be preserved.
 
 ## Current Release State
 
-- Latest released version: `1.0.6`
-- Latest release tag: `v1.0.6`
+- Latest released version: `1.0.7`
+- Latest release tag: `v1.0.7`
 - Current package name:
-  `ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc_1_0_6.pext`
+  `ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc_1_0_7.pext`
 - Package output folder:
-  `C:\Proyectos\playnite-nx-session-controller-manager\dist\v1.0.6`
-- Public package SHA-256 verified for v1.0.6:
-  `854907ECCD00C1A820B8C5C56E69FBC614ED34C457B8AD94F6F0D568E954C676`
+  `C:\Proyectos\playnite-nx-session-controller-manager\dist\v1.0.7`
+- Public package SHA-256 verified for v1.0.7:
+  `67B0537EE6032D196B08872A8D4350D35718437EE3C73295A82330F7969E053C`
 
 When continuing work, first verify the current repository state instead of
 assuming this file is still current.
@@ -195,7 +195,7 @@ foreach ($name in $keySets.Keys) {
 Check package hashes:
 
 ```powershell
-Get-FileHash C:\Proyectos\playnite-nx-session-controller-manager\dist\v1.0.6\*.pext -Algorithm SHA256
+Get-FileHash C:\Proyectos\playnite-nx-session-controller-manager\dist\v1.0.7\*.pext -Algorithm SHA256
 ```
 
 ## Current Follow-Up Ideas

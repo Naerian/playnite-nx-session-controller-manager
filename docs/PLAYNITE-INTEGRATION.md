@@ -50,7 +50,7 @@ En 0.4.3, el sondeo de mandos se realiza cada 50 ms durante toda la sesión de j
 
 ## 4. Integración de eventos de controlador
 
-En la implementación 1.0.6, `GetConnectedControllers()`, `OnControllerConnected` y `OnControllerDisconnected` son la autoridad del ciclo de vida. La enumeración establece el inventario inicial; los callbacks aplican cambios inmediatos. Dos inventarios consecutivos ausentes sirven únicamente para recuperar una desconexión cuyo callback se hubiera perdido, y no prevalecen mientras una capacidad asociada siga observando el dispositivo.
+En la implementación 1.0.7, `GetConnectedControllers()`, `OnControllerConnected` y `OnControllerDisconnected` son la autoridad del ciclo de vida. La enumeración establece el inventario inicial; los callbacks aplican cambios inmediatos. Dos inventarios consecutivos ausentes sirven únicamente para recuperar una desconexión cuyo callback se hubiera perdido, y no prevalecen mientras una capacidad asociada siga observando el dispositivo.
 
 `GamepadController.Path` se normaliza para correlacionar el registro con XInput o SDL. `InstanceId` queda limitado al proveedor y a la ejecución: sólo se compara con SDL para controladores no XInput, nunca con un slot XInput por coincidencia numérica. XInput, SDL y Windows PnP enriquecen la fila autoritativa con capacidades, pero no modifican su presencia. Si el inventario del SDK no está disponible o no aporta ninguna fila utilizable, los proveedores funcionan como fallback degradado y esa situación queda reflejada en diagnóstico.
 

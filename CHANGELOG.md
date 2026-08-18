@@ -1,10 +1,15 @@
 # Changelog
 
-## 1.0.6 — Unreleased test build
+## 1.0.7 — 2026-08-18
+- Applied a fixed settings type scale (20/14/12) and spacing scale (4/8/16/24), and added themed status/capability pills for Overview and controller metadata.
+- Stopped tagging non-Xbox XInput wrappers (`&ig_`) as Bluetooth when a sibling BLE interface is present. Dongle and cable XInput stay wireless or unknown; Xbox-licensed pads remain the Bluetooth exception.
+- Stopped attaching cached Windows Bluetooth battery to XInput wrappers, so a dongle slot cannot keep a BLE Medium reading after the transport changes.
+- Mapped generic Playnite "Game Controller" names from VID/PID and ignored unnamed USB HID placeholders until the pad is identified.
+- Unified settings hint typography: helpers under controls use regular `HintText`; only section intros under page headers stay italic.
+- Stopped unnamed USB HID leftovers from appearing as extra "Game Controller" rows; only Bluetooth gamepads and known USB pads still publish HID capabilities.
 - Replaced the Windows color dialog with a themed picker that includes a live preview and an opacity percentage, so transparency is adjustable without editing hex.
 - Filled remaining English leftovers in the non-English locales (About text, pause options and notification chrome).
 - Recovered Windows Bluetooth battery for BLE HID pads such as the 8BitDo Ultimate 2 Wireless, whose percentage lives on a `BTHLE\DEV_{address}` node that does not share a PnP container or VID/PID with the gamepad HID path.
-- Recovered Windows Bluetooth battery for XInput-wrapped pads such as 8BitDo, whose `&ig_` HID path is not the device node that Settings uses for the percentage.
 - Let the disconnect-overlay preview fill the remaining settings height so the mockup has more room around the card.
 - Made the fullscreen and desktop notification rows look expandable, with a configure hint and a chevron control while they are collapsed.
 - Restyled fullscreen/desktop notification expanders to match the side navigation, restored Overview cards, and added title underlines plus more page spacing.

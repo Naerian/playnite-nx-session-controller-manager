@@ -31,8 +31,10 @@ namespace ControllerSessionManager.Controllers
 
         public bool Supports(ControllerMetadata controller)
         {
-            if (controller == null ||
+            if (controller == null || IsXInputWrapperPath(controller.DevicePath) ||
                 string.Equals(controller.ConnectionType, "Wired", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(controller.ConnectionType, "Wireless",
+                    StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(controller.ConnectionType, "WirelessReceiver",
                     StringComparison.OrdinalIgnoreCase))
             {
@@ -77,6 +79,11 @@ namespace ControllerSessionManager.Controllers
                 Level = level
             };
             return success;
+        }
+
+        internal void ClearCache()
+        {
+            cache.Clear();
         }
 
         internal static string ToLevel(int percent)
@@ -178,6 +185,11 @@ namespace ControllerSessionManager.Controllers
         private bool TryReadBatteryForController(ControllerMetadata controller, out int percent)
         {
             percent = 0;
+            if (controller == null || IsXInputWrapperPath(controller.DevicePath))
+            {
+                return false;
+            }
+
             var records = EnumeratePresentDevices();
             Guid containerId;
             if (!IsXInputWrapperPath(controller.DevicePath) &&

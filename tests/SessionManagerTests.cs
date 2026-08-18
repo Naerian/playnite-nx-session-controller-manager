@@ -36,9 +36,12 @@ internal static class SessionManagerTests
             DualShock4UsbBatteryReportIsParsed();
             UnknownPlayStationReportIsRejected();
             BluetoothTransportOverridesEightBitDoReceiverHint();
+            EightBitDoXInputWrapperIsNotBluetooth();
             HidPathMetadataRestoresConnectionWithoutSdl();
             BluetoothLeHidPathExposesVidPid();
             PointerDevicesAreNotTreatedAsControllers();
+            GenericUsbHidLeftoverIsNotPublishedAsInventory();
+            GenericPlayniteNameUsesMappedIdentity();
             GenericHidNameDoesNotReplacePlayniteIdentity();
             WindowsBluetoothBatteryUsesCoarseLevels();
             XInputWrapperIsNotUsedAsBluetoothBatteryContainer();
@@ -64,7 +67,7 @@ internal static class SessionManagerTests
             AlreadyConnectedControllerStillRequiresInputForTakeover();
             ColorPickerStoresOpacityInHex();
             ColorPickerMathRoundTripsHueAndOpacity();
-            Console.WriteLine("Session manager tests passed: 52 scenarios.");
+            Console.WriteLine("Session manager tests passed: 55 scenarios.");
             return 0;
         }
         catch (Exception error)
@@ -229,6 +232,43 @@ internal static class SessionManagerTests
             "8BitDo Ultimate 2 Wireless", 0x2DC8, 0x310B, @"\\?\hid#vid_2dc8&pid_310b&ig_00"),
             "A 2.4GHz receiver PID (0x310B) is a USB device and must not appear in BTHENUM; " +
             "the name-based heuristic must resolve it to Wireless.");
+        Equal("Bluetooth", ControllerDeviceIdentity.GetConnectionType(
+            "Xbox Wireless Controller Bluetooth", 0x045E, 0x0B13,
+            @"\\?\hid#vid_045e&pid_0b13&ig_00"),
+            "Xbox-licensed pads may still speak XInput over Bluetooth.");
+    }
+
+    private static void EightBitDoXInputWrapperIsNotBluetooth()
+    {
+        Equal("Wireless", ControllerDeviceIdentity.GetConnectionType(
+            "8BitDo Ultimate 2 Wireless", 0x2DC8, 0x310A,
+            @"\\?\hid#vid_2dc8&pid_310a&ig_00"),
+            "An 8BitDo XInput dongle wrapper must stay wireless even if a sibling BLE HID exists.");
+        Equal("Unknown", ControllerDeviceIdentity.GetConnectionType(
+            "XInput Controller (Player 1)", 0x2DC8, 0x310A,
+            @"\\?\hid#vid_2dc8&pid_310a&ig_00"),
+            "A generic XInput wrapper name must not inherit Bluetooth from a BLE alias PID.");
+        var wrapper = new ControllerMetadata
+        {
+            DisplayName = "8BitDo Ultimate 2 Wireless",
+            DevicePath = @"\\?\hid#vid_2dc8&pid_310a&ig_00",
+            VendorId = 0x2DC8,
+            ProductId = 0x310A,
+            ConnectionType = "Wireless"
+        };
+        Equal(false, new WindowsBluetoothBatteryProvider().Supports(wrapper),
+            "Windows Bluetooth battery must not attach to an XInput dongle wrapper.");
+        var bluetooth = new ControllerMetadata
+        {
+            DisplayName = "8BitDo Ultimate 2 Wireless",
+            DevicePath =
+                @"HID\{00001812-0000-1000-8000-00805F9B34FB}_DEV_VID&122DC8_PID&6012",
+            VendorId = 0x2DC8,
+            ProductId = 0x6012,
+            ConnectionType = "Bluetooth"
+        };
+        Equal(true, new WindowsBluetoothBatteryProvider().Supports(bluetooth),
+            "A real Bluetooth HID path must remain eligible for Windows battery lookup.");
     }
 
     private static void HidPathMetadataRestoresConnectionWithoutSdl()
@@ -260,6 +300,47 @@ internal static class SessionManagerTests
         Equal(false, ControllerDeviceIdentity.IsLikelyNonController(
             "DualSense Wireless Controller", @"\\?\HID#VID_054C&PID_0CE6"),
             "A real gamepad must keep passing the non-controller filter.");
+    }
+
+    private static void GenericUsbHidLeftoverIsNotPublishedAsInventory()
+    {
+        Equal(false, ControllerDeviceIdentity.IsPublishableHidCapability(
+            "Game Controller", @"\\?\hid#vid_1234&pid_5678"),
+            "An unnamed USB HID collection must not become a Mandos row.");
+        Equal(true, ControllerDeviceIdentity.IsPublishableHidCapability(
+            "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#{00001812-0000-1000-8000-00805f9b34fb}_dev_vid&122dc8_pid&6012"),
+            "A Bluetooth LE gamepad HID path must still enrich Playnite battery and transport.");
+        Equal(true, ControllerDeviceIdentity.IsPublishableHidCapability(
+            "DualSense Wireless Controller", @"\\?\hid#vid_054c&pid_0ce6"),
+            "A known USB gamepad may still publish HID capabilities such as battery.");
+        var sdk = Snapshot("playnite:path:HID#VID_2DC8&PID_6012", "Playnite", 1,
+            "8BitDo Ultimate 2 Wireless", @"HID#VID_2DC8&PID_6012", true);
+        var leftover = Snapshot("hardware:1234:5678:1", "HID", 0, "Game Controller",
+            @"\\?\hid#vid_1234&pid_5678", true);
+        leftover.VendorId = 0x1234;
+        leftover.ProductId = 0x5678;
+        var merged = ControllerSnapshotMerger.Merge(new[] { sdk, leftover }, true);
+        Equal(1, merged.Count,
+            "Generic USB HID leftovers must stay hidden once Playnite owns the inventory.");
+    }
+
+    private static void GenericPlayniteNameUsesMappedIdentity()
+    {
+        Equal("8BitDo Ultimate 2 Wireless",
+            ControllerDeviceIdentity.ResolvePlayniteDisplayName("Game Controller", 0x2DC8, 0x6012),
+            "Playnite's generic HID placeholder should take the mapped model name.");
+        Equal(true, ControllerDeviceIdentity.ShouldAcceptPlayniteInventory(
+            "Game Controller", @"\\?\hid#vid_2dc8&pid_6012", 0x2DC8, 0x6012),
+            "A known VID/PID behind a generic Playnite name is still a real pad.");
+        Equal(false, ControllerDeviceIdentity.ShouldAcceptPlayniteInventory(
+            "Game Controller", @"\\?\hid#vid_1234&pid_5678", 0x1234, 0x5678),
+            "An unnamed USB HID placeholder must wait until the controller is identified.");
+        Equal(true, ControllerDeviceIdentity.ShouldAcceptPlayniteInventory(
+            "Game Controller",
+            @"HID\{00001812-0000-1000-8000-00805F9B34FB}_DEV_VID&122DC8_PID&6012",
+            0x2DC8, 0x6012),
+            "A Bluetooth HID path may appear as Game Controller before Playnite names it.");
     }
 
     private static void GenericHidNameDoesNotReplacePlayniteIdentity()

@@ -27,6 +27,13 @@
     <sys:String x:Key="LOCCSM_LastRefresh">Son Yenileme</sys:String>
     <sys:String x:Key="LOCCSM_ProviderActive">Etkin</sys:String>
     <sys:String x:Key="LOCCSM_ProviderReady">Hazır</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeActive">Etkin</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeReady">Hazır</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeIdle">Boşta</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeWatching">İzleniyor</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeWaiting">Bekleniyor</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeAlert">Uyarı</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeLocal">Yerel</sys:String>
     <sys:String x:Key="LOCCSM_TabControllers">Kontrolcüler</sys:String>
     <sys:String x:Key="LOCCSM_ControllersHelp">Etkin Playnite, XInput ve Masaüstü meta veri sağlayıcılarında görünen kontrolcüler.</sys:String>
     <sys:String x:Key="LOCCSM_ControllerName">Kontrolcü</sys:String>

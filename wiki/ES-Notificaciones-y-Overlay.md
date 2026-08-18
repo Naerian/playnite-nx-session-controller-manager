@@ -4,7 +4,7 @@
 
 Las notificaciones de conexión están pensadas para navegar por la interfaz Fullscreen de Playnite sin un juego activo. El fallback de seguridad online también puede usar el estilo de aviso durante una partida. Las ventanas se muestran por encima, no reciben clics ni activación y desaparecen automáticamente.
 
-En **Apariencia > Notificación en pantalla** puedes configurar ancho, escala, duración, esquina, tipografía, icono, padding, borde, redondeo y colores. El icono puede colocarse a izquierda, derecha, arriba, abajo u ocultarse. Hay vistas previas independientes para conectado, desconectado y aviso.
+En **Apariencia > Notificación a pantalla completa** y **Apariencia > Notificación de escritorio** puedes configurar ancho, escala, duración, esquina, tipografía, icono, padding, borde, redondeo y colores. El selector de color del tema incluye la opacidad en porcentaje. El icono puede colocarse a izquierda, derecha, arriba, abajo u ocultarse. Hay vistas previas independientes para conectado, desconectado y aviso.
 
 Los cambios XInput estables usan un antirrebote de 300 ms para descartar oscilaciones rápidas del driver sin esperar a la reconciliación lenta.
 

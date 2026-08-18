@@ -7,6 +7,7 @@
         Background="{DynamicResource PopupBackgroundBrush}"
         Foreground="{DynamicResource TextBrush}"
         TextElement.Foreground="{DynamicResource TextBrush}"
+        TextElement.FontSize="14"
         SnapsToDevicePixels="True"
         PreviewKeyDown="OnPreviewKeyDown">
     <Window.Resources>
@@ -27,7 +28,7 @@
                                 Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="3"
+                                CornerRadius="4"
                                 Padding="{TemplateBinding Padding}"
                                 SnapsToDevicePixels="True">
                             <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
@@ -48,9 +49,8 @@
         </Style>
         <Style x:Key="PickerLabel" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-            <Setter Property="Opacity" Value="0.78" />
-            <Setter Property="FontSize" Value="11" />
-            <Setter Property="Margin" Value="0,0,0,5" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Margin" Value="0,0,0,4" />
         </Style>
         <DrawingBrush x:Key="CheckerBrush" TileMode="Tile" Viewport="0,0,10,10" ViewportUnits="Absolute">
             <DrawingBrush.Drawing>
@@ -76,7 +76,7 @@
             Background="{DynamicResource PopupBackgroundBrush}">
         <DockPanel LastChildFill="True" Margin="18,16">
             <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource GlyphBrush}"
-                    BorderThickness="0,0,0,1" Padding="0,0,0,10" Margin="0,0,0,16">
+                    BorderThickness="0,0,0,1" Padding="0,0,0,8" Margin="0,0,0,16">
                 <TextBlock x:Name="TitleText" FontSize="20" FontWeight="SemiBold"
                            Foreground="{DynamicResource GlyphBrush}" />
             </Border>
@@ -163,7 +163,7 @@
                             BorderBrush="{DynamicResource GlyphBrush}" BorderThickness="1">
                         <Border x:Name="PreviewSwatch" />
                     </Border>
-                    <TextBlock x:Name="OpacityLabel" Style="{StaticResource PickerLabel}" Margin="0,16,0,5" />
+                    <TextBlock x:Name="OpacityLabel" Style="{StaticResource PickerLabel}" Margin="0,16,0,4" />
                     <DockPanel>
                         <TextBlock x:Name="OpacityValueText" DockPanel.Dock="Right"
                                    FontWeight="SemiBold" VerticalAlignment="Center" Margin="8,0,0,0" />

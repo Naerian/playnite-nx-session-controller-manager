@@ -2,21 +2,25 @@
 
 ## Lista de dispositivos
 
-La tabla muestra nombre detectado, nombre del usuario, icono asignado, conexión, batería, última entrada y acciones disponibles. Los alias e iconos se guardan por identidad de hardware siempre que es posible. Desktop también puede recordar qué mando corresponde a cada jugador XInput para reutilizar su nombre de forma segura en Fullscreen.
+La página **Mandos** muestra el nombre detectado, el alias opcional, el icono, el tipo de conexión, la batería y el proveedor como badges del tema. Los alias e iconos se guardan por identidad de hardware siempre que es posible. Desktop también puede recordar qué mando corresponde a cada jugador XInput para reutilizar su nombre de forma segura en Fullscreen.
 
 Usa la acción de vibración para relacionar una fila con el mando físico. Su disponibilidad depende del dispositivo, el driver y el protocolo activo.
 
+Los restos HID USB sin nombre, como una fila genérica **Game Controller**, se ocultan hasta que Windows o Playnite identifican el mando. Un VID/PID conocido sustituye ese marcador por el nombre del modelo.
+
 ## Tipo de conexión
 
-Controller Session Manager combina metadatos y evidencias de transporte de Windows. USB requiere una ruta cableada, Bluetooth requiere evidencias específicas y wireless representa un receptor o dongle. Algunos drivers ocultan esta diferencia; el plugin prefiere un resultado desconocido o inalámbrico genérico antes que inventar el transporte.
+Controller Session Manager combina metadatos y evidencias de transporte de Windows. USB requiere una ruta cableada, Bluetooth requiere evidencias específicas y wireless representa un receptor o dongle. Un wrapper XInput (`&ig_`) se trata como cable o dongle de 2,4 GHz salvo que sea un mando con licencia Xbox que también aparezca por Bluetooth. Algunos drivers ocultan esta diferencia; el plugin prefiere un resultado desconocido o inalámbrico genérico antes que inventar el transporte.
 
 ## Niveles de batería
 
-XInput suele ofrecer cuatro niveles: Vacía, Baja, Media y Llena. Se muestran con colores semánticos, pero no se convierten en porcentajes porque la API no aporta esa precisión.
+XInput suele ofrecer cuatro niveles: Vacía, Baja, Media y Llena. Se muestran con colores semánticos en el badge de batería, pero no se convierten en porcentajes porque la API no aporta esa precisión.
 
-Los mandos Bluetooth se asocian primero con su contenedor físico PnP de Windows. Los pads Bluetooth compatibles con XInput suelen exponer un wrapper `&ig_` cuyo contenedor no es el dispositivo Bluetooth del que Configuración lee la batería; la versión 1.0.6 sigue el contenedor Bluetooth del fabricante y convierte ese porcentaje de solo lectura a los mismos niveles aproximados del resto de la interfaz. Los gamepads Bluetooth LE pueden guardar la batería en un nodo `BTHLE` distinto que solo comparte la dirección Bluetooth con la ruta HID; el plugin relaciona esos nodos hermanos sin descodificar informes propietarios. Esto permite usar dispositivos Bluetooth como 8BitDo. Se mantiene un fallback Sony HID estricto para informes documentados de DualSense y DualShock 4; los datos Bluetooth deben superar su CRC y el dispositivo debe coincidir con un VID/PID Sony verificado. Algunas rutas de controlador Bluetooth del DualSense no exponen ni ese canal seguro de batería ni vibración respaldada por el proveedor. El plugin deja esas capacidades como no disponibles en vez de enviar informes propietarios especulativos. Los patrones no verificados de receptores no se interpretan. **Desconocido** significa que ningún proveedor seguro devolvió un valor fiable; no significa que la batería esté llena.
+La batería Bluetooth de Windows solo se lee en rutas HID Bluetooth reales. Los gamepads BLE pueden guardar el porcentaje en un nodo `BTHLE\DEV_{dirección}` distinto que comparte la dirección Bluetooth con la ruta HID; el plugin relaciona esos nodos hermanos sin descodificar informes propietarios. Esto permite usar dispositivos Bluetooth como 8BitDo. Un wrapper XInput de dongle o cable no hereda esa lectura BLE, así que un valor Media no puede quedarse pegado al cambiar al receptor. Los mandos con licencia Xbox sí pueden usar XInput por Bluetooth y entonces conservan la API de batería XInput.
 
-El proveedor no representa una marca ni el transporte. Un 8BitDo puede aparecer mediante DInput/HID por Bluetooth y como endpoint compatible con XInput mediante el dongle. El inventario y los callbacks del SDK de Playnite son autoritativos para el estado de conexión. SDL enriquece metadatos en Desktop, XInput monitoriza los slots traducidos y Windows PnP aporta propiedades Bluetooth verificadas. Las observaciones se agrupan por ruta/slot XInput, ruta de dispositivo equivalente o un InstanceId SDL dentro de su propio proveedor; un número coincidente nunca basta para fusionar APIs diferentes.
+Se mantiene un fallback Sony HID estricto para informes documentados de DualSense y DualShock 4; los datos Bluetooth deben superar su CRC y el dispositivo debe coincidir con un VID/PID Sony verificado. Algunas rutas de controlador Bluetooth del DualSense no exponen ni ese canal seguro de batería ni vibración respaldada por el proveedor. El plugin deja esas capacidades como no disponibles en vez de enviar informes propietarios especulativos. Los patrones no verificados de receptores no se interpretan. **Desconocido** significa que ningún proveedor seguro devolvió un valor fiable; no significa que la batería esté llena.
+
+El badge de proveedor no representa una marca ni el transporte. Un 8BitDo puede aparecer mediante DInput/HID por Bluetooth y como endpoint compatible con XInput mediante el dongle. El inventario y los callbacks del SDK de Playnite son autoritativos para el estado de conexión. XInput monitoriza los slots traducidos y Windows PnP aporta propiedades Bluetooth verificadas. Las observaciones se agrupan por ruta/slot XInput o ruta de dispositivo equivalente; un número coincidente nunca basta para fusionar APIs diferentes.
 
 ## Diagnóstico HID
 

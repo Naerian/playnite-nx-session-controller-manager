@@ -4,7 +4,7 @@
 
 Connection notifications are intended for browsing the Playnite Fullscreen interface without an active game. Online safety fallbacks can also use the warning style during gameplay. Toast windows are topmost, click-through, non-activating and close automatically.
 
-Under **Appearance > On-screen notification**, configure width, scale, duration, screen corner, typography, icon size, padding, border, corner radius and colors. The icon can appear left, right, above, below or be hidden. Separate preview buttons exercise the connected, disconnected and warning colors immediately.
+Under **Appearance > Fullscreen notification** and **Appearance > Desktop notification**, configure width, scale, duration, screen corner, typography, icon size, padding, border, corner radius and colors. The themed color picker includes opacity as a percentage. The icon can appear left, right, above, below or be hidden. Separate preview buttons exercise the connected, disconnected and warning colors immediately.
 
 Stable XInput changes use a short 300 ms debounce to reject rapid driver flaps without waiting for the slower reconciliation pass.
 

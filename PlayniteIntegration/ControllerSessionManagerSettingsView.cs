@@ -374,8 +374,12 @@ namespace ControllerSessionManager.PlayniteIntegration
             XInputStatusText.Text = connected.Count > 0
                 ? plugin.Loc("LOCCSM_ProviderActive")
                 : plugin.Loc("LOCCSM_ProviderReady");
+            XInputStatusPillText.Text = connected.Count > 0
+                ? plugin.Loc("LOCCSM_BadgeActive")
+                : plugin.Loc("LOCCSM_BadgeReady");
             LastRefreshText.Text = DateTime.Now.ToString("T", CultureInfo.CurrentCulture);
             SessionStatusText.Text = plugin.GetSessionStatusText();
+            SessionStatusPillText.Text = plugin.GetSessionStatusBadge();
             ActiveSessionControllersText.Text = plugin.GetActiveSessionControllersText();
             ControllerList.ItemsSource = connected.Select(CreateRow).ToList();
             EmptyControllersText.Visibility = connected.Count == 0 ? Visibility.Visible : Visibility.Collapsed;

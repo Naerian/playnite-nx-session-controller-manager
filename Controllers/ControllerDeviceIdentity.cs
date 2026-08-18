@@ -92,6 +92,62 @@ namespace ControllerSessionManager.Controllers
             return LooksLikePointerOrKeyboard(name) || LooksLikePointerOrKeyboard(path);
         }
 
+        /// <summary>
+        /// Unused HID interfaces may enrich a Playnite or XInput row (battery, Bluetooth path),
+        /// but unknown USB HID collections must not become extra "Game Controller" inventory.
+        /// </summary>
+        public static bool IsPublishableHidCapability(string displayName, string devicePath)
+        {
+            if (IsLikelyNonController(displayName, devicePath))
+            {
+                return false;
+            }
+
+            if (WindowsBluetoothBatteryProvider.IsBluetoothPath(devicePath))
+            {
+                return true;
+            }
+
+            return !IsGenericDisplayName(displayName);
+        }
+
+        public static string ResolvePlayniteDisplayName(string rawName, ushort vendorId, ushort productId)
+        {
+            if (string.IsNullOrWhiteSpace(rawName))
+            {
+                rawName = "Unknown controller";
+            }
+
+            if (!IsGenericDisplayName(rawName))
+            {
+                return rawName;
+            }
+
+            var mapped = GetDisplayName(rawName, vendorId, productId);
+            return IsGenericDisplayName(mapped) ? rawName : mapped;
+        }
+
+        public static bool ShouldAcceptPlayniteInventory(string rawName, string path,
+            ushort vendorId, ushort productId)
+        {
+            if (IsLikelyNonController(rawName, path))
+            {
+                return false;
+            }
+
+            if (WindowsBluetoothBatteryProvider.IsBluetoothPath(path))
+            {
+                return true;
+            }
+
+            if (!IsGenericDisplayName(rawName))
+            {
+                return true;
+            }
+
+            return !IsGenericDisplayName(GetDisplayName(rawName, vendorId, productId));
+        }
+
         public static string GetConnectionType(string deviceName, ushort vendorId, ushort productId,
             string devicePath = null)
         {
@@ -109,7 +165,10 @@ namespace ControllerSessionManager.Controllers
 
             if (Contains(devicePath, "&ig_"))
             {
-                if (vendorId != 0 && productId != 0 &&
+                // XInput wrappers are almost always a cable or a 2.4 GHz dongle. Only Xbox
+                // licensed pads also speak XInput over Bluetooth; other brands keep a separate
+                // DInput/BLE HID path for that transport.
+                if (vendorId == 0x045E && productId != 0 &&
                     HasBluetoothPresence(vendorId, productId))
                 {
                     return "Bluetooth";
@@ -134,13 +193,8 @@ namespace ControllerSessionManager.Controllers
                 return HidDiagnosticsService.HasUsbInterface(vendorId, productId) ? "Wired" : "Bluetooth";
             }
 
-            // When the SDL device path uses the XInput wrapper (e.g. paths containing &ig_00)
-            // the underlying HID transport is hidden and path-based BT detection cannot work.
-            // Query the Windows BTHENUM registry tree to determine generically whether a device
-            // with this VID/PID is currently present as a Bluetooth HID device. This covers
-            // any manufacturer: 8BitDo in BT+XInput mode, Xbox controllers via BT, etc.
-            // Dongle/receiver PIDs are USB devices and never appear in BTHENUM, so they fall
-            // through to the name-based heuristic below.
+            // Non-wrapper HID paths can still hide the transport. Query BTHENUM/BTHLE for
+            // this VID/PID (and known aliases) before falling back to the product name.
             if (vendorId != 0 && productId != 0 &&
                 HasBluetoothPresence(vendorId, productId))
             {

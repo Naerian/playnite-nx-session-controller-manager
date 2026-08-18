@@ -27,6 +27,13 @@
     <sys:String x:Key="LOCCSM_LastRefresh">Последнее обновление</sys:String>
     <sys:String x:Key="LOCCSM_ProviderActive">Активен</sys:String>
     <sys:String x:Key="LOCCSM_ProviderReady">Готов</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeActive">Активно</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeReady">Готово</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeIdle">Простой</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeWatching">Наблюдение</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeWaiting">Ожидание</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeAlert">Тревога</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeLocal">Локально</sys:String>
     <sys:String x:Key="LOCCSM_TabControllers">Контроллеры</sys:String>
     <sys:String x:Key="LOCCSM_ControllersHelp">Контроллеры, видимые через активные провайдеры Playnite, XInput и метаданных Desktop.</sys:String>
     <sys:String x:Key="LOCCSM_ControllerName">Контроллер</sys:String>

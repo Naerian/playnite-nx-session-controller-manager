@@ -16,10 +16,10 @@
 
 Open `Add-ons > Extension settings > Generic > Controller Session Manager`.
 
-1. In **Controllers > Devices**, confirm that each physical controller appears once.
+1. In **Controllers**, confirm that each physical controller appears once.
 2. Assign optional names and icons, then save.
 3. Use the vibration action to identify a controller physically.
-4. Keep **Session > Monitoring** enabled.
+4. Keep **Advanced > Monitoring** enabled.
 5. Configure the Desktop shortcut, Fullscreen notification and disconnect overlay under **Appearance**.
 6. Leave automatic/adaptive protection enabled initially.
 

@@ -75,6 +75,14 @@ namespace ControllerSessionManager.Controllers
                 if (topologyChanged)
                 {
                     HidDiagnosticsService.InvalidatePresentControllerMetadata();
+                    foreach (var provider in batteryProviders)
+                    {
+                        var windowsBattery = provider as WindowsBluetoothBatteryProvider;
+                        if (windowsBattery != null)
+                        {
+                            windowsBattery.ClearCache();
+                        }
+                    }
                     metadata = new List<ControllerMetadata>();
                 }
                 else
@@ -221,13 +229,6 @@ namespace ControllerSessionManager.Controllers
                 return xinputWrappers[0];
             }
 
-            var bluetoothHid = unused.Where(a =>
-                WindowsBluetoothBatteryProvider.IsBluetoothPath(a.DevicePath)).ToList();
-            if (bluetoothHid.Count == 1 && connectedSlotCount == 1)
-            {
-                return bluetoothHid[0];
-            }
-
             return null;
         }
 
@@ -244,7 +245,7 @@ namespace ControllerSessionManager.Controllers
             {
                 if (leftover == null || usedMetadata.Contains(leftover) ||
                     IsXInputWrapperMetadata(leftover) ||
-                    ControllerDeviceIdentity.IsLikelyNonController(leftover.DisplayName,
+                    !ControllerDeviceIdentity.IsPublishableHidCapability(leftover.DisplayName,
                         leftover.DevicePath))
                 {
                     continue;
@@ -357,7 +358,10 @@ namespace ControllerSessionManager.Controllers
         private static string GetBatteryLevel(ControllerMetadata metadata, uint result,
             XInputBatteryInformation battery, bool wired, bool wireless)
         {
-            if (metadata != null && !string.IsNullOrWhiteSpace(metadata.BatteryLevel) &&
+            if (metadata != null &&
+                string.Equals(metadata.ConnectionType, "Bluetooth",
+                    StringComparison.OrdinalIgnoreCase) &&
+                !string.IsNullOrWhiteSpace(metadata.BatteryLevel) &&
                 metadata.BatteryLevel != "Unknown" && metadata.BatteryLevel != "Unavailable")
             {
                 return metadata.BatteryLevel;

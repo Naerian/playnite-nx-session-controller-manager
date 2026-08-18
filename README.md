@@ -53,10 +53,10 @@ Open:
 
 `Add-ons > Extension settings > Generic > Controller Session Manager`
 
-1. Open **Controllers > Devices** and confirm that every controller appears once.
+1. Open **Controllers** and confirm that every controller appears once.
 2. Give each controller an optional custom name and choose its icon.
 3. Use the vibration button to verify which physical controller corresponds to each row.
-4. Under **Session > Monitoring**, keep monitoring enabled.
+4. Under **Advanced > Monitoring**, keep monitoring enabled.
 5. Under **Appearance**, configure the Desktop quick-access indicator, Fullscreen notifications and disconnect overlay.
 6. Start a game, use the intended controller, disconnect it and verify the selected protection behavior.
 
@@ -92,7 +92,7 @@ The optional Desktop indicator locates Playnite's internal `TopPanelItem` contai
 
 ## Battery and controller limitations
 
-Battery reporting depends on the protocol, receiver, firmware and driver. XInput and SDL provide general battery channels. Version 1.0.6 also follows the Windows PnP device container for Bluetooth controllers and consumes the same read-only battery property used by Windows when it is available. This supports devices such as 8BitDo Bluetooth modes without decoding proprietary reports. Documented Sony DualSense and DualShock 4 HID reports remain a strict fallback, but some Bluetooth driver paths expose neither a safely readable battery report nor rumble through the active provider. Those cases deliberately remain **Unknown** or unavailable instead of sending speculative proprietary commands. USB receivers that expose no trustworthy Windows or protocol value remain **Unknown**. Controller Session Manager never converts coarse levels into invented percentages.
+Battery reporting depends on the protocol, receiver, firmware and driver. XInput and documented Sony HID reports remain the primary sources. Windows Bluetooth battery is used only for real Bluetooth HID paths, including BLE nodes that store the percentage on a sibling `BTHLE\DEV_{address}` device. XInput wrappers (`&ig_`) for dongles and cables are not labelled Bluetooth just because a BLE interface exists, and they do not keep a cached BLE reading after you switch transport. Xbox-licensed pads are the exception that can speak XInput over Bluetooth. USB receivers that expose no trustworthy Windows or protocol value remain **Unknown**. Controller Session Manager never converts coarse levels into invented percentages.
 
 Controller Session Manager does not equate XInput with an Xbox-branded USB controller. A controller such as an 8BitDo can use DInput/HID over Bluetooth, expose an XInput-compatible endpoint through its dongle, and use another identity over USB. The provider column describes the observation API; the connection column describes the detected transport.
 

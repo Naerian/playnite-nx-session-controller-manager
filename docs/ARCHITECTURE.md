@@ -1,6 +1,6 @@
 # Controller Session Manager — Arquitectura
 
-## Autoridad de controladores implementada (1.0.6)
+## Autoridad de controladores implementada (1.0.7)
 
 El SDK de Playnite es la autoridad del ciclo de vida: inventario inicial, conexión, desconexión e input de botones. XInput, SDL y Windows PnP son proveedores de capacidades y metadatos. Sus observaciones se proyectan sobre la fila Playnite correspondiente y no pueden invertir su estado de conexión. Si el SDK no aporta ninguna fila utilizable, los proveedores actúan como fallback degradado; en cuanto existe un registro Playnite, una observación suplementaria sin correspondencia queda sólo para diagnóstico.
 
@@ -38,7 +38,7 @@ Opciones:
 
 Playnite documenta plugins en lenguajes compatibles con .NET Framework y actualmente señala `net462`; la versión exacta del SDK se fijará al crear el proyecto y se validará con Playnite 10 y la guía de migración de Playnite 11. No se copiarán ensamblados que Playnite ya cargue, para evitar conflictos de versiones.
 
-### ADR-002 (superseded en 1.0.6): GameInput como proveedor primario, Playnite como señal complementaria
+### ADR-002 (superseded en 1.0.7): GameInput como proveedor primario, Playnite como señal complementaria
 
 GameInput actual proporciona enumeración y callbacks de dispositivo, lecturas con timestamps, identidad local, `containerId`, VID/PID, ruta PnP, capacidades y feedback. Playnite proporciona eventos de controlador y `GetConnectedControllers`, pero su modelo público sólo confirma `InstanceId`, `Path`, `Name` y `Enabled`.
 

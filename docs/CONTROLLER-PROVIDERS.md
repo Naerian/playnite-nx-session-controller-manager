@@ -4,7 +4,7 @@
 
 ## 1. Recomendación
 
-Pila implementada en 1.0.6:
+Pila implementada en 1.0.7:
 
 1. **Playnite SDK**: autoridad de inventario, conexión, desconexión y botones.
 2. **XInput 1.4**: input de alta frecuencia, slots, vibración y batería cualitativa cuando el endpoint sea XInput.

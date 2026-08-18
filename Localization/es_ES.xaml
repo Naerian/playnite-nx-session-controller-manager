@@ -27,6 +27,13 @@
     <sys:String x:Key="LOCCSM_LastRefresh">Última actualización</sys:String>
     <sys:String x:Key="LOCCSM_ProviderActive">Activo. Mando detectado</sys:String>
     <sys:String x:Key="LOCCSM_ProviderReady">Preparado. Esperando un mando</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeActive">Activo</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeReady">Listo</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeIdle">Inactivo</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeWatching">En seguimiento</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeWaiting">En espera</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeAlert">Alerta</sys:String>
+    <sys:String x:Key="LOCCSM_BadgeLocal">Local</sys:String>
     <sys:String x:Key="LOCCSM_TabControllers">Mandos</sys:String>
     <sys:String x:Key="LOCCSM_ControllersHelp">Mandos visibles mediante los proveedores activos de Playnite, XInput y metadatos de Desktop.</sys:String>
     <sys:String x:Key="LOCCSM_ControllerName">Mando</sys:String>

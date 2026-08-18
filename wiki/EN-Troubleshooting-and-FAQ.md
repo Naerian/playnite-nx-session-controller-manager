@@ -6,7 +6,15 @@ Refresh the controller list, close remapping tools temporarily and compare the p
 
 ## Why is the battery Unknown?
 
-The active driver or receiver did not expose a trustworthy standard value. This is common with proprietary dongles. XInput levels are coarse and cannot be converted honestly into percentages.
+The active driver or receiver did not expose a trustworthy standard value. This is common with proprietary dongles. XInput levels are coarse and cannot be converted honestly into percentages. Windows Bluetooth battery is only used on real Bluetooth HID paths, not on an XInput dongle wrapper.
+
+## Why was a dongle pad shown as Bluetooth?
+
+An XInput wrapper is a cable or 2.4 GHz receiver unless it is an Xbox-licensed pad that also appears on Bluetooth. A sibling BLE HID from the same brand must not relabel the dongle row.
+
+## Why did a generic Game Controller row appear?
+
+Playnite and Windows often expose an unnamed HID collection while the pad is still enumerating. Unknown USB leftovers stay hidden; a known VID/PID is shown with the model name instead.
 
 ## Why does Fullscreen show a generic player name?
 

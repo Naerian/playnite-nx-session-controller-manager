@@ -6,7 +6,15 @@ Actualiza la lista, cierra temporalmente herramientas de remapeo y compara el di
 
 ## ¿Por qué la batería aparece como Desconocida?
 
-El driver o receptor activo no expone un valor estándar fiable. Es habitual con dongles propietarios. Los niveles XInput son aproximados y no pueden convertirse honestamente en porcentajes.
+El driver o receptor activo no expone un valor estándar fiable. Es habitual con dongles propietarios. Los niveles XInput son aproximados y no pueden convertirse honestamente en porcentajes. La batería Bluetooth de Windows solo se usa en rutas HID Bluetooth reales, no en un wrapper XInput de dongle.
+
+## ¿Por qué un mando por dongle salía como Bluetooth?
+
+Un wrapper XInput es un cable o un receptor de 2,4 GHz salvo que sea un mando con licencia Xbox que también aparezca por Bluetooth. Un HID BLE hermano de la misma marca no debe relabelar la fila del dongle.
+
+## ¿Por qué aparecía una fila genérica Game Controller?
+
+Playnite y Windows suelen exponer una colección HID sin nombre mientras el mando termina de enumerarse. Los restos USB desconocidos se ocultan; un VID/PID conocido se muestra con el nombre del modelo.
 
 ## ¿Por qué Fullscreen muestra un jugador genérico?
 

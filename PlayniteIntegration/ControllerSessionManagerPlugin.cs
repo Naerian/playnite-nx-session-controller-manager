@@ -255,6 +255,33 @@ namespace ControllerSessionManager.PlayniteIntegration
                 : Loc("LOCCSM_SessionTracking");
         }
 
+        public string GetSessionStatusBadge()
+        {
+            if (!sessionManager.IsRunning)
+            {
+                return Loc("LOCCSM_BadgeIdle");
+            }
+
+            if (sessionManager.ConfirmedDisconnectCount > 0)
+            {
+                return Loc("LOCCSM_BadgeAlert");
+            }
+
+            if (sessionManager.SuspectedDisconnectCount > 0)
+            {
+                return Loc("LOCCSM_BadgeWaiting");
+            }
+
+            if (adaptiveSessionScopeDetector.IsLocalMultiplayer)
+            {
+                return Loc("LOCCSM_BadgeLocal");
+            }
+
+            return sessionManager.ActiveControllers.Count == 0
+                ? Loc("LOCCSM_BadgeWaiting")
+                : Loc("LOCCSM_BadgeWatching");
+        }
+
         public string GetActiveSessionControllersText()
         {
             var active = sessionManager.ActiveControllers;

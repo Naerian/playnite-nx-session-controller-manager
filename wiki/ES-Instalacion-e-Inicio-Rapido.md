@@ -16,10 +16,10 @@
 
 Abre `Complementos > Configuración de extensiones > Genérica > Controller Session Manager`.
 
-1. En **Mandos > Dispositivos**, comprueba que cada mando físico aparezca una sola vez.
+1. En **Mandos**, comprueba que cada mando físico aparezca una sola vez.
 2. Asigna nombres e iconos opcionales y guarda.
 3. Usa la acción de vibración para identificar físicamente un mando.
-4. Mantén activa **Sesión > Monitorización**.
+4. Mantén activa **Avanzado > Monitorización**.
 5. Configura el acceso de Desktop, la notificación Fullscreen y el overlay en **Apariencia**.
 6. Conserva inicialmente la protección automática/adaptativa.
 

@@ -40,7 +40,11 @@ namespace ControllerSessionManager.Controllers
                 playniteAuthorityInitialized = true;
                 foreach (var controller in connectedControllers ?? Enumerable.Empty<GamepadController>())
                 {
-                    if (ControllerDeviceIdentity.IsLikelyNonController(controller.Name, controller.Path))
+                    ushort vendorId;
+                    ushort productId;
+                    ControllerBridgeIdentity.TryGetVidPid(controller.Path, out vendorId, out productId);
+                    if (!ControllerDeviceIdentity.ShouldAcceptPlayniteInventory(controller.Name,
+                        controller.Path, vendorId, productId))
                     {
                         continue;
                     }
@@ -145,8 +149,16 @@ namespace ControllerSessionManager.Controllers
 
         public void RecordConnected(GamepadController controller)
         {
-            if (controller == null ||
-                ControllerDeviceIdentity.IsLikelyNonController(controller.Name, controller.Path))
+            if (controller == null)
+            {
+                return;
+            }
+
+            ushort vendorId;
+            ushort productId;
+            ControllerBridgeIdentity.TryGetVidPid(controller.Path, out vendorId, out productId);
+            if (!ControllerDeviceIdentity.ShouldAcceptPlayniteInventory(controller.Name,
+                controller.Path, vendorId, productId))
             {
                 return;
             }
@@ -204,8 +216,16 @@ namespace ControllerSessionManager.Controllers
 
         public void RecordInput(GamepadController controller)
         {
-            if (controller == null ||
-                ControllerDeviceIdentity.IsLikelyNonController(controller.Name, controller.Path))
+            if (controller == null)
+            {
+                return;
+            }
+
+            ushort vendorId;
+            ushort productId;
+            ControllerBridgeIdentity.TryGetVidPid(controller.Path, out vendorId, out productId);
+            if (!ControllerDeviceIdentity.ShouldAcceptPlayniteInventory(controller.Name,
+                controller.Path, vendorId, productId))
             {
                 return;
             }
@@ -246,7 +266,7 @@ namespace ControllerSessionManager.Controllers
                 devices[key] = device;
             }
 
-            device.Name = string.IsNullOrWhiteSpace(controller.Name) ? "Unknown controller" : controller.Name;
+            device.Name = ResolvePlayniteName(controller);
             device.Path = controller.Path ?? string.Empty;
             device.ProviderInstanceId = controller.InstanceId;
             device.IsEnabled = controller.Enabled;
@@ -266,8 +286,8 @@ namespace ControllerSessionManager.Controllers
                 ProviderId = ProviderId,
                 LifecycleProviderId = ProviderId,
                 ProviderInstanceId = controller.InstanceId,
-                Name = string.IsNullOrWhiteSpace(controller.Name) ? "Unknown controller" : controller.Name,
-                DetectedName = string.IsNullOrWhiteSpace(controller.Name) ? "Unknown controller" : controller.Name,
+                Name = ResolvePlayniteName(controller),
+                DetectedName = ResolvePlayniteName(controller),
                 HardwareId = key,
                 VendorId = vendorId,
                 ProductId = productId,
@@ -280,6 +300,15 @@ namespace ControllerSessionManager.Controllers
                 BatteryProviderId = "None",
                 LastSeenUtc = now
             };
+        }
+
+        private static string ResolvePlayniteName(GamepadController controller)
+        {
+            ushort vendorId;
+            ushort productId;
+            ControllerBridgeIdentity.TryGetVidPid(controller.Path, out vendorId, out productId);
+            return ControllerDeviceIdentity.ResolvePlayniteDisplayName(controller.Name,
+                vendorId, productId);
         }
 
         private static string GetProviderKey(GamepadController controller)
