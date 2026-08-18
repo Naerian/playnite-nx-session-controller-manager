@@ -522,19 +522,17 @@
                                 <Border Style="{StaticResource SettingsCard}">
                                     <StackPanel>
                                         <CheckBox Content="{DynamicResource LOCCSM_EnableSessionTracking}" IsChecked="{Binding EnableSessionTracking}" />
-                                        <CheckBox Content="{DynamicResource LOCCSM_ShowDisconnectOverlay}" IsChecked="{Binding ShowDisconnectOverlay}" Margin="0,14,0,0" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_ShowDisconnectOverlayHelp}" Style="{StaticResource HintText}" Margin="22,6,0,0" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_GameOverridesHelp}" Style="{StaticResource HintText}" Margin="0,16,0,0" />
-                                    </StackPanel>
-                                </Border>
-                                <Border Style="{StaticResource SettingsCard}">
-                                    <StackPanel>
-                                        <TextBlock Text="{DynamicResource LOCCSM_DisconnectGracePeriod}" Style="{StaticResource SectionHeaderText}" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_DisconnectGracePeriodHelp}" Style="{StaticResource HintText}" Margin="0,5,0,8" />
-                                        <DockPanel LastChildFill="False">
-                                            <TextBox Width="82" Text="{Binding DisconnectGracePeriodMilliseconds, UpdateSourceTrigger=PropertyChanged}" />
-                                            <TextBlock Text="ms" VerticalAlignment="Center" Margin="8,0,0,0" />
-                                        </DockPanel>
+                                        <StackPanel Margin="22,14,0,0" IsEnabled="{Binding EnableSessionTracking}">
+                                            <CheckBox Content="{DynamicResource LOCCSM_ShowDisconnectOverlay}" IsChecked="{Binding ShowDisconnectOverlay}" />
+                                            <TextBlock Text="{DynamicResource LOCCSM_ShowDisconnectOverlayHelp}" Style="{StaticResource HintText}" Margin="22,6,0,16" />
+                                            <TextBlock Text="{DynamicResource LOCCSM_DisconnectGracePeriod}" Style="{StaticResource SectionHeaderText}" />
+                                            <TextBlock Text="{DynamicResource LOCCSM_DisconnectGracePeriodHelp}" Style="{StaticResource HintText}" Margin="0,5,0,8" />
+                                            <DockPanel LastChildFill="False">
+                                                <TextBox Width="82" Text="{Binding DisconnectGracePeriodMilliseconds, UpdateSourceTrigger=PropertyChanged}" />
+                                                <TextBlock Text="ms" VerticalAlignment="Center" Margin="8,0,0,0" />
+                                            </DockPanel>
+                                            <TextBlock Text="{DynamicResource LOCCSM_GameOverridesHelp}" Style="{StaticResource HintText}" Margin="0,16,0,0" />
+                                        </StackPanel>
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
@@ -580,7 +578,8 @@
                                 <Border Style="{StaticResource SettingsCard}">
                                     <StackPanel>
                                         <CheckBox Content="{DynamicResource LOCCSM_ShowPrimaryInTopPanel}" IsChecked="{Binding ShowPrimaryControllerInTopPanel}" />
-                                        <CheckBox Content="{DynamicResource LOCCSM_ColorTopPanelByBattery}" IsChecked="{Binding ColorTopPanelIndicatorByBattery}" Margin="0,14,0,0" />
+                                        <CheckBox Content="{DynamicResource LOCCSM_ColorTopPanelByBattery}" IsChecked="{Binding ColorTopPanelIndicatorByBattery}"
+                                                  Margin="22,14,0,0" IsEnabled="{Binding ShowPrimaryControllerInTopPanel}" />
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
@@ -600,7 +599,8 @@
                                 <Border Style="{StaticResource SettingsCard}">
                                     <StackPanel>
                                         <CheckBox Content="{DynamicResource LOCCSM_ShowFullscreenControllerNotifications}" IsChecked="{Binding ShowFullscreenControllerNotifications}" />
-                                        <CheckBox Content="{DynamicResource LOCCSM_ShowControllerNameInNotifications}" IsChecked="{Binding ShowControllerNameInNotifications}" Margin="0,12,0,0" />
+                                        <StackPanel Margin="0,12,0,0" IsEnabled="{Binding ShowFullscreenControllerNotifications}">
+                                        <CheckBox Content="{DynamicResource LOCCSM_ShowControllerNameInNotifications}" IsChecked="{Binding ShowControllerNameInNotifications}" />
                                         <Border Style="{StaticResource AppearanceGroup}">
                                             <StackPanel><TextBlock Text="{DynamicResource LOCCSM_AppearanceLayout}" Style="{StaticResource AppearanceGroupHeader}"/><WrapPanel>
                                                 <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationWidth}"/><TextBlock DockPanel.Dock="Right" Text="{Binding NotificationWidth}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="300" Maximum="900" TickFrequency="10" IsSnapToTickEnabled="True" Value="{Binding NotificationWidth, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="300–900" Style="{StaticResource SliderRangeText}"/></StackPanel>
@@ -641,6 +641,7 @@
                                             <Button Content="{DynamicResource LOCCSM_ControllerDisconnectedToast}" Tag="disconnected" MinWidth="160" Margin="0,0,10,0" Click="PreviewNotificationClick"/>
                                             <Button Content="{DynamicResource LOCCSM_NotificationWarningPreview}" Tag="warning" MinWidth="160" Click="PreviewNotificationClick"/>
                                         </WrapPanel>
+                                        </StackPanel>
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
@@ -658,7 +659,8 @@
                                 <Border Style="{StaticResource SettingsCard}">
                                     <StackPanel>
                                         <CheckBox Content="{DynamicResource LOCCSM_ShowDesktopControllerNotifications}" IsChecked="{Binding ShowDesktopControllerNotifications}" />
-                                        <CheckBox Content="{DynamicResource LOCCSM_ShowControllerNameInDesktopNotifications}" IsChecked="{Binding ShowControllerNameInDesktopNotifications}" Margin="0,12,0,0" />
+                                        <StackPanel Margin="0,12,0,0" IsEnabled="{Binding ShowDesktopControllerNotifications}">
+                                        <CheckBox Content="{DynamicResource LOCCSM_ShowControllerNameInDesktopNotifications}" IsChecked="{Binding ShowControllerNameInDesktopNotifications}" />
                                         <Border Style="{StaticResource AppearanceGroup}">
                                             <StackPanel><TextBlock Text="{DynamicResource LOCCSM_AppearanceLayout}" Style="{StaticResource AppearanceGroupHeader}"/><WrapPanel>
                                                 <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationWidth}"/><TextBlock DockPanel.Dock="Right" Text="{Binding DesktopNotificationWidth}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="300" Maximum="900" TickFrequency="10" IsSnapToTickEnabled="True" Value="{Binding DesktopNotificationWidth, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="300–900" Style="{StaticResource SliderRangeText}"/></StackPanel>
@@ -699,6 +701,7 @@
                                             <Button Content="{DynamicResource LOCCSM_ControllerDisconnectedToast}" Tag="disconnected" MinWidth="160" Margin="0,0,10,0" Click="PreviewDesktopNotificationClick"/>
                                             <Button Content="{DynamicResource LOCCSM_NotificationWarningPreview}" Tag="warning" MinWidth="160" Click="PreviewDesktopNotificationClick"/>
                                         </WrapPanel>
+                                        </StackPanel>
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
@@ -717,7 +720,8 @@
                                 </Border>
                                 <Border Style="{StaticResource SettingsCard}">
                                     <StackPanel>
-                                        <CheckBox Content="{DynamicResource LOCCSM_EnableDisconnectOverlay}" IsChecked="{Binding ShowDisconnectOverlay}" Margin="0,0,0,14" />
+                                        <CheckBox Content="{DynamicResource LOCCSM_EnableDisconnectOverlay}" IsChecked="{Binding ShowDisconnectOverlay}" />
+                                        <StackPanel Margin="0,14,0,0" IsEnabled="{Binding ShowDisconnectOverlay}">
                                         <Border Style="{StaticResource AppearanceGroup}">
                                             <StackPanel><TextBlock Text="{DynamicResource LOCCSM_AppearanceLayout}" Style="{StaticResource AppearanceGroupHeader}"/><WrapPanel>
                                                 <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_OverlayScale}"/><TextBlock DockPanel.Dock="Right" Text="{Binding OverlayScalePercent}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="80" Maximum="140" TickFrequency="5" IsSnapToTickEnabled="True" Value="{Binding OverlayScalePercent, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="80–140" Style="{StaticResource SliderRangeText}"/></StackPanel>
@@ -774,6 +778,7 @@
                                             </Grid>
                                         </Border>
                                         <TextBlock Text="{DynamicResource LOCCSM_OverlayPreviewHelp}" Style="{StaticResource HintText}" Margin="0,7,0,0"/>
+                                        </StackPanel>
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
