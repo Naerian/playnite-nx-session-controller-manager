@@ -170,7 +170,7 @@ namespace ControllerSessionManager.Tester.Views.ThemeIntegration
             };
             SetThemeResource(border, Border.BackgroundProperty, ControlBackgroundBrushKey);
 
-            var message = Text(L("LOCCSM_Tester_NoControllerDetected", "No controller detected"), 22, FontWeights.SemiBold);
+            var message = Text(L("LOCCSM_NoControllers", "No controller connected"), 22, FontWeights.SemiBold);
             message.HorizontalAlignment = HorizontalAlignment.Center;
             message.VerticalAlignment = VerticalAlignment.Center;
             border.Child = message;

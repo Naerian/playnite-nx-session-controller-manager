@@ -51,6 +51,142 @@ namespace ControllerSessionManager.PlayniteIntegration
                 plugin.Loc("LOCCSM_VersionAuthorFormat"), GetInstalledVersion());
             Loaded += OnLoaded;
             Unloaded += OnUnloaded;
+            DataContextChanged += OnSettingsDataContextChanged;
+        }
+
+        private ControllerSessionManagerSettings boundSettings;
+
+        private void OnSettingsDataContextChanged(object sender, DependencyPropertyChangedEventArgs args)
+        {
+            if (boundSettings != null)
+            {
+                boundSettings.PropertyChanged -= OnBoundSettingsPropertyChanged;
+            }
+
+            boundSettings = args.NewValue as ControllerSessionManagerSettings;
+            if (boundSettings != null)
+            {
+                boundSettings.PropertyChanged += OnBoundSettingsPropertyChanged;
+            }
+
+            RefreshOverlayPreviewControllerLayout();
+        }
+
+        private void OnBoundSettingsPropertyChanged(object sender,
+            System.ComponentModel.PropertyChangedEventArgs args)
+        {
+            if (args == null ||
+                string.IsNullOrEmpty(args.PropertyName) ||
+                args.PropertyName == "OverlayControllerIconPosition" ||
+                args.PropertyName == "OverlayElementSpacing" ||
+                args.PropertyName == "OverlayShowControllerIcon" ||
+                args.PropertyName == "OverlayShowControllerName" ||
+                args.PropertyName == "OverlayControllerIconSize")
+            {
+                RefreshOverlayPreviewControllerLayout();
+            }
+        }
+
+        private void RefreshOverlayPreviewControllerLayout()
+        {
+            if (OverlayPreviewControllerHost == null || OverlayPreviewControllerIcon == null ||
+                OverlayPreviewControllerName == null)
+            {
+                return;
+            }
+
+            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            var position = settings == null || string.IsNullOrWhiteSpace(settings.OverlayControllerIconPosition)
+                ? "Left" : settings.OverlayControllerIconPosition;
+            var gap = settings == null ? 0 : Math.Max(0, settings.OverlayElementSpacing);
+
+            OverlayPreviewControllerHost.Children.Clear();
+            OverlayPreviewControllerHost.RowDefinitions.Clear();
+            OverlayPreviewControllerHost.ColumnDefinitions.Clear();
+            OverlayPreviewControllerIcon.Margin = new Thickness(0);
+            OverlayPreviewControllerName.Margin = new Thickness(0);
+
+            if (string.Equals(position, "Top", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(position, "Bottom", StringComparison.OrdinalIgnoreCase))
+            {
+                OverlayPreviewControllerHost.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                OverlayPreviewControllerHost.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                var iconFirst = string.Equals(position, "Top", StringComparison.OrdinalIgnoreCase);
+                Grid.SetRow(OverlayPreviewControllerIcon, iconFirst ? 0 : 1);
+                Grid.SetColumn(OverlayPreviewControllerIcon, 0);
+                Grid.SetRow(OverlayPreviewControllerName, iconFirst ? 1 : 0);
+                Grid.SetColumn(OverlayPreviewControllerName, 0);
+                OverlayPreviewControllerIcon.Margin = iconFirst
+                    ? new Thickness(0, 0, 0, gap) : new Thickness(0, gap, 0, 0);
+            }
+            else
+            {
+                OverlayPreviewControllerHost.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+                OverlayPreviewControllerHost.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+                var iconFirst = !string.Equals(position, "Right", StringComparison.OrdinalIgnoreCase);
+                Grid.SetRow(OverlayPreviewControllerIcon, 0);
+                Grid.SetColumn(OverlayPreviewControllerIcon, iconFirst ? 0 : 1);
+                Grid.SetRow(OverlayPreviewControllerName, 0);
+                Grid.SetColumn(OverlayPreviewControllerName, iconFirst ? 1 : 0);
+                OverlayPreviewControllerIcon.Margin = iconFirst
+                    ? new Thickness(0, 0, gap, 0) : new Thickness(gap, 0, 0, 0);
+            }
+
+            OverlayPreviewControllerHost.Children.Add(OverlayPreviewControllerIcon);
+            OverlayPreviewControllerHost.Children.Add(OverlayPreviewControllerName);
+            FitPreviewControllerIcon(settings == null ? 30 : settings.OverlayControllerIconSize);
+        }
+
+        private void FitPreviewControllerIcon(double maxSize)
+        {
+            if (OverlayPreviewControllerIcon == null)
+            {
+                return;
+            }
+
+            maxSize = Math.Max(1, maxSize);
+            var data = OverlayPreviewControllerIcon.Data;
+            if (data == null)
+            {
+                OverlayPreviewControllerIcon.Width = maxSize;
+                OverlayPreviewControllerIcon.Height = maxSize;
+                return;
+            }
+
+            var bounds = data.Bounds;
+            try
+            {
+                var flattened = data.GetFlattenedPathGeometry(0.25, ToleranceType.Absolute);
+                if (flattened != null && !flattened.Bounds.IsEmpty &&
+                    flattened.Bounds.Width > 0 && flattened.Bounds.Height > 0)
+                {
+                    bounds = flattened.Bounds;
+                }
+            }
+            catch
+            {
+            }
+
+            if (bounds.Width <= 0 || bounds.Height <= 0)
+            {
+                OverlayPreviewControllerIcon.Width = maxSize;
+                OverlayPreviewControllerIcon.Height = maxSize;
+                return;
+            }
+
+            var aspect = bounds.Width / bounds.Height;
+            if (aspect >= 1.0)
+            {
+                OverlayPreviewControllerIcon.Width = maxSize;
+                OverlayPreviewControllerIcon.Height = maxSize / aspect;
+            }
+            else
+            {
+                OverlayPreviewControllerIcon.Height = maxSize;
+                OverlayPreviewControllerIcon.Width = maxSize * aspect;
+            }
+
+            OverlayPreviewControllerIcon.Stretch = Stretch.Fill;
         }
 
         private ScrollViewer hostScrollViewer;
@@ -226,6 +362,12 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private void OnUnloaded(object sender, RoutedEventArgs args)
         {
+            if (boundSettings != null)
+            {
+                boundSettings.PropertyChanged -= OnBoundSettingsPropertyChanged;
+                boundSettings = null;
+            }
+
             plugin.ControllerSnapshotChanged -= OnControllerSnapshotChanged;
             DetachFromHost();
             DisposeTesterView();
@@ -307,8 +449,13 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             var button = sender as Button;
             var row = button == null ? null : button.DataContext as ControllerRow;
-            if (row == null || row.Controller == null)
+            if (row == null || !row.InteractionsEnabled || row.Controller == null)
             {
+                if (row != null && !row.InteractionsEnabled)
+                {
+                    return;
+                }
+
                 if (TesterTab != null)
                 {
                     TesterTab.IsSelected = true;
@@ -435,13 +582,28 @@ namespace ControllerSessionManager.PlayniteIntegration
             SessionStatusPillText.Text = plugin.GetSessionStatusBadge();
             ActiveSessionControllersText.Text = plugin.GetActiveSessionControllersText();
             var listSignature = ControllerDisplayHold.IdentitySignature(connected);
-            if (listSignature != lastControllerListSignature)
+            var rows = connected.Select(CreateRow).ToList();
+            var existing = ControllerList.ItemsSource as System.Collections.IList;
+            if (listSignature == lastControllerListSignature &&
+                existing != null && existing.Count == rows.Count)
+            {
+                for (var index = 0; index < rows.Count; index++)
+                {
+                    var current = existing[index] as ControllerRow;
+                    if (current != null)
+                    {
+                        current.CopyFrom(rows[index]);
+                    }
+                }
+            }
+            else
             {
                 lastControllerListSignature = listSignature;
-                ControllerList.ItemsSource = connected.Select(CreateRow).ToList();
-                EmptyControllersText.Visibility = connected.Count == 0
-                    ? Visibility.Visible : Visibility.Collapsed;
+                ControllerList.ItemsSource = rows;
             }
+
+            EmptyControllersText.Visibility = connected.Count == 0
+                ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private ControllerRow CreateRow(ControllerDeviceSnapshot controller)
@@ -464,6 +626,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 ConnectionIconGeometry = GetConnectionIconGeometry(controller.ConnectionType),
                 ConnectionFallback = string.Equals(controller.ConnectionType, "Unknown", StringComparison.OrdinalIgnoreCase)
                     ? "?" : string.Empty,
+                ConnectionBrush = GetConnectionBrush(controller.ConnectionType),
+                InteractionsEnabled = !IsUnknownConnection(controller.ConnectionType),
                 Battery = battery,
                 BatteryTooltip = LabeledTooltip("LOCCSM_Battery", battery),
                 BatteryBrush = GetBatteryBrush(controller.BatteryLevel),
@@ -522,24 +686,40 @@ namespace ControllerSessionManager.PlayniteIntegration
             return localized == key ? value : localized;
         }
 
+        private Brush GetConnectionBrush(string connectionType)
+        {
+            if (IsUnknownConnection(connectionType))
+            {
+                return BatteryUnknownBrush;
+            }
+
+            var themeBrush = TryFindResource("TextBrush") as Brush;
+            return themeBrush ?? CreateFrozenBrush(220, 225, 230);
+        }
+
+        private static bool IsUnknownConnection(string connectionType)
+        {
+            return string.IsNullOrWhiteSpace(connectionType) ||
+                string.Equals(connectionType, "Unknown", StringComparison.OrdinalIgnoreCase);
+        }
+
         private static string GetConnectionIconGeometry(string connectionType)
         {
-            switch (connectionType)
-            {
-                case "Wired": return SvgIconGeometryLoader.GetPathData("usb.svg");
-                case "Bluetooth": return SvgIconGeometryLoader.GetPathData("bluetooth.svg");
-                case "Wireless":
-                case "WirelessReceiver": return SvgIconGeometryLoader.GetPathData("wifi.svg");
-                default: return string.Empty;
-            }
+            return ControllerConnectionIcons.GetPathData(connectionType);
         }
 
         private void VibrateControllerClick(object sender, RoutedEventArgs args)
         {
             var button = sender as Button;
             var row = button == null ? null : button.DataContext as ControllerRow;
-            if (row == null || row.Controller == null || !plugin.TryVibrateController(row.Controller))
+            if (row == null || !row.InteractionsEnabled || row.Controller == null ||
+                !plugin.TryVibrateController(row.Controller))
             {
+                if (row != null && !row.InteractionsEnabled)
+                {
+                    return;
+                }
+
                 plugin.ShowVibrationUnavailable();
             }
         }
@@ -549,7 +729,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             var selector = sender as ComboBox;
             var row = selector == null ? null : selector.DataContext as ControllerRow;
             var option = selector == null ? null : selector.SelectedItem as ControllerIconOption;
-            if (row == null || row.Profile == null || option == null)
+            if (row == null || !row.InteractionsEnabled || row.Profile == null || option == null)
             {
                 return;
             }
@@ -607,39 +787,166 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private sealed class ControllerRow : System.ComponentModel.INotifyPropertyChanged
         {
+            private string name;
+            private string detectedName;
+            private string provider;
+            private string providerTooltip;
+            private string connection;
+            private string connectionTooltip;
+            private string connectionIconGeometry;
+            private string connectionFallback;
+            private Brush connectionBrush;
+            private bool interactionsEnabled = true;
+            private string battery;
+            private string batteryTooltip;
+            private Brush batteryBrush;
+            private string lastInput;
             private string iconGeometry;
+            private string actionIconGeometry;
 
-            public string Name { get; set; }
-            public string DetectedName { get; set; }
+            public string Name
+            {
+                get { return name; }
+                set { SetField(ref name, value, "Name"); }
+            }
+
+            public string DetectedName
+            {
+                get { return detectedName; }
+                set { SetField(ref detectedName, value, "DetectedName"); }
+            }
+
             public ControllerProfile Profile { get; set; }
-            public string Provider { get; set; }
-            public string ProviderTooltip { get; set; }
-            public string Connection { get; set; }
-            public string ConnectionTooltip { get; set; }
-            public string ConnectionIconGeometry { get; set; }
-            public string ConnectionFallback { get; set; }
-            public string Battery { get; set; }
-            public string BatteryTooltip { get; set; }
-            public Brush BatteryBrush { get; set; }
-            public string LastInput { get; set; }
+
+            public string Provider
+            {
+                get { return provider; }
+                set { SetField(ref provider, value, "Provider"); }
+            }
+
+            public string ProviderTooltip
+            {
+                get { return providerTooltip; }
+                set { SetField(ref providerTooltip, value, "ProviderTooltip"); }
+            }
+
+            public string Connection
+            {
+                get { return connection; }
+                set { SetField(ref connection, value, "Connection"); }
+            }
+
+            public string ConnectionTooltip
+            {
+                get { return connectionTooltip; }
+                set { SetField(ref connectionTooltip, value, "ConnectionTooltip"); }
+            }
+
+            public string ConnectionIconGeometry
+            {
+                get { return connectionIconGeometry; }
+                set { SetField(ref connectionIconGeometry, value, "ConnectionIconGeometry"); }
+            }
+
+            public string ConnectionFallback
+            {
+                get { return connectionFallback; }
+                set { SetField(ref connectionFallback, value, "ConnectionFallback"); }
+            }
+
+            public Brush ConnectionBrush
+            {
+                get { return connectionBrush; }
+                set { SetField(ref connectionBrush, value, "ConnectionBrush"); }
+            }
+
+            public bool InteractionsEnabled
+            {
+                get { return interactionsEnabled; }
+                set { SetField(ref interactionsEnabled, value, "InteractionsEnabled"); }
+            }
+
+            public string Battery
+            {
+                get { return battery; }
+                set { SetField(ref battery, value, "Battery"); }
+            }
+
+            public string BatteryTooltip
+            {
+                get { return batteryTooltip; }
+                set { SetField(ref batteryTooltip, value, "BatteryTooltip"); }
+            }
+
+            public Brush BatteryBrush
+            {
+                get { return batteryBrush; }
+                set { SetField(ref batteryBrush, value, "BatteryBrush"); }
+            }
+
+            public string LastInput
+            {
+                get { return lastInput; }
+                set { SetField(ref lastInput, value, "LastInput"); }
+            }
+
             public ControllerDeviceSnapshot Controller { get; set; }
-            public string ActionIconGeometry { get; set; }
+
+            public string ActionIconGeometry
+            {
+                get { return actionIconGeometry; }
+                set { SetField(ref actionIconGeometry, value, "ActionIconGeometry"); }
+            }
 
             public string IconGeometry
             {
                 get { return iconGeometry; }
-                set
-                {
-                    iconGeometry = value;
-                    var handler = PropertyChanged;
-                    if (handler != null)
-                    {
-                        handler(this, new System.ComponentModel.PropertyChangedEventArgs("IconGeometry"));
-                    }
-                }
+                set { SetField(ref iconGeometry, value, "IconGeometry"); }
             }
 
             public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+
+            public void CopyFrom(ControllerRow source)
+            {
+                if (source == null)
+                {
+                    return;
+                }
+
+                Name = source.Name;
+                DetectedName = source.DetectedName;
+                Profile = source.Profile;
+                Provider = source.Provider;
+                ProviderTooltip = source.ProviderTooltip;
+                Connection = source.Connection;
+                ConnectionTooltip = source.ConnectionTooltip;
+                ConnectionIconGeometry = source.ConnectionIconGeometry;
+                ConnectionFallback = source.ConnectionFallback;
+                ConnectionBrush = source.ConnectionBrush;
+                InteractionsEnabled = source.InteractionsEnabled;
+                Battery = source.Battery;
+                BatteryTooltip = source.BatteryTooltip;
+                BatteryBrush = source.BatteryBrush;
+                LastInput = source.LastInput;
+                Controller = source.Controller;
+                ActionIconGeometry = source.ActionIconGeometry;
+                IconGeometry = source.IconGeometry;
+            }
+
+            private void SetField<T>(ref T field, T value, string propertyName)
+            {
+                if (object.Equals(field, value))
+                {
+                    return;
+                }
+
+                field = value;
+                var handler = PropertyChanged;
+                if (handler != null)
+                {
+                    handler(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+                }
+            }
         }
     }
 }

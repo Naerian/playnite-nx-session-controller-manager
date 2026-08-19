@@ -7,6 +7,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Windows;
+using ControllerSessionManager.Overlay;
 
 namespace ControllerSessionManager.OverlayHost
 {
@@ -47,11 +48,19 @@ namespace ControllerSessionManager.OverlayHost
                     using (var server = CreatePipe(pipeName))
                     {
                         server.WaitForConnection();
-                        using (var reader = new StreamReader(server, Encoding.UTF8, false, 4096, true))
+                        using (var reader = new StreamReader(server, Encoding.UTF8, false,
+                            OverlayIpcLimits.PipeBufferBytes, true))
                         {
                             var line = reader.ReadLine();
-                            if (string.IsNullOrWhiteSpace(line) || line.Length > 16384)
+                            if (string.IsNullOrWhiteSpace(line))
                             {
+                                continue;
+                            }
+
+                            if (line.Length > OverlayIpcLimits.MaxLineCharacters)
+                            {
+                                Debug.WriteLine("CSM overlay IPC line dropped: " + line.Length +
+                                    " characters.");
                                 continue;
                             }
 
@@ -75,7 +84,8 @@ namespace ControllerSessionManager.OverlayHost
             security.AddAccessRule(new PipeAccessRule(identity.User, PipeAccessRights.ReadWrite,
                 AccessControlType.Allow));
             return new NamedPipeServerStream(pipeName, PipeDirection.In, 1, PipeTransmissionMode.Byte,
-                PipeOptions.None, 4096, 4096, security);
+                PipeOptions.None, OverlayIpcLimits.PipeBufferBytes, OverlayIpcLimits.PipeBufferBytes,
+                security);
         }
 
         private static void Dispatch(string line, string token, OverlayWindow window, ToastWindow toastWindow)
@@ -103,21 +113,22 @@ namespace ControllerSessionManager.OverlayHost
                         Decode(parts[11]), Decode(parts[12]), forcePause, pauseProcessId,
                         Decode(parts[15]), Decode(parts[16]), Decode(parts[17]), Decode(parts[18]));
                 }
-                else if ((command == "TOAST" || command == "TOASTPREVIEW") && parts.Length == 12)
+                else if ((command == "TOAST" || command == "TOASTPREVIEW") && parts.Length >= 12)
                 {
                     int processId;
                     int duration;
                     int.TryParse(parts[5], out processId);
                     int.TryParse(parts[6], out duration);
+                    var connectionIcon = parts.Length > 12 ? Decode(parts[12]) : string.Empty;
                     if (command == "TOASTPREVIEW")
                     {
                         toastWindow.ReplaceWith(parts[4], processId, duration, parts[7], Decode(parts[8]),
-                            Decode(parts[9]), Decode(parts[10]), Decode(parts[11]));
+                            Decode(parts[9]), Decode(parts[10]), Decode(parts[11]), connectionIcon);
                     }
                     else
                     {
                         toastWindow.Enqueue(parts[4], processId, duration, parts[7], Decode(parts[8]),
-                            Decode(parts[9]), Decode(parts[10]), Decode(parts[11]));
+                            Decode(parts[9]), Decode(parts[10]), Decode(parts[11]), connectionIcon);
                     }
                 }
                 else if (command == "HIDEALL")

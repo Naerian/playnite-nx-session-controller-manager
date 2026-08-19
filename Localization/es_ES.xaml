@@ -197,6 +197,7 @@
     <sys:String x:Key="LOCCSM_NotificationTextSize">Texto del mensaje (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationIconSize">Tamaño del icono (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationPadding">Padding interior (px)</sys:String>
+    <sys:String x:Key="LOCCSM_ElementSpacing">Separación entre elementos (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationShowBorder">Mostrar un borde de color semántico</sys:String>
     <sys:String x:Key="LOCCSM_NotificationBorderPosition">Posición del borde</sys:String>
     <sys:String x:Key="LOCCSM_NotificationBorderThickness">Grosor del borde (px)</sys:String>
@@ -223,7 +224,9 @@
     <sys:String x:Key="LOCCSM_AboutCapabilities3">Incluye notificaciones personalizables para los modos Escritorio y Pantalla completa: colores, tamaños de fuente, posición, relleno, borde y posición del icono son configurables por separado en cada modo. El icono de la barra superior muestra el mando principal e indica el nivel de batería mediante color.</sys:String>
     <sys:String x:Key="LOCCSM_AboutCapabilities4">La información de batería funciona con DualSense, DualShock 4, mandos Xbox y cualquier dispositivo compatible con SDL. El tipo de conexión (USB, Bluetooth, inalámbrico) se detecta automáticamente.</sys:String>
     <sys:String x:Key="LOCCSM_AboutSafety">El overlay externo y las acciones de pausa opcionales están aislados de Playnite y del juego. No inyecta entradas y actúa de forma conservadora cuando las pruebas sobre dispositivo, proceso o partida en línea son incompletas.</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">Mostrar el icono junto al nombre del mando</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">Mostrar el icono del mando</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowControllerName">Mostrar el nombre del mando</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayControllerIconPosition">Posición del icono del mando</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowStatusIcon">Mostrar el icono del estado de pausa o aviso</sys:String>
     <sys:String x:Key="LOCCSM_DesktopNotificationsTitle">Notificación de escritorio</sys:String>
     <sys:String x:Key="LOCCSM_ShowDesktopControllerNotifications">Avisar al conectar o desconectar un mando en escritorio</sys:String>

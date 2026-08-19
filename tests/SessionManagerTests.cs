@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Xml.Linq;
 using ControllerSessionManager.Controllers;
+using ControllerSessionManager.Overlay;
 using ControllerSessionManager.PlayniteIntegration;
 using ControllerSessionManager.Sessions;
 
@@ -52,6 +56,7 @@ internal static class SessionManagerTests
             PlayniteLifecycleOverridesSupplementalPresence();
             PlayniteLifecycleReceivesSupplementalCapabilities();
             InitializedAuthoritySuppressesUnmatchedProviderRows();
+            DistinctVidXInputPadIsListedBesidePlaynitePad();
             ProviderFallbackRemainsAvailableBeforeSdkInitialization();
             EmptySdkInventoryUsesDegradedProviderFallback();
             NumericIdsDoNotMergeAcrossUnrelatedProviders();
@@ -74,11 +79,21 @@ internal static class SessionManagerTests
             ColorPickerMathRoundTripsHueAndOpacity();
             DisplayHoldKeepsSettledControllerDuringHotPlugGap();
             DisplayHoldIgnoresUnsettledReplacement();
-            DisplayHoldWaitsForStableTransportSwitch();
+            DisplayHoldAppliesSameVendorTransportImmediately();
+            DisplayHoldCollapsesDongleAndBluetoothOverlap();
+            DisplayHoldAddsSecondPadImmediately();
+            SameModelHidIsNotListedBesideXInput();
+            DongleXInputSupersedesStalePlayniteBluetooth();
+            IndependentBluetoothPadIsKeptBesideXInput();
+            BluetoothPlayniteDoesNotBindDongleXInput();
+            DonglePlayniteDoesNotInheritBluetoothFromHidLeftover();
+            XboxBluetoothMayBindXInputCapability();
+            DisplayHoldPromotesVolatileDongleOverHeldBluetooth();
             TransportSwitchHonorsWrapperDisconnectWhenPeerConnected();
             BluetoothDisconnectHonoredWhileXInputStillPresent();
             GenericIconIsKeptWhenChosen();
-            Console.WriteLine("Session manager tests passed: 65 scenarios.");
+            OverlayIpcAcceptsGamepadSilhouettes();
+            Console.WriteLine("Session manager tests passed: 76 scenarios.");
             return 0;
         }
         catch (Exception error)
@@ -211,6 +226,27 @@ internal static class SessionManagerTests
         var merged = ControllerSnapshotMerger.Merge(new[] { sdk, stale }, true);
         Equal(1, merged.Count,
             "Supplemental polling must not create a second physical controller after SDK initialization.");
+    }
+
+    private static void DistinctVidXInputPadIsListedBesidePlaynitePad()
+    {
+        var dualsense = Snapshot("playnite:path:HID#DS", "Playnite", 1, "DualSense",
+            @"\\?\hid#vid_054c&pid_0ce6", true);
+        dualsense.VendorId = 0x054C;
+        dualsense.ProductId = 0x0CE6;
+        var eightBitDo = Snapshot("xinput:slot:0", "XInput", 0, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#vid_2dc8&pid_310b&ig_00", true);
+        eightBitDo.VendorId = 0x2DC8;
+        eightBitDo.ProductId = 0x310B;
+        eightBitDo.ConnectionType = "Wireless";
+        var connected = ControllerSnapshotMerger.Merge(new[] { dualsense, eightBitDo }, true)
+            .Where(a => a.IsConnected).ToList();
+        Equal(2, connected.Count,
+            "An 8BitDo XInput dongle must stay listed in Mandos beside a DualSense Playnite row.");
+        Equal(true, connected.Any(a => a.VendorId == 0x054C),
+            "DualSense must remain in the merged inventory.");
+        Equal(true, connected.Any(a => a.VendorId == 0x2DC8),
+            "The 8BitDo XInput observation must not be dropped just because Playnite already listed another pad.");
     }
 
     private static void ProviderFallbackRemainsAvailableBeforeSdkInitialization()
@@ -1067,7 +1103,7 @@ internal static class SessionManagerTests
             "Unsettled observations must not create a Default.svg profile.");
     }
 
-    private static void DisplayHoldWaitsForStableTransportSwitch()
+    private static void DisplayHoldAppliesSameVendorTransportImmediately()
     {
         var hold = new ControllerDisplayHold();
         var start = new DateTime(2026, 8, 19, 22, 2, 0, DateTimeKind.Utc);
@@ -1075,25 +1111,212 @@ internal static class SessionManagerTests
             @"\\?\hid#vid_2dc8&pid_310b&ig_00", true);
         dongle.VendorId = 0x2DC8;
         dongle.ProductId = 0x310B;
+        dongle.ConnectionType = "Wireless";
         var bluetooth = Snapshot("hardware:2DC8:6012:1", "Playnite", 2, "8BitDo Ultimate 2 Wireless",
             @"\\?\hid#{00001812-0000-1000-8000-00805f9b34fb}_dev_vid&122dc8_pid&6012", true);
         bluetooth.VendorId = 0x2DC8;
         bluetooth.ProductId = 0x6012;
+        bluetooth.ConnectionType = "Bluetooth";
         hold.Apply(new[] { dongle }, start);
-        var bouncing = hold.Apply(new[] { bluetooth }, start.AddMilliseconds(200));
-        Equal("hardware:2DC8:310B:1", bouncing.Single().HardwareId,
-            "Mandos must keep the dongle row while Bluetooth is still bouncing.");
-        bouncing = hold.Apply(new[] { dongle }, start.AddMilliseconds(400));
-        Equal("hardware:2DC8:310B:1", bouncing.Single().HardwareId,
-            "A Wireless/Bluetooth flap must not recreate the Mandos card on every sample.");
-        var bluetoothSince = start.AddMilliseconds(600);
-        bouncing = hold.Apply(new[] { bluetooth }, bluetoothSince);
-        Equal("hardware:2DC8:310B:1", bouncing.Single().HardwareId,
-            "Bluetooth must stay pending until it has been the only identity for a second.");
-        var stable = hold.Apply(new[] { bluetooth },
-            bluetoothSince.Add(ControllerDisplayHold.StableDuration));
-        Equal("hardware:2DC8:6012:1", stable.Single().HardwareId,
-            "After Bluetooth stays connected, Mandos may switch to that identity once.");
+        var switched = hold.Apply(new[] { bluetooth }, start.AddMilliseconds(50));
+        Equal(1, switched.Count, "A Wireless/Bluetooth switch must keep a single Mandos card.");
+        Equal("hardware:2DC8:310B:1", switched.Single().HardwareId,
+            "The card must keep the original pad identity so the icon and profile do not reset.");
+        Equal("Bluetooth", switched.Single().ConnectionType,
+            "The same card must show Bluetooth as soon as that transport is the live one.");
+        var bounced = hold.Apply(new[] { dongle }, start.AddMilliseconds(100));
+        Equal("Wireless", bounced.Single().ConnectionType,
+            "Switching back to the dongle must update the connection type immediately.");
+        Equal("hardware:2DC8:310B:1", bounced.Single().HardwareId,
+            "Bouncing transports must not recreate the controller identity.");
+    }
+
+    private static void DisplayHoldCollapsesDongleAndBluetoothOverlap()
+    {
+        var hold = new ControllerDisplayHold();
+        var start = new DateTime(2026, 8, 19, 23, 0, 0, DateTimeKind.Utc);
+        var dongle = Snapshot("hardware:2DC8:310B:1", "XInput", 0, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#vid_2dc8&pid_310b&ig_00", true);
+        dongle.VendorId = 0x2DC8;
+        dongle.ProductId = 0x310B;
+        dongle.ConnectionType = "Wireless";
+        dongle.BatteryLevel = "Unknown";
+        var bluetooth = Snapshot("hardware:2DC8:6012:1", "HID", 0, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#{00001812-0000-1000-8000-00805f9b34fb}_dev_vid&122dc8_pid&6012", true);
+        bluetooth.VendorId = 0x2DC8;
+        bluetooth.ProductId = 0x6012;
+        bluetooth.ConnectionType = "Bluetooth";
+        bluetooth.BatteryLevel = "Full";
+        var overlap = hold.Apply(new[] { dongle, bluetooth }, start);
+        Equal(1, overlap.Count,
+            "Dongle XInput and Bluetooth HID of the same 8BitDo must be one Mandos card.");
+        Equal("Wireless", overlap.Single().ConnectionType,
+            "A connected XInput dongle is the live transport; leftover Bluetooth HID must not win.");
+        var wirelessOnly = hold.Apply(new[] { dongle }, start.AddMilliseconds(80));
+        Equal(1, wirelessOnly.Count, "The Mandos card must stay a single row after the overlap.");
+        Equal("Wireless", wirelessOnly.Single().ConnectionType,
+            "The same card must update to Wireless when the dongle is the only remaining transport.");
+        Equal(overlap.Single().HardwareId, wirelessOnly.Single().HardwareId,
+            "Updating the transport must not create a second controller identity.");
+    }
+
+    private static void DisplayHoldAddsSecondPadImmediately()
+    {
+        var hold = new ControllerDisplayHold();
+        var start = new DateTime(2026, 8, 20, 0, 10, 0, DateTimeKind.Utc);
+        var dualsense = Snapshot("hardware:054C:0CE6:1", "Playnite", 1, "DualSense",
+            @"\\?\hid#vid_054c&pid_0ce6", true);
+        dualsense.VendorId = 0x054C;
+        dualsense.ProductId = 0x0CE6;
+        hold.Apply(new[] { dualsense }, start);
+        var eightBitDo = Snapshot("hardware:2DC8:310B:1", "XInput", 0, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#vid_2dc8&pid_310b&ig_00", true);
+        eightBitDo.VendorId = 0x2DC8;
+        eightBitDo.ProductId = 0x310B;
+        var both = hold.Apply(new[] { dualsense, eightBitDo }, start.AddMilliseconds(40));
+        Equal(2, both.Count,
+            "A newly connected second pad must appear in Mandos immediately, without the shrink debounce.");
+        Equal(true, both.Any(a => a.VendorId == 0x054C) && both.Any(a => a.VendorId == 0x2DC8),
+            "DualSense and 8BitDo must both remain listed.");
+    }
+
+    private static void SameModelHidIsNotListedBesideXInput()
+    {
+        var xinput = Snapshot("xinput:slot:0", "XInput", 0, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#vid_2dc8&pid_310b&ig_00", true);
+        xinput.VendorId = 0x2DC8;
+        xinput.ProductId = 0x310B;
+        xinput.ConnectionType = "Wireless";
+        var hid = Snapshot("hardware:2DC8:6012:1", "HID", 0, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#{00001812-0000-1000-8000-00805f9b34fb}_dev_vid&122dc8_pid&6012", true);
+        hid.VendorId = 0x2DC8;
+        hid.ProductId = 0x6012;
+        hid.ConnectionType = "Bluetooth";
+        var merged = ControllerSnapshotMerger.Merge(new[] { xinput, hid }, true);
+        Equal(1, merged.Count,
+            "A Bluetooth HID leftover must not appear beside the same 8BitDo XInput slot.");
+        Equal("XInput", merged.Single().ProviderId,
+            "The remaining row must be the XInput dongle observation.");
+    }
+
+    private static void DongleXInputSupersedesStalePlayniteBluetooth()
+    {
+        var bluetooth = Snapshot("playnite:path:BTH", "Playnite", 2, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#{00001812-0000-1000-8000-00805f9b34fb}_dev_vid&122dc8_pid&6012", true);
+        bluetooth.VendorId = 0x2DC8;
+        bluetooth.ProductId = 0x6012;
+        bluetooth.ConnectionType = "Bluetooth";
+        var xinput = Snapshot("xinput:slot:0", "XInput", 0, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#vid_2dc8&pid_310b&ig_00", true);
+        xinput.VendorId = 0x2DC8;
+        xinput.ProductId = 0x310B;
+        xinput.ConnectionType = "Wireless";
+        var connected = ControllerSnapshotMerger.Merge(new[] { bluetooth, xinput }, true)
+            .Where(a => a.IsConnected).ToList();
+        Equal(1, connected.Count,
+            "A 2.4 GHz XInput slot must replace a leftover Playnite Bluetooth row of the same pad.");
+        Equal("Wireless", connected.Single().ConnectionType,
+            "The Mandos card must show Wireless after switching from Bluetooth to the dongle.");
+        Equal("XInput", connected.Single().ProviderId,
+            "The live gameplay path for the dongle is XInput, not the stale BLE HID node.");
+    }
+
+    private static void IndependentBluetoothPadIsKeptBesideXInput()
+    {
+        var start = new DateTime(2026, 8, 19, 23, 12, 0, DateTimeKind.Utc);
+        var bluetooth = Snapshot("playnite:path:BTH", "Playnite", 2, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#{00001812-0000-1000-8000-00805f9b34fb}_dev_vid&122dc8_pid&6012", true);
+        bluetooth.VendorId = 0x2DC8;
+        bluetooth.ProductId = 0x6012;
+        bluetooth.ConnectionType = "Bluetooth";
+        bluetooth.LastInputUtc = start.AddSeconds(4);
+        var xinput = Snapshot("xinput:slot:0", "XInput", 0, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#vid_2dc8&pid_310b&ig_00", true);
+        xinput.VendorId = 0x2DC8;
+        xinput.ProductId = 0x310B;
+        xinput.ConnectionType = "Wireless";
+        xinput.LastInputUtc = start;
+        var connected = ControllerSnapshotMerger.Merge(new[] { bluetooth, xinput }, true)
+            .Where(a => a.IsConnected).ToList();
+        Equal(2, connected.Count,
+            "A second 8BitDo on Bluetooth with newer input must stay listed beside a dongle pad.");
+    }
+
+    private static void BluetoothPlayniteDoesNotBindDongleXInput()
+    {
+        var bluetooth = Snapshot("playnite:path:BTH", "Playnite", 2, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#{00001812-0000-1000-8000-00805f9b34fb}_dev_vid&122dc8_pid&6012", true);
+        bluetooth.VendorId = 0x2DC8;
+        bluetooth.ProductId = 0x6012;
+        bluetooth.ConnectionType = "Bluetooth";
+        var xinput = Snapshot("xinput:slot:0", "XInput", 0, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#vid_2dc8&pid_310b&ig_00", true);
+        xinput.VendorId = 0x2DC8;
+        xinput.ProductId = 0x310B;
+        xinput.ConnectionType = "Wireless";
+        Equal(true, ControllerSnapshotMerger.FindCapability(bluetooth, new[] { xinput }) == null,
+            "Bluetooth DInput and 2.4 GHz XInput are different Windows devices; matching them by name copies the wrong radio onto Mandos.");
+    }
+
+    private static void DonglePlayniteDoesNotInheritBluetoothFromHidLeftover()
+    {
+        var playnite = Snapshot("playnite:path:HID#IG", "Playnite", 1, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#vid_2dc8&pid_310b&ig_00", true);
+        playnite.VendorId = 0x2DC8;
+        playnite.ProductId = 0x310B;
+        playnite.ConnectionType = "Wireless";
+        var hid = Snapshot("hardware:2DC8:6012:1", "HID", 0, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#{00001812-0000-1000-8000-00805f9b34fb}_dev_vid&122dc8_pid&6012", true);
+        hid.VendorId = 0x2DC8;
+        hid.ProductId = 0x6012;
+        hid.ConnectionType = "Bluetooth";
+        var connected = ControllerSnapshotMerger.Merge(new[] { playnite, hid }, true)
+            .Where(a => a.IsConnected).ToList();
+        Equal(1, connected.Count,
+            "A leftover BLE HID node must not appear beside the Playnite dongle row.");
+        Equal("Wireless", connected.Single().ConnectionType,
+            "The dongle row must not inherit Bluetooth from a same-name HID leftover.");
+        Equal(true, connected.Single().Path.IndexOf("&ig_", StringComparison.OrdinalIgnoreCase) >= 0,
+            "The live path must stay the XInput wrapper, not the BLE HID interface.");
+    }
+
+    private static void XboxBluetoothMayBindXInputCapability()
+    {
+        var playnite = Snapshot("playnite:path:XBOXBT", "Playnite", 1, "Xbox Wireless Controller",
+            @"\\?\hid#vid_045e&pid_0b13&ig_00", true);
+        playnite.VendorId = 0x045E;
+        playnite.ProductId = 0x0B13;
+        playnite.ConnectionType = "Bluetooth";
+        var xinput = Snapshot("xinput:slot:0", "XInput", 0, "Xbox Wireless Controller",
+            @"\\?\hid#vid_045e&pid_0b13&ig_00", true);
+        xinput.VendorId = 0x045E;
+        xinput.ProductId = 0x0B13;
+        xinput.ConnectionType = "Bluetooth";
+        Equal("xinput:slot:0", ControllerSnapshotMerger.FindCapability(playnite, new[] { xinput }).ControllerId,
+            "Xbox-licensed pads speak XInput over Bluetooth and must still receive the XInput slot.");
+    }
+
+    private static void DisplayHoldPromotesVolatileDongleOverHeldBluetooth()
+    {
+        var hold = new ControllerDisplayHold();
+        var start = new DateTime(2026, 8, 19, 23, 20, 0, DateTimeKind.Utc);
+        var bluetooth = Snapshot("hardware:2DC8:6012:1", "Playnite", 2, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#{00001812-0000-1000-8000-00805f9b34fb}_dev_vid&122dc8_pid&6012", true);
+        bluetooth.VendorId = 0x2DC8;
+        bluetooth.ProductId = 0x6012;
+        bluetooth.ConnectionType = "Bluetooth";
+        hold.Apply(new[] { bluetooth }, start);
+        var xinput = Snapshot("xinput:slot:0", "XInput", 0, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#vid_2dc8&pid_310b&ig_00", true);
+        xinput.VendorId = 0x2DC8;
+        xinput.ProductId = 0x310B;
+        xinput.HardwareId = "xinput:slot:0";
+        xinput.ConnectionType = "Wireless";
+        var switched = hold.Apply(new[] { xinput }, start.AddMilliseconds(40));
+        Equal("Wireless", switched.Single().ConnectionType,
+            "A live dongle XInput slot must update Mandos immediately even before a stable hardware id exists.");
+        Equal("hardware:2DC8:6012:1", switched.Single().HardwareId,
+            "The Mandos card must keep the settled identity while the XInput wrapper enumerates.");
     }
 
     private static void GenericIconIsKeptWhenChosen()
@@ -1108,6 +1331,30 @@ internal static class SessionManagerTests
             "A missing profile still uses VID to pick the 8BitDo silhouette instead of Default.svg.");
         Equal("dualsense", ControllerIconCatalog.ResolveId(controller, "dualsense"),
             "An explicit picker choice must win over VID suggestion.");
+    }
+
+    private static void OverlayIpcAcceptsGamepadSilhouettes()
+    {
+        var root = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", ".."));
+        var largest = 0;
+        foreach (var svg in Directory.GetFiles(Path.Combine(root, "Gamepads"), "*.svg"))
+        {
+            var document = XDocument.Load(svg);
+            var geometry = string.Join(" ", document.Descendants()
+                .Select(a => (string)a.Attribute("d"))
+                .Where(a => !string.IsNullOrWhiteSpace(a)));
+            var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(geometry ?? string.Empty));
+            if (encoded.Length > largest)
+            {
+                largest = encoded.Length;
+            }
+        }
+
+        Equal(true, largest > 16384,
+            "Gamepads silhouettes exceed the old 16 KB IPC cap that dropped every toast.");
+        var framing = 512;
+        Equal(true, largest * 2 + framing < OverlayIpcLimits.MaxLineCharacters,
+            "A disconnect overlay with two silhouette payloads must still fit the IPC line limit.");
     }
 
     private static void ColorPickerMathRoundTripsHueAndOpacity()

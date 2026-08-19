@@ -46,6 +46,17 @@ namespace ControllerSessionManager.PlayniteIntegration
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var number = value is int ? (int)value : 0;
+            var mode = parameter as string;
+            if (string.Equals(mode, "Top", StringComparison.OrdinalIgnoreCase))
+            {
+                return new Thickness(0, number, 0, 0);
+            }
+
+            if (string.Equals(mode, "Right", StringComparison.OrdinalIgnoreCase))
+            {
+                return new Thickness(0, 0, number, 0);
+            }
+
             return new Thickness(number);
         }
 

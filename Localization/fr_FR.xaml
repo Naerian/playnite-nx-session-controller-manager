@@ -174,6 +174,7 @@
     <sys:String x:Key="LOCCSM_Monitoring">Surveillance</sys:String>
     <sys:String x:Key="LOCCSM_ShowControllerNameInNotifications">Afficher le nom du périphérique dans les notifications</sys:String>
     <sys:String x:Key="LOCCSM_NotificationTitleSize">Texte du titre (px)</sys:String><sys:String x:Key="LOCCSM_NotificationTextSize">Texte du message (px)</sys:String><sys:String x:Key="LOCCSM_NotificationIconSize">Taille de l’icône (px)</sys:String><sys:String x:Key="LOCCSM_NotificationPadding">Marge intérieure (px)</sys:String>
+    <sys:String x:Key="LOCCSM_ElementSpacing">Spacing between elements (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationShowBorder">Afficher une bordure de couleur sémantique</sys:String><sys:String x:Key="LOCCSM_NotificationBorderPosition">Position de la bordure</sys:String><sys:String x:Key="LOCCSM_NotificationBorderThickness">Épaisseur de bordure (px)</sys:String>
     <sys:String x:Key="LOCCSM_BorderLeft">Gauche</sys:String><sys:String x:Key="LOCCSM_BorderTop">Haut</sys:String><sys:String x:Key="LOCCSM_BorderRight">Droite</sys:String><sys:String x:Key="LOCCSM_BorderBottom">Bas</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPreview">Aperçu en direct</sys:String><sys:String x:Key="LOCCSM_PreviewControllerName">Manette d’exemple</sys:String><sys:String x:Key="LOCCSM_OverlayPreviewHelp">Les couleurs et l’échelle changent pendant la modification. L’overlay réel s’adapte à l’écran.</sys:String>
@@ -194,7 +195,9 @@
     <sys:String x:Key="LOCCSM_AboutCapabilities3">Inclut des notifications personnalisables pour le Bureau et le Plein écran : couleurs, tailles de police, position, marges, bordure et icône se règlent séparément pour chaque mode. L’icône de la barre supérieure montre la manette principale et indique le niveau de batterie par la couleur.</sys:String>
     <sys:String x:Key="LOCCSM_AboutCapabilities4">Le niveau de batterie fonctionne avec DualSense, DualShock 4, les manettes Xbox et tout appareil compatible SDL. Le type de connexion (USB, Bluetooth, sans fil) est détecté automatiquement.</sys:String>
     <sys:String x:Key="LOCCSM_AboutSafety">Son overlay externe et ses actions de pause facultatives sont isolés de Playnite et du jeu. Il n’injecte aucune entrée et agit prudemment lorsque les preuves sur le périphérique, le processus ou la partie en ligne sont incomplètes.</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">Afficher l’icône à côté du nom de la manette</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">Show the controller icon</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowControllerName">Show the controller name</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayControllerIconPosition">Controller icon position</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowStatusIcon">Afficher l’icône d’état de pause ou d’avertissement</sys:String>
     <sys:String x:Key="LOCCSM_DesktopTabLabel">Bureau</sys:String>
     <sys:String x:Key="LOCCSM_NotificationSurface">Modifier les notifications pour</sys:String>

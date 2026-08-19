@@ -174,6 +174,7 @@
     <sys:String x:Key="LOCCSM_Monitoring">监控</sys:String>
     <sys:String x:Key="LOCCSM_ShowControllerNameInNotifications">在通知中显示设备名称</sys:String>
     <sys:String x:Key="LOCCSM_NotificationTitleSize">标题文字 (px)</sys:String><sys:String x:Key="LOCCSM_NotificationTextSize">消息文字 (px)</sys:String><sys:String x:Key="LOCCSM_NotificationIconSize">图标大小 (px)</sys:String><sys:String x:Key="LOCCSM_NotificationPadding">内边距 (px)</sys:String>
+    <sys:String x:Key="LOCCSM_ElementSpacing">Spacing between elements (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationShowBorder">显示状态颜色边框</sys:String><sys:String x:Key="LOCCSM_NotificationBorderPosition">边框位置</sys:String><sys:String x:Key="LOCCSM_NotificationBorderThickness">边框宽度 (px)</sys:String>
     <sys:String x:Key="LOCCSM_BorderLeft">左</sys:String><sys:String x:Key="LOCCSM_BorderTop">上</sys:String><sys:String x:Key="LOCCSM_BorderRight">右</sys:String><sys:String x:Key="LOCCSM_BorderBottom">下</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPreview">实时预览</sys:String><sys:String x:Key="LOCCSM_PreviewControllerName">示例控制器</sys:String><sys:String x:Key="LOCCSM_OverlayPreviewHelp">编辑时颜色和缩放会实时更新。实际游戏浮层会适应当前屏幕。</sys:String>
@@ -194,7 +195,9 @@
     <sys:String x:Key="LOCCSM_AboutCapabilities3">可为桌面和全屏分别自定义通知：颜色、字号、位置、内边距、边框和图标布局均可按模式单独设置。顶栏图标显示主手柄，并用颜色表示电量。</sys:String>
     <sys:String x:Key="LOCCSM_AboutCapabilities4">电量显示适用于 DualSense、DualShock 4、Xbox 手柄以及任何 SDL 支持的设备。连接类型（USB、蓝牙、无线）会自动检测。</sys:String>
     <sys:String x:Key="LOCCSM_AboutSafety">外部叠加层和可选暂停操作与 Playnite 和游戏隔离。它不会注入输入；当设备、进程或在线对局证据不足时，会采用保守处理。</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">在控制器名称旁显示图标</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">Show the controller icon</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowControllerName">Show the controller name</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayControllerIconPosition">Controller icon position</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowStatusIcon">显示暂停或警告状态图标</sys:String>
     <sys:String x:Key="LOCCSM_DesktopNotificationsTitle">桌面通知</sys:String>
     <sys:String x:Key="LOCCSM_ShowDesktopControllerNotifications">Notify when a controller connects or disconnects in the Desktop interface</sys:String>

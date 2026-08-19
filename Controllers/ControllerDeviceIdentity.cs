@@ -150,6 +150,41 @@ namespace ControllerSessionManager.Controllers
             return !IsGenericDisplayName(GetDisplayName(rawName, vendorId, productId));
         }
 
+        public static string GetModelKey(ControllerDeviceSnapshot controller)
+        {
+            if (controller == null)
+            {
+                return string.Empty;
+            }
+
+            if (controller.VendorId == 0x2DC8)
+            {
+                var mapped = GetDisplayName(controller.DetectedName ?? controller.Name,
+                    controller.VendorId, controller.ProductId);
+                if (!IsGenericDisplayName(mapped))
+                {
+                    return string.Format("{0:X4}:{1}", controller.VendorId, mapped);
+                }
+            }
+
+            return controller.HardwareId ?? controller.ControllerId ?? string.Empty;
+        }
+
+        public static bool AreTransportAliases(ControllerDeviceSnapshot left,
+            ControllerDeviceSnapshot right)
+        {
+            if (left == null || right == null)
+            {
+                return false;
+            }
+
+            var leftKey = GetModelKey(left);
+            var rightKey = GetModelKey(right);
+            return !string.IsNullOrWhiteSpace(leftKey) &&
+                leftKey.StartsWith("2DC8:", StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(leftKey, rightKey, StringComparison.OrdinalIgnoreCase);
+        }
+
         public static string GetConnectionType(string deviceName, ushort vendorId, ushort productId,
             string devicePath = null)
         {

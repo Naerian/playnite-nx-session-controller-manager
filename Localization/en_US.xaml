@@ -199,6 +199,7 @@
     <sys:String x:Key="LOCCSM_NotificationTextSize">Message text (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationIconSize">Icon size (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationPadding">Inner padding (px)</sys:String>
+    <sys:String x:Key="LOCCSM_ElementSpacing">Spacing between elements (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationShowBorder">Show a semantic color border</sys:String>
     <sys:String x:Key="LOCCSM_NotificationBorderPosition">Border position</sys:String>
     <sys:String x:Key="LOCCSM_NotificationBorderThickness">Border thickness (px)</sys:String>
@@ -225,7 +226,9 @@
     <sys:String x:Key="LOCCSM_AboutCapabilities3">Includes customizable notifications for both Desktop and Fullscreen modes: colors, font sizes, position, padding, border and icon layout are all configurable separately for each mode. The top-bar icon shows the primary controller and uses color to indicate battery level.</sys:String>
     <sys:String x:Key="LOCCSM_AboutCapabilities4">Battery reporting works with DualSense, DualShock 4, Xbox controllers and any SDL-supported device. Connection type (USB, Bluetooth, wireless) is detected automatically.</sys:String>
     <sys:String x:Key="LOCCSM_AboutSafety">Its external overlay and optional pause actions are isolated from Playnite and the game. It avoids input injection and falls back conservatively whenever device, process or online-match evidence is incomplete.</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">Show the icon beside the controller name</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">Show the controller icon</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowControllerName">Show the controller name</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayControllerIconPosition">Controller icon position</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowStatusIcon">Show the pause or warning status icon</sys:String>
     <sys:String x:Key="LOCCSM_DesktopNotificationsTitle">Desktop notification</sys:String>
     <sys:String x:Key="LOCCSM_ShowDesktopControllerNotifications">Notify when a controller connects or disconnects in Desktop</sys:String>

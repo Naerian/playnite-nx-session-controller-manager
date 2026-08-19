@@ -174,6 +174,7 @@
     <sys:String x:Key="LOCCSM_Monitoring">İzleme</sys:String>
     <sys:String x:Key="LOCCSM_ShowControllerNameInNotifications">Bildirimlerde aygıt adını göster</sys:String>
     <sys:String x:Key="LOCCSM_NotificationTitleSize">Başlık metni (px)</sys:String><sys:String x:Key="LOCCSM_NotificationTextSize">Mesaj metni (px)</sys:String><sys:String x:Key="LOCCSM_NotificationIconSize">Simge boyutu (px)</sys:String><sys:String x:Key="LOCCSM_NotificationPadding">İç boşluk (px)</sys:String>
+    <sys:String x:Key="LOCCSM_ElementSpacing">Spacing between elements (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationShowBorder">Durum renginde kenarlık göster</sys:String><sys:String x:Key="LOCCSM_NotificationBorderPosition">Kenarlık konumu</sys:String><sys:String x:Key="LOCCSM_NotificationBorderThickness">Kenarlık kalınlığı (px)</sys:String>
     <sys:String x:Key="LOCCSM_BorderLeft">Sol</sys:String><sys:String x:Key="LOCCSM_BorderTop">Üst</sys:String><sys:String x:Key="LOCCSM_BorderRight">Sağ</sys:String><sys:String x:Key="LOCCSM_BorderBottom">Alt</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPreview">Canlı önizleme</sys:String><sys:String x:Key="LOCCSM_PreviewControllerName">Örnek kontrolcü</sys:String><sys:String x:Key="LOCCSM_OverlayPreviewHelp">Düzenlerken renkler ve ölçek güncellenir. Gerçek katman ekrana uyum sağlar.</sys:String>
@@ -194,7 +195,9 @@
     <sys:String x:Key="LOCCSM_AboutCapabilities3">Masaüstü ve Tam ekran için özelleştirilebilir bildirimler içerir: renkler, yazı tipi boyutları, konum, dolgu, kenarlık ve simge her kip için ayrı ayarlanır. Üst çubuktaki simge birincil kontrolcüyü gösterir ve pili renkle belirtir.</sys:String>
     <sys:String x:Key="LOCCSM_AboutCapabilities4">Pil bilgisi DualSense, DualShock 4, Xbox kontrolcüleri ve SDL destekli her cihazda çalışır. Bağlantı türü (USB, Bluetooth, kablosuz) otomatik algılanır.</sys:String>
     <sys:String x:Key="LOCCSM_AboutSafety">Harici katman ve isteğe bağlı duraklatma eylemleri Playnite ile oyundan yalıtılmıştır. Girdi enjekte etmez; cihaz, işlem veya çevrimiçi oyun kanıtı eksikse temkinli davranır.</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">Kontrolcü adının yanında simgeyi göster</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">Show the controller icon</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowControllerName">Show the controller name</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayControllerIconPosition">Controller icon position</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowStatusIcon">Duraklatma veya uyarı durumu simgesini göster</sys:String>
     <sys:String x:Key="LOCCSM_DesktopNotificationsTitle">Masaüstü bildirimi</sys:String>
     <sys:String x:Key="LOCCSM_ShowDesktopControllerNotifications">Notify when a controller connects or disconnects in the Desktop interface</sys:String>

@@ -308,6 +308,24 @@ namespace ControllerSessionManager.Controllers
                     continue;
                 }
 
+                var leftoverSnapshot = new ControllerDeviceSnapshot
+                {
+                    ProviderId = HidProviderId,
+                    Name = leftover.DisplayName,
+                    DetectedName = leftover.DisplayName,
+                    HardwareId = leftover.HardwareId,
+                    VendorId = leftover.VendorId,
+                    ProductId = leftover.ProductId,
+                    Path = leftover.DevicePath ?? string.Empty,
+                    IsConnected = true,
+                    ConnectionType = leftover.ConnectionType
+                };
+                if (result.Any(a => a != null && a.IsConnected &&
+                    ControllerTransportPolicy.ShouldCollapse(a, leftoverSnapshot)))
+                {
+                    continue;
+                }
+
                 result.Add(new ControllerDeviceSnapshot
                 {
                     ControllerId = string.IsNullOrWhiteSpace(leftover.HardwareId)

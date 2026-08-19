@@ -287,12 +287,26 @@ namespace ControllerSessionManager.Controllers
             }
 
             device.Name = ResolvePlayniteName(controller);
+            device.DetectedName = device.Name;
             device.Path = controller.Path ?? string.Empty;
             device.ProviderInstanceId = controller.InstanceId;
             device.IsEnabled = controller.Enabled;
             device.IsConnected = true;
             device.LifecycleProviderId = ProviderId;
             device.LastSeenUtc = now;
+            ushort vendorId;
+            ushort productId;
+            ControllerBridgeIdentity.TryGetVidPid(controller.Path, out vendorId, out productId);
+            if (vendorId != 0)
+            {
+                device.VendorId = vendorId;
+            }
+            if (productId != 0)
+            {
+                device.ProductId = productId;
+            }
+            device.ConnectionType = ControllerDeviceIdentity.GetConnectionType(controller.Name,
+                device.VendorId, device.ProductId, device.Path);
         }
 
         private static ControllerDeviceSnapshot CreateSnapshot(GamepadController controller, string key, DateTime now)

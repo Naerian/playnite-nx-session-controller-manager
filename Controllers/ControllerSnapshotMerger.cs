@@ -34,17 +34,64 @@ namespace ControllerSessionManager.Controllers
                 result.Add(MergeOne(authoritative, capability));
             }
 
-            // Before the SDK has supplied a usable controller record, provider observations
-            // remain a degraded fallback (for example when Desktop controller support is off).
-            // As soon as Playnite owns any lifecycle rows, unmatched observations stay hidden.
+            PromoteLiveXInputOverStaleBluetooth(result, supplemental, used);
+
             if (!playniteAuthorityInitialized || playnite.Count == 0)
             {
-                result.AddRange(supplemental.Where(a => !used.Contains(a.ControllerId ?? string.Empty))
+                result.AddRange(supplemental.Where(a =>
+                    !used.Contains(a.ControllerId ?? string.Empty) &&
+                    !result.Any(existing => existing.IsConnected &&
+                        ControllerTransportPolicy.ShouldCollapse(existing, a)))
+                    .Select(a => a.Clone()));
+            }
+            else
+            {
+                // Mandos must list every distinct connected pad. Playnite's inventory can omit a
+                // second controller that Windows still exposes (XInput dongle, Bluetooth HID, etc.).
+                // Publish unused supplemental rows with real VID/PID; never invent VID-less ghosts
+                // or standalone SDL rows (Playnite owns that lifecycle).
+                result.AddRange(supplemental.Where(a =>
+                    a.IsConnected &&
+                    !used.Contains(a.ControllerId ?? string.Empty) &&
+                    ShouldPublishUnusedSupplemental(a) &&
+                    !result.Any(existing => existing.IsConnected &&
+                        ControllerTransportPolicy.ShouldCollapse(existing, a)))
                     .Select(a => a.Clone()));
             }
 
             return result.OrderByDescending(a => a.IsConnected)
                 .ThenBy(a => a.Name, StringComparer.CurrentCultureIgnoreCase).ToList();
+        }
+
+        private static void PromoteLiveXInputOverStaleBluetooth(
+            List<ControllerDeviceSnapshot> result, IList<ControllerDeviceSnapshot> supplemental,
+            HashSet<string> used)
+        {
+            var xinput = (supplemental ?? new ControllerDeviceSnapshot[0])
+                .Where(ControllerTransportPolicy.IsXInputObservation).ToList();
+            foreach (var row in result.ToList())
+            {
+                var live = xinput.FirstOrDefault(a =>
+                    ControllerTransportPolicy.BluetoothIsSupersededByXInput(row, a));
+                if (live == null)
+                {
+                    continue;
+                }
+
+                row.IsConnected = false;
+                if (used.Contains(live.ControllerId ?? string.Empty) ||
+                    result.Any(a => a.IsConnected &&
+                        string.Equals(a.ControllerId, live.ControllerId,
+                            StringComparison.OrdinalIgnoreCase)))
+                {
+                    continue;
+                }
+
+                used.Add(live.ControllerId ?? string.Empty);
+                var clone = live.Clone();
+                clone.LifecycleProviderId = PlayniteProviderId + "+XInput";
+                result.Add(clone);
+            }
         }
 
         internal static ControllerDeviceSnapshot FindCapability(ControllerDeviceSnapshot authoritative,
@@ -55,7 +102,9 @@ namespace ControllerSessionManager.Controllers
                 return null;
             }
 
-            var candidates = (supplemental ?? Enumerable.Empty<ControllerDeviceSnapshot>()).ToList();
+            var candidates = (supplemental ?? Enumerable.Empty<ControllerDeviceSnapshot>())
+                .Where(a => ControllerTransportPolicy.CanShareCapability(authoritative, a))
+                .ToList();
             var slot = ControllerBridgeIdentity.GetXInputSlot(authoritative.Path);
             if (slot.HasValue)
             {
@@ -229,6 +278,58 @@ namespace ControllerSessionManager.Controllers
         {
             return value != null && string.Equals(value.ProviderId, PlayniteProviderId,
                 StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool HasHardwareIdentity(ControllerDeviceSnapshot value)
+        {
+            if (value == null)
+            {
+                return false;
+            }
+
+            if (value.VendorId != 0)
+            {
+                return true;
+            }
+
+            ushort vendorId;
+            ushort productId;
+            return ControllerBridgeIdentity.TryGetVidPid(value.Path, out vendorId, out productId) &&
+                vendorId != 0;
+        }
+
+        private static bool ShouldPublishUnusedSupplemental(ControllerDeviceSnapshot value)
+        {
+            if (value == null || !HasHardwareIdentity(value))
+            {
+                return false;
+            }
+
+            if (string.Equals(value.ProviderId, SdlProviderId, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            if (ControllerDeviceIdentity.IsLikelyNonController(value.Name, value.Path) ||
+                ControllerDeviceIdentity.IsLikelyNonController(value.DetectedName, value.Path))
+            {
+                return false;
+            }
+
+            if (ControllerTransportPolicy.IsXInputObservation(value))
+            {
+                return true;
+            }
+
+            if (ControllerTransportPolicy.IsHidLeftover(value) ||
+                ControllerTransportPolicy.IsBluetoothObservation(value))
+            {
+                return ControllerDeviceIdentity.IsPublishableHidCapability(
+                    string.IsNullOrWhiteSpace(value.DetectedName) ? value.Name : value.DetectedName,
+                    value.Path);
+            }
+
+            return false;
         }
 
         private static string Prefer(string candidate, string fallback)

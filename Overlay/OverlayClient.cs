@@ -60,21 +60,24 @@ namespace ControllerSessionManager.Overlay
         }
 
         public void ShowToast(Guid sessionId, int processId, string kind, string title,
-            string message, string iconGeometry, int durationMilliseconds, string presentationStyle)
+            string message, string iconGeometry, int durationMilliseconds, string presentationStyle,
+            string connectionIconGeometry = null)
         {
             SendToast("TOAST", sessionId, processId, kind, title, message, iconGeometry,
-                durationMilliseconds, presentationStyle);
+                durationMilliseconds, presentationStyle, connectionIconGeometry);
         }
 
         public void ShowToastPreview(Guid sessionId, int processId, string kind, string title,
-            string message, string iconGeometry, int durationMilliseconds, string presentationStyle)
+            string message, string iconGeometry, int durationMilliseconds, string presentationStyle,
+            string connectionIconGeometry = null)
         {
             SendToast("TOASTPREVIEW", sessionId, processId, kind, title, message, iconGeometry,
-                durationMilliseconds, presentationStyle);
+                durationMilliseconds, presentationStyle, connectionIconGeometry);
         }
 
         private void SendToast(string command, Guid sessionId, int processId, string kind, string title,
-            string message, string iconGeometry, int durationMilliseconds, string presentationStyle)
+            string message, string iconGeometry, int durationMilliseconds, string presentationStyle,
+            string connectionIconGeometry)
         {
             EnsureHost();
             lastSessionId = sessionId;
@@ -82,7 +85,8 @@ namespace ControllerSessionManager.Overlay
             {
                 "CSM3", token, sessionId.ToString("N"), command, Guid.NewGuid().ToString("N"),
                 processId.ToString(), durationMilliseconds.ToString(), kind, Encode(title),
-                Encode(message), Encode(iconGeometry), Encode(presentationStyle)
+                Encode(message), Encode(iconGeometry), Encode(presentationStyle),
+                Encode(connectionIconGeometry)
             }));
         }
 
@@ -165,16 +169,25 @@ namespace ControllerSessionManager.Overlay
 
         private void Enqueue(string message)
         {
-            if (!disposed && !queue.IsAddingCompleted)
+            if (disposed || queue.IsAddingCompleted)
             {
-                try
-                {
-                    queue.Add(message);
-                }
-                catch (InvalidOperationException)
-                {
-                    logger.Warn("An overlay command was ignored while the client was shutting down.");
-                }
+                return;
+            }
+
+            if (message != null && message.Length > OverlayIpcLimits.MaxLineCharacters)
+            {
+                logger.Error("An overlay command was skipped because the IPC payload exceeded " +
+                    OverlayIpcLimits.MaxLineCharacters + " characters.");
+                return;
+            }
+
+            try
+            {
+                queue.Add(message);
+            }
+            catch (InvalidOperationException)
+            {
+                logger.Warn("An overlay command was ignored while the client was shutting down.");
             }
         }
 

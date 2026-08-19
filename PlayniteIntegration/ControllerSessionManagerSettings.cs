@@ -36,6 +36,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private int notificationIconSize = 32;
         private string notificationIconPosition = "Left";
         private int notificationPadding = 18;
+        private int notificationElementSpacing = 8;
         private bool notificationShowBorder = true;
         private string notificationBorderPosition = "Bottom";
         private int notificationBorderThickness = 3;
@@ -57,6 +58,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private int desktopNotificationIconSize = 28;
         private string desktopNotificationIconPosition = "Left";
         private int desktopNotificationPadding = 14;
+        private int desktopNotificationElementSpacing = 6;
         private bool desktopNotificationShowBorder = true;
         private string desktopNotificationBorderPosition = "Bottom";
         private int desktopNotificationBorderThickness = 3;
@@ -75,7 +77,10 @@ namespace ControllerSessionManager.PlayniteIntegration
         private int overlayStatusIconSize = 18;
         private bool overlayShowControllerIcon = true;
         private bool overlayShowStatusIcon = true;
+        private bool overlayShowControllerName = true;
+        private string overlayControllerIconPosition = "Left";
         private int overlayPadding = 34;
+        private int overlayElementSpacing = 14;
         private bool overlayShowBorder = true;
         private int overlayBorderThickness = 3;
         private int overlayCornerRadius = 13;
@@ -198,6 +203,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         public int NotificationIconSize { get { return notificationIconSize; } set { SetValue(ref notificationIconSize, value); } }
         public string NotificationIconPosition { get { return notificationIconPosition; } set { SetValue(ref notificationIconPosition, value); } }
         public int NotificationPadding { get { return notificationPadding; } set { SetValue(ref notificationPadding, value); } }
+        public int NotificationElementSpacing { get { return notificationElementSpacing; } set { SetValue(ref notificationElementSpacing, value); } }
         public bool NotificationShowBorder { get { return notificationShowBorder; } set { SetValue(ref notificationShowBorder, value); } }
         public string NotificationBorderPosition { get { return notificationBorderPosition; } set { SetValue(ref notificationBorderPosition, value); } }
         public int NotificationBorderThickness { get { return notificationBorderThickness; } set { SetValue(ref notificationBorderThickness, value); } }
@@ -219,6 +225,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         public int DesktopNotificationIconSize { get { return desktopNotificationIconSize; } set { SetValue(ref desktopNotificationIconSize, value); } }
         public string DesktopNotificationIconPosition { get { return desktopNotificationIconPosition; } set { SetValue(ref desktopNotificationIconPosition, value); } }
         public int DesktopNotificationPadding { get { return desktopNotificationPadding; } set { SetValue(ref desktopNotificationPadding, value); } }
+        public int DesktopNotificationElementSpacing { get { return desktopNotificationElementSpacing; } set { SetValue(ref desktopNotificationElementSpacing, value); } }
         public bool DesktopNotificationShowBorder { get { return desktopNotificationShowBorder; } set { SetValue(ref desktopNotificationShowBorder, value); } }
         public string DesktopNotificationBorderPosition { get { return desktopNotificationBorderPosition; } set { SetValue(ref desktopNotificationBorderPosition, value); } }
         public int DesktopNotificationBorderThickness { get { return desktopNotificationBorderThickness; } set { SetValue(ref desktopNotificationBorderThickness, value); } }
@@ -237,7 +244,10 @@ namespace ControllerSessionManager.PlayniteIntegration
         public int OverlayStatusIconSize { get { return overlayStatusIconSize; } set { SetValue(ref overlayStatusIconSize, value); } }
         public bool OverlayShowControllerIcon { get { return overlayShowControllerIcon; } set { SetValue(ref overlayShowControllerIcon, value); } }
         public bool OverlayShowStatusIcon { get { return overlayShowStatusIcon; } set { SetValue(ref overlayShowStatusIcon, value); } }
+        public bool OverlayShowControllerName { get { return overlayShowControllerName; } set { SetValue(ref overlayShowControllerName, value); } }
+        public string OverlayControllerIconPosition { get { return overlayControllerIconPosition; } set { SetValue(ref overlayControllerIconPosition, value); } }
         public int OverlayPadding { get { return overlayPadding; } set { SetValue(ref overlayPadding, value); } }
+        public int OverlayElementSpacing { get { return overlayElementSpacing; } set { SetValue(ref overlayElementSpacing, value); } }
         public bool OverlayShowBorder { get { return overlayShowBorder; } set { SetValue(ref overlayShowBorder, value); } }
         public int OverlayBorderThickness { get { return overlayBorderThickness; } set { SetValue(ref overlayBorderThickness, value); } }
         public int OverlayCornerRadius { get { return overlayCornerRadius; } set { SetValue(ref overlayCornerRadius, value); } }
@@ -642,18 +652,22 @@ namespace ControllerSessionManager.PlayniteIntegration
                 NotificationDurationMilliseconds < 2000 || NotificationDurationMilliseconds > 15000 ||
                 NotificationTitleFontSize < 12 || NotificationTitleFontSize > 36 ||
                 NotificationMessageFontSize < 10 || NotificationMessageFontSize > 30 ||
-                NotificationIconSize < 16 || NotificationIconSize > 72 ||
+                NotificationIconSize < 16 || NotificationIconSize > 128 ||
                 NotificationPadding < 6 || NotificationPadding > 40 ||
+                NotificationElementSpacing < 0 || NotificationElementSpacing > 40 ||
                 NotificationBorderThickness < 0 || NotificationBorderThickness > 10 ||
                 NotificationCornerRadius < 0 || NotificationCornerRadius > 40 ||
+                DesktopNotificationIconSize < 16 || DesktopNotificationIconSize > 128 ||
+                DesktopNotificationElementSpacing < 0 || DesktopNotificationElementSpacing > 40 ||
                 OverlayScalePercent < 80 || OverlayScalePercent > 140 ||
                 OverlayTitleFontSize < 18 || OverlayTitleFontSize > 64 ||
                 OverlayControllerFontSize < 12 || OverlayControllerFontSize > 48 ||
                 OverlayInstructionFontSize < 12 || OverlayInstructionFontSize > 40 ||
                 OverlayStatusFontSize < 10 || OverlayStatusFontSize > 30 ||
-                OverlayControllerIconSize < 16 || OverlayControllerIconSize > 72 ||
+                OverlayControllerIconSize < 16 || OverlayControllerIconSize > 128 ||
                 OverlayStatusIconSize < 12 || OverlayStatusIconSize > 48 ||
                 OverlayPadding < 12 || OverlayPadding > 80 ||
+                OverlayElementSpacing < 0 || OverlayElementSpacing > 48 ||
                 OverlayBorderThickness < 0 || OverlayBorderThickness > 10 ||
                 OverlayCornerRadius < 0 || OverlayCornerRadius > 40)
             {
@@ -662,6 +676,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
             if (!IsSupportedPosition(NotificationPosition) || !IsSupportedBorderPosition(NotificationBorderPosition) ||
                 !IsSupportedIconPosition(NotificationIconPosition) ||
+                !IsSupportedOverlayIconPosition(OverlayControllerIconPosition) ||
                 !AppearanceColors().All(IsHexColor))
             {
                 errors.Add(plugin == null ? "An appearance color or notification position is invalid."
@@ -699,11 +714,34 @@ namespace ControllerSessionManager.PlayniteIntegration
                 NotificationIconSize = NotificationIconSize,
                 NotificationIconPosition = NotificationIconPosition,
                 NotificationPadding = NotificationPadding,
+                NotificationElementSpacing = NotificationElementSpacing,
                 NotificationShowBorder = NotificationShowBorder,
                 NotificationBorderPosition = NotificationBorderPosition,
                 NotificationBorderThickness = NotificationBorderThickness,
                 NotificationCornerRadius = NotificationCornerRadius,
                 ShowControllerNameInNotifications = ShowControllerNameInNotifications,
+                ShowControllerNameInDesktopNotifications = ShowControllerNameInDesktopNotifications,
+                ShowDesktopControllerNotifications = ShowDesktopControllerNotifications,
+                DesktopNotificationWidth = DesktopNotificationWidth,
+                DesktopNotificationScalePercent = DesktopNotificationScalePercent,
+                DesktopNotificationDurationMilliseconds = DesktopNotificationDurationMilliseconds,
+                DesktopNotificationPosition = DesktopNotificationPosition,
+                DesktopNotificationBackgroundColor = DesktopNotificationBackgroundColor,
+                DesktopNotificationTextColor = DesktopNotificationTextColor,
+                DesktopNotificationSecondaryTextColor = DesktopNotificationSecondaryTextColor,
+                DesktopNotificationConnectedColor = DesktopNotificationConnectedColor,
+                DesktopNotificationDisconnectedColor = DesktopNotificationDisconnectedColor,
+                DesktopNotificationWarningColor = DesktopNotificationWarningColor,
+                DesktopNotificationTitleFontSize = DesktopNotificationTitleFontSize,
+                DesktopNotificationMessageFontSize = DesktopNotificationMessageFontSize,
+                DesktopNotificationIconSize = DesktopNotificationIconSize,
+                DesktopNotificationIconPosition = DesktopNotificationIconPosition,
+                DesktopNotificationPadding = DesktopNotificationPadding,
+                DesktopNotificationElementSpacing = DesktopNotificationElementSpacing,
+                DesktopNotificationShowBorder = DesktopNotificationShowBorder,
+                DesktopNotificationBorderPosition = DesktopNotificationBorderPosition,
+                DesktopNotificationBorderThickness = DesktopNotificationBorderThickness,
+                DesktopNotificationCornerRadius = DesktopNotificationCornerRadius,
                 OverlayScalePercent = OverlayScalePercent,
                 OverlayDimColor = OverlayDimColor,
                 OverlayCardColor = OverlayCardColor,
@@ -718,7 +756,10 @@ namespace ControllerSessionManager.PlayniteIntegration
                 OverlayStatusIconSize = OverlayStatusIconSize,
                 OverlayShowControllerIcon = OverlayShowControllerIcon,
                 OverlayShowStatusIcon = OverlayShowStatusIcon,
+                OverlayShowControllerName = OverlayShowControllerName,
+                OverlayControllerIconPosition = OverlayControllerIconPosition,
                 OverlayPadding = OverlayPadding,
+                OverlayElementSpacing = OverlayElementSpacing,
                 OverlayShowBorder = OverlayShowBorder,
                 OverlayBorderThickness = OverlayBorderThickness,
                 OverlayCornerRadius = OverlayCornerRadius,
@@ -760,6 +801,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             NotificationIconSize = source.NotificationIconSize;
             NotificationIconPosition = source.NotificationIconPosition;
             NotificationPadding = source.NotificationPadding;
+            NotificationElementSpacing = source.NotificationElementSpacing;
             NotificationShowBorder = source.NotificationShowBorder;
             NotificationBorderPosition = source.NotificationBorderPosition;
             NotificationBorderThickness = source.NotificationBorderThickness;
@@ -781,6 +823,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             DesktopNotificationIconSize = source.DesktopNotificationIconSize;
             DesktopNotificationIconPosition = source.DesktopNotificationIconPosition;
             DesktopNotificationPadding = source.DesktopNotificationPadding;
+            DesktopNotificationElementSpacing = source.DesktopNotificationElementSpacing;
             DesktopNotificationShowBorder = source.DesktopNotificationShowBorder;
             DesktopNotificationBorderPosition = source.DesktopNotificationBorderPosition;
             DesktopNotificationBorderThickness = source.DesktopNotificationBorderThickness;
@@ -799,7 +842,10 @@ namespace ControllerSessionManager.PlayniteIntegration
             OverlayStatusIconSize = source.OverlayStatusIconSize;
             OverlayShowControllerIcon = source.OverlayShowControllerIcon;
             OverlayShowStatusIcon = source.OverlayShowStatusIcon;
+            OverlayShowControllerName = source.OverlayShowControllerName;
+            OverlayControllerIconPosition = source.OverlayControllerIconPosition;
             OverlayPadding = source.OverlayPadding;
+            OverlayElementSpacing = source.OverlayElementSpacing;
             OverlayShowBorder = source.OverlayShowBorder;
             OverlayBorderThickness = source.OverlayBorderThickness;
             OverlayCornerRadius = source.OverlayCornerRadius;
@@ -886,6 +932,11 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             return value == "Left" || value == "Right" || value == "Top" ||
                 value == "Bottom" || value == "Hidden";
+        }
+
+        private static bool IsSupportedOverlayIconPosition(string value)
+        {
+            return value == "Left" || value == "Right" || value == "Top" || value == "Bottom";
         }
 
         private static bool IsHexColor(string value)

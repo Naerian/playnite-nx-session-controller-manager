@@ -27,6 +27,8 @@ namespace ControllerSessionManager.OverlayHost
         private readonly TextBlock titleText;
         private readonly TextBlock messageText;
         private readonly Path icon;
+        private readonly Path connectionIcon;
+        private readonly Grid rootLayout;
         private readonly Grid contentLayout;
         private readonly StackPanel textPanel;
         private readonly Border card;
@@ -60,6 +62,22 @@ namespace ControllerSessionManager.OverlayHost
                 Margin = new Thickness(0, 0, 14, 0),
                 VerticalAlignment = VerticalAlignment.Center
             };
+            connectionIcon = new Path
+            {
+                Width = 14,
+                Height = 14,
+                Stretch = Stretch.Uniform,
+                StrokeThickness = 1.75,
+                StrokeStartLineCap = PenLineCap.Round,
+                StrokeEndLineCap = PenLineCap.Round,
+                StrokeLineJoin = PenLineJoin.Round,
+                Fill = Brushes.Transparent,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                VerticalAlignment = VerticalAlignment.Top,
+                Margin = new Thickness(0),
+                IsHitTestVisible = false,
+                Visibility = Visibility.Collapsed
+            };
             titleText = new TextBlock
             {
                 FontSize = 17,
@@ -78,13 +96,16 @@ namespace ControllerSessionManager.OverlayHost
             textPanel.Children.Add(titleText);
             textPanel.Children.Add(messageText);
             contentLayout = new Grid();
+            rootLayout = new Grid();
+            rootLayout.Children.Add(contentLayout);
+            rootLayout.Children.Add(connectionIcon);
             card = new Border
             {
                 Background = new SolidColorBrush(Color.FromArgb(244, 18, 20, 24)),
                 BorderThickness = new Thickness(0, 0, 0, 3),
                 CornerRadius = new CornerRadius(10),
                 Padding = new Thickness(18, 14, 18, 14),
-                Child = contentLayout
+                Child = rootLayout
             };
             ConfigureContentLayout("Left", 14);
             Content = card;
@@ -94,7 +115,8 @@ namespace ControllerSessionManager.OverlayHost
         }
 
         public void Enqueue(string id, int processId, int durationMilliseconds, string kind,
-            string title, string message, string iconGeometry, string presentationStyle)
+            string title, string message, string iconGeometry, string presentationStyle,
+            string connectionIconGeometry = null)
         {
             pending.Enqueue(new ToastRequest
             {
@@ -105,7 +127,8 @@ namespace ControllerSessionManager.OverlayHost
                 Title = title,
                 Message = message,
                 IconGeometry = iconGeometry,
-                PresentationStyle = presentationStyle
+                PresentationStyle = presentationStyle,
+                ConnectionIconGeometry = connectionIconGeometry
             });
             if (current == null)
             {
@@ -114,7 +137,8 @@ namespace ControllerSessionManager.OverlayHost
         }
 
         public void ReplaceWith(string id, int processId, int durationMilliseconds, string kind,
-            string title, string message, string iconGeometry, string presentationStyle)
+            string title, string message, string iconGeometry, string presentationStyle,
+            string connectionIconGeometry = null)
         {
             pending.Clear();
             holdTimer.Stop();
@@ -122,7 +146,7 @@ namespace ControllerSessionManager.OverlayHost
             BeginAnimation(OpacityProperty, null);
             Opacity = 0;
             Enqueue(id, processId, durationMilliseconds, kind, title, message, iconGeometry,
-                presentationStyle);
+                presentationStyle, connectionIconGeometry);
         }
 
         private void ShowNext()
@@ -140,31 +164,39 @@ namespace ControllerSessionManager.OverlayHost
             messageText.Visibility = string.IsNullOrWhiteSpace(current.Message) ? Visibility.Collapsed : Visibility.Visible;
             var style = ToastStyle.Parse(current.PresentationStyle);
             var scale = style.ScalePercent / 100.0;
-            Width = style.Width;
-            var textHeight = style.TitleFontSize + (messageText.Visibility == Visibility.Visible
-                ? style.MessageFontSize * 2 + 8 : 0);
-            titleText.FontSize = style.TitleFontSize;
-            messageText.FontSize = style.MessageFontSize;
-            icon.Width = style.IconSize;
-            icon.Height = style.IconSize;
-            var iconGap = Math.Max(8, style.Padding * 0.75);
+            var iconSize = Math.Max(16, style.IconSize * scale);
+            var titleSize = Math.Max(10, style.TitleFontSize * scale);
+            var messageSize = Math.Max(9, style.MessageFontSize * scale);
+            var padding = Math.Max(4, style.Padding * scale);
+            var elementSpacing = Math.Max(0, style.ElementSpacing * scale);
+            Width = Math.Max(280, style.Width * scale);
+            titleText.FontSize = titleSize;
+            messageText.FontSize = messageSize;
+            messageText.Margin = new Thickness(0, elementSpacing, 0, 0);
+            icon.Width = iconSize;
+            icon.Height = iconSize;
+            try { icon.Data = Geometry.Parse(current.IconGeometry ?? string.Empty); }
+            catch { icon.Data = null; }
+            PathAspectSizer.FitToMaxSize(icon, iconSize);
+            var iconGap = Math.Max(8, Math.Max(elementSpacing, padding * 0.75));
             var verticalIcon = string.Equals(style.IconPosition, "Top", StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(style.IconPosition, "Bottom", StringComparison.OrdinalIgnoreCase);
             var hiddenIcon = string.Equals(style.IconPosition, "Hidden", StringComparison.OrdinalIgnoreCase);
+            var textHeight = titleSize + (messageText.Visibility == Visibility.Visible
+                ? messageSize * 2 + elementSpacing : 0);
             var contentHeight = hiddenIcon
                 ? textHeight
                 : verticalIcon
-                    ? style.IconSize + iconGap + textHeight
-                    : Math.Max(style.IconSize, textHeight);
-            Height = Math.Max(82, contentHeight + style.Padding * 2);
+                    ? icon.Height + iconGap + textHeight
+                    : Math.Max(icon.Height, textHeight);
+            Height = Math.Max(82, contentHeight + padding * 2);
             ConfigureContentLayout(style.IconPosition, iconGap);
-            card.Padding = new Thickness(style.Padding);
+            card.Padding = new Thickness(padding);
             card.CornerRadius = new CornerRadius(style.CornerRadius * scale);
             card.Background = Brush(style.Background, Color.FromArgb(244, 18, 20, 24));
             titleText.Foreground = Brush(style.PrimaryText, Colors.White);
             messageText.Foreground = Brush(style.SecondaryText, Color.FromRgb(198, 203, 212));
-            try { icon.Data = Geometry.Parse(current.IconGeometry ?? string.Empty); }
-            catch { icon.Data = null; }
+            var secondaryBrush = Brush(style.SecondaryText, Color.FromRgb(198, 203, 212));
             var accent = ParseColor(string.Equals(current.Kind, "warning", StringComparison.OrdinalIgnoreCase)
                 ? style.WarningAccent
                 : string.Equals(current.Kind, "connected", StringComparison.OrdinalIgnoreCase)
@@ -192,6 +224,8 @@ namespace ControllerSessionManager.OverlayHost
                 icon.Stroke = Brushes.Transparent;
                 icon.StrokeThickness = 0;
             }
+
+            ApplyConnectionIcon(current.ConnectionIconGeometry, secondaryBrush, scale);
             card.Measure(new Size(Width, double.PositiveInfinity));
             Height = Math.Max(82, Math.Ceiling(card.DesiredSize.Height));
             if (!IsVisible)
@@ -202,6 +236,47 @@ namespace ControllerSessionManager.OverlayHost
             BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(180)));
             holdTimer.Interval = TimeSpan.FromMilliseconds(current.DurationMilliseconds);
             holdTimer.Start();
+        }
+
+        private void ApplyConnectionIcon(string geometry, Brush stroke, double scale)
+        {
+            if (string.IsNullOrWhiteSpace(geometry) ||
+                string.Equals(current.Kind, "warning", StringComparison.OrdinalIgnoreCase))
+            {
+                connectionIcon.Data = null;
+                connectionIcon.Visibility = Visibility.Collapsed;
+                titleText.Margin = new Thickness(0);
+                return;
+            }
+
+            try
+            {
+                connectionIcon.Data = Geometry.Parse(geometry);
+            }
+            catch
+            {
+                connectionIcon.Data = null;
+            }
+
+            if (connectionIcon.Data == null)
+            {
+                connectionIcon.Visibility = Visibility.Collapsed;
+                titleText.Margin = new Thickness(0);
+                return;
+            }
+
+            var size = Math.Max(11, Math.Min(16, 13 * scale));
+            var reserve = size + Math.Max(8, 10 * scale);
+            connectionIcon.Width = size;
+            connectionIcon.Height = size;
+            connectionIcon.Stroke = stroke;
+            connectionIcon.StrokeThickness = Math.Max(1.4, 1.75 * scale);
+            connectionIcon.HorizontalAlignment = HorizontalAlignment.Right;
+            connectionIcon.VerticalAlignment = VerticalAlignment.Top;
+            connectionIcon.Margin = new Thickness(0);
+            connectionIcon.Visibility = Visibility.Visible;
+            // Keep the title from running under the badge; long names ellipsis instead.
+            titleText.Margin = new Thickness(0, 0, reserve, 0);
         }
 
         private void ConfigureContentLayout(string position, double gap)
@@ -320,6 +395,7 @@ namespace ControllerSessionManager.OverlayHost
             public string Title { get; set; }
             public string Message { get; set; }
             public string IconGeometry { get; set; }
+            public string ConnectionIconGeometry { get; set; }
             public string PresentationStyle { get; set; }
         }
 
@@ -343,6 +419,7 @@ namespace ControllerSessionManager.OverlayHost
             public int BorderThickness = 3;
             public int CornerRadius = 10;
             public string IconPosition = "Left";
+            public int ElementSpacing = 8;
 
             public static ToastStyle Parse(string value)
             {
@@ -360,7 +437,7 @@ namespace ControllerSessionManager.OverlayHost
                 if (parts.Length > 8) style.WarningAccent = parts[8];
                 if (parts.Length > 9 && int.TryParse(parts[9], out parsed)) style.TitleFontSize = Math.Max(12, Math.Min(36, parsed));
                 if (parts.Length > 10 && int.TryParse(parts[10], out parsed)) style.MessageFontSize = Math.Max(10, Math.Min(30, parsed));
-                if (parts.Length > 11 && int.TryParse(parts[11], out parsed)) style.IconSize = Math.Max(16, Math.Min(72, parsed));
+                if (parts.Length > 11 && int.TryParse(parts[11], out parsed)) style.IconSize = Math.Max(16, Math.Min(128, parsed));
                 if (parts.Length > 12 && int.TryParse(parts[12], out parsed)) style.Padding = Math.Max(6, Math.Min(40, parsed));
                 bool parsedBool;
                 if (parts.Length > 13 && bool.TryParse(parts[13], out parsedBool)) style.ShowBorder = parsedBool;
@@ -368,6 +445,7 @@ namespace ControllerSessionManager.OverlayHost
                 if (parts.Length > 15 && int.TryParse(parts[15], out parsed)) style.BorderThickness = Math.Max(0, Math.Min(10, parsed));
                 if (parts.Length > 16 && int.TryParse(parts[16], out parsed)) style.CornerRadius = Math.Max(0, Math.Min(40, parsed));
                 if (parts.Length > 17 && IsIconPosition(parts[17])) style.IconPosition = parts[17];
+                if (parts.Length > 18 && int.TryParse(parts[18], out parsed)) style.ElementSpacing = Math.Max(0, Math.Min(40, parsed));
                 return style;
             }
 

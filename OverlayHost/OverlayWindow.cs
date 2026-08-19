@@ -31,6 +31,8 @@ namespace ControllerSessionManager.OverlayHost
         private readonly Path pauseStatusIcon;
         private readonly Border pauseStatusBadge;
         private readonly Border incidentCard;
+        private readonly StackPanel content;
+        private readonly Grid controllerHost;
         private readonly DispatcherTimer watchdog;
         private DateTime lastHeartbeatUtc = DateTime.UtcNow;
         private string currentSessionId;
@@ -59,12 +61,20 @@ namespace ControllerSessionManager.OverlayHost
                 StrokeThickness = 0.35,
                 StrokeLineJoin = PenLineJoin.Round,
                 VerticalAlignment = VerticalAlignment.Center,
-                Margin = new Thickness(0, 0, 10, 0)
+                HorizontalAlignment = HorizontalAlignment.Center
             };
-            titleText = CreateText(30, FontWeights.SemiBold, Brushes.White, new Thickness(0, 0, 0, 12));
+            titleText = CreateText(30, FontWeights.SemiBold, Brushes.White, new Thickness(0));
+            titleText.HorizontalAlignment = HorizontalAlignment.Center;
+            titleText.TextAlignment = TextAlignment.Center;
             messageText = CreateText(22, FontWeights.SemiBold, Brushes.White, new Thickness(0));
+            messageText.HorizontalAlignment = HorizontalAlignment.Center;
+            messageText.TextAlignment = TextAlignment.Center;
+            messageText.TextWrapping = TextWrapping.Wrap;
             instructionText = CreateText(19, FontWeights.SemiBold,
-                new SolidColorBrush(Color.FromRgb(80, 170, 255)), new Thickness(0, 0, 0, 14));
+                new SolidColorBrush(Color.FromRgb(80, 170, 255)), new Thickness(0));
+            instructionText.HorizontalAlignment = HorizontalAlignment.Center;
+            instructionText.TextAlignment = TextAlignment.Center;
+            instructionText.TextWrapping = TextWrapping.Wrap;
             pauseStatusText = CreateText(15, FontWeights.Normal,
                 new SolidColorBrush(Color.FromRgb(190, 195, 205)), new Thickness(0));
             pauseStatusIcon = new Path
@@ -91,18 +101,19 @@ namespace ControllerSessionManager.OverlayHost
                 Child = statusContent
             };
 
-            var controllerContent = new StackPanel
+            controllerHost = new Grid
             {
-                Orientation = Orientation.Horizontal,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Margin = new Thickness(0, 0, 0, 18)
+                HorizontalAlignment = HorizontalAlignment.Center
             };
-            controllerContent.Children.Add(controllerIcon);
-            controllerContent.Children.Add(messageText);
+            ConfigureControllerLayout("Left", 10);
 
-            var content = new StackPanel { MaxWidth = 720 };
+            content = new StackPanel
+            {
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            };
             content.Children.Add(titleText);
-            content.Children.Add(controllerContent);
+            content.Children.Add(controllerHost);
             content.Children.Add(instructionText);
             content.Children.Add(pauseStatusBadge);
             incidentCard = new Border
@@ -112,7 +123,6 @@ namespace ControllerSessionManager.OverlayHost
                 BorderThickness = new Thickness(2.5),
                 CornerRadius = new CornerRadius(13),
                 Padding = new Thickness(42, 34, 42, 34),
-                MinWidth = 540,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
                 Child = content
@@ -136,19 +146,26 @@ namespace ControllerSessionManager.OverlayHost
             titleText.Text = title;
             messageText.Text = message;
             instructionText.Text = instruction;
+            try
+            {
+                controllerIcon.Data = string.IsNullOrWhiteSpace(iconGeometry) ? null : Geometry.Parse(iconGeometry);
+            }
+            catch
+            {
+                controllerIcon.Data = null;
+            }
+
             ApplyPresentationStyle(presentationStyle);
             var suspensionSucceeded = !forcePause || suspensionLease.TrySuspend(pauseProcessId, incidentId);
             pauseStatusText.Text = suspensionSucceeded ? pauseStatus : pauseFailureStatus;
             ApplyPauseStatusStyle(suspensionSucceeded ? pauseStatusKind : pauseFailureKind);
             try
             {
-                controllerIcon.Data = string.IsNullOrWhiteSpace(iconGeometry) ? null : Geometry.Parse(iconGeometry);
                 var statusGeometry = suspensionSucceeded ? pauseStatusIconGeometry : pauseFailureIconGeometry;
                 pauseStatusIcon.Data = string.IsNullOrWhiteSpace(statusGeometry) ? null : Geometry.Parse(statusGeometry);
             }
             catch
             {
-                controllerIcon.Data = null;
                 pauseStatusIcon.Data = null;
             }
 
@@ -202,7 +219,7 @@ namespace ControllerSessionManager.OverlayHost
             var controllerSize = ParseInt(parts, 7, 22, 12, 48);
             var instructionSize = ParseInt(parts, 8, 19, 12, 40);
             var statusSize = ParseInt(parts, 9, 15, 10, 30);
-            var controllerIconSize = ParseInt(parts, 10, 30, 16, 72);
+            var controllerIconSize = ParseInt(parts, 10, 30, 16, 128);
             var statusIconSize = ParseInt(parts, 11, 18, 12, 48);
             var padding = ParseInt(parts, 12, 34, 12, 80);
             bool showBorder;
@@ -211,6 +228,9 @@ namespace ControllerSessionManager.OverlayHost
             var cornerRadius = ParseInt(parts, 15, 13, 0, 40);
             var showControllerIcon = ParseBool(parts, 16, true);
             var showStatusIcon = ParseBool(parts, 17, true);
+            var elementSpacing = ParseInt(parts, 18, 14, 0, 48);
+            var iconPosition = parts.Length > 19 && IsIconPosition(parts[19]) ? parts[19] : "Left";
+            var showControllerName = ParseBool(parts, 20, true);
 
             Background = new SolidColorBrush(dim);
             incidentCard.Background = new SolidColorBrush(card);
@@ -218,14 +238,17 @@ namespace ControllerSessionManager.OverlayHost
             incidentCard.BorderThickness = showBorder ? new Thickness(borderThickness) : new Thickness(0);
             incidentCard.CornerRadius = new CornerRadius(cornerRadius);
             incidentCard.Padding = new Thickness(padding);
-            incidentCard.MinWidth = 540 * scale;
+            incidentCard.ClearValue(FrameworkElement.MinWidthProperty);
+            incidentCard.ClearValue(FrameworkElement.MaxWidthProperty);
+            content.MaxWidth = 720 * scale;
             titleText.FontSize = titleSize;
             messageText.FontSize = controllerSize;
             instructionText.FontSize = instructionSize;
             pauseStatusText.FontSize = statusSize;
-            controllerIcon.Width = controllerIconSize;
-            controllerIcon.Height = controllerIconSize;
+            PathAspectSizer.FitToMaxSize(controllerIcon, controllerIconSize);
             controllerIcon.Visibility = showControllerIcon ? Visibility.Visible : Visibility.Collapsed;
+            messageText.Visibility = showControllerName && !string.IsNullOrWhiteSpace(messageText.Text)
+                ? Visibility.Visible : Visibility.Collapsed;
             pauseStatusIcon.Width = statusIconSize;
             pauseStatusIcon.Height = statusIconSize;
             pauseStatusIcon.Visibility = showStatusIcon ? Visibility.Visible : Visibility.Collapsed;
@@ -235,6 +258,60 @@ namespace ControllerSessionManager.OverlayHost
             controllerIcon.Fill = textBrush;
             controllerIcon.Stroke = textBrush;
             instructionText.Foreground = new SolidColorBrush(presentationAccent);
+
+            var gap = Math.Max(0, elementSpacing);
+            var iconGap = gap;
+            ConfigureControllerLayout(iconPosition, iconGap);
+            titleText.Margin = new Thickness(0);
+            controllerHost.Margin = new Thickness(0, gap, 0, 0);
+            instructionText.Margin = new Thickness(0, gap, 0, 0);
+            pauseStatusBadge.Margin = new Thickness(0, gap, 0, 0);
+
+            // Grow the card around its content; padding must not shrink the interior.
+            content.Measure(new Size(720 * scale, double.PositiveInfinity));
+            var contentWidth = Math.Ceiling(content.DesiredSize.Width);
+            var contentHeight = Math.Ceiling(content.DesiredSize.Height);
+            incidentCard.MinWidth = contentWidth + padding * 2;
+            incidentCard.MinHeight = contentHeight + padding * 2;
+            incidentCard.LayoutTransform = new ScaleTransform(scale, scale);
+        }
+
+        private void ConfigureControllerLayout(string position, double gap)
+        {
+            controllerHost.Children.Clear();
+            controllerHost.RowDefinitions.Clear();
+            controllerHost.ColumnDefinitions.Clear();
+            controllerIcon.Margin = new Thickness(0);
+            messageText.Margin = new Thickness(0);
+
+            var normalized = string.IsNullOrWhiteSpace(position) ? "Left" : position;
+            if (string.Equals(normalized, "Top", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(normalized, "Bottom", StringComparison.OrdinalIgnoreCase))
+            {
+                controllerHost.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                controllerHost.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                var iconFirst = string.Equals(normalized, "Top", StringComparison.OrdinalIgnoreCase);
+                Grid.SetRow(controllerIcon, iconFirst ? 0 : 1);
+                Grid.SetRow(messageText, iconFirst ? 1 : 0);
+                controllerIcon.Margin = iconFirst ? new Thickness(0, 0, 0, gap) : new Thickness(0, gap, 0, 0);
+            }
+            else
+            {
+                controllerHost.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+                controllerHost.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+                var iconFirst = !string.Equals(normalized, "Right", StringComparison.OrdinalIgnoreCase);
+                Grid.SetColumn(controllerIcon, iconFirst ? 0 : 1);
+                Grid.SetColumn(messageText, iconFirst ? 1 : 0);
+                controllerIcon.Margin = iconFirst ? new Thickness(0, 0, gap, 0) : new Thickness(gap, 0, 0, 0);
+            }
+
+            controllerHost.Children.Add(controllerIcon);
+            controllerHost.Children.Add(messageText);
+        }
+
+        private static bool IsIconPosition(string value)
+        {
+            return value == "Left" || value == "Right" || value == "Top" || value == "Bottom";
         }
 
         private static int ParseInt(string[] parts, int index, int fallback, int minimum, int maximum)
@@ -347,26 +424,23 @@ namespace ControllerSessionManager.OverlayHost
             }
         }
 
-        private static TextBlock CreateText(double size, FontWeight weight, Brush foreground, Thickness margin)
+        private static TextBlock CreateText(double size, FontWeight weight, Brush brush, Thickness margin)
         {
             return new TextBlock
             {
                 FontSize = size,
                 FontWeight = weight,
-                Foreground = foreground,
-                TextAlignment = TextAlignment.Center,
+                Foreground = brush,
+                Margin = margin,
                 TextWrapping = TextWrapping.Wrap,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Margin = margin
+                TextAlignment = TextAlignment.Center
             };
         }
 
         [DllImport("user32.dll")]
         private static extern int GetWindowLong(IntPtr window, int index);
-
         [DllImport("user32.dll")]
         private static extern int SetWindowLong(IntPtr window, int index, int value);
-
         [DllImport("user32.dll")]
         private static extern bool SetWindowPos(IntPtr window, IntPtr insertAfter, int x, int y,
             int width, int height, uint flags);

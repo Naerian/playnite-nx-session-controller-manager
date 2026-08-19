@@ -174,6 +174,7 @@
     <sys:String x:Key="LOCCSM_Monitoring">Мониторинг</sys:String>
     <sys:String x:Key="LOCCSM_ShowControllerNameInNotifications">Показывать имя устройства в уведомлениях</sys:String>
     <sys:String x:Key="LOCCSM_NotificationTitleSize">Текст заголовка (px)</sys:String><sys:String x:Key="LOCCSM_NotificationTextSize">Текст сообщения (px)</sys:String><sys:String x:Key="LOCCSM_NotificationIconSize">Размер значка (px)</sys:String><sys:String x:Key="LOCCSM_NotificationPadding">Внутренний отступ (px)</sys:String>
+    <sys:String x:Key="LOCCSM_ElementSpacing">Spacing between elements (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationShowBorder">Показывать цветную рамку состояния</sys:String><sys:String x:Key="LOCCSM_NotificationBorderPosition">Положение рамки</sys:String><sys:String x:Key="LOCCSM_NotificationBorderThickness">Толщина рамки (px)</sys:String>
     <sys:String x:Key="LOCCSM_BorderLeft">Слева</sys:String><sys:String x:Key="LOCCSM_BorderTop">Сверху</sys:String><sys:String x:Key="LOCCSM_BorderRight">Справа</sys:String><sys:String x:Key="LOCCSM_BorderBottom">Снизу</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPreview">Предпросмотр</sys:String><sys:String x:Key="LOCCSM_PreviewControllerName">Пример контроллера</sys:String><sys:String x:Key="LOCCSM_OverlayPreviewHelp">Цвета и масштаб обновляются при редактировании. Реальный оверлей адаптируется к экрану.</sys:String>
@@ -194,7 +195,9 @@
     <sys:String x:Key="LOCCSM_AboutCapabilities3">Включает настраиваемые уведомления для рабочего стола и полного экрана: цвета, размеры шрифта, положение, отступы, рамка и значок задаются отдельно для каждого режима. Значок на верхней панели показывает основной контроллер и цветом отражает заряд батареи.</sys:String>
     <sys:String x:Key="LOCCSM_AboutCapabilities4">Заряд батареи работает с DualSense, DualShock 4, контроллерами Xbox и любым устройством с поддержкой SDL. Тип подключения (USB, Bluetooth, беспроводной) определяется автоматически.</sys:String>
     <sys:String x:Key="LOCCSM_AboutSafety">Внешний оверлей и необязательная пауза изолированы от Playnite и игры. Плагин не внедряет ввод и действует осторожно при неполных данных об устройстве, процессе или сетевой игре.</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">Показывать значок рядом с названием контроллера</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">Show the controller icon</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowControllerName">Show the controller name</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayControllerIconPosition">Controller icon position</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowStatusIcon">Показывать значок состояния паузы или предупреждения</sys:String>
     <sys:String x:Key="LOCCSM_DesktopNotificationsTitle">Уведомление рабочего стола</sys:String>
     <sys:String x:Key="LOCCSM_ShowDesktopControllerNotifications">Notify when a controller connects or disconnects in the Desktop interface</sys:String>

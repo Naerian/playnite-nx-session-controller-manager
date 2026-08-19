@@ -21,9 +21,11 @@ $testExecutable = Join-Path $output "SessionManagerTests.exe"
     (Join-Path $root "Controllers\ControllerDeviceIdentity.cs") `
     (Join-Path $root "Controllers\ControllerIconCatalog.cs") `
     (Join-Path $root "Controllers\ControllerDisplayHold.cs") `
+    (Join-Path $root "Controllers\ControllerTransportPolicy.cs") `
     (Join-Path $root "Controllers\ProviderLifecyclePolicy.cs") `
     (Join-Path $root "Controllers\ControllerBridgeIdentity.cs") `
     (Join-Path $root "Controllers\IntentionalInputDetector.cs") `
+    (Join-Path $root "Overlay\OverlayIpcLimits.cs") `
     (Join-Path $root "Sessions\GameSessionManager.cs") `
     (Join-Path $root "Sessions\SessionControllerIdentity.cs") `
     (Join-Path $root "Sessions\GamePauseService.cs") `

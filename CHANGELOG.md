@@ -42,8 +42,21 @@
 - Added the 8BitDo Ultimate 3 silhouette to the icon picker, selected by PID 0x202F or the Ultimate 3 name.
 - Restored a Playnite-owned dongle disconnect when XInput sees the same pad again for three samples, so the overlay can close after a receiver reconnect while a game owns the foreground.
 - Kept the dongle/cable session identity across XInput reconnects that temporarily expose xinput:slot:N instead of hardware:VID:PID, which left the overlay stuck after a receiver or cable reconnect.
-- Held the last identified pad in the top bar and Mandos while an 8BitDo Wireless/Bluetooth switch bounces, and only accepted the new identity after it stayed connected for a second, so the card no longer appears and disappears on every handshake sample.
+- Held the last identified pad in the top bar and Mandos while transports bounce. A connected XInput dongle or cable (`&ig_`) is the live gameplay path; leftover Bluetooth HID/Playnite rows of the same VID are not bound by name and are replaced unless that Bluetooth pad has newer input (a second controller). Xbox-licensed pads still share XInput over Bluetooth.
 - Renamed the Default icon option to Generic and stopped replacing it with the VID silhouette when that option is chosen.
+- Raised the overlay IPC line limit so Gamepads silhouette path data fits; connect/disconnect toasts and notification previews were being dropped silently after the Lucide icons were replaced.
+- Matched Diagnostic profile jump buttons to the Playnite button style and moved that Tester tab before Options.
+- Applied notification scale to icon, text and padding (it previously only affected corner radius), raised the icon size range to 16–128 px, and added element spacing for notifications and the disconnect overlay.
+- Added overlay controls for controller icon position, show/hide controller name, and element spacing; padding now grows the card instead of clipping content.
+- Moved “show controller name” above the controller text size slider and disabled that slider when the name is hidden.
+- Sized overlay/toast/preview silhouettes to the path aspect ratio so landscape Gamepads SVGs no longer leave empty bands above and below at zero element spacing.
+- Gave Mandos “Unknown” connection an icon and the same muted color used for unknown battery (common when a charging dock stays enumerated while the pad is off).
+- Sized overlay silhouettes with flattened path bounds and Stretch=Fill, and removed the 8 px floor on icon/name gap so zero element spacing is truly tight.
+- Listed a second pad’s XInput observation in Mandos even when Playnite’s inventory only exposes another controller (e.g. DualSense + 8BitDo dongle); Tester already saw both via SDL.
+- Mandos lists every distinct connected controller (1..N). Newly added pads appear immediately; only shrink/replace still waits for the short stability window. Same-pad dongle/Bluetooth aliases stay one card.
+- Fullscreen and desktop connect/disconnect toasts show a small connection-type icon (USB, Bluetooth, wireless or unknown) at the top-right of the card, with title margin so long names ellipsis instead of overlapping it.
+- Disabled Mandos name, icon and test actions when connection is Unknown (e.g. an 8BitDo charging dock with the pad off).
+- Tester empty state uses the same “no controller connected” title as Mandos and no longer shows the connect/mode-switch help subtitle.
 
 ## 1.0.7 — 2026-08-18
 - Applied a fixed settings type scale (20/14/12) and spacing scale (4/8/16/24), and added themed status/capability pills for Overview and controller metadata.

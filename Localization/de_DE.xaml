@@ -174,6 +174,7 @@
     <sys:String x:Key="LOCCSM_Monitoring">Überwachung</sys:String>
     <sys:String x:Key="LOCCSM_ShowControllerNameInNotifications">Gerätenamen in Benachrichtigungen anzeigen</sys:String>
     <sys:String x:Key="LOCCSM_NotificationTitleSize">Titeltext (px)</sys:String><sys:String x:Key="LOCCSM_NotificationTextSize">Nachrichtentext (px)</sys:String><sys:String x:Key="LOCCSM_NotificationIconSize">Symbolgröße (px)</sys:String><sys:String x:Key="LOCCSM_NotificationPadding">Innenabstand (px)</sys:String>
+    <sys:String x:Key="LOCCSM_ElementSpacing">Spacing between elements (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationShowBorder">Semantischen Farbrand anzeigen</sys:String><sys:String x:Key="LOCCSM_NotificationBorderPosition">Randposition</sys:String><sys:String x:Key="LOCCSM_NotificationBorderThickness">Randstärke (px)</sys:String>
     <sys:String x:Key="LOCCSM_BorderLeft">Links</sys:String><sys:String x:Key="LOCCSM_BorderTop">Oben</sys:String><sys:String x:Key="LOCCSM_BorderRight">Rechts</sys:String><sys:String x:Key="LOCCSM_BorderBottom">Unten</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPreview">Live-Vorschau</sys:String><sys:String x:Key="LOCCSM_PreviewControllerName">Beispiel-Controller</sys:String><sys:String x:Key="LOCCSM_OverlayPreviewHelp">Farben und Skalierung werden beim Bearbeiten aktualisiert. Das echte Overlay passt sich dem Bildschirm an.</sys:String>
@@ -194,7 +195,9 @@
     <sys:String x:Key="LOCCSM_AboutCapabilities3">Enthält anpassbare Benachrichtigungen für Desktop und Vollbild: Farben, Schriftgrößen, Position, Innenabstand, Rahmen und Icon-Anordnung sind pro Modus getrennt einstellbar. Das Symbol in der oberen Leiste zeigt den primären Controller und färbt den Akkustand ein.</sys:String>
     <sys:String x:Key="LOCCSM_AboutCapabilities4">Der Akkustand funktioniert mit DualSense, DualShock 4, Xbox-Controllern und jedem SDL-unterstützten Gerät. Der Verbindungstyp (USB, Bluetooth, kabellos) wird automatisch erkannt.</sys:String>
     <sys:String x:Key="LOCCSM_AboutSafety">Externes Overlay und optionale Pausenaktionen sind von Playnite und dem Spiel isoliert. Es injiziert keine Eingaben und reagiert konservativ, wenn Geräte-, Prozess- oder Online-Nachweise unvollständig sind.</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">Symbol neben dem Controllernamen anzeigen</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">Show the controller icon</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowControllerName">Show the controller name</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayControllerIconPosition">Controller icon position</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowStatusIcon">Symbol für Pause oder Warnung anzeigen</sys:String>
     <sys:String x:Key="LOCCSM_DesktopNotificationsTitle">Desktop-Benachrichtigung</sys:String>
     <sys:String x:Key="LOCCSM_ShowDesktopControllerNotifications">Beim Verbinden oder Trennen eines Controllers im Desktop-Modus benachrichtigen</sys:String>

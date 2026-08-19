@@ -174,6 +174,7 @@
     <sys:String x:Key="LOCCSM_Monitoring">Monitorowanie</sys:String>
     <sys:String x:Key="LOCCSM_ShowControllerNameInNotifications">Pokaż nazwę urządzenia w powiadomieniach</sys:String>
     <sys:String x:Key="LOCCSM_NotificationTitleSize">Tekst tytułu (px)</sys:String><sys:String x:Key="LOCCSM_NotificationTextSize">Tekst wiadomości (px)</sys:String><sys:String x:Key="LOCCSM_NotificationIconSize">Rozmiar ikony (px)</sys:String><sys:String x:Key="LOCCSM_NotificationPadding">Wewnętrzny odstęp (px)</sys:String>
+    <sys:String x:Key="LOCCSM_ElementSpacing">Spacing between elements (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationShowBorder">Pokaż obramowanie w kolorze stanu</sys:String><sys:String x:Key="LOCCSM_NotificationBorderPosition">Pozycja obramowania</sys:String><sys:String x:Key="LOCCSM_NotificationBorderThickness">Grubość obramowania (px)</sys:String>
     <sys:String x:Key="LOCCSM_BorderLeft">Lewa</sys:String><sys:String x:Key="LOCCSM_BorderTop">Góra</sys:String><sys:String x:Key="LOCCSM_BorderRight">Prawa</sys:String><sys:String x:Key="LOCCSM_BorderBottom">Dół</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPreview">Podgląd na żywo</sys:String><sys:String x:Key="LOCCSM_PreviewControllerName">Przykładowy kontroler</sys:String><sys:String x:Key="LOCCSM_OverlayPreviewHelp">Kolory i skala aktualizują się podczas edycji. Rzeczywista nakładka dopasowuje się do ekranu.</sys:String>
@@ -194,7 +195,9 @@
     <sys:String x:Key="LOCCSM_AboutCapabilities3">Zawiera konfigurowalne powiadomienia dla pulpitu i pełnego ekranu: kolory, rozmiary czcionki, pozycja, odstępy, obramowanie i ikona są ustawiane osobno dla każdego trybu. Ikona na górnym pasku pokazuje główny kontroler i kolorem oznacza poziom baterii.</sys:String>
     <sys:String x:Key="LOCCSM_AboutCapabilities4">Poziom baterii działa z DualSense, DualShock 4, kontrolerami Xbox i każdym urządzeniem obsługiwanym przez SDL. Typ połączenia (USB, Bluetooth, bezprzewodowe) jest wykrywany automatycznie.</sys:String>
     <sys:String x:Key="LOCCSM_AboutSafety">Zewnętrzna nakładka i opcjonalne pauzowanie są odizolowane od Playnite i gry. Nie wstrzykuje wejścia i działa zachowawczo, gdy dane o urządzeniu, procesie lub rozgrywce online są niepełne.</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">Pokaż ikonę obok nazwy kontrolera</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">Show the controller icon</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowControllerName">Show the controller name</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayControllerIconPosition">Controller icon position</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowStatusIcon">Pokaż ikonę stanu pauzy lub ostrzeżenia</sys:String>
     <sys:String x:Key="LOCCSM_DesktopNotificationsTitle">Powiadomienie pulpitu</sys:String>
     <sys:String x:Key="LOCCSM_ShowDesktopControllerNotifications">Notify when a controller connects or disconnects in the Desktop interface</sys:String>

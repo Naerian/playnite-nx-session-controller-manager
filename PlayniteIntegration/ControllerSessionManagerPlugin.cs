@@ -400,7 +400,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 : settings.ShowControllerNameInNotifications ? Loc("LOCCSM_NotificationPreviewMessage") : string.Empty;
             overlayClient.ShowToastPreview(notificationSessionId, 0, previewKind, title, message,
                 SvgIconGeometryLoader.GetPathData(isWarning ? "alert-triangle.svg" : ControllerIconCatalog.DefaultFileName),
-                settings.NotificationDurationMilliseconds, GetToastStylePayload());
+                settings.NotificationDurationMilliseconds, GetToastStylePayload(),
+                isWarning ? string.Empty : ControllerConnectionIcons.GetPathData("Wireless"));
         }
 
         public void ExportHidDiagnostics()
@@ -1192,9 +1193,11 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private static string GetDisplaySignature(IReadOnlyList<ControllerDeviceSnapshot> display)
         {
-            return ControllerDisplayHold.IdentitySignature(
-                (display ?? Enumerable.Empty<ControllerDeviceSnapshot>())
-                    .Where(a => a != null && a.IsConnected));
+            return string.Join(";", (display ?? Enumerable.Empty<ControllerDeviceSnapshot>())
+                .Where(a => a != null && a.IsConnected)
+                .OrderBy(a => a.HardwareId ?? a.ControllerId, StringComparer.OrdinalIgnoreCase)
+                .Select(a => string.Format("{0}:{1}:{2}",
+                    a.HardwareId ?? a.ControllerId, a.ConnectionType, a.BatteryLevel)));
         }
 
         private string ResolveControllerIconFileName(ControllerDeviceSnapshot controller)
@@ -1539,7 +1542,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                         isCurrentlyConnected ? "connected" : "disconnected",
                         Loc(isCurrentlyConnected ? "LOCCSM_ControllerConnectedToast" : "LOCCSM_ControllerDisconnectedToast"),
                         GetToastControllerName(candidate.Identity.Name), candidate.Identity.IconGeometry,
-                        settings.NotificationDurationMilliseconds, GetToastStylePayload());
+                        settings.NotificationDurationMilliseconds, GetToastStylePayload(),
+                        candidate.Identity.ConnectionIconGeometry);
                 }
 
                 if (showDesktop)
@@ -1550,7 +1554,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                         settings.ShowControllerNameInDesktopNotifications
                             ? GetToastControllerName(candidate.Identity.Name) : string.Empty,
                         candidate.Identity.IconGeometry,
-                        settings.DesktopNotificationDurationMilliseconds, GetDesktopToastStylePayload());
+                        settings.DesktopNotificationDurationMilliseconds, GetDesktopToastStylePayload(),
+                        candidate.Identity.ConnectionIconGeometry);
                 }
 
                 if (isCurrentlyConnected)
@@ -1570,7 +1575,8 @@ namespace ControllerSessionManager.PlayniteIntegration
             return new ControllerToastIdentity
             {
                 Name = controller.Name,
-                IconGeometry = SvgIconGeometryLoader.GetPathData(ResolveControllerIconFileName(controller))
+                IconGeometry = SvgIconGeometryLoader.GetPathData(ResolveControllerIconFileName(controller)),
+                ConnectionIconGeometry = ControllerConnectionIcons.GetPathData(controller.ConnectionType)
             };
         }
 
@@ -1612,7 +1618,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 settings.NotificationPadding.ToString(), settings.NotificationShowBorder.ToString(),
                 settings.NotificationBorderPosition ?? "Bottom",
                 settings.NotificationBorderThickness.ToString(), settings.NotificationCornerRadius.ToString(),
-                settings.NotificationIconPosition ?? "Left"
+                settings.NotificationIconPosition ?? "Left",
+                settings.NotificationElementSpacing.ToString()
             });
         }
 
@@ -1629,7 +1636,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 settings.DesktopNotificationPadding.ToString(), settings.DesktopNotificationShowBorder.ToString(),
                 settings.DesktopNotificationBorderPosition ?? "Bottom",
                 settings.DesktopNotificationBorderThickness.ToString(), settings.DesktopNotificationCornerRadius.ToString(),
-                settings.DesktopNotificationIconPosition ?? "Left"
+                settings.DesktopNotificationIconPosition ?? "Left",
+                settings.DesktopNotificationElementSpacing.ToString()
             });
         }
 
@@ -1647,7 +1655,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 : settings.ShowControllerNameInDesktopNotifications ? Loc("LOCCSM_NotificationPreviewMessage") : string.Empty;
             overlayClient.ShowToastPreview(notificationSessionId, 0, previewKind, title, message,
                 SvgIconGeometryLoader.GetPathData(isWarning ? "alert-triangle.svg" : ControllerIconCatalog.DefaultFileName),
-                settings.DesktopNotificationDurationMilliseconds, GetDesktopToastStylePayload());
+                settings.DesktopNotificationDurationMilliseconds, GetDesktopToastStylePayload(),
+                isWarning ? string.Empty : ControllerConnectionIcons.GetPathData("Bluetooth"));
         }
 
         private string GetToastControllerName(string name)
@@ -1667,7 +1676,10 @@ namespace ControllerSessionManager.PlayniteIntegration
                 settings.OverlayControllerIconSize.ToString(), settings.OverlayStatusIconSize.ToString(),
                 settings.OverlayPadding.ToString(), settings.OverlayShowBorder.ToString(),
                 settings.OverlayBorderThickness.ToString(), settings.OverlayCornerRadius.ToString(),
-                settings.OverlayShowControllerIcon.ToString(), settings.OverlayShowStatusIcon.ToString()
+                settings.OverlayShowControllerIcon.ToString(), settings.OverlayShowStatusIcon.ToString(),
+                settings.OverlayElementSpacing.ToString(),
+                settings.OverlayControllerIconPosition ?? "Left",
+                settings.OverlayShowControllerName.ToString()
             });
         }
 
@@ -1675,6 +1687,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             public string Name { get; set; }
             public string IconGeometry { get; set; }
+            public string ConnectionIconGeometry { get; set; }
         }
 
         private sealed class ControllerToastCandidate

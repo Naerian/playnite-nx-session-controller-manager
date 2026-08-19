@@ -174,6 +174,7 @@
     <sys:String x:Key="LOCCSM_Monitoring">監視</sys:String>
     <sys:String x:Key="LOCCSM_ShowControllerNameInNotifications">通知にデバイス名を表示する</sys:String>
     <sys:String x:Key="LOCCSM_NotificationTitleSize">タイトル文字 (px)</sys:String><sys:String x:Key="LOCCSM_NotificationTextSize">メッセージ文字 (px)</sys:String><sys:String x:Key="LOCCSM_NotificationIconSize">アイコンサイズ (px)</sys:String><sys:String x:Key="LOCCSM_NotificationPadding">内側余白 (px)</sys:String>
+    <sys:String x:Key="LOCCSM_ElementSpacing">Spacing between elements (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationShowBorder">状態色の境界線を表示する</sys:String><sys:String x:Key="LOCCSM_NotificationBorderPosition">境界線の位置</sys:String><sys:String x:Key="LOCCSM_NotificationBorderThickness">境界線の太さ (px)</sys:String>
     <sys:String x:Key="LOCCSM_BorderLeft">左</sys:String><sys:String x:Key="LOCCSM_BorderTop">上</sys:String><sys:String x:Key="LOCCSM_BorderRight">右</sys:String><sys:String x:Key="LOCCSM_BorderBottom">下</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPreview">ライブプレビュー</sys:String><sys:String x:Key="LOCCSM_PreviewControllerName">サンプルコントローラー</sys:String><sys:String x:Key="LOCCSM_OverlayPreviewHelp">編集中に色と倍率が更新されます。実際のオーバーレイは画面に合わせて調整されます。</sys:String>
@@ -194,7 +195,9 @@
     <sys:String x:Key="LOCCSM_AboutCapabilities3">デスクトップとフルスクリーンの通知を個別にカスタマイズできます。色、文字サイズ、位置、余白、枠、アイコン配置をモードごとに設定できます。上部バーのアイコンはメインのコントローラーを示し、色でバッテリー残量を表します。</sys:String>
     <sys:String x:Key="LOCCSM_AboutCapabilities4">バッテリー表示は DualSense、DualShock 4、Xbox コントローラー、および SDL 対応デバイスで動作します。接続種別（USB、Bluetooth、ワイヤレス）は自動検出されます。</sys:String>
     <sys:String x:Key="LOCCSM_AboutSafety">外部オーバーレイと任意の一時停止操作は Playnite およびゲームから分離されています。入力を注入せず、機器、プロセス、オンライン対戦の根拠が不十分な場合は安全側に動作します。</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">コントローラー名の横にアイコンを表示</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">Show the controller icon</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowControllerName">Show the controller name</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayControllerIconPosition">Controller icon position</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowStatusIcon">一時停止または警告の状態アイコンを表示</sys:String>
     <sys:String x:Key="LOCCSM_DesktopNotificationsTitle">デスクトップ通知</sys:String>
     <sys:String x:Key="LOCCSM_ShowDesktopControllerNotifications">Notify when a controller connects or disconnects in the Desktop interface</sys:String>

@@ -42,7 +42,11 @@
     <Compile Include="Program.cs" />
     <Compile Include="OverlayWindow.cs" />
     <Compile Include="ToastWindow.cs" />
+    <Compile Include="PathAspectSizer.cs" />
     <Compile Include="ProcessSuspensionLease.cs" />
+    <Compile Include="..\Overlay\OverlayIpcLimits.cs">
+      <Link>OverlayIpcLimits.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

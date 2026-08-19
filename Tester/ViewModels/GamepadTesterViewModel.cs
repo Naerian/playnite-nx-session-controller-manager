@@ -323,10 +323,10 @@ namespace ControllerSessionManager.Tester.ViewModels
         public const int TabGeneral = 0;
         public const int TabSticks = 1;
         public const int TabLatency = 2;
-        public const int TabDiagnostic = 3;
-        public const int TabGuided = 4;
-        public const int TabInputLog = 5;
-        public const int TabDevice = 6;
+        public const int TabGuided = 3;
+        public const int TabInputLog = 4;
+        public const int TabDevice = 5;
+        public const int TabDiagnostic = 6;
         public const int TabOptions = 7;
 
         public ICommand OpenGuidedTestCommand
@@ -1713,7 +1713,7 @@ namespace ControllerSessionManager.Tester.ViewModels
             {
                 if (!State.IsConnected)
                 {
-                    return L("LOCCSM_Tester_NoControllerDetected", "No controller detected");
+                    return L("LOCCSM_NoControllers", "No controller connected");
                 }
 
                 if (IsGuidedTestFullyCovered())
@@ -4515,7 +4515,7 @@ namespace ControllerSessionManager.Tester.ViewModels
             switch (finding.Code)
             {
                 case "NoController":
-                    title = L("LOCCSM_Tester_NoControllerDetected", "No controller detected");
+                    title = L("LOCCSM_NoControllers", "No controller connected");
                     detail = L("LOCCSM_Tester_ConnectControllerAndPress", "Connect a controller and press any button.");
                     break;
                 case "MappingUnavailable":

@@ -194,7 +194,7 @@
             <Setter Property="Margin" Value="0,0,0,8" />
         </Style>
 
-        <Style x:Key="RadarActionButton" TargetType="Button">
+        <Style x:Key="RadarActionButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="Height" Value="32" />
             <Setter Property="MinWidth" Value="132" />
             <Setter Property="HorizontalAlignment" Value="Left" />
@@ -325,16 +325,12 @@
                                     <StackPanel HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
                                                 MaxWidth="520">
-                                        <TextBlock Text="{DynamicResource LOCCSM_Tester_NoControllerDetected}"
+                                        <TextBlock Text="{DynamicResource LOCCSM_NoControllers}"
                                                    FontSize="20"
                                                    FontWeight="SemiBold"
                                                    TextAlignment="Center"
                                                    TextWrapping="Wrap"
                                                    Foreground="{DynamicResource TextBrush}" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_Tester_NoControllerDetectedHelp}"
-                                                   Style="{StaticResource HintText}"
-                                                   TextAlignment="Center"
-                                                   Margin="0,8,0,0" />
                                     </StackPanel>
                                 </Border>
                             </Grid>
@@ -1301,104 +1297,6 @@
                 <TabItem>
                     <TabItem.Header>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource TabGlyph}" Text="&#xE9D9;" />
-                            <TextBlock Text="{DynamicResource LOCCSM_Tester_DiagnosticProfile}" Style="{StaticResource TabHeaderLabel}" />
-                        </StackPanel>
-                    </TabItem.Header>
-                    <Grid Margin="4,12,4,0"
-                          ClipToBounds="False"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Stretch">
-                        <Border Style="{StaticResource DashboardPanel}"
-                                Margin="0"
-                                VerticalAlignment="Stretch">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="*" MinHeight="0" />
-                                </Grid.RowDefinitions>
-                                <TextBlock Text="{DynamicResource LOCCSM_Tester_DiagnosticProfile}"
-                                           Style="{StaticResource DashboardTitle}" />
-                                <Border Grid.Row="1"
-                                        Style="{StaticResource SubtleHorizontalSeparator}"
-                                        Margin="0,0,0,10" />
-                                <Grid Grid.Row="2">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" MinWidth="240" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <controls:DiagnosticRadarChart MinHeight="0"
-                                                                   HorizontalAlignment="Stretch"
-                                                                   VerticalAlignment="Stretch"
-                                                                   Values="{Binding DiagnosticRadarValues}"
-                                                                   Labels="{Binding DiagnosticRadarLabels}"
-                                                                   AccentBrush="{DynamicResource GlyphBrush}"
-                                                                   ValueBrush="{DynamicResource GlyphBrush}"
-                                                                   GridBrush="{StaticResource LineBrush}"
-                                                                   LabelBrush="{StaticResource PillIdleTextBrush}" />
-                                    <ScrollViewer Grid.Column="1"
-                                                  VerticalScrollBarVisibility="Auto"
-                                                  HorizontalScrollBarVisibility="Disabled"
-                                                  VerticalAlignment="Stretch">
-                                    <StackPanel Margin="28,4,8,0"
-                                                VerticalAlignment="Top">
-                                        <TextBlock Text="{DynamicResource LOCCSM_Tester_DiagnosticProfileHelp}"
-                                                   Style="{StaticResource HintText}"
-                                                   Margin="0,0,0,18" />
-                                        <StackPanel Margin="0,0,0,16">
-                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_CenterDrift}" Style="{StaticResource BodyText}" />
-                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_RadarCenterAction}" Style="{StaticResource HintUnderLabel}" />
-                                            <Button Content="{DynamicResource LOCCSM_Tester_RadarOpenSticks}"
-                                                    Style="{StaticResource RadarActionButton}"
-                                                    Command="{Binding OpenSticksTabCommand}" />
-                                        </StackPanel>
-                                        <StackPanel Margin="0,0,0,16">
-                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_LeftStick}" Style="{StaticResource BodyText}" />
-                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_RadarLeftStickAction}" Style="{StaticResource HintUnderLabel}" />
-                                            <Button Content="{DynamicResource LOCCSM_Tester_RadarOpenSticks}"
-                                                    Style="{StaticResource RadarActionButton}"
-                                                    Command="{Binding OpenSticksTabCommand}" />
-                                        </StackPanel>
-                                        <StackPanel Margin="0,0,0,16">
-                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_RightStick}" Style="{StaticResource BodyText}" />
-                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_RadarRightStickAction}" Style="{StaticResource HintUnderLabel}" />
-                                            <Button Content="{DynamicResource LOCCSM_Tester_RadarOpenSticks}"
-                                                    Style="{StaticResource RadarActionButton}"
-                                                    Command="{Binding OpenSticksTabCommand}" />
-                                        </StackPanel>
-                                        <StackPanel Margin="0,0,0,16">
-                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_Triggers}" Style="{StaticResource BodyText}" />
-                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_RadarTriggersAction}" Style="{StaticResource HintUnderLabel}" />
-                                            <Button Content="{DynamicResource LOCCSM_Tester_RadarOpenGeneral}"
-                                                    Style="{StaticResource RadarActionButton}"
-                                                    Command="{Binding OpenGeneralTestTabCommand}" />
-                                        </StackPanel>
-                                        <StackPanel Margin="0,0,0,16">
-                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_SessionCoverage}" Style="{StaticResource BodyText}" />
-                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_RadarControlsAction}" Style="{StaticResource HintUnderLabel}" />
-                                            <Button Content="{DynamicResource LOCCSM_Tester_RadarOpenGuided}"
-                                                    Style="{StaticResource RadarActionButton}"
-                                                    Command="{Binding OpenGuidedTabCommand}" />
-                                        </StackPanel>
-                                        <StackPanel>
-                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_InputEventLatency}" Style="{StaticResource BodyText}" />
-                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_RadarTimingAction}" Style="{StaticResource HintUnderLabel}" />
-                                            <Button Content="{DynamicResource LOCCSM_Tester_RadarOpenLatency}"
-                                                    Style="{StaticResource RadarActionButton}"
-                                                    Command="{Binding OpenLatencyTabCommand}" />
-                                        </StackPanel>
-                                    </StackPanel>
-                                    </ScrollViewer>
-                                </Grid>
-                            </Grid>
-                        </Border>
-                    </Grid>
-                </TabItem>
-
-                <TabItem>
-                    <TabItem.Header>
-                        <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource TabGlyph}" Text="&#xE8F1;" />
                             <TextBlock Text="{DynamicResource LOCCSM_Tester_GuidedTest}" Style="{StaticResource TabHeaderLabel}" />
                         </StackPanel>
@@ -1774,6 +1672,105 @@
                             </Border>
                     </Grid>
                 </TabItem>
+
+                <TabItem>
+                    <TabItem.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource TabGlyph}" Text="&#xE9D9;" />
+                            <TextBlock Text="{DynamicResource LOCCSM_Tester_DiagnosticProfile}" Style="{StaticResource TabHeaderLabel}" />
+                        </StackPanel>
+                    </TabItem.Header>
+                    <Grid Margin="4,12,4,0"
+                          ClipToBounds="False"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch">
+                        <Border Style="{StaticResource DashboardPanel}"
+                                Margin="0"
+                                VerticalAlignment="Stretch">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" MinHeight="0" />
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="{DynamicResource LOCCSM_Tester_DiagnosticProfile}"
+                                           Style="{StaticResource DashboardTitle}" />
+                                <Border Grid.Row="1"
+                                        Style="{StaticResource SubtleHorizontalSeparator}"
+                                        Margin="0,0,0,10" />
+                                <Grid Grid.Row="2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" MinWidth="240" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <controls:DiagnosticRadarChart MinHeight="0"
+                                                                   HorizontalAlignment="Stretch"
+                                                                   VerticalAlignment="Stretch"
+                                                                   Values="{Binding DiagnosticRadarValues}"
+                                                                   Labels="{Binding DiagnosticRadarLabels}"
+                                                                   AccentBrush="{DynamicResource GlyphBrush}"
+                                                                   ValueBrush="{DynamicResource GlyphBrush}"
+                                                                   GridBrush="{StaticResource LineBrush}"
+                                                                   LabelBrush="{StaticResource PillIdleTextBrush}" />
+                                    <ScrollViewer Grid.Column="1"
+                                                  VerticalScrollBarVisibility="Auto"
+                                                  HorizontalScrollBarVisibility="Disabled"
+                                                  VerticalAlignment="Stretch">
+                                    <StackPanel Margin="28,4,8,0"
+                                                VerticalAlignment="Top">
+                                        <TextBlock Text="{DynamicResource LOCCSM_Tester_DiagnosticProfileHelp}"
+                                                   Style="{StaticResource HintText}"
+                                                   Margin="0,0,0,18" />
+                                        <StackPanel Margin="0,0,0,16">
+                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_CenterDrift}" Style="{StaticResource BodyText}" />
+                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_RadarCenterAction}" Style="{StaticResource HintUnderLabel}" />
+                                            <Button Content="{DynamicResource LOCCSM_Tester_RadarOpenSticks}"
+                                                    Style="{StaticResource RadarActionButton}"
+                                                    Command="{Binding OpenSticksTabCommand}" />
+                                        </StackPanel>
+                                        <StackPanel Margin="0,0,0,16">
+                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_LeftStick}" Style="{StaticResource BodyText}" />
+                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_RadarLeftStickAction}" Style="{StaticResource HintUnderLabel}" />
+                                            <Button Content="{DynamicResource LOCCSM_Tester_RadarOpenSticks}"
+                                                    Style="{StaticResource RadarActionButton}"
+                                                    Command="{Binding OpenSticksTabCommand}" />
+                                        </StackPanel>
+                                        <StackPanel Margin="0,0,0,16">
+                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_RightStick}" Style="{StaticResource BodyText}" />
+                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_RadarRightStickAction}" Style="{StaticResource HintUnderLabel}" />
+                                            <Button Content="{DynamicResource LOCCSM_Tester_RadarOpenSticks}"
+                                                    Style="{StaticResource RadarActionButton}"
+                                                    Command="{Binding OpenSticksTabCommand}" />
+                                        </StackPanel>
+                                        <StackPanel Margin="0,0,0,16">
+                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_Triggers}" Style="{StaticResource BodyText}" />
+                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_RadarTriggersAction}" Style="{StaticResource HintUnderLabel}" />
+                                            <Button Content="{DynamicResource LOCCSM_Tester_RadarOpenGeneral}"
+                                                    Style="{StaticResource RadarActionButton}"
+                                                    Command="{Binding OpenGeneralTestTabCommand}" />
+                                        </StackPanel>
+                                        <StackPanel Margin="0,0,0,16">
+                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_SessionCoverage}" Style="{StaticResource BodyText}" />
+                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_RadarControlsAction}" Style="{StaticResource HintUnderLabel}" />
+                                            <Button Content="{DynamicResource LOCCSM_Tester_RadarOpenGuided}"
+                                                    Style="{StaticResource RadarActionButton}"
+                                                    Command="{Binding OpenGuidedTabCommand}" />
+                                        </StackPanel>
+                                        <StackPanel>
+                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_InputEventLatency}" Style="{StaticResource BodyText}" />
+                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_RadarTimingAction}" Style="{StaticResource HintUnderLabel}" />
+                                            <Button Content="{DynamicResource LOCCSM_Tester_RadarOpenLatency}"
+                                                    Style="{StaticResource RadarActionButton}"
+                                                    Command="{Binding OpenLatencyTabCommand}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                    </ScrollViewer>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </TabItem>
+
                 <TabItem Visibility="{Binding IsOptionsTabVisible, Converter={StaticResource BoolToVisibility}}">
                     <TabItem.Header>
                         <StackPanel Orientation="Horizontal">

@@ -55,6 +55,7 @@
     <Compile Include="Controllers\ControllerDeviceIdentity.cs" />
     <Compile Include="Controllers\ControllerIconCatalog.cs" />
     <Compile Include="Controllers\ControllerDisplayHold.cs" />
+    <Compile Include="Controllers\ControllerTransportPolicy.cs" />
     <Compile Include="Controllers\ProviderLifecyclePolicy.cs" />
     <Compile Include="Controllers\ControllerBridgeIdentity.cs" />
     <Compile Include="Controllers\SdlControllerMetadataProvider.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="Sessions\AdaptiveSessionScopeDetector.cs" />
     <Compile Include="Sessions\InputPollingPolicy.cs" />
     <Compile Include="Overlay\OverlayClient.cs" />
+    <Compile Include="Overlay\OverlayIpcLimits.cs" />
     <Compile Include="PlayniteIntegration\ControllerSessionManagerPlugin.cs" />
     <Compile Include="PlayniteIntegration\SupportReportService.cs" />
     <Compile Include="PlayniteIntegration\ControllerSessionManagerSettings.cs" />
@@ -73,6 +75,7 @@
     <Compile Include="PlayniteIntegration\GameSessionOverride.cs" />
     <Compile Include="PlayniteIntegration\ControllerIconOption.cs" />
     <Compile Include="PlayniteIntegration\SvgIconGeometryLoader.cs" />
+    <Compile Include="PlayniteIntegration\ControllerConnectionIcons.cs" />
     <Compile Include="PlayniteIntegration\IconGeometryConverter.cs" />
     <Compile Include="PlayniteIntegration\AppearanceConverters.cs" />
     <Compile Include="PlayniteIntegration\ColorPickerMath.cs" />
