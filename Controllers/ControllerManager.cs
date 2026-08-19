@@ -15,6 +15,8 @@ namespace ControllerSessionManager.Controllers
             new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, int> missingProviderObservations =
             new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, int> presentProviderObservations =
+            new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         private readonly HashSet<string> providerFallbackDisconnected =
             new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         private bool playniteAuthorityInitialized;
@@ -204,6 +206,24 @@ namespace ControllerSessionManager.Controllers
                     }
                 }
 
+                var capability = ControllerSnapshotMerger.FindCapability(device,
+                    devices.Values.Where(a => a.ProviderId != ProviderId));
+                var vendorId = GetVendorId(device);
+                var anotherSameVendorConnected = devices.Values.Any(a =>
+                    a != null &&
+                    !object.ReferenceEquals(a, device) &&
+                    string.Equals(a.ProviderId, ProviderId, StringComparison.OrdinalIgnoreCase) &&
+                    a.IsConnected &&
+                    GetVendorId(a) != 0 &&
+                    GetVendorId(a) == vendorId);
+                if (!ProviderLifecyclePolicy.ShouldHonorSdkDisconnect(
+                    capability != null && capability.IsConnected,
+                    ControllerBridgeIdentity.IsXInputWrapperPath(device.Path),
+                    anotherSameVendorConnected))
+                {
+                    return;
+                }
+
                 device.IsConnected = false;
                 device.LastSeenUtc = DateTime.UtcNow;
                 missingInventoryObservations[key] = 2;
@@ -311,6 +331,25 @@ namespace ControllerSessionManager.Controllers
                 vendorId, productId);
         }
 
+        private static ushort GetVendorId(ControllerDeviceSnapshot device)
+        {
+            if (device == null)
+            {
+                return 0;
+            }
+
+            if (device.VendorId != 0)
+            {
+                return device.VendorId;
+            }
+
+            ushort vendorId;
+            ushort productId;
+            return ControllerBridgeIdentity.TryGetVidPid(device.Path, out vendorId, out productId)
+                ? vendorId
+                : (ushort)0;
+        }
+
         private static string GetProviderKey(GamepadController controller)
         {
             var path = NormalizePath(controller.Path);
@@ -366,17 +405,30 @@ namespace ControllerSessionManager.Controllers
                 if (capability.IsConnected)
                 {
                     missingProviderObservations.Remove(evidenceKey);
-                    if (!authority.IsConnected && providerFallbackDisconnected.Contains(authorityKey))
+                    if (authority.IsConnected)
+                    {
+                        presentProviderObservations.Remove(evidenceKey);
+                        continue;
+                    }
+
+                    int presents;
+                    presentProviderObservations.TryGetValue(evidenceKey, out presents);
+                    presents++;
+                    presentProviderObservations[evidenceKey] = presents;
+                    if (ProviderLifecyclePolicy.ShouldRestorePlayniteRow(false, true,
+                        providerFallbackDisconnected.Contains(authorityKey), presents))
                     {
                         authority.IsConnected = true;
                         authority.LastSeenUtc = DateTime.UtcNow;
                         authority.LifecycleProviderId = ProviderId + "+" + providerId + " recovery";
                         providerFallbackDisconnected.Remove(authorityKey);
+                        presentProviderObservations.Remove(evidenceKey);
                         changed = true;
                     }
                     continue;
                 }
 
+                presentProviderObservations.Remove(evidenceKey);
                 if (!authority.IsConnected)
                 {
                     missingProviderObservations.Remove(evidenceKey);
@@ -387,7 +439,7 @@ namespace ControllerSessionManager.Controllers
                 missingProviderObservations.TryGetValue(evidenceKey, out misses);
                 misses++;
                 missingProviderObservations[evidenceKey] = misses;
-                if (misses >= 3)
+                if (ProviderLifecyclePolicy.ShouldMarkDisconnected(misses))
                 {
                     authority.IsConnected = false;
                     authority.LastSeenUtc = DateTime.UtcNow;
@@ -406,6 +458,11 @@ namespace ControllerSessionManager.Controllers
                 a.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)).ToList())
             {
                 missingProviderObservations.Remove(key);
+            }
+            foreach (var key in presentProviderObservations.Keys.Where(a =>
+                a.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)).ToList())
+            {
+                presentProviderObservations.Remove(key);
             }
         }
         private void RaiseSnapshotChanged()

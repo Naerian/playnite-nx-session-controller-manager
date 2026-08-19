@@ -27,6 +27,49 @@ namespace ControllerSessionManager.Controllers
                 : null;
         }
 
+        public static bool IsXInputWrapperPath(string path)
+        {
+            return GetXInputSlot(path).HasValue ||
+                (!string.IsNullOrWhiteSpace(path) &&
+                 path.IndexOf("&ig_", StringComparison.OrdinalIgnoreCase) >= 0);
+        }
+
+        public static bool IsVolatileHardwareId(string hardwareId)
+        {
+            return !string.IsNullOrWhiteSpace(hardwareId) &&
+                hardwareId.StartsWith("xinput:slot:", StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static string PreferStableHardwareId(string candidate, string fallback)
+        {
+            if (IsVolatileHardwareId(candidate) && !IsVolatileHardwareId(fallback) &&
+                !string.IsNullOrWhiteSpace(fallback))
+            {
+                return fallback;
+            }
+
+            return string.IsNullOrWhiteSpace(candidate) ? fallback : candidate;
+        }
+
+        public static bool TryParseHardwareVidPid(string value, out ushort vendorId, out ushort productId)
+        {
+            vendorId = 0;
+            productId = 0;
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return false;
+            }
+
+            var parts = value.Split(':');
+            return parts.Length >= 3 &&
+                string.Equals(parts[0], "hardware", StringComparison.OrdinalIgnoreCase) &&
+                ushort.TryParse(parts[1], System.Globalization.NumberStyles.HexNumber,
+                    System.Globalization.CultureInfo.InvariantCulture, out vendorId) &&
+                ushort.TryParse(parts[2], System.Globalization.NumberStyles.HexNumber,
+                    System.Globalization.CultureInfo.InvariantCulture, out productId) &&
+                vendorId != 0 && productId != 0;
+        }
+
         public static bool PathsReferToSameDevice(string left, string right)
         {
             if (string.IsNullOrWhiteSpace(left) || string.IsNullOrWhiteSpace(right))

@@ -54,12 +54,10 @@ namespace ControllerSessionManager.OverlayHost
                 Width = 30,
                 Height = 30,
                 Stretch = Stretch.Uniform,
+                Fill = Brushes.White,
                 Stroke = Brushes.White,
-                StrokeThickness = 2,
-                StrokeStartLineCap = PenLineCap.Round,
-                StrokeEndLineCap = PenLineCap.Round,
+                StrokeThickness = 0.35,
                 StrokeLineJoin = PenLineJoin.Round,
-                Fill = Brushes.Transparent,
                 VerticalAlignment = VerticalAlignment.Center,
                 Margin = new Thickness(0, 0, 10, 0)
             };
@@ -233,7 +231,9 @@ namespace ControllerSessionManager.OverlayHost
             pauseStatusIcon.Visibility = showStatusIcon ? Visibility.Visible : Visibility.Collapsed;
             titleText.Foreground = new SolidColorBrush(text);
             messageText.Foreground = new SolidColorBrush(text);
-            controllerIcon.Stroke = new SolidColorBrush(text);
+            var textBrush = new SolidColorBrush(text);
+            controllerIcon.Fill = textBrush;
+            controllerIcon.Stroke = textBrush;
             instructionText.Foreground = new SolidColorBrush(presentationAccent);
         }
 

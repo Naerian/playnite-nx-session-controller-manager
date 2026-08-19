@@ -175,11 +175,23 @@ namespace ControllerSessionManager.OverlayHost
                     : string.Equals(current.Kind, "connected", StringComparison.OrdinalIgnoreCase)
                         ? Color.FromRgb(79, 194, 126)
                         : Color.FromRgb(80, 170, 255));
-            card.BorderBrush = new SolidColorBrush(accent);
+            var accentBrush = new SolidColorBrush(accent);
+            card.BorderBrush = accentBrush;
             card.BorderThickness = style.ShowBorder
                 ? CreateBorderThickness(style.BorderPosition, style.BorderThickness)
                 : new Thickness(0);
-            icon.Stroke = new SolidColorBrush(accent);
+            if (string.Equals(current.Kind, "warning", StringComparison.OrdinalIgnoreCase))
+            {
+                icon.Fill = Brushes.Transparent;
+                icon.Stroke = accentBrush;
+                icon.StrokeThickness = 2;
+            }
+            else
+            {
+                icon.Fill = accentBrush;
+                icon.Stroke = Brushes.Transparent;
+                icon.StrokeThickness = 0;
+            }
             card.Measure(new Size(Width, double.PositiveInfinity));
             Height = Math.Max(82, Math.Ceiling(card.DesiredSize.Height));
             if (!IsVisible)

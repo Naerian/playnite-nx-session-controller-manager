@@ -65,6 +65,7 @@
     <sys:String x:Key="LOCCSM_DetectedName">Обнаруженное имя</sys:String>
     <sys:String x:Key="LOCCSM_CustomName">Пользовательское имя</sys:String>
     <sys:String x:Key="LOCCSM_Icon">Значок</sys:String>
+    <sys:String x:Key="LOCCSM_IconGeneric">Универсальный</sys:String>
     <sys:String x:Key="LOCCSM_NoIcon">Нет</sys:String>
     <sys:String x:Key="LOCCSM_ValueUnavailable">Недоступно</sys:String>
     <sys:String x:Key="LOCCSM_UserName">Имя пользователя</sys:String>

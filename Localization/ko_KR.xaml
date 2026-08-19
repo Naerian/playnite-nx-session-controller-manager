@@ -65,6 +65,7 @@
     <sys:String x:Key="LOCCSM_DetectedName">감지된 이름</sys:String>
     <sys:String x:Key="LOCCSM_CustomName">사용자 지정 이름</sys:String>
     <sys:String x:Key="LOCCSM_Icon">아이콘</sys:String>
+    <sys:String x:Key="LOCCSM_IconGeneric">일반</sys:String>
     <sys:String x:Key="LOCCSM_NoIcon">없음</sys:String>
     <sys:String x:Key="LOCCSM_ValueUnavailable">사용할 수 없음</sys:String>
     <sys:String x:Key="LOCCSM_UserName">사용자 이름</sys:String>

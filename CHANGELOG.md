@@ -35,7 +35,15 @@
 - Controllers > Test controller now switches to the Tester tab and keeps that pad selected.
 - Removed the redundant General test details card so health, sticks, current inputs and rumble have more room.
 - Guided test results now list each control with a green check or a red cross, plus a status badge.
-- Matched General test current-input chips to the Guided test chip style, stretched rumble to the same card height with taller buttons, and laid out General test sticks in one row with each pad beside its labels.
+- Replaced Lucide gamepad/Nintendo picker icons with Gamepads silhouettes chosen by VID, falling back to Default.svg.
+- Matched picker icon color to the item text and added a hairline silhouette stroke so small top-bar and combo icons stay readable without filling in the details.
+- Ignored Playnite disconnect callbacks while XInput still sees the same dongle slot, and stopped labelling an empty XInput path as Bluetooth from leftover BLE nodes.
+- Stopped the Controllers vibration test with an explicit rumble-off so 8BitDo pads cannot keep buzzing after TesterHost is released.
+- Added the 8BitDo Ultimate 3 silhouette to the icon picker, selected by PID 0x202F or the Ultimate 3 name.
+- Restored a Playnite-owned dongle disconnect when XInput sees the same pad again for three samples, so the overlay can close after a receiver reconnect while a game owns the foreground.
+- Kept the dongle/cable session identity across XInput reconnects that temporarily expose xinput:slot:N instead of hardware:VID:PID, which left the overlay stuck after a receiver or cable reconnect.
+- Held the last identified pad in the top bar and Mandos while an 8BitDo Wireless/Bluetooth switch bounces, and only accepted the new identity after it stayed connected for a second, so the card no longer appears and disappears on every handshake sample.
+- Renamed the Default icon option to Generic and stopped replacing it with the VID silhouette when that option is chosen.
 
 ## 1.0.7 — 2026-08-18
 - Applied a fixed settings type scale (20/14/12) and spacing scale (4/8/16/24), and added themed status/capability pills for Overview and controller metadata.

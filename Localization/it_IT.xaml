@@ -65,6 +65,7 @@
     <sys:String x:Key="LOCCSM_DetectedName">Nome rilevato</sys:String>
     <sys:String x:Key="LOCCSM_CustomName">Nome personalizzato</sys:String>
     <sys:String x:Key="LOCCSM_Icon">Icona</sys:String>
+    <sys:String x:Key="LOCCSM_IconGeneric">Generico</sys:String>
     <sys:String x:Key="LOCCSM_NoIcon">Nessuna</sys:String>
     <sys:String x:Key="LOCCSM_ValueUnavailable">Non disponibile</sys:String>
     <sys:String x:Key="LOCCSM_UserName">Nome utente</sys:String>

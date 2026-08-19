@@ -29,7 +29,14 @@ namespace ControllerSessionManager.PlayniteIntegration
             try
             {
                 var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                var document = XDocument.Load(Path.Combine(directory, "Icons", safeName));
+                var path = ResolveSvgPath(directory, safeName);
+                if (string.IsNullOrEmpty(path))
+                {
+                    Cache[safeName] = string.Empty;
+                    return string.Empty;
+                }
+
+                var document = XDocument.Load(path);
                 cached = string.Join(" ", document.Descendants()
                     .Where(a => !string.Equals((string)a.Attribute("stroke"), "none", StringComparison.OrdinalIgnoreCase))
                     .Select(GetGeometryData)
@@ -42,6 +49,25 @@ namespace ControllerSessionManager.PlayniteIntegration
 
             Cache[safeName] = cached;
             return cached;
+        }
+
+        private static string ResolveSvgPath(string directory, string fileName)
+        {
+            var candidates = new[]
+            {
+                Path.Combine(directory, "Gamepads", fileName),
+                Path.Combine(directory, "Icons", fileName)
+            };
+
+            foreach (var candidate in candidates)
+            {
+                if (File.Exists(candidate))
+                {
+                    return candidate;
+                }
+            }
+
+            return null;
         }
 
         private static string GetGeometryData(XElement element)

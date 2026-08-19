@@ -173,11 +173,22 @@ namespace ControllerSessionManager.Sessions
                 UpdateMostRecentController(eligible);
             }
 
+            var claimedKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (var active in activeControllers.Values)
             {
-                ControllerDeviceSnapshot observed;
-                if (connected.TryGetValue(active.ControllerKey, out observed))
+                if (connected.ContainsKey(active.ControllerKey))
                 {
+                    claimedKeys.Add(active.ControllerKey);
+                }
+            }
+
+            foreach (var active in activeControllers.Values)
+            {
+                var observed = SessionControllerIdentity.FindConnected(active.ControllerKey,
+                    connected, claimedKeys);
+                if (observed != null)
+                {
+                    claimedKeys.Add(GetControllerKey(observed));
                     active.Name = observed.Name;
                     if (observed.LastInputUtc.HasValue)
                     {

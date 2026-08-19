@@ -71,6 +71,18 @@ namespace ControllerSessionManager.Controllers
                 return pathMatch;
             }
 
+            // Playnite's dongle/cable row is often the HID &ig_ wrapper, not XINPUT#n. After a
+            // receiver reconnect the XInput observation can arrive without a path; the sole
+            // connected XInput slot is still that wrapper.
+            var connectedXinput = candidates.Where(a =>
+                string.Equals(a.ProviderId, XInputProviderId, StringComparison.OrdinalIgnoreCase) &&
+                a.IsConnected).ToList();
+            if (ControllerBridgeIdentity.IsXInputWrapperPath(authoritative.Path) &&
+                connectedXinput.Count == 1)
+            {
+                return connectedXinput[0];
+            }
+
             ushort vendorId;
             ushort productId;
             if (!ControllerBridgeIdentity.TryGetVidPid(authoritative.Path, out vendorId,
@@ -186,7 +198,8 @@ namespace ControllerSessionManager.Controllers
             result.ProviderInstanceId = capability.ProviderInstanceId;
             result.Name = Prefer(capability.Name, result.Name);
             result.DetectedName = Prefer(capability.DetectedName, result.DetectedName);
-            result.HardwareId = Prefer(capability.HardwareId, result.HardwareId);
+            result.HardwareId = ControllerBridgeIdentity.PreferStableHardwareId(
+                capability.HardwareId, result.HardwareId);
             result.VendorId = capability.VendorId != 0 ? capability.VendorId : result.VendorId;
             result.ProductId = capability.ProductId != 0 ? capability.ProductId : result.ProductId;
             result.Path = Prefer(capability.Path, result.Path);

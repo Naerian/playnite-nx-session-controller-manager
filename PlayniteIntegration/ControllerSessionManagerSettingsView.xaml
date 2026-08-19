@@ -759,9 +759,11 @@
                                                                      VerticalAlignment="Center"
                                                                      HorizontalAlignment="Center">
                                                                 <Path Data="{Binding IconGeometry, Converter={StaticResource IconGeometryConverter}}"
-                                                                      Stroke="{DynamicResource TextBrush}" StrokeThickness="2"
-                                                                      StrokeStartLineCap="Round" StrokeEndLineCap="Round"
-                                                                      StrokeLineJoin="Round" Stretch="Uniform" />
+                                                                      Fill="{DynamicResource TextBrush}"
+                                                                      Stroke="{DynamicResource TextBrush}"
+                                                                      StrokeThickness="0.18"
+                                                                      StrokeLineJoin="Round"
+                                                                      Stretch="Uniform" />
                                                             </Viewbox>
                                                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                                                 <TextBlock Text="{Binding DetectedName}" Foreground="{DynamicResource TextBrush}"
@@ -818,14 +820,27 @@
                                                                           SelectionChanged="ControllerIconSelectionChanged">
                                                                     <ComboBox.ItemTemplate>
                                                                         <DataTemplate>
-                                                                            <StackPanel Orientation="Horizontal" MinHeight="22">
-                                                                                <Viewbox Width="18" Height="18" Margin="0,0,7,0">
+                                                                            <StackPanel Orientation="Horizontal" MinHeight="28">
+                                                                                <Viewbox Width="28" Height="28" Margin="0,0,8,0">
                                                                                     <Path Data="{Binding GeometryData, Converter={StaticResource IconGeometryConverter}}"
-                                                                                          Stroke="Gray" StrokeThickness="2" Fill="Transparent"
-                                                                                          StrokeLineJoin="Round" StrokeStartLineCap="Round"
-                                                                                          StrokeEndLineCap="Round" Stretch="Uniform" />
+                                                                                          Fill="{Binding Foreground, ElementName=IconOptionName}"
+                                                                                          Stroke="{Binding Foreground, ElementName=IconOptionName}"
+                                                                                          StrokeThickness="0.45"
+                                                                                          StrokeLineJoin="Round"
+                                                                                          Stretch="Uniform" />
                                                                                 </Viewbox>
-                                                                                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                                                                                <TextBlock x:Name="IconOptionName" VerticalAlignment="Center">
+                                                                                    <TextBlock.Style>
+                                                                                        <Style TargetType="TextBlock">
+                                                                                            <Setter Property="Text" Value="{Binding Name}" />
+                                                                                            <Style.Triggers>
+                                                                                                <DataTrigger Binding="{Binding Id}" Value="default">
+                                                                                                    <Setter Property="Text" Value="{DynamicResource LOCCSM_IconGeneric}" />
+                                                                                                </DataTrigger>
+                                                                                            </Style.Triggers>
+                                                                                        </Style>
+                                                                                    </TextBlock.Style>
+                                                                                </TextBlock>
                                                                             </StackPanel>
                                                                         </DataTemplate>
                                                                     </ComboBox.ItemTemplate>
@@ -1219,7 +1234,7 @@
                                                     <StackPanel>
                                                         <TextBlock Text="{DynamicResource LOCCSM_OverlayDisconnectTitle}" Foreground="{Binding OverlayTextColor, Converter={StaticResource HexColorBrushConverter}}" FontWeight="SemiBold" FontSize="{Binding OverlayTitleFontSize}" HorizontalAlignment="Center"/>
                                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,13,0,0">
-                                                            <Path x:Name="OverlayPreviewControllerIcon" Width="{Binding OverlayControllerIconSize}" Height="{Binding OverlayControllerIconSize}" Stretch="Uniform" Stroke="{Binding OverlayTextColor, Converter={StaticResource HexColorBrushConverter}}" StrokeThickness="2" Margin="0,0,9,0"><Path.Style><Style TargetType="Path"><Setter Property="Visibility" Value="Visible"/><Style.Triggers><DataTrigger Binding="{Binding OverlayShowControllerIcon}" Value="False"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers></Style></Path.Style></Path>
+                                                            <Path x:Name="OverlayPreviewControllerIcon" Width="{Binding OverlayControllerIconSize}" Height="{Binding OverlayControllerIconSize}" Stretch="Uniform" Fill="{Binding OverlayTextColor, Converter={StaticResource HexColorBrushConverter}}" Stroke="{Binding OverlayTextColor, Converter={StaticResource HexColorBrushConverter}}" StrokeThickness="0.35" StrokeLineJoin="Round" Margin="0,0,9,0"><Path.Style><Style TargetType="Path"><Setter Property="Visibility" Value="Visible"/><Style.Triggers><DataTrigger Binding="{Binding OverlayShowControllerIcon}" Value="False"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers></Style></Path.Style></Path>
                                                             <TextBlock Text="{DynamicResource LOCCSM_PreviewControllerName}" Foreground="{Binding OverlayTextColor, Converter={StaticResource HexColorBrushConverter}}" FontSize="{Binding OverlayControllerFontSize}"/>
                                                         </StackPanel>
                                                         <TextBlock Text="{DynamicResource LOCCSM_OverlayAllowTakeover}" Foreground="{Binding OverlayAccentColor, Converter={StaticResource HexColorBrushConverter}}" FontSize="{Binding OverlayInstructionFontSize}" HorizontalAlignment="Center" Margin="0,13,0,0"/>

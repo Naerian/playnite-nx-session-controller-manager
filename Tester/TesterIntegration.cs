@@ -933,7 +933,14 @@ namespace ControllerSessionManager.Tester
 
                 provider.SelectController(match.InstanceId);
                 Thread.Sleep(40);
-                return provider.TryRumble(42000, 52000, 350);
+                if (!provider.TryRumble(42000, 52000, 350))
+                {
+                    return false;
+                }
+
+                Thread.Sleep(400);
+                provider.TryRumble(0, 0, 1);
+                return true;
             }
             catch (Exception ex)
             {

@@ -135,21 +135,44 @@ namespace ControllerSessionManager.Controllers
                     if (deviceMetadata != null)
                     {
                         usedMetadata.Add(deviceMetadata);
+                        RememberSlotIdentity(slot, deviceMetadata);
                     }
 
+                    var hardwareId = deviceMetadata != null
+                        ? deviceMetadata.HardwareId
+                        : slot.HardwareId;
+                    if (string.IsNullOrWhiteSpace(hardwareId))
+                    {
+                        hardwareId = string.Format("xinput:slot:{0}", index);
+                    }
+                    var vendorId = deviceMetadata != null ? deviceMetadata.VendorId : slot.VendorId;
+                    var productId = deviceMetadata != null ? deviceMetadata.ProductId : slot.ProductId;
+                    var path = deviceMetadata != null
+                        ? deviceMetadata.DevicePath ?? string.Empty
+                        : slot.DevicePath ?? string.Empty;
                     XInputBatteryInformation battery;
                     var batteryResult = NativeMethods.XInputGetBatteryInformation(
                         index, BatteryDeviceTypeGamepad, out battery);
                     var wired = batteryResult == ErrorSuccess && battery.BatteryType == BatteryTypeWired;
                     var wireless = batteryResult == ErrorSuccess &&
                         (battery.BatteryType == BatteryTypeAlkaline || battery.BatteryType == BatteryTypeNimh);
-                    var detectedConnection = deviceMetadata == null ? "Unknown" : deviceMetadata.ConnectionType;
+                    var detectedConnection = deviceMetadata != null
+                        ? deviceMetadata.ConnectionType
+                        : string.IsNullOrWhiteSpace(slot.ConnectionType) ? "Unknown" : slot.ConnectionType;
+                    var detectedName = deviceMetadata != null
+                        ? deviceMetadata.DisplayName
+                        : !string.IsNullOrWhiteSpace(slot.DisplayName)
+                            ? slot.DisplayName
+                            : string.Format("XInput Controller (Player {0})", index + 1);
+                    if (!IsReusableXInputTransport(vendorId, path, detectedConnection))
+                    {
+                        path = string.Empty;
+                        detectedConnection = ControllerDeviceIdentity.ContainsWirelessHint(detectedName)
+                            ? "Wireless" : "Unknown";
+                    }
                     var connection = detectedConnection != "Unknown"
                         ? detectedConnection
                         : wireless ? "Wireless" : wired ? "Wired" : "Unknown";
-                    var detectedName = deviceMetadata == null
-                        ? string.Format("XInput Controller (Player {0})", index + 1)
-                        : deviceMetadata.DisplayName;
                     var batteryLevel = GetBatteryLevel(deviceMetadata, batteryResult, battery,
                         wired && detectedConnection == "Unknown", wireless);
                     // When XInput does not detect input (e.g. some BT stacks do not deliver XInput
@@ -170,12 +193,10 @@ namespace ControllerSessionManager.Controllers
                         ProviderInstanceId = (int)index,
                         Name = detectedName,
                         DetectedName = detectedName,
-                        HardwareId = deviceMetadata == null
-                            ? string.Format("xinput:slot:{0}", index)
-                            : deviceMetadata.HardwareId,
-                        VendorId = deviceMetadata == null ? (ushort)0 : deviceMetadata.VendorId,
-                        ProductId = deviceMetadata == null ? (ushort)0 : deviceMetadata.ProductId,
-                        Path = deviceMetadata == null ? string.Empty : deviceMetadata.DevicePath ?? string.Empty,
+                        HardwareId = hardwareId,
+                        VendorId = vendorId,
+                        ProductId = productId,
+                        Path = path,
                         IsConnected = true,
                         IsEnabled = true,
                         ConnectionType = connection,
@@ -210,6 +231,42 @@ namespace ControllerSessionManager.Controllers
         {
             metadataProvider.AbandonOpenHandles();
             HidDiagnosticsService.InvalidatePresentControllerMetadata();
+        }
+
+        private static void RememberSlotIdentity(SlotState slot, ControllerMetadata metadata)
+        {
+            if (slot == null || metadata == null)
+            {
+                return;
+            }
+
+            slot.HardwareId = metadata.HardwareId;
+            slot.VendorId = metadata.VendorId;
+            slot.ProductId = metadata.ProductId;
+            slot.DisplayName = metadata.DisplayName;
+            if (IsReusableXInputTransport(metadata.VendorId, metadata.DevicePath,
+                metadata.ConnectionType))
+            {
+                slot.DevicePath = metadata.DevicePath ?? string.Empty;
+                slot.ConnectionType = metadata.ConnectionType;
+            }
+            else
+            {
+                slot.DevicePath = string.Empty;
+                slot.ConnectionType = ControllerDeviceIdentity.ContainsWirelessHint(metadata.DisplayName)
+                    ? "Wireless" : "Unknown";
+            }
+        }
+
+        private static bool IsReusableXInputTransport(ushort vendorId, string path, string connectionType)
+        {
+            if (WindowsBluetoothBatteryProvider.IsBluetoothPath(path) ||
+                string.Equals(connectionType, "Bluetooth", StringComparison.OrdinalIgnoreCase))
+            {
+                return vendorId == 0x045E;
+            }
+
+            return true;
         }
 
         private static ControllerMetadata MatchHidMetadata(IReadOnlyList<ControllerMetadata> metadata,
@@ -318,8 +375,11 @@ namespace ControllerSessionManager.Controllers
                 ? ProviderId : "None";
         }
 
+        private int rumbleEpoch;
+
         public void Dispose()
         {
+            Interlocked.Increment(ref rumbleEpoch);
             metadataProvider.Dispose();
         }
 
@@ -327,7 +387,15 @@ namespace ControllerSessionManager.Controllers
         {
             if (string.Equals(providerId, SdlProviderId, StringComparison.OrdinalIgnoreCase))
             {
-                return metadataProvider.TryRumble(providerInstanceId, 36000, 48000, 450);
+                var started = metadataProvider.TryRumble(providerInstanceId, 36000, 48000, 450);
+                if (!started)
+                {
+                    return false;
+                }
+
+                Thread.Sleep(450);
+                metadataProvider.TryRumble(providerInstanceId, 0, 0, 1);
+                return true;
             }
 
             if (!string.Equals(providerId, ProviderId, StringComparison.OrdinalIgnoreCase) ||
@@ -336,6 +404,9 @@ namespace ControllerSessionManager.Controllers
                 return false;
             }
 
+            var epoch = Interlocked.Increment(ref rumbleEpoch);
+            var stop = new XInputVibration();
+            NativeMethods.XInputSetState((uint)providerInstanceId, ref stop);
             var vibration = new XInputVibration
             {
                 LeftMotorSpeed = 36000,
@@ -349,10 +420,33 @@ namespace ControllerSessionManager.Controllers
             Task.Run(delegate
             {
                 Thread.Sleep(450);
-                var stop = new XInputVibration();
+                if (Thread.VolatileRead(ref rumbleEpoch) != epoch)
+                {
+                    return;
+                }
+
                 NativeMethods.XInputSetState((uint)providerInstanceId, ref stop);
             });
             return true;
+        }
+
+        public void StopVibrate(string providerId, int providerInstanceId)
+        {
+            Interlocked.Increment(ref rumbleEpoch);
+            if (string.Equals(providerId, SdlProviderId, StringComparison.OrdinalIgnoreCase))
+            {
+                metadataProvider.TryRumble(providerInstanceId, 0, 0, 1);
+                return;
+            }
+
+            if (!string.Equals(providerId, ProviderId, StringComparison.OrdinalIgnoreCase) ||
+                providerInstanceId < 0 || providerInstanceId >= slots.Length)
+            {
+                return;
+            }
+
+            var stop = new XInputVibration();
+            NativeMethods.XInputSetState((uint)providerInstanceId, ref stop);
         }
 
         private static string GetBatteryLevel(ControllerMetadata metadata, uint result,
@@ -430,6 +524,12 @@ namespace ControllerSessionManager.Controllers
             public DateTime? InputNeutralSinceUtc;
             public bool HasGamepadState;
             public XInputGamepad GamepadState;
+            public string HardwareId;
+            public ushort VendorId;
+            public ushort ProductId;
+            public string DevicePath;
+            public string DisplayName;
+            public string ConnectionType;
         }
 
         [StructLayout(LayoutKind.Sequential)]

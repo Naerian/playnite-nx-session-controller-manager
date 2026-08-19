@@ -11,6 +11,8 @@ namespace ControllerSessionManager.Controllers
             {
                 switch (productId)
                 {
+                    case 0x202F:
+                        return "8BitDo Ultimate 3";
                     case 0x310B:
                     case 0x6012:
                     case 0x3011:
@@ -151,6 +153,24 @@ namespace ControllerSessionManager.Controllers
         public static string GetConnectionType(string deviceName, ushort vendorId, ushort productId,
             string devicePath = null)
         {
+            if (string.IsNullOrWhiteSpace(devicePath))
+            {
+                // A fresh XInput slot has no HID path yet. Do not consult leftover BTHENUM
+                // nodes from a previous Bluetooth pairing — that is how a dongle reconnect
+                // was labelled Bluetooth while the receiver was still enumerating.
+                if (Contains(deviceName, "bluetooth"))
+                {
+                    return "Bluetooth";
+                }
+
+                if (Contains(deviceName, "wireless"))
+                {
+                    return "Wireless";
+                }
+
+                return "Unknown";
+            }
+
             if (Contains(devicePath, "bthenum") || Contains(devicePath, "bthle") ||
                 Contains(devicePath, "bluetooth") ||
                 Contains(devicePath, "00001812-0000-1000-8000-00805f9b34fb"))
@@ -243,6 +263,11 @@ namespace ControllerSessionManager.Controllers
             {
                 yield return 0x310A;
             }
+        }
+
+        public static bool ContainsWirelessHint(string deviceName)
+        {
+            return Contains(deviceName, "wireless");
         }
 
         private static bool LooksLikePointerOrKeyboard(string value)

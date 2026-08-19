@@ -320,11 +320,17 @@ namespace ControllerSessionManager.PlayniteIntegration
             {
                 return new List<ControllerIconOption>
                 {
-                    Icon("gamepad", "Gamepad 1", "device-gamepad.svg"),
-                    Icon("gamepad-2", "Gamepad 2", "device-gamepad-2.svg"),
-                    Icon("gamepad-3", "Gamepad 3", "device-gamepad-3.svg"),
-                    Icon("gamepad-4", "Gamepad 4", "device-gamepad-4.svg"),
-                    Icon("nintendo", "Nintendo", "device-nintendo.svg")
+                    Icon(ControllerIconCatalog.DefaultId, "Generic", ControllerIconCatalog.DefaultFileName),
+                    Icon(ControllerIconCatalog.XboxOneId, "Xbox One", ControllerIconCatalog.GetFileName(ControllerIconCatalog.XboxOneId)),
+                    Icon(ControllerIconCatalog.XboxSeriesId, "Xbox Series", ControllerIconCatalog.GetFileName(ControllerIconCatalog.XboxSeriesId)),
+                    Icon(ControllerIconCatalog.DualShockId, "DualShock", ControllerIconCatalog.GetFileName(ControllerIconCatalog.DualShockId)),
+                    Icon(ControllerIconCatalog.DualSenseId, "DualSense", ControllerIconCatalog.GetFileName(ControllerIconCatalog.DualSenseId)),
+                    Icon(ControllerIconCatalog.SwitchProId, "Switch Pro", ControllerIconCatalog.GetFileName(ControllerIconCatalog.SwitchProId)),
+                    Icon(ControllerIconCatalog.EightBitDoProId, "8BitDo Pro", ControllerIconCatalog.GetFileName(ControllerIconCatalog.EightBitDoProId)),
+                    Icon(ControllerIconCatalog.EightBitDoUltimateId, "8BitDo Ultimate 2", ControllerIconCatalog.GetFileName(ControllerIconCatalog.EightBitDoUltimateId)),
+                    Icon(ControllerIconCatalog.EightBitDoUltimate3Id, "8BitDo Ultimate 3", ControllerIconCatalog.GetFileName(ControllerIconCatalog.EightBitDoUltimate3Id)),
+                    Icon(ControllerIconCatalog.SteamId, "Steam Controller", ControllerIconCatalog.GetFileName(ControllerIconCatalog.SteamId)),
+                    Icon(ControllerIconCatalog.SteamV2Id, "Steam Controller 2", ControllerIconCatalog.GetFileName(ControllerIconCatalog.SteamV2Id))
                 };
             }
         }
@@ -334,6 +340,11 @@ namespace ControllerSessionManager.PlayniteIntegration
             var changed = false;
             foreach (var controller in controllers ?? Enumerable.Empty<ControllerDeviceSnapshot>())
             {
+                if (!ControllerDisplayHold.ShouldSyncProfile(controller))
+                {
+                    continue;
+                }
+
                 var hardwareId = string.IsNullOrWhiteSpace(controller.HardwareId)
                     ? controller.ControllerId
                     : controller.HardwareId;
@@ -365,11 +376,12 @@ namespace ControllerSessionManager.PlayniteIntegration
                         changed = true;
                     }
 
-                    var normalizedIcon = NormalizeIconId(profile.IconId);
-                    if (!string.Equals(profile.IconId, normalizedIcon,
-                        System.StringComparison.Ordinal))
+                    var nextIcon = ControllerIconCatalog.IsLegacy(profile.IconId)
+                        ? ControllerIconCatalog.Suggest(controller)
+                        : ControllerIconCatalog.Normalize(profile.IconId);
+                    if (!string.Equals(profile.IconId, nextIcon, System.StringComparison.Ordinal))
                     {
-                        profile.IconId = normalizedIcon;
+                        profile.IconId = nextIcon;
                         changed = true;
                     }
                 }
@@ -801,34 +813,18 @@ namespace ControllerSessionManager.PlayniteIntegration
             Tester = source.Tester == null ? new GamepadTesterSettings() : source.Tester.Clone();
             foreach (var profile in ControllerProfiles)
             {
-                profile.IconId = NormalizeIconId(profile.IconId);
+                profile.IconId = ControllerIconCatalog.Normalize(profile.IconId);
             }
+        }
+
+        private static string SuggestIcon(ControllerDeviceSnapshot controller)
+        {
+            return ControllerIconCatalog.Suggest(controller);
         }
 
         private static ControllerIconOption Icon(string id, string name, string fileName)
         {
             return new ControllerIconOption { Id = id, Name = name, FileName = fileName };
-        }
-
-        private static string SuggestIcon(ControllerDeviceSnapshot controller)
-        {
-            var name = (controller.DetectedName ?? controller.Name ?? string.Empty).ToLowerInvariant();
-            return name.Contains("nintendo") || name.Contains("switch") ? "nintendo" : "gamepad-4";
-        }
-
-        private static string NormalizeIconId(string iconId)
-        {
-            switch (iconId)
-            {
-                case "gamepad":
-                case "gamepad-2":
-                case "gamepad-3":
-                case "gamepad-4":
-                case "nintendo":
-                    return iconId;
-                default:
-                    return "gamepad-4";
-            }
         }
 
         private static List<ControllerProfile> CloneProfiles(IEnumerable<ControllerProfile> profiles)

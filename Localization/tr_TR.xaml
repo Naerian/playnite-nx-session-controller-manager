@@ -65,6 +65,7 @@
     <sys:String x:Key="LOCCSM_DetectedName">Algılanan ad</sys:String>
     <sys:String x:Key="LOCCSM_CustomName">Özel ad</sys:String>
     <sys:String x:Key="LOCCSM_Icon">Simge</sys:String>
+    <sys:String x:Key="LOCCSM_IconGeneric">Genel</sys:String>
     <sys:String x:Key="LOCCSM_NoIcon">Yok</sys:String>
     <sys:String x:Key="LOCCSM_ValueUnavailable">Kullanılamıyor</sys:String>
     <sys:String x:Key="LOCCSM_UserName">Kullanıcı adı</sys:String>

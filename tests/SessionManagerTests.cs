@@ -65,9 +65,20 @@ internal static class SessionManagerTests
             RealInputReplacesSessionStartFallback();
             NewlyConnectedControllerResolvesIncidentWithoutInput();
             AlreadyConnectedControllerStillRequiresInputForTakeover();
+            XInputDongleReconnectRestoresSdkDisconnect();
+            DongleReconnectResolvesVolatileXInputSlot();
+            MergeKeepsHardwareIdWhenXInputSlotIsVolatile();
+            PlayniteDongleHidMatchesSoleXInputWithoutPath();
+            ControllerIconsFollowVidAndDefaultFallback();
             ColorPickerStoresOpacityInHex();
             ColorPickerMathRoundTripsHueAndOpacity();
-            Console.WriteLine("Session manager tests passed: 55 scenarios.");
+            DisplayHoldKeepsSettledControllerDuringHotPlugGap();
+            DisplayHoldIgnoresUnsettledReplacement();
+            DisplayHoldWaitsForStableTransportSwitch();
+            TransportSwitchHonorsWrapperDisconnectWhenPeerConnected();
+            BluetoothDisconnectHonoredWhileXInputStillPresent();
+            GenericIconIsKeptWhenChosen();
+            Console.WriteLine("Session manager tests passed: 65 scenarios.");
             return 0;
         }
         catch (Exception error)
@@ -75,6 +86,93 @@ internal static class SessionManagerTests
             Console.Error.WriteLine(error);
             return 1;
         }
+    }
+
+    private static void XInputDongleReconnectRestoresSdkDisconnect()
+    {
+        Equal(false, ProviderLifecyclePolicy.ShouldRestorePlayniteRow(true, true, false, 3),
+            "A still-connected Playnite row must not be rewritten.");
+        Equal(false, ProviderLifecyclePolicy.ShouldRestorePlayniteRow(false, false, true, 3),
+            "XInput must be present before a Playnite disconnect can recover.");
+        Equal(false, ProviderLifecyclePolicy.ShouldRestorePlayniteRow(false, true, false, 2),
+            "An SDK disconnect waits for stable XInput samples before recovering.");
+        Equal(true, ProviderLifecyclePolicy.ShouldRestorePlayniteRow(false, true, false, 3),
+            "Three XInput samples after an SDK disconnect must restore the dongle pad.");
+        Equal(true, ProviderLifecyclePolicy.ShouldRestorePlayniteRow(false, true, true, 1),
+            "A provider-owned disconnect may restore as soon as XInput returns.");
+        Equal(false, ProviderLifecyclePolicy.ShouldMarkDisconnected(2),
+            "Two missing XInput samples are still treated as a transient gap.");
+        Equal(true, ProviderLifecyclePolicy.ShouldMarkDisconnected(3),
+            "Three missing XInput samples still confirm a fallback disconnect.");
+        Equal(false, ProviderLifecyclePolicy.ShouldHonorSdkDisconnect(true),
+            "Playnite disconnect callbacks must not drop a dongle pad while XInput still sees it.");
+        Equal(true, ProviderLifecyclePolicy.ShouldHonorSdkDisconnect(false),
+            "A Playnite disconnect is honored once XInput has also dropped the slot.");
+    }
+
+    private static void TransportSwitchHonorsWrapperDisconnectWhenPeerConnected()
+    {
+        Equal(true, ProviderLifecyclePolicy.ShouldHonorSdkDisconnect(true, true, true),
+            "A dongle Playnite row must disconnect once Bluetooth of the same VID is already connected.");
+    }
+
+    private static void BluetoothDisconnectHonoredWhileXInputStillPresent()
+    {
+        Equal(true, ProviderLifecyclePolicy.ShouldHonorSdkDisconnect(true, false, false),
+            "A Bluetooth HID disconnect must be honored even if an XInput slot is still occupied.");
+    }
+
+    private static void DongleReconnectResolvesVolatileXInputSlot()
+    {
+        var start = new DateTime(2026, 8, 19, 21, 0, 0, DateTimeKind.Utc);
+        var manager = new GameSessionManager();
+        manager.Start(GameId, start);
+        var dongle = Device("hardware:2DC8:310B:1", start);
+        dongle.VendorId = 0x2DC8;
+        dongle.ProductId = 0x310B;
+        manager.Update(new[] { dongle }, start, true, false);
+        manager.Update(new ControllerDeviceSnapshot[0], start.AddSeconds(1), true, false);
+        Equal(1, manager.SuspectedDisconnectCount,
+            "A dongle that drops off XInput must still raise a disconnect incident.");
+
+        var slot = ConnectedDevice("xinput:slot:0");
+        slot.VendorId = 0x2DC8;
+        slot.ProductId = 0x310B;
+        slot.HardwareId = "xinput:slot:0";
+        manager.Update(new[] { slot }, start.AddSeconds(2), true, false);
+        Equal(0, manager.SuspectedDisconnectCount,
+            "The same dongle VID/PID on a volatile XInput slot must close the overlay.");
+        Equal("hardware:2DC8:310B:1", manager.ActiveControllers.Single().ControllerKey,
+            "The session must keep the stable hardware id across the dongle reconnect.");
+    }
+
+    private static void MergeKeepsHardwareIdWhenXInputSlotIsVolatile()
+    {
+        var sdk = Snapshot("playnite:path:HID#IG", "Playnite", 1, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#vid_2dc8&pid_310b&ig_00", true);
+        sdk.HardwareId = "hardware:2DC8:310B:1";
+        sdk.VendorId = 0x2DC8;
+        sdk.ProductId = 0x310B;
+        var xinput = Snapshot("xinput:slot:0", "XInput", 0, "XInput Controller (Player 1)",
+            string.Empty, true);
+        xinput.HardwareId = "xinput:slot:0";
+        var merged = ControllerSnapshotMerger.Merge(new[] { sdk, xinput }, true).Single();
+        Equal("hardware:2DC8:310B:1", merged.HardwareId,
+            "A dongle reconnect must not replace the stable hardware id with xinput:slot:N.");
+    }
+
+    private static void PlayniteDongleHidMatchesSoleXInputWithoutPath()
+    {
+        var sdk = Snapshot("playnite:path:HID#IG", "Playnite", 8, "XInput Controller #1",
+            @"\\?\hid#vid_2dc8&pid_310b&ig_00", false);
+        sdk.VendorId = 0x2DC8;
+        sdk.ProductId = 0x310B;
+        var xinput = Snapshot("xinput:slot:0", "XInput", 0, "XInput Controller (Player 1)",
+            string.Empty, true);
+        Equal("xinput:slot:0", ControllerSnapshotMerger.FindCapability(sdk, new[] { xinput }).ControllerId,
+            "A Playnite HID &ig_ row must correlate with the only connected XInput slot.");
+        Equal(true, ProviderLifecyclePolicy.ShouldRestorePlayniteRow(false, true, false, 3),
+            "That correlated XInput slot can restore the Playnite disconnect after three samples.");
     }
 
     private static void PlayniteLifecycleOverridesSupplementalPresence()
@@ -248,6 +346,12 @@ internal static class SessionManagerTests
             "XInput Controller (Player 1)", 0x2DC8, 0x310A,
             @"\\?\hid#vid_2dc8&pid_310a&ig_00"),
             "A generic XInput wrapper name must not inherit Bluetooth from a BLE alias PID.");
+        Equal("Unknown", ControllerDeviceIdentity.GetConnectionType(
+            "XInput Controller (Player 1)", 0x2DC8, 0x310B, string.Empty),
+            "An XInput slot without a HID path must not inherit Bluetooth from leftover BLE nodes.");
+        Equal("Wireless", ControllerDeviceIdentity.GetConnectionType(
+            "8BitDo Ultimate 2 Wireless", 0x2DC8, 0x310B, string.Empty),
+            "A wireless product name on an empty XInput path stays wireless, not Bluetooth.");
         var wrapper = new ControllerMetadata
         {
             DisplayName = "8BitDo Ultimate 2 Wireless",
@@ -897,6 +1001,113 @@ internal static class SessionManagerTests
             "An 8-digit hex value with alpha must parse.");
         Equal((byte)0x80, alpha, "The first two hex digits are the opacity.");
         Equal((byte)255, red, "A semi-transparent red must keep its red channel.");
+    }
+
+    private static void ControllerIconsFollowVidAndDefaultFallback()
+    {
+        Equal("dualsense", ControllerIconCatalog.Suggest(0x054C, 0x0CE6, "Wireless Controller"),
+            "Sony DualSense VID/PID should select the DualSense silhouette.");
+        Equal("dualshock", ControllerIconCatalog.Suggest(0x054C, 0x09CC, "Wireless Controller"),
+            "DualShock 4 VID/PID should select the DualShock silhouette.");
+        Equal("xbox-series", ControllerIconCatalog.Suggest(0x045E, 0x0B13, "Xbox Wireless Controller"),
+            "Xbox Series VID/PID should select the Series silhouette.");
+        Equal("xbox-one", ControllerIconCatalog.Suggest(0x045E, 0x02EA, "Xbox Controller"),
+            "Xbox One VID/PID should select the One silhouette.");
+        Equal("switch-pro", ControllerIconCatalog.Suggest(0x057E, 0x2009, "Pro Controller"),
+            "Nintendo VID should select the Switch Pro silhouette.");
+        Equal("8bitdo-ultimate", ControllerIconCatalog.Suggest(0x2DC8, 0x310B, "Xbox Controller"),
+            "8BitDo Ultimate VID/PID should select the Ultimate silhouette.");
+        Equal("8bitdo-ultimate-3", ControllerIconCatalog.Suggest(0x2DC8, 0x202F, "Xbox Controller"),
+            "8BitDo Ultimate 3 VID/PID should select the Ultimate 3 silhouette.");
+        Equal("8bitdo-pro", ControllerIconCatalog.Suggest(0x2DC8, 0x6009, "8BitDo Pro 3"),
+            "8BitDo Pro VID/PID should select the Pro silhouette.");
+        Equal("steam", ControllerIconCatalog.Suggest(0x28DE, 0x1102, "Steam Controller"),
+            "Valve VID should select the Steam Controller silhouette.");
+        Equal("default", ControllerIconCatalog.Suggest(0, 0, "Arcade Stick"),
+            "Unknown VID should fall back to Default.");
+        Equal("Default.svg", ControllerIconCatalog.GetFileName("gamepad-4"),
+            "Removed Lucide gamepad ids should resolve to Default.svg.");
+    }
+
+    private static void DisplayHoldKeepsSettledControllerDuringHotPlugGap()
+    {
+        var hold = new ControllerDisplayHold();
+        var start = new DateTime(2026, 8, 19, 22, 0, 0, DateTimeKind.Utc);
+        var dongle = Snapshot("hardware:2DC8:310B:1", "Playnite", 1, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#vid_2dc8&pid_310b&ig_00", true);
+        dongle.VendorId = 0x2DC8;
+        dongle.ProductId = 0x310B;
+        Equal(1, hold.Apply(new[] { dongle }, start).Count,
+            "A settled 8BitDo row must populate the display hold.");
+        var held = hold.Apply(new ControllerDeviceSnapshot[0], start.AddMilliseconds(500));
+        Equal(1, held.Count,
+            "Mandos must keep the last settled pad while Wireless/Bluetooth is bouncing.");
+        Equal("hardware:2DC8:310B:1", held[0].HardwareId,
+            "The held row must stay the settled 8BitDo identity.");
+        Equal(0, hold.Apply(new ControllerDeviceSnapshot[0],
+            start.Add(ControllerDisplayHold.HoldDuration).AddMilliseconds(1)).Count,
+            "A real disconnect still clears Mandos after the hold window.");
+    }
+
+    private static void DisplayHoldIgnoresUnsettledReplacement()
+    {
+        var hold = new ControllerDisplayHold();
+        var start = new DateTime(2026, 8, 19, 22, 1, 0, DateTimeKind.Utc);
+        var dongle = Snapshot("hardware:2DC8:310B:1", "Playnite", 1, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#vid_2dc8&pid_310b&ig_00", true);
+        dongle.VendorId = 0x2DC8;
+        dongle.ProductId = 0x310B;
+        hold.Apply(new[] { dongle }, start);
+        var ghost = Snapshot("xinput:slot:0", "XInput", 0, "XInput Controller (Player 1)",
+            string.Empty, true);
+        var display = hold.Apply(new[] { ghost }, start.AddMilliseconds(200));
+        Equal("hardware:2DC8:310B:1", display.Single().HardwareId,
+            "A VID-less XInput slot must not replace the settled 8BitDo icon identity.");
+        Equal(false, ControllerDisplayHold.ShouldSyncProfile(ghost),
+            "Unsettled observations must not create a Default.svg profile.");
+    }
+
+    private static void DisplayHoldWaitsForStableTransportSwitch()
+    {
+        var hold = new ControllerDisplayHold();
+        var start = new DateTime(2026, 8, 19, 22, 2, 0, DateTimeKind.Utc);
+        var dongle = Snapshot("hardware:2DC8:310B:1", "Playnite", 1, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#vid_2dc8&pid_310b&ig_00", true);
+        dongle.VendorId = 0x2DC8;
+        dongle.ProductId = 0x310B;
+        var bluetooth = Snapshot("hardware:2DC8:6012:1", "Playnite", 2, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#{00001812-0000-1000-8000-00805f9b34fb}_dev_vid&122dc8_pid&6012", true);
+        bluetooth.VendorId = 0x2DC8;
+        bluetooth.ProductId = 0x6012;
+        hold.Apply(new[] { dongle }, start);
+        var bouncing = hold.Apply(new[] { bluetooth }, start.AddMilliseconds(200));
+        Equal("hardware:2DC8:310B:1", bouncing.Single().HardwareId,
+            "Mandos must keep the dongle row while Bluetooth is still bouncing.");
+        bouncing = hold.Apply(new[] { dongle }, start.AddMilliseconds(400));
+        Equal("hardware:2DC8:310B:1", bouncing.Single().HardwareId,
+            "A Wireless/Bluetooth flap must not recreate the Mandos card on every sample.");
+        var bluetoothSince = start.AddMilliseconds(600);
+        bouncing = hold.Apply(new[] { bluetooth }, bluetoothSince);
+        Equal("hardware:2DC8:310B:1", bouncing.Single().HardwareId,
+            "Bluetooth must stay pending until it has been the only identity for a second.");
+        var stable = hold.Apply(new[] { bluetooth },
+            bluetoothSince.Add(ControllerDisplayHold.StableDuration));
+        Equal("hardware:2DC8:6012:1", stable.Single().HardwareId,
+            "After Bluetooth stays connected, Mandos may switch to that identity once.");
+    }
+
+    private static void GenericIconIsKeptWhenChosen()
+    {
+        var controller = Snapshot("hardware:2DC8:310B:1", "Playnite", 1, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#vid_2dc8&pid_310b&ig_00", true);
+        controller.VendorId = 0x2DC8;
+        controller.ProductId = 0x310B;
+        Equal("default", ControllerIconCatalog.ResolveId(controller, "default"),
+            "Choosing Generic must keep Default.svg instead of the VID silhouette.");
+        Equal("8BitdoUltimate2.svg", ControllerIconCatalog.ResolveFileName(controller, null),
+            "A missing profile still uses VID to pick the 8BitDo silhouette instead of Default.svg.");
+        Equal("dualsense", ControllerIconCatalog.ResolveId(controller, "dualsense"),
+            "An explicit picker choice must win over VID suggestion.");
     }
 
     private static void ColorPickerMathRoundTripsHueAndOpacity()

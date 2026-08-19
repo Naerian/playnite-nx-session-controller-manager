@@ -45,6 +45,8 @@ namespace ControllerSessionManager.PlayniteIntegration
         private bool playniteBridgeAvailable = true;
         private bool playniteBridgeWarningLogged;
         private string lastXInputSignature;
+        private string lastDisplaySignature;
+        private readonly ControllerDisplayHold displayHold = new ControllerDisplayHold();
         private DateTime sdlQuietUntilUtc;
         private static readonly TimeSpan SdlHotPlugQuietPeriod = TimeSpan.FromSeconds(2);
         private Guid? activeGameId;
@@ -171,6 +173,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                     string.IsNullOrWhiteSpace(controller.HardwareId) ? controller.ControllerId : controller.HardwareId);
                 if (profile == null)
                 {
+                    controller.IconId = ControllerIconCatalog.Suggest(controller);
                     continue;
                 }
 
@@ -179,10 +182,16 @@ namespace ControllerSessionManager.PlayniteIntegration
                     controller.Name = profile.CustomName.Trim();
                 }
 
-                controller.IconId = profile.IconId;
+                controller.IconId = ControllerIconCatalog.ResolveId(controller,
+                    profile.IconId);
             }
 
             return snapshot;
+        }
+
+        public IReadOnlyList<ControllerDeviceSnapshot> GetDisplayControllerSnapshot()
+        {
+            return displayHold.Apply(GetControllerSnapshot(), DateTime.UtcNow);
         }
 
         public void RefreshControllers()
@@ -264,6 +273,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                     {
                         if (testerIntegration != null && testerIntegration.TryStandardRumble(vendorId, productId))
                         {
+                            xInputProvider.StopVibrate(providerId, instanceId);
                             return;
                         }
 
@@ -364,7 +374,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                     : sessionPrimary.Name;
             }
 
-            var primary = GetControllerSnapshot().Where(a => a.IsConnected)
+            var primary = GetDisplayControllerSnapshot().Where(a => a.IsConnected)
                 .OrderByDescending(a => a.LastInputUtc.HasValue)
                 .ThenByDescending(a => a.LastInputUtc)
                 .FirstOrDefault();
@@ -389,7 +399,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 ? Loc("LOCCSM_OnlineFallbackToastMessage")
                 : settings.ShowControllerNameInNotifications ? Loc("LOCCSM_NotificationPreviewMessage") : string.Empty;
             overlayClient.ShowToastPreview(notificationSessionId, 0, previewKind, title, message,
-                SvgIconGeometryLoader.GetPathData(isWarning ? "alert-triangle.svg" : "device-gamepad-4.svg"),
+                SvgIconGeometryLoader.GetPathData(isWarning ? "alert-triangle.svg" : ControllerIconCatalog.DefaultFileName),
                 settings.NotificationDurationMilliseconds, GetToastStylePayload());
         }
 
@@ -1010,7 +1020,11 @@ namespace ControllerSessionManager.PlayniteIntegration
             {
                 QuiesceSdl(true);
             }
-            if (settings.SyncControllerProfiles(observations.Where(a => a.IsConnected)))
+            if (settings.SyncControllerProfiles(observations.Where(a =>
+                a.IsConnected &&
+                ControllerDisplayHold.ShouldSyncProfile(a) &&
+                !string.Equals(a.ProviderId, XInputProvider.HidProviderId,
+                    StringComparison.OrdinalIgnoreCase))))
             {
                 // Persist the friendly Desktop identity and its XInput slot so the separate
                 // Fullscreen process can reuse it without initializing SDL.
@@ -1044,6 +1058,10 @@ namespace ControllerSessionManager.PlayniteIntegration
                 observations.Where(a => a.ProviderId == XInputProvider.HidProviderId));
             controllerManager.ReconcileProvider(XInputProvider.SdlProviderId,
                 observations.Where(a => a.ProviderId == XInputProvider.SdlProviderId));
+            // Dongle reconnects often change the HID signature before Playnite fires Connected.
+            // Count those samples in the same poll so the overlay can recover without waiting
+            // for a later unchanged tick.
+            controllerManager.ConfirmProviderLifecycle();
         }
 
         private void OnManagerSnapshotChanged(object sender, EventArgs args)
@@ -1094,7 +1112,15 @@ namespace ControllerSessionManager.PlayniteIntegration
                     GetEffectiveProtectAllControllers(snapshot, DateTime.UtcNow));
             }
             UpdateInputPollingInterval();
-            UpdateThemeApi();
+            var display = displayHold.Apply(snapshot, DateTime.UtcNow);
+            UpdateThemeApi(display);
+            var signature = GetDisplaySignature(display);
+            if (signature == lastDisplaySignature)
+            {
+                return;
+            }
+
+            lastDisplaySignature = signature;
             PublishControllerSnapshotChanged();
         }
 
@@ -1135,7 +1161,13 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private void UpdateThemeApi()
         {
-            var connected = GetControllerSnapshot().Where(a => a.IsConnected).ToList();
+            UpdateThemeApi(displayHold.Apply(GetControllerSnapshot(), DateTime.UtcNow));
+        }
+
+        private void UpdateThemeApi(IReadOnlyList<ControllerDeviceSnapshot> display)
+        {
+            var connected = (display ?? Enumerable.Empty<ControllerDeviceSnapshot>())
+                .Where(a => a != null && a.IsConnected).ToList();
             var primary = connected
                 .OrderByDescending(a => a.LastInputUtc.HasValue)
                 .ThenByDescending(a => a.LastInputUtc)
@@ -1146,11 +1178,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 ? Loc("LOCCSM_NoControllers")
                 : string.Format(Loc("LOCCSM_StatusFormat"), primaryName, connected.Count);
             Theme.Update(connected.Count, primaryName, status);
-            var profile = primary == null || settings == null ? null : settings.GetControllerProfile(
-                string.IsNullOrWhiteSpace(primary.HardwareId) ? primary.ControllerId : primary.HardwareId);
-            var icon = profile == null || string.IsNullOrWhiteSpace(profile.IconId)
-                ? "device-gamepad-4.svg"
-                : GetIconFileName(profile.IconId);
+            var icon = ResolveControllerIconFileName(primary);
             var batteryAvailable = primary != null && primary.BatteryLevel != "Unknown" &&
                 primary.BatteryLevel != "Unavailable";
             Theme.UpdatePrimaryPresentation(
@@ -1162,6 +1190,26 @@ namespace ControllerSessionManager.PlayniteIntegration
             RefreshTopPanelItem();
         }
 
+        private static string GetDisplaySignature(IReadOnlyList<ControllerDeviceSnapshot> display)
+        {
+            return ControllerDisplayHold.IdentitySignature(
+                (display ?? Enumerable.Empty<ControllerDeviceSnapshot>())
+                    .Where(a => a != null && a.IsConnected));
+        }
+
+        private string ResolveControllerIconFileName(ControllerDeviceSnapshot controller)
+        {
+            if (controller == null)
+            {
+                return ControllerIconCatalog.DefaultFileName;
+            }
+
+            var profile = settings == null ? null : settings.GetControllerProfile(
+                string.IsNullOrWhiteSpace(controller.HardwareId) ? controller.ControllerId : controller.HardwareId);
+            return ControllerIconCatalog.ResolveFileName(controller,
+                profile == null ? controller.IconId : profile.IconId);
+        }
+
         private void RefreshTopPanelItem()
         {
             if (controllerTopPanelItem == null)
@@ -1171,18 +1219,6 @@ namespace ControllerSessionManager.PlayniteIntegration
 
             controllerTopPanelItem.Visible = settings != null && settings.ShowPrimaryControllerInTopPanel;
             controllerTopPanelItem.Title = Theme.PrimaryControllerTooltip;
-        }
-
-        private static string GetIconFileName(string iconId)
-        {
-            switch (iconId)
-            {
-                case "gamepad-2": return "device-gamepad-2.svg";
-                case "gamepad-3": return "device-gamepad-3.svg";
-                case "gamepad-4": return "device-gamepad-4.svg";
-                case "nintendo": return "device-nintendo.svg";
-                default: return "device-gamepad.svg";
-            }
         }
 
         private static readonly Brush BatteryEmptyBrush = CreateFrozenBrush(224, 82, 82);
@@ -1284,8 +1320,16 @@ namespace ControllerSessionManager.PlayniteIntegration
             {
                 instruction = Loc("LOCCSM_OverlayReconnectControllers");
             }
-            var profile = settings.GetControllerProfile(missing[0].ControllerKey);
-            var iconFile = profile == null ? "device-gamepad-4.svg" : GetIconFileName(profile.IconId);
+            ushort vendorId;
+            ushort productId;
+            ControllerBridgeIdentity.TryParseHardwareVidPid(missing[0].ControllerKey, out vendorId, out productId);
+            var iconFile = ResolveControllerIconFileName(new ControllerDeviceSnapshot
+            {
+                HardwareId = missing[0].ControllerKey,
+                Name = missing[0].Name,
+                VendorId = vendorId,
+                ProductId = productId
+            });
             overlayClient.Show(activeSessionId, activeDisconnectIncidentId.Value, activeGameProcessId,
                 missing.Count == 1 ? Loc("LOCCSM_OverlayDisconnectTitle") :
                     string.Format(Loc("LOCCSM_OverlayDisconnectTitlePlural"), missing.Count),
@@ -1523,13 +1567,10 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private ControllerToastIdentity CreateToastIdentity(ControllerDeviceSnapshot controller)
         {
-            var profile = settings.GetControllerProfile(string.IsNullOrWhiteSpace(controller.HardwareId)
-                ? controller.ControllerId : controller.HardwareId);
-            var iconFile = profile == null ? "device-gamepad-4.svg" : GetIconFileName(profile.IconId);
             return new ControllerToastIdentity
             {
                 Name = controller.Name,
-                IconGeometry = SvgIconGeometryLoader.GetPathData(iconFile)
+                IconGeometry = SvgIconGeometryLoader.GetPathData(ResolveControllerIconFileName(controller))
             };
         }
 
@@ -1605,7 +1646,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 ? Loc("LOCCSM_OnlineFallbackToastMessage")
                 : settings.ShowControllerNameInDesktopNotifications ? Loc("LOCCSM_NotificationPreviewMessage") : string.Empty;
             overlayClient.ShowToastPreview(notificationSessionId, 0, previewKind, title, message,
-                SvgIconGeometryLoader.GetPathData(isWarning ? "alert-triangle.svg" : "device-gamepad-4.svg"),
+                SvgIconGeometryLoader.GetPathData(isWarning ? "alert-triangle.svg" : ControllerIconCatalog.DefaultFileName),
                 settings.DesktopNotificationDurationMilliseconds, GetDesktopToastStylePayload());
         }
 

@@ -53,10 +53,14 @@
     <Compile Include="Controllers\IntentionalInputDetector.cs" />
     <Compile Include="Controllers\ControllerMetadata.cs" />
     <Compile Include="Controllers\ControllerDeviceIdentity.cs" />
+    <Compile Include="Controllers\ControllerIconCatalog.cs" />
+    <Compile Include="Controllers\ControllerDisplayHold.cs" />
+    <Compile Include="Controllers\ProviderLifecyclePolicy.cs" />
     <Compile Include="Controllers\ControllerBridgeIdentity.cs" />
     <Compile Include="Controllers\SdlControllerMetadataProvider.cs" />
     <Compile Include="Controllers\XInputProvider.cs" />
     <Compile Include="Sessions\GameSessionManager.cs" />
+    <Compile Include="Sessions\SessionControllerIdentity.cs" />
     <Compile Include="Sessions\GamePauseService.cs" />
     <Compile Include="Sessions\OnlineSessionDetector.cs" />
     <Compile Include="Sessions\AdaptiveSessionScopeDetector.cs" />
@@ -364,6 +368,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Icons\*.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Gamepads\*.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <EmbeddedResource Include="Icons\gamepad-tester.svg">

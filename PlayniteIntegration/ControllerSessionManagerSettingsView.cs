@@ -16,6 +16,7 @@ namespace ControllerSessionManager.PlayniteIntegration
     public partial class ControllerSessionManagerSettingsView : UserControl
     {
         private readonly ControllerSessionManagerPlugin plugin;
+        private string lastControllerListSignature;
 
         public ControllerSessionManagerSettingsView(ControllerSessionManagerPlugin sourcePlugin)
         {
@@ -37,7 +38,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             try
             {
                 OverlayPreviewControllerIcon.Data = Geometry.Parse(
-                    SvgIconGeometryLoader.GetPathData("device-gamepad-4.svg"));
+                    SvgIconGeometryLoader.GetPathData(ControllerIconCatalog.DefaultFileName));
                 OverlayPreviewStatusIcon.Data = Geometry.Parse(
                     SvgIconGeometryLoader.GetPathData("player-pause.svg"));
             }
@@ -414,12 +415,12 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private void RefreshOverviewCore()
         {
-            var connected = plugin.GetControllerSnapshot().Where(a => a.IsConnected).ToList();
+            var connected = plugin.GetDisplayControllerSnapshot().Where(a => a.IsConnected).ToList();
             var settings = DataContext as ControllerSessionManagerSettings;
             if (settings != null)
             {
                 settings.SyncControllerProfiles(connected);
-                connected = plugin.GetControllerSnapshot().Where(a => a.IsConnected).ToList();
+                connected = plugin.GetDisplayControllerSnapshot().Where(a => a.IsConnected).ToList();
             }
             ConnectedCountText.Text = connected.Count.ToString(CultureInfo.CurrentCulture);
             PrimaryControllerText.Text = plugin.GetPrimaryControllerText();
@@ -433,8 +434,14 @@ namespace ControllerSessionManager.PlayniteIntegration
             SessionStatusText.Text = plugin.GetSessionStatusText();
             SessionStatusPillText.Text = plugin.GetSessionStatusBadge();
             ActiveSessionControllersText.Text = plugin.GetActiveSessionControllersText();
-            ControllerList.ItemsSource = connected.Select(CreateRow).ToList();
-            EmptyControllersText.Visibility = connected.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+            var listSignature = ControllerDisplayHold.IdentitySignature(connected);
+            if (listSignature != lastControllerListSignature)
+            {
+                lastControllerListSignature = listSignature;
+                ControllerList.ItemsSource = connected.Select(CreateRow).ToList();
+                EmptyControllersText.Visibility = connected.Count == 0
+                    ? Visibility.Visible : Visibility.Collapsed;
+            }
         }
 
         private ControllerRow CreateRow(ControllerDeviceSnapshot controller)
@@ -460,7 +467,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 Battery = battery,
                 BatteryTooltip = LabeledTooltip("LOCCSM_Battery", battery),
                 BatteryBrush = GetBatteryBrush(controller.BatteryLevel),
-                IconGeometry = GetControllerIconGeometry(profile),
+                IconGeometry = GetControllerIconGeometry(controller, profile),
                 Controller = controller,
                 ActionIconGeometry = SvgIconGeometryLoader.GetPathData("wave-sine.svg"),
                 LastInput = controller.LastInputUtc.HasValue
@@ -591,19 +598,11 @@ namespace ControllerSessionManager.PlayniteIntegration
             return typeof(ControllerSessionManagerSettingsView).Assembly.GetName().Version.ToString(3);
         }
 
-        private static string GetControllerIconGeometry(ControllerProfile profile)
+        private static string GetControllerIconGeometry(ControllerDeviceSnapshot controller,
+            ControllerProfile profile)
         {
-            var iconId = profile == null ? "gamepad-4" : profile.IconId;
-            string fileName;
-            switch (iconId)
-            {
-                case "gamepad-2": fileName = "device-gamepad-2.svg"; break;
-                case "gamepad-3": fileName = "device-gamepad-3.svg"; break;
-                case "gamepad-4": fileName = "device-gamepad-4.svg"; break;
-                case "nintendo": fileName = "device-nintendo.svg"; break;
-                default: fileName = "device-gamepad.svg"; break;
-            }
-            return SvgIconGeometryLoader.GetPathData(fileName);
+            return SvgIconGeometryLoader.GetPathData(ControllerIconCatalog.ResolveFileName(
+                controller, profile == null ? null : profile.IconId));
         }
 
         private sealed class ControllerRow : System.ComponentModel.INotifyPropertyChanged
