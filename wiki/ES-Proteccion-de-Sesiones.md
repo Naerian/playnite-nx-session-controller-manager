@@ -2,7 +2,7 @@
 
 ## Cómo entra un mando en la sesión
 
-Un mando conectado no se considera automáticamente un jugador. Tras iniciar el juego, Controller Session Manager busca entradas intencionadas: botones, gatillos por encima del umbral o movimientos amplios de stick. Una ventana de diez segundos conserva el mando usado para lanzar el juego desde Desktop. Si el juego captura todo el input antes de que Playnite pueda observarlo, se arma exactamente un mando conectado como propietario inicial conservador. La primera entrada real puede reemplazar esa inferencia de inmediato; el resto de mandos no se convierten en jugadores por estar conectados. Se ignoran liberaciones, drift pequeño, simples cambios de paquete y botones Guide/Home.
+Un mando conectado no se considera automáticamente un jugador. Tras iniciar el juego, Controller Manager busca entradas intencionadas: botones, gatillos por encima del umbral o movimientos amplios de stick. Una ventana de diez segundos conserva el mando usado para lanzar el juego desde Desktop. Si el juego captura todo el input antes de que Playnite pueda observarlo, se arma exactamente un mando conectado como propietario inicial conservador. La primera entrada real puede reemplazar esa inferencia de inmediato; el resto de mandos no se convierten en jugadores por estar conectados. Se ignoran liberaciones, drift pequeño, simples cambios de paquete y botones Guide/Home.
 
 ## Modo automático/adaptativo
 
@@ -16,7 +16,7 @@ Una alternancia sostenida entre varios mandos promociona la sesión a multijugad
 
 ## Política por juego
 
-Abre el menú contextual del juego y selecciona **Controller Session Manager > Protección de sesión**:
+Abre el menú contextual del juego y selecciona **Controller Manager > Protección de sesión**:
 
 - **Usar configuración global**: hereda la configuración general.
 - **Automático / adaptativo**: relevo normal y detección automática de multijugador local.

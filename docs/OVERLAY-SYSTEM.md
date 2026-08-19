@@ -158,7 +158,7 @@ Manifiesto:
 ```yaml
 Id: Default
 Name: Default
-Author: Controller Session Manager
+Author: Controller Manager
 Version: 1.0.0
 ControllerSessionManagerApiVersion: 1
 EntryPoint: Overlay.xaml

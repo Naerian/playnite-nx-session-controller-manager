@@ -1,0 +1,51 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converters="clr-namespace:ControllerSessionManager.Tester.Converters">
+    <SolidColorBrush x:Key="ControllerFill" Color="#11151B" />
+    <SolidColorBrush x:Key="SurfaceFill" Color="#1D232E" />
+    <SolidColorBrush x:Key="LineBrush" Color="{DynamicResource TextColor}" />
+    <SolidColorBrush x:Key="MutedLineBrush" Color="{DynamicResource TextColorDarker}" />
+    <SolidColorBrush x:Key="InputIdleFill" Color="Transparent" />
+    <SolidColorBrush x:Key="InputActiveFill" Color="#6631C48D" />
+    <SolidColorBrush x:Key="InputActiveStroke" Color="#64F0B7" />
+    <SolidColorBrush x:Key="TriggerTrack" Color="#151922" />
+    <SolidColorBrush x:Key="StickDotLeft" Color="#4CC9F0" />
+    <SolidColorBrush x:Key="StickDotRight" Color="#F7B955" />
+
+    <converters:BoolToBrushConverter x:Key="InputFillBrush"
+                                     FalseBrush="{StaticResource InputIdleFill}"
+                                     TrueBrush="{StaticResource InputActiveFill}" />
+    <converters:BoolToBrushConverter x:Key="TriggerFillBrush"
+                                     FalseBrush="{StaticResource SurfaceFill}"
+                                     TrueBrush="{StaticResource InputActiveFill}" />
+    <converters:BoolToBrushConverter x:Key="InputStrokeBrush"
+                                     FalseBrush="{StaticResource LineBrush}"
+                                     TrueBrush="{StaticResource InputActiveStroke}" />
+    <converters:BoolToBrushConverter x:Key="ActiveOnlyStrokeBrush"
+                                     FalseBrush="{StaticResource InputIdleFill}"
+                                     TrueBrush="{StaticResource InputActiveStroke}" />
+    <converters:BoolToBrushConverter x:Key="TouchpadFillBrush"
+                                     FalseBrush="{StaticResource SurfaceFill}"
+                                     TrueBrush="{StaticResource InputActiveFill}" />
+    <converters:BoolToBrushConverter x:Key="TouchpadStrokeBrush"
+                                     FalseBrush="{StaticResource MutedLineBrush}"
+                                     TrueBrush="{StaticResource InputActiveStroke}" />
+
+    <Style x:Key="MapLabel" TargetType="Label">
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="SmallMapText" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="TextAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+</ResourceDictionary>

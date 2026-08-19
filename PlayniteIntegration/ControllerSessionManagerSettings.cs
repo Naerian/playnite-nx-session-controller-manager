@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ControllerSessionManager.Controllers;
 using ControllerSessionManager.Sessions;
+using ControllerSessionManager.Tester;
 using Playnite.SDK;
 using Playnite.SDK.Data;
 
@@ -86,6 +87,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private int reconciliationIntervalSeconds = 5;
         private List<ControllerProfile> controllerProfiles = new List<ControllerProfile>();
         private List<GameSessionOverride> gameSessionOverrides = new List<GameSessionOverride>();
+        private GamepadTesterSettings tester = new GamepadTesterSettings();
 
         public ControllerSessionManagerSettings()
         {
@@ -297,6 +299,12 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             get { return gameSessionOverrides; }
             set { SetValue(ref gameSessionOverrides, value ?? new List<GameSessionOverride>()); }
+        }
+
+        public GamepadTesterSettings Tester
+        {
+            get { return tester ?? (tester = new GamepadTesterSettings()); }
+            set { SetValue(ref tester, value ?? new GamepadTesterSettings()); }
         }
 
         public List<ControllerProfile> ControllerProfiles
@@ -594,6 +602,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             if (plugin != null)
             {
+                Tester.Normalize();
                 plugin.SavePluginSettings(this);
                 plugin.ApplySettings();
             }
@@ -707,7 +716,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 DisconnectGracePeriodMilliseconds = DisconnectGracePeriodMilliseconds,
                 ReconciliationIntervalSeconds = ReconciliationIntervalSeconds,
                 ControllerProfiles = CloneProfiles(ControllerProfiles),
-                GameSessionOverrides = CloneGameOverrides(GameSessionOverrides)
+                GameSessionOverrides = CloneGameOverrides(GameSessionOverrides),
+                Tester = Tester == null ? new GamepadTesterSettings() : Tester.Clone()
             };
         }
 
@@ -788,6 +798,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             ReconciliationIntervalSeconds = source.ReconciliationIntervalSeconds;
             ControllerProfiles = CloneProfiles(source.ControllerProfiles);
             GameSessionOverrides = CloneGameOverrides(source.GameSessionOverrides);
+            Tester = source.Tester == null ? new GamepadTesterSettings() : source.Tester.Clone();
             foreach (var profile in ControllerProfiles)
             {
                 profile.IconId = NormalizeIconId(profile.IconId);

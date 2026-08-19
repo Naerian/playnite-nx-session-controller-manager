@@ -8,10 +8,16 @@ using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Threading;
+using System.Threading.Tasks;
 using Microsoft.Win32;
 using ControllerSessionManager.Controllers;
 using ControllerSessionManager.Overlay;
 using ControllerSessionManager.Sessions;
+using ControllerSessionManager.Tester;
+using ControllerSessionManager.Tester.ViewModels;
+using ControllerSessionManager.Tester.Views;
+using ControllerSessionManager.Tester.Views.ThemeIntegration;
+using ControllerSessionManager.Tester.Services;
 using Playnite.SDK;
 using Playnite.SDK.Events;
 using Playnite.SDK.Plugins;
@@ -61,6 +67,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private bool adaptiveLocalScopeLogged;
         private SessionProtectionPolicy activeSessionPolicy;
         private TopPanelItem controllerTopPanelItem;
+        private TesterIntegration testerIntegration;
 
         public override Guid Id
         {
@@ -68,6 +75,11 @@ namespace ControllerSessionManager.PlayniteIntegration
         }
 
         public ControllerThemeApi Theme { get; private set; }
+
+        public GamepadTesterThemeIntegration TesterTheme
+        {
+            get { return testerIntegration == null ? null : testerIntegration.ThemeIntegration; }
+        }
 
         public event EventHandler ControllerSnapshotChanged;
 
@@ -105,18 +117,36 @@ namespace ControllerSessionManager.PlayniteIntegration
                 {
                     "ControllerStatus",
                     "ControllerCount",
-                    "PrimaryController"
+                    "PrimaryController",
+                    "TesterLauncher",
+                    "TesterStatusBadge",
+                    "TesterButtonMap",
+                    "TesterStickCheck",
+                    "TesterTriggerCheck",
+                    "TesterRumblePad",
+                    "TesterLatencyMini"
                 }
+            });
+            AddCustomElementSupport(new AddCustomElementSupportArgs
+            {
+                SourceName = "GamepadTester",
+                ElementList = new List<string>(GamepadTesterThemeContract.BlockNames)
             });
             AddSettingsSupport(new AddSettingsSupportArgs
             {
                 SourceName = "ControllerSessionManager",
                 SettingsRoot = "Theme"
             });
+            AddSettingsSupport(new AddSettingsSupportArgs
+            {
+                SourceName = "GamepadTester",
+                SettingsRoot = "TesterTheme"
+            });
 
             settings = new ControllerSessionManagerSettings(this);
+            testerIntegration = new TesterIntegration(PlayniteApi, logger, settings.Tester, Loc, OpenTesterSettings);
             ApplySettings();
-            logger.Info(string.Format("Controller Session Manager {0} initialized.",
+            logger.Info(string.Format("Controller Manager {0} initialized.",
                 GetType().Assembly.GetName().Version.ToString(3)));
             diagnosticEvents.Add("lifecycle", "Plugin initialized in " + PlayniteApi.ApplicationInfo.Mode + " mode");
         }
@@ -213,8 +243,38 @@ namespace ControllerSessionManager.PlayniteIntegration
                             StringComparison.CurrentCultureIgnoreCase)).ToList();
                     current = sameName.Count == 1 ? sameName[0] : null;
                 }
-                return current != null && xInputProvider.TryVibrate(
-                    current.ProviderId, current.ProviderInstanceId);
+
+                if (current == null)
+                {
+                    return false;
+                }
+
+                if (settings.Tester != null && !settings.Tester.EnableRumbleTests)
+                {
+                    return false;
+                }
+
+                var vendorId = current.VendorId;
+                var productId = current.ProductId;
+                var providerId = current.ProviderId;
+                var instanceId = current.ProviderInstanceId;
+                Task.Run(delegate
+                {
+                    try
+                    {
+                        if (testerIntegration != null && testerIntegration.TryStandardRumble(vendorId, productId))
+                        {
+                            return;
+                        }
+
+                        xInputProvider.TryVibrate(providerId, instanceId);
+                    }
+                    catch (Exception rumbleEx)
+                    {
+                        logger.Warn(rumbleEx, "Controller vibration test failed.");
+                    }
+                });
+                return true;
             }
             catch (Exception ex)
             {
@@ -440,6 +500,71 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
             RefreshControllers();
             UpdateThemeApi();
+            if (testerIntegration != null)
+            {
+                testerIntegration.UpdateSettings(settings.Tester);
+            }
+        }
+
+        public GamepadTesterView CreateTesterView(out GamepadTesterViewModel viewModel)
+        {
+            viewModel = null;
+            if (testerIntegration == null)
+            {
+                return null;
+            }
+
+            return testerIntegration.CreateEmbeddedView(out viewModel);
+        }
+
+        public void OpenTesterSettings()
+        {
+            TesterIntegration.PendingOpenSettingsTab = true;
+            PlayniteApi.MainView.OpenPluginSettings(Id);
+        }
+
+        public void OpenTesterForController(ushort vendorId, ushort productId, string name)
+        {
+            TesterIntegration.PendingTabIndex = 0;
+            TesterIntegration.PendingOpenSettingsTab = true;
+            TesterIntegration.RequestController(vendorId, productId, name);
+            OpenTesterSettings();
+        }
+
+        public bool IsLegacyGamepadTesterInstalled()
+        {
+            var roots = new List<string>();
+            try
+            {
+                if (PlayniteApi != null && PlayniteApi.Paths != null &&
+                    !string.IsNullOrWhiteSpace(PlayniteApi.Paths.ApplicationPath))
+                {
+                    roots.Add(Path.Combine(PlayniteApi.Paths.ApplicationPath, "Extensions"));
+                }
+            }
+            catch
+            {
+            }
+
+            roots.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "Playnite", "Extensions"));
+            foreach (var root in roots)
+            {
+                if (string.IsNullOrWhiteSpace(root) || !Directory.Exists(root))
+                {
+                    continue;
+                }
+
+                foreach (var directory in Directory.GetDirectories(root, "GamepadTester*"))
+                {
+                    if (Directory.Exists(directory))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         public override ISettings GetSettings(bool firstRunSettings)
@@ -472,6 +597,15 @@ namespace ControllerSessionManager.PlayniteIntegration
                 return new ControllerThemeControl(Theme, args.Name);
             }
 
+            if (testerIntegration != null)
+            {
+                var testerControl = testerIntegration.GetGameViewControl(args);
+                if (testerControl != null)
+                {
+                    return testerControl;
+                }
+            }
+
             return null;
         }
 
@@ -487,26 +621,52 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
 
             RefreshTopPanelItem();
-            return new[] { controllerTopPanelItem };
+            yield return controllerTopPanelItem;
+            if (testerIntegration != null)
+            {
+                foreach (var item in testerIntegration.GetTopPanelItems())
+                {
+                    yield return item;
+                }
+            }
+        }
+
+        public override IEnumerable<SidebarItem> GetSidebarItems()
+        {
+            if (testerIntegration == null)
+            {
+                yield break;
+            }
+
+            foreach (var item in testerIntegration.GetSidebarItems())
+            {
+                yield return item;
+            }
         }
 
         public override IEnumerable<MainMenuItem> GetMainMenuItems(GetMainMenuItemsArgs args)
         {
             yield return new MainMenuItem
             {
-                MenuSection = "Controller Session Manager",
+                MenuSection = "Controller Manager",
+                Description = Loc("LOCCSM_OpenTester"),
+                Action = delegate { OpenTesterSettings(); }
+            };
+            yield return new MainMenuItem
+            {
+                MenuSection = "Controller Manager",
                 Description = Loc("LOCCSM_MenuDiagnostics"),
                 Action = delegate { ShowDiagnostics(); }
             };
             yield return new MainMenuItem
             {
-                MenuSection = "Controller Session Manager",
+                MenuSection = "Controller Manager",
                 Description = Loc("LOCCSM_MenuExportSupport"),
                 Action = delegate { ExportSupportReport(); }
             };
             yield return new MainMenuItem
             {
-                MenuSection = "Controller Session Manager",
+                MenuSection = "Controller Manager",
                 Description = Loc("LOCCSM_MenuRefresh"),
                 Action = delegate { RefreshControllers(); }
             };
@@ -514,12 +674,12 @@ namespace ControllerSessionManager.PlayniteIntegration
             {
                 yield return new MainMenuItem
                 {
-                    MenuSection = "Controller Session Manager",
+                    MenuSection = "Controller Manager",
                     Description = "-"
                 };
                 yield return new MainMenuItem
                 {
-                    MenuSection = "Controller Session Manager",
+                    MenuSection = "Controller Manager",
                     Description = Loc("LOCCSM_MenuSettings"),
                     Action = delegate { PlayniteApi.MainView.OpenPluginSettings(Id); }
                 };
@@ -534,8 +694,8 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
 
             var policies = args.Games.Select(a => settings.GetSessionPolicy(a.Id)).ToList();
-            var sessionSection = "Controller Session Manager|" + Loc("LOCCSM_GamePolicySessionSection");
-            var pauseSection = "Controller Session Manager|" + Loc("LOCCSM_GamePolicyPauseSection");
+            var sessionSection = "Controller Manager|" + Loc("LOCCSM_GamePolicySessionSection");
+            var pauseSection = "Controller Manager|" + Loc("LOCCSM_GamePolicyPauseSection");
 
             yield return CreateGamePolicyMenuItem(sessionSection,
                 CheckedLabel(policies.All(a => !a.HasSessionOverride), Loc("LOCCSM_GamePolicyUseGlobal")), args,
@@ -627,15 +787,24 @@ namespace ControllerSessionManager.PlayniteIntegration
         public override void OnControllerButtonStateChanged(OnControllerButtonStateChangedArgs args)
         {
             RecordControllerInput(args);
+            if (testerIntegration != null)
+            {
+                testerIntegration.HandleControllerInput(args);
+            }
         }
 
         public override void OnDesktopControllerButtonStateChanged(OnControllerButtonStateChangedArgs args)
         {
             RecordControllerInput(args);
+            if (testerIntegration != null)
+            {
+                testerIntegration.HandleControllerInput(args);
+            }
         }
 
         public override void OnGameStarted(OnGameStartedEventArgs args)
         {
+            TesterHostClient.SuspendShared();
             EndDisconnectIncident();
             activeGameId = args == null || args.Game == null ? (Guid?)null : args.Game.Id;
             activeGameProcessId = args == null ? 0 : args.StartedProcessId;
@@ -699,6 +868,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             activeGameOnlineMetadata.Clear();
             sessionTimer.Stop();
             sessionManager.Stop();
+            TesterHostClient.ResumeShared();
             PublishControllerSnapshotChanged();
         }
 
@@ -718,6 +888,10 @@ namespace ControllerSessionManager.PlayniteIntegration
             controllerManager.SnapshotChanged -= OnManagerSnapshotChanged;
             xInputProvider.Dispose();
             overlayClient.Dispose();
+            if (testerIntegration != null)
+            {
+                testerIntegration.Shutdown();
+            }
             base.Dispose();
         }
 
@@ -1507,7 +1681,7 @@ namespace ControllerSessionManager.PlayniteIntegration
 
                 var loaded = Application.Current.Resources.MergedDictionaries
                     .OfType<ResourceDictionary>()
-                    .Any(a => a.Contains("LOCCSM_PluginName") && Equals(a["LOCCSM_PluginName"], "Controller Session Manager"));
+                    .Any(a => a.Contains("LOCCSM_PluginName") && Equals(a["LOCCSM_PluginName"], "Controller Manager"));
                 if (!loaded)
                 {
                     Application.Current.Resources.MergedDictionaries.Insert(0, englishFallbackResources);

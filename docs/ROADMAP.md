@@ -1,4 +1,4 @@
-# Roadmap de Controller Session Manager
+# Roadmap de Controller Manager
 
 ## 1. Método
 

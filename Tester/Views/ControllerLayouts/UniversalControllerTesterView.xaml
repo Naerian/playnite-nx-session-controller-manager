@@ -1,0 +1,218 @@
+<UserControl x:Class="ControllerSessionManager.Tester.Views.ControllerLayouts.UniversalControllerTesterView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:ControllerSessionManager.Tester.Converters"
+             xmlns:primitives="clr-namespace:ControllerLayoutPrimitives"
+             IsHitTestVisible="False">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ControllerLayoutResources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <LinearGradientBrush x:Key="ControllerFill" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#202B39" Offset="0" />
+            <GradientStop Color="#151A22" Offset="0.55" />
+            <GradientStop Color="#10151C" Offset="1" />
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="SurfaceFill" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#303A49" Offset="0" />
+            <GradientStop Color="#1B222D" Offset="1" />
+        </LinearGradientBrush>
+        <SolidColorBrush x:Key="LineBrush" Color="{DynamicResource TextColor}" />
+        <SolidColorBrush x:Key="MutedLineBrush" Color="{DynamicResource TextColorDarker}" />
+        <SolidColorBrush x:Key="InputIdleFill" Color="Transparent" />
+        <SolidColorBrush x:Key="InputActiveFill" Color="#6631C48D" />
+        <SolidColorBrush x:Key="InputActiveStroke" Color="#64F0B7" />
+        <SolidColorBrush x:Key="TriggerTrack" Color="#151922" />
+        <SolidColorBrush x:Key="StickDotLeft" Color="#4CC9F0" />
+        <SolidColorBrush x:Key="StickDotRight" Color="#F7B955" />
+
+        <Style x:Key="MapLabel" TargetType="Label">
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+
+        <Style x:Key="SmallMapText" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Viewbox Stretch="Uniform">
+        <Canvas Width="760" Height="500">
+            <Canvas Canvas.Left="46" Canvas.Top="30">
+                <Canvas.RenderTransform>
+                    <ScaleTransform ScaleX="0.88" ScaleY="0.88" />
+                </Canvas.RenderTransform>
+            <Canvas Canvas.Left="138" Canvas.Top="30">
+                <Path Data="M58.689 67.9165L5.20399 73.9448C0.805227 74.4406 0.705254 71.4721 1.20511 69.9259C3.20455 62.3904 8.20315 44.4057 12.202 32.7509C17.2006 18.1822 32.6963 9.13966 38.6946 6.62782C44.6929 4.116 57.6893 2.10654 72.6851 1.1018C84.6817 0.298019 89.6803 4.4509 90.6801 6.62782C96.1785 19.187 107.975 46.2143 111.174 53.8502C114.373 61.4862 107.509 64.065 103.676 64.3999L58.689 67.9165Z"
+                      Fill="{Binding IsLeftTriggerActive, Converter={StaticResource TriggerFillBrush}}"
+                      Stroke="{Binding IsLeftTriggerActive, Converter={StaticResource InputStrokeBrush}}"
+                      StrokeThickness="1.6"
+                      StrokeLineJoin="Round">
+                    <Path.RenderTransform>
+                        <ScaleTransform ScaleX="1.08" ScaleY="1.08" />
+                    </Path.RenderTransform>
+                </Path>
+                <TextBlock Text="{Binding LeftTriggerPercent, StringFormat={}{0}%}"
+                           Visibility="Collapsed"
+                           Canvas.Left="36"
+                           Canvas.Top="26"
+                           Width="50"
+                           Style="{StaticResource SmallMapText}" />
+            </Canvas>
+
+            <Canvas Canvas.Left="500" Canvas.Top="30">
+                <Path Data="M58.689 67.9165L5.20399 73.9448C0.805227 74.4406 0.705254 71.4721 1.20511 69.9259C3.20455 62.3904 8.20315 44.4057 12.202 32.7509C17.2006 18.1822 32.6963 9.13966 38.6946 6.62782C44.6929 4.116 57.6893 2.10654 72.6851 1.1018C84.6817 0.298019 89.6803 4.4509 90.6801 6.62782C96.1785 19.187 107.975 46.2143 111.174 53.8502C114.373 61.4862 107.509 64.065 103.676 64.3999L58.689 67.9165Z"
+                      Fill="{Binding IsRightTriggerActive, Converter={StaticResource TriggerFillBrush}}"
+                      Stroke="{Binding IsRightTriggerActive, Converter={StaticResource InputStrokeBrush}}"
+                      StrokeThickness="1.6"
+                      StrokeLineJoin="Round">
+                    <Path.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleX="-1.08" ScaleY="1.08" />
+                            <TranslateTransform X="122" />
+                        </TransformGroup>
+                    </Path.RenderTransform>
+                </Path>
+                <TextBlock Text="{Binding RightTriggerPercent, StringFormat={}{0}%}"
+                           Visibility="Collapsed"
+                           Canvas.Left="36"
+                           Canvas.Top="26"
+                           Width="50"
+                           Style="{StaticResource SmallMapText}" />
+            </Canvas>
+
+            <Canvas Canvas.Left="80" Canvas.Top="132" Width="600" Height="400">
+                <Path Data="M90,1 C101.121,1 107.131,6.369 110.886,9.289 C111.946,10.113 113.374,10.771 114.854,11.296 C116.349,11.826 117.963,12.246 119.44,12.569 C120.92,12.893 122.279,13.124 123.268,13.273 C123.541,13.315 123.788,13.347 124,13.376 L124,57 L1.197,57 C1.193,56.938 1.187,56.873 1.183,56.806 C1.136,56.112 1.08,55.142 1.042,54.042 C0.966,51.824 0.97,49.139 1.261,47.105 C2.515,38.343 7.294,32.044 13.721,26.986 C20.18,21.904 28.224,18.132 35.936,14.4 C43.591,10.696 54.386,7.341 64.668,4.911 C74.961,2.478 84.619,1 90,1 Z"
+                      Fill="{Binding State.Buttons.LeftShoulder, Converter={StaticResource InputFillBrush}}"
+                      Stroke="{Binding State.Buttons.LeftShoulder, Converter={StaticResource InputStrokeBrush}}"
+                      StrokeThickness="2"
+                      StrokeLineJoin="Round">
+                    <Path.RenderTransform>
+                        <TranslateTransform X="80" Y="-8" />
+                    </Path.RenderTransform>
+                </Path>
+                <Path Data="M90,1 C101.121,1 107.131,6.369 110.886,9.289 C111.946,10.113 113.374,10.771 114.854,11.296 C116.349,11.826 117.963,12.246 119.44,12.569 C120.92,12.893 122.279,13.124 123.268,13.273 C123.541,13.315 123.788,13.347 124,13.376 L124,57 L1.197,57 C1.193,56.938 1.187,56.873 1.183,56.806 C1.136,56.112 1.08,55.142 1.042,54.042 C0.966,51.824 0.97,49.139 1.261,47.105 C2.515,38.343 7.294,32.044 13.721,26.986 C20.18,21.904 28.224,18.132 35.936,14.4 C43.591,10.696 54.386,7.341 64.668,4.911 C74.961,2.478 84.619,1 90,1 Z"
+                      Fill="{Binding State.Buttons.RightShoulder, Converter={StaticResource InputFillBrush}}"
+                      Stroke="{Binding State.Buttons.RightShoulder, Converter={StaticResource InputStrokeBrush}}"
+                      StrokeThickness="2"
+                      StrokeLineJoin="Round">
+                    <Path.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleX="-1" />
+                            <TranslateTransform X="520" Y="-8" />
+                        </TransformGroup>
+                    </Path.RenderTransform>
+                </Path>
+
+                <Path Data="M302.463 1H297.539C266.052 0.999 238.056 0.998 200.553 2.499C175.594 3.498 163.581 4.457 140.3 11.762C114.877 19.738 99.923 27.975 88.771 38.991C77.593 50.035 70.164 63.935 59.897 83.466C30.162 140.037 1 207.933 1 294.307C1 328.126 3.851 354.41 10.095 372.207C13.215 381.1 17.158 387.802 21.95 392.273C26.719 396.723 32.366 399 39.013 399C42.485 399 54.651 399.488 66.354 389.247C106.038 354.524 128.219 326.68 144.773 309.121C154.465 298.842 162.857 293.102 172.157 289.959C181.427 286.827 191.515 286.307 204.5 286.307H395.5C408.485 286.307 418.573 286.827 427.843 289.959C437.144 293.102 445.536 298.841 455.228 309.121C471.782 326.68 493.974 354.524 533.658 389.248C545.362 399.489 557.527 399 561 399C567.647 399 573.293 396.724 578.061 392.274C582.851 387.803 586.793 381.101 589.911 372.208C596.152 354.411 599 328.126 599 294.307C599 207.933 569.851 140.037 540.115 83.466C529.849 63.935 522.42 50.035 511.241 38.991C500.09 27.975 485.136 19.738 459.713 11.762C436.432 4.457 424.419 3.498 399.46 2.499C361.957 0.998 333.95 0.999 302.463 1Z"
+                      Fill="{StaticResource ControllerFill}"
+                      Stroke="{StaticResource LineBrush}"
+                      StrokeThickness="3"
+                      StrokeLineJoin="Round" />
+
+                <primitives:StickIndicatorView Canvas.Left="110"
+                                               Canvas.Top="68"
+                                               OuterSize="72"
+                                               DotSize="34"
+                                               DotFill="{StaticResource StickDotLeft}"
+                                               DotX="{Binding LeftStickDotX}"
+                                               DotY="{Binding LeftStickDotY}"
+                                               StrokeThickness="2" />
+
+                <primitives:StickIndicatorView Canvas.Left="340"
+                                               Canvas.Top="164"
+                                               OuterSize="72"
+                                               DotSize="34"
+                                               DotFill="{StaticResource StickDotRight}"
+                                               DotX="{Binding RightStickDotX}"
+                                               DotY="{Binding RightStickDotY}"
+                                               StrokeThickness="2" />
+
+                <Path Data="M169,154 L195,154 L195,184 L225,184 L225,210 L195,210 L195,240 L169,240 L169,210 L139,210 L139,184 L169,184 Z"
+                      Fill="{StaticResource SurfaceFill}"
+                      Stroke="{StaticResource LineBrush}"
+                      StrokeThickness="2.4"
+                      StrokeLineJoin="Round" />
+                <Path Data="M173,158 L191,158 L191,188 L173,188 Z"
+                      Fill="{Binding State.Buttons.DpadUp, Converter={StaticResource InputFillBrush}}"
+                      Stroke="{Binding State.Buttons.DpadUp, Converter={StaticResource ActiveOnlyStrokeBrush}}"
+                      StrokeThickness="2" />
+                <Path Data="M143,188 L173,188 L173,206 L143,206 Z"
+                      Fill="{Binding State.Buttons.DpadLeft, Converter={StaticResource InputFillBrush}}"
+                      Stroke="{Binding State.Buttons.DpadLeft, Converter={StaticResource ActiveOnlyStrokeBrush}}"
+                      StrokeThickness="2" />
+                <Path Data="M191,188 L221,188 L221,206 L191,206 Z"
+                      Fill="{Binding State.Buttons.DpadRight, Converter={StaticResource InputFillBrush}}"
+                      Stroke="{Binding State.Buttons.DpadRight, Converter={StaticResource ActiveOnlyStrokeBrush}}"
+                      StrokeThickness="2" />
+                <Path Data="M173,206 L191,206 L191,236 L173,236 Z"
+                      Fill="{Binding State.Buttons.DpadDown, Converter={StaticResource InputFillBrush}}"
+                      Stroke="{Binding State.Buttons.DpadDown, Converter={StaticResource ActiveOnlyStrokeBrush}}"
+                      StrokeThickness="2" />
+                <Rectangle Canvas.Left="173" Canvas.Top="188" Width="18" Height="18"
+                           Fill="{StaticResource SurfaceFill}"
+                           StrokeThickness="0" />
+
+                <Ellipse Canvas.Left="244" Canvas.Top="98" Width="28" Height="28"
+                         Fill="{Binding State.Buttons.Back, Converter={StaticResource InputFillBrush}}"
+                         Stroke="{Binding State.Buttons.Back, Converter={StaticResource InputStrokeBrush}}"
+                         StrokeThickness="2" />
+                <Ellipse Canvas.Left="276" Canvas.Top="28" Width="48" Height="48"
+                         Fill="{Binding State.Buttons.Guide, Converter={StaticResource InputFillBrush}}"
+                         Stroke="{Binding State.Buttons.Guide, Converter={StaticResource InputStrokeBrush}}"
+                         StrokeThickness="2" />
+                <Ellipse Canvas.Left="328" Canvas.Top="98" Width="28" Height="28"
+                         Fill="{Binding State.Buttons.Start, Converter={StaticResource InputFillBrush}}"
+                         Stroke="{Binding State.Buttons.Start, Converter={StaticResource InputStrokeBrush}}"
+                         StrokeThickness="2" />
+
+                <Path Data="M252,112 L264,112" Stroke="{StaticResource LineBrush}" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                <Path Data="M336,112 L348,112" Stroke="{StaticResource LineBrush}" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+
+                <primitives:FaceButtonView Canvas.Left="433"
+                                           Canvas.Top="53"
+                                           ButtonSize="40"
+                                           LabelFontSize="14"
+                                           StrokeThickness="3"
+                                           Label="{Binding NorthLabel}"
+                                           IsActive="{Binding State.Buttons.North}" />
+                <primitives:FaceButtonView Canvas.Left="473"
+                                           Canvas.Top="93"
+                                           ButtonSize="40"
+                                           LabelFontSize="14"
+                                           StrokeThickness="3"
+                                           Label="{Binding EastLabel}"
+                                           IsActive="{Binding State.Buttons.East}" />
+                <primitives:FaceButtonView Canvas.Left="393"
+                                           Canvas.Top="93"
+                                           ButtonSize="40"
+                                           LabelFontSize="14"
+                                           StrokeThickness="3"
+                                           Label="{Binding WestLabel}"
+                                           IsActive="{Binding State.Buttons.West}" />
+                <primitives:FaceButtonView Canvas.Left="433"
+                                           Canvas.Top="133"
+                                           ButtonSize="40"
+                                           LabelFontSize="14"
+                                           StrokeThickness="3"
+                                           Label="{Binding SouthLabel}"
+                                           IsActive="{Binding State.Buttons.South}" />
+            </Canvas>
+            </Canvas>
+        </Canvas>
+    </Viewbox>
+</UserControl>
+
+
+

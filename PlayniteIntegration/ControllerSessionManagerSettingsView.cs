@@ -8,6 +8,8 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
 using ControllerSessionManager.Controllers;
+using ControllerSessionManager.Tester;
+using ControllerSessionManager.Tester.ViewModels;
 
 namespace ControllerSessionManager.PlayniteIntegration
 {
@@ -52,12 +54,19 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private ScrollViewer hostScrollViewer;
         private Window hostWindow;
+        private GamepadTesterViewModel testerViewModel;
 
         private void OnLoaded(object sender, RoutedEventArgs args)
         {
             plugin.ControllerSnapshotChanged += OnControllerSnapshotChanged;
             ApplyPreferredWindowSize();
             AttachToHost();
+            ApplyLegacyTesterWarning();
+            ApplyPendingTesterOpen();
+            if (TesterTab != null && TesterTab.IsSelected)
+            {
+                AttachTesterView();
+            }
             Dispatcher.BeginInvoke(new Action(AttachToHost), DispatcherPriority.Loaded);
             Dispatcher.BeginInvoke(new Action(AttachToHost), DispatcherPriority.ApplicationIdle);
             Dispatcher.BeginInvoke(new Action(FillSelectedContentHosts), DispatcherPriority.Loaded);
@@ -108,6 +117,11 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private void RootTabsSelectionChanged(object sender, SelectionChangedEventArgs args)
         {
+            if (TesterTab != null && TesterTab.IsSelected)
+            {
+                AttachTesterView();
+            }
+
             Dispatcher.BeginInvoke(new Action(FillSelectedContentHosts), DispatcherPriority.Loaded);
         }
 
@@ -153,85 +167,12 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private void ApplyViewportSize()
         {
-            double width = 0;
-            double height = 0;
-            if (hostScrollViewer != null)
-            {
-                width = hostScrollViewer.ViewportWidth > 8
-                    ? hostScrollViewer.ViewportWidth
-                    : hostScrollViewer.ActualWidth;
-                height = hostScrollViewer.ViewportHeight > 8
-                    ? hostScrollViewer.ViewportHeight
-                    : hostScrollViewer.ActualHeight;
-            }
-
-            if (width < 8 || height < 8)
-            {
-                var slot = FindWindowGridSlot();
-                if (slot.Width > 8)
-                {
-                    width = slot.Width;
-                }
-                if (slot.Height > 8)
-                {
-                    height = slot.Height;
-                }
-            }
-
-            if ((width < 8 || height < 8) && hostWindow != null)
-            {
-                var content = hostWindow.Content as FrameworkElement;
-                if (content != null)
-                {
-                    if (width < 8)
-                    {
-                        width = content.ActualWidth;
-                    }
-                    if (height < 8)
-                    {
-                        height = content.ActualHeight;
-                    }
-                }
-            }
-
-            if (width > 8 && Math.Abs(Width - width) > 1)
-            {
-                Width = width;
-            }
-
-            if (height > 8 && Math.Abs(Height - height) > 1)
-            {
-                Height = height;
-            }
+            HorizontalAlignment = HorizontalAlignment.Stretch;
+            VerticalAlignment = VerticalAlignment.Stretch;
+            ClearValue(WidthProperty);
+            ClearValue(HeightProperty);
 
             FillSelectedContentHosts();
-        }
-
-        private Size FindWindowGridSlot()
-        {
-            for (var parent = VisualTreeHelper.GetParent(this);
-                 parent != null;
-                 parent = VisualTreeHelper.GetParent(parent))
-            {
-                if (parent is Window)
-                {
-                    break;
-                }
-
-                var grid = parent as Grid;
-                if (grid == null || grid.RowDefinitions.Count < 2 || grid.ActualWidth < 400)
-                {
-                    continue;
-                }
-
-                var rowHeight = grid.RowDefinitions[0].ActualHeight;
-                if (rowHeight > 200)
-                {
-                    return new Size(grid.ActualWidth, rowHeight);
-                }
-            }
-
-            return new Size(0, 0);
         }
 
         private ScrollViewer FindAncestorScrollViewer()
@@ -286,6 +227,117 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             plugin.ControllerSnapshotChanged -= OnControllerSnapshotChanged;
             DetachFromHost();
+            DisposeTesterView();
+        }
+
+        private void AttachTesterView()
+        {
+            if (testerViewModel != null || TesterPane == null)
+            {
+                return;
+            }
+
+            testerViewModel = null;
+            var view = plugin.CreateTesterView(out testerViewModel);
+            if (view == null)
+            {
+                return;
+            }
+
+            TesterPane.DataContext = testerViewModel;
+        }
+
+        private void DisposeTesterView()
+        {
+            if (testerViewModel == null)
+            {
+                return;
+            }
+
+            testerViewModel.Dispose();
+            testerViewModel = null;
+            if (TesterPane != null)
+            {
+                TesterPane.DataContext = null;
+            }
+        }
+
+        private void ApplyLegacyTesterWarning()
+        {
+            var visible = plugin.IsLegacyGamepadTesterInstalled() ? Visibility.Visible : Visibility.Collapsed;
+            if (LegacyGamepadTesterWarning != null)
+            {
+                LegacyGamepadTesterWarning.Visibility = visible;
+            }
+
+            if (AboutLegacyGamepadTesterWarning != null)
+            {
+                AboutLegacyGamepadTesterWarning.Visibility = visible;
+            }
+        }
+
+        private void ApplyPendingTesterOpen()
+        {
+            if (!TesterIntegration.PendingOpenSettingsTab &&
+                TesterIntegration.PendingVendorId == 0 && TesterIntegration.PendingProductId == 0)
+            {
+                return;
+            }
+
+            RootTabs.SelectedItem = TesterTab;
+            AttachTesterView();
+            if (testerViewModel != null)
+            {
+                testerViewModel.SelectedTabIndex = TesterIntegration.PendingTabIndex;
+                testerViewModel.RequestControllerSelection(
+                    TesterIntegration.PendingVendorId,
+                    TesterIntegration.PendingProductId,
+                    TesterIntegration.PendingControllerName);
+            }
+
+            TesterIntegration.PendingOpenSettingsTab = false;
+            TesterIntegration.PendingTabIndex = 0;
+            TesterIntegration.PendingVendorId = 0;
+            TesterIntegration.PendingProductId = 0;
+            TesterIntegration.PendingControllerName = null;
+        }
+
+        private void OpenTesterClick(object sender, RoutedEventArgs args)
+        {
+            var button = sender as Button;
+            var row = button == null ? null : button.DataContext as ControllerRow;
+            if (row == null || row.Controller == null)
+            {
+                if (TesterTab != null)
+                {
+                    TesterTab.IsSelected = true;
+                }
+
+                AttachTesterView();
+                return;
+            }
+
+            TesterIntegration.PendingTabIndex = 0;
+            TesterIntegration.RequestController(
+                row.Controller.VendorId, row.Controller.ProductId, row.Controller.Name);
+            if (TesterTab != null)
+            {
+                TesterTab.IsSelected = true;
+            }
+
+            AttachTesterView();
+            if (testerViewModel != null)
+            {
+                testerViewModel.SelectedTabIndex = 0;
+                testerViewModel.RequestControllerSelection(
+                    row.Controller.VendorId, row.Controller.ProductId, row.Controller.Name);
+            }
+
+            TesterIntegration.PendingOpenSettingsTab = false;
+            TesterIntegration.PendingTabIndex = 0;
+            TesterIntegration.PendingVendorId = 0;
+            TesterIntegration.PendingProductId = 0;
+            TesterIntegration.PendingControllerName = null;
         }
 
         private void OnControllerSnapshotChanged(object sender, EventArgs args)

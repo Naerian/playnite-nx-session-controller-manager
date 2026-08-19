@@ -14,14 +14,16 @@
 
 ## Primera configuración
 
-Abre `Complementos > Configuración de extensiones > Genérica > Controller Session Manager`.
+Abre `Complementos > Configuración de extensiones > Genérica > Controller Manager`.
 
 1. En **Mandos**, comprueba que cada mando físico aparezca una sola vez.
 2. Asigna nombres e iconos opcionales y guarda.
-3. Usa la acción de vibración para identificar físicamente un mando.
+3. Usa **Probar** para abrir la pestaña Tester de ese mando, o la vibración para identificarlo.
 4. Mantén activa **Avanzado > Monitorización**.
 5. Configura el acceso de Desktop, la notificación Fullscreen y el overlay en **Apariencia**.
 6. Conserva inicialmente la protección automática/adaptativa.
+
+Si el complemento antiguo **Gamepad Tester** sigue instalado, desinstálalo. Las dos extensiones no pueden reclamar el mismo `SourceName` Fullscreen `GamepadTester`.
 
 ## Primera prueba de protección
 

@@ -39,7 +39,7 @@ namespace ControllerSessionManager.Controllers
                 .Select(a => a.First())
                 .ToList();
             var output = new StringBuilder();
-            output.AppendLine("Controller Session Manager - HID diagnostic");
+            output.AppendLine("Controller Manager - HID diagnostic");
             output.AppendLine("Generated: " + DateTime.Now.ToString("O"));
             output.AppendLine("Mode: read-only inventory and current report capture");
             output.AppendLine();

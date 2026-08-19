@@ -1,13 +1,13 @@
 # Descripción general
 
-Controller Session Manager es una extensión de Playnite para visualizar mandos y proteger sesiones de juego en Windows.
+Controller Manager es una extensión de Playnite para visualizar mandos, probarlos dentro del plugin y proteger sesiones de juego en Windows.
 
 ## Qué permite hacer
 
 - Mostrar mandos conectados y conocidos con nombre real, alias e icono asignable.
 - Indicar USB, Bluetooth o receptor inalámbrico cuando Windows aporta evidencias suficientes.
 - Mostrar niveles de batería XInput sin inventar porcentajes.
-- Probar la vibración y exportar diagnósticos HID de solo lectura.
+- Probar la vibración, abrir la pestaña Tester completa y exportar diagnósticos HID de solo lectura.
 - Añadir un acceso adaptativo con mando y batería a la barra superior de Desktop.
 - Mostrar notificaciones configurables al navegar por Fullscreen.
 - Registrar qué mandos participan realmente después de iniciar un juego.

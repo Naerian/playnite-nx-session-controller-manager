@@ -36,6 +36,14 @@ Not universally. The overlay is intentionally click-through and does not install
 
 Windowed and borderless are recommended. A legacy exclusive-fullscreen game can render above external topmost windows. Running the game elevated while Playnite is not elevated can also restrict process verification.
 
+## Why does Playnite warn that Gamepad Tester is still installed?
+
+Uninstall the standalone Gamepad Tester extension. Controller Manager now owns that tester, including the Fullscreen `GamepadTester` source name. Two plugins cannot register the same theme source.
+
+## Why does Tester show no controller?
+
+Open **Settings > Tester** or a Fullscreen tester block so `ControllerSessionManager.TesterHost.exe` can start. SDL is loaded from Playnite's install folder, not inside the plugin process. If the host is missing from the extension folder, reinstall the `.pext`.
+
 ## What should a useful bug report include?
 
 Export **Advanced > Support report** and include it with Playnite mode and theme, controller model, USB/Bluetooth/dongle mode, game, remapping tools, exact reproduction steps, and expected versus actual result. The report already includes the version, anonymized session state and recent incident timeline. Add a reviewed HID diagnostic only when detection or battery is involved.

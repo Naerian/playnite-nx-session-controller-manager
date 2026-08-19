@@ -1,0 +1,53 @@
+<UserControl x:Class="Theme.Views.GamepadTesterSampleView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:gt="clr-namespace:ControllerSessionManager.Tester.Views.ThemeIntegration;assembly=GamepadTester">
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="GamepadTesterControlBackgroundBrush" Color="#181C24" />
+        <SolidColorBrush x:Key="GamepadTesterButtonBackgroundBrush" Color="#242A35" />
+        <SolidColorBrush x:Key="GamepadTesterControlBorderBrush" Color="#566174" />
+        <SolidColorBrush x:Key="GamepadTesterStickGuideBrush" Color="#75839A" />
+        <SolidColorBrush x:Key="GamepadTesterTextBrush" Color="#F4F6FA" />
+    </UserControl.Resources>
+
+    <Grid FocusManager.IsFocusScope="True"
+          KeyboardNavigation.DirectionalNavigation="Contained">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ContentControl gt:GamepadTesterThemeHost.Block="StatusBadge" />
+
+        <Grid Grid.Row="1" Margin="0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <ContentControl x:Name="ButtonMapHost"
+                            gt:GamepadTesterThemeHost.Block="ButtonMap" />
+            <StackPanel Grid.Column="1" Margin="20,0,0,0">
+                <ContentControl gt:GamepadTesterThemeHost.Block="TriggerCheck" />
+                <ContentControl gt:GamepadTesterThemeHost.Block="StickCheck" Margin="0,16,0,0" />
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock Text="{Binding ElementName=ButtonMapHost, Path=(gt:GamepadTesterThemeHost.InitializationState)}" />
+                <TextBlock Text="{Binding ElementName=ButtonMapHost, Path=(gt:GamepadTesterThemeHost.InitializationMessage)}"
+                           TextWrapping="Wrap" />
+            </StackPanel>
+            <Button x:Name="GamepadTester_BackButton"
+                    Grid.Column="1"
+                    Content="Back"
+                    IsEnabled="{Binding ElementName=ButtonMapHost, Path=Content.CanNavigateBack}"
+                    MinWidth="160" />
+        </Grid>
+    </Grid>
+</UserControl>

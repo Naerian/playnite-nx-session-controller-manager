@@ -1,13 +1,13 @@
 # Overview
 
-Controller Session Manager is a Playnite extension for controller visibility and game-session protection on Windows.
+Controller Manager is a Playnite extension for controller visibility, in-plugin testing and game-session protection on Windows.
 
 ## What it does
 
 - Lists connected and known controllers with friendly names, custom aliases and assignable icons.
 - Reports USB, Bluetooth or wireless-receiver transport when Windows exposes enough evidence.
 - Shows XInput battery levels without inventing percentages.
-- Provides vibration testing and read-only HID diagnostics.
+- Provides vibration testing, a full Gamepad Tester tab and read-only HID diagnostics.
 - Adds an adaptive controller and battery shortcut to the Desktop top panel.
 - Shows configurable connection notifications while browsing Fullscreen.
 - Tracks which controllers actually participate after a game starts.

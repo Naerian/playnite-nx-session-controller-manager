@@ -40,9 +40,11 @@ foreach ($fileName in $expectedFiles) {
 
 & (Join-Path $root "build.ps1") -Configuration $Configuration
 
+& (Join-Path $root "tests\run-tester-tests.ps1")
+
 $assemblyPath = Join-Path $root "bin\$Configuration\ControllerSessionManager.dll"
 $assemblyName = [Reflection.AssemblyName]::GetAssemblyName($assemblyPath)
-if ($assemblyName.Version.ToString() -ne "1.0.7.0") {
+if ($assemblyName.Version.ToString() -ne "1.0.8.0") {
     throw "Unexpected assembly version: $($assemblyName.Version)"
 }
 
@@ -51,8 +53,17 @@ if (-not (Test-Path -LiteralPath $overlayPath)) {
     throw "Build output is missing ControllerSessionManager.OverlayHost.exe"
 }
 $overlayName = [Reflection.AssemblyName]::GetAssemblyName($overlayPath)
-if ($overlayName.Version.ToString() -ne "1.0.7.0") {
+if ($overlayName.Version.ToString() -ne "1.0.8.0") {
     throw "Unexpected overlay host version: $($overlayName.Version)"
+}
+
+$testerHostPath = Join-Path $root "bin\$Configuration\ControllerSessionManager.TesterHost.exe"
+if (-not (Test-Path -LiteralPath $testerHostPath)) {
+    throw "Build output is missing ControllerSessionManager.TesterHost.exe"
+}
+$testerHostName = [Reflection.AssemblyName]::GetAssemblyName($testerHostPath)
+if ($testerHostName.Version.ToString() -ne "1.0.8.0") {
+    throw "Unexpected tester host version: $($testerHostName.Version)"
 }
 
 $outputLocalization = Join-Path $root "bin\$Configuration\Localization"
@@ -62,7 +73,7 @@ foreach ($fileName in $expectedFiles) {
     }
 }
 
-Write-Host "Verification passed: $($expectedFiles.Count) locales, $($englishKeys.Count) keys each, plugin $($assemblyName.Version), overlay $($overlayName.Version)."
+Write-Host "Verification passed: $($expectedFiles.Count) locales, $($englishKeys.Count) keys each, plugin $($assemblyName.Version), overlay $($overlayName.Version), tester host $($testerHostName.Version)."
 
 $distDir = Join-Path $root "dist"
 if (-not (Test-Path -LiteralPath $distDir)) {

@@ -1,4 +1,4 @@
-# Controller Session Manager — Arquitectura
+# Controller Manager — Arquitectura
 
 ## Autoridad de controladores implementada (1.0.7)
 
@@ -18,7 +18,7 @@ Desde 0.5.8, Desktop persiste la última asociación entre el perfil físico y e
 
 ## 1. Objetivos y no objetivos
 
-Controller Session Manager (CSM) mantiene un inventario normalizado de mandos, determina cuáles participan en una sesión de juego y aplica una política segura cuando uno de ellos desaparece. La prioridad es conservar el estado del juego y evitar falsos positivos.
+Controller Manager (CSM) mantiene un inventario normalizado de mandos, determina cuáles participan en una sesión de juego y aplica una política segura cuando uno de ellos desaparece. La prioridad es conservar el estado del juego y evitar falsos positivos.
 
 El núcleo no presupone que «hay un mando conectado» equivale a «el mando del jugador sigue conectado». Tampoco presupone que VID/PID, un índice XInput o un nombre sean una identidad física estable.
 

@@ -36,6 +36,14 @@ No de forma universal. El overlay no recibe clics ni instala hooks o drivers vir
 
 Se recomiendan ventana y pantalla completa sin bordes. Un juego exclusivo heredado puede dibujarse por encima de ventanas externas. Ejecutar el juego como administrador y Playnite sin elevar también puede impedir la verificación del proceso.
 
+## ¿Por qué avisa que Gamepad Tester sigue instalado?
+
+Desinstala el complemento independiente Gamepad Tester. Controller Manager ya incluye ese tester, incluido el `SourceName` Fullscreen `GamepadTester`. Dos extensiones no pueden registrar la misma fuente de tema.
+
+## ¿Por qué Tester no muestra ningún mando?
+
+Abre **Ajustes > Tester** o un bloque Fullscreen del tester para que arranque `ControllerSessionManager.TesterHost.exe`. SDL se carga desde la carpeta de Playnite, no dentro del proceso del complemento. Si el host no está en la carpeta de la extensión, reinstala el `.pext`.
+
 ## ¿Qué debe incluir una incidencia útil?
 
 Exporta **Avanzado > Informe de soporte** y adjúntalo junto con modo y tema de Playnite, modelo del mando, USB/Bluetooth/dongle, juego, herramientas de remapeo, pasos exactos y resultado esperado frente al real. El informe ya incluye versión, estado anónimo de la sesión y cronología reciente. Añade un diagnóstico HID revisado solo si el problema afecta a detección o batería.

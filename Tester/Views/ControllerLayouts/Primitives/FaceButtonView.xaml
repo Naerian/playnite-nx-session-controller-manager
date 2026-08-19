@@ -1,0 +1,35 @@
+<UserControl x:Class="ControllerLayoutPrimitives.FaceButtonView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Name="Root"
+             IsHitTestVisible="False">
+    <Grid Width="{Binding ButtonSize, ElementName=Root}"
+          Height="{Binding ButtonSize, ElementName=Root}">
+        <Ellipse StrokeThickness="{Binding StrokeThickness, ElementName=Root}">
+            <Ellipse.Style>
+                <Style TargetType="Ellipse">
+                    <Setter Property="Fill" Value="{DynamicResource SurfaceFill}" />
+                    <Setter Property="Stroke" Value="{DynamicResource LineBrush}" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsActive, ElementName=Root}" Value="True">
+                            <Setter Property="Fill" Value="{DynamicResource InputActiveFill}" />
+                            <Setter Property="Stroke" Value="{DynamicResource InputActiveStroke}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Ellipse.Style>
+        </Ellipse>
+        <TextBlock Text="{Binding Label, ElementName=Root}"
+                   Foreground="{DynamicResource TextBrush}"
+                   FontFamily="Segoe UI Symbol"
+                   FontSize="{Binding LabelFontSize, ElementName=Root}"
+                   FontWeight="SemiBold"
+                   TextAlignment="Center"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center">
+            <TextBlock.RenderTransform>
+                <TranslateTransform Y="{Binding LabelOffsetY, ElementName=Root}" />
+            </TextBlock.RenderTransform>
+        </TextBlock>
+    </Grid>
+</UserControl>

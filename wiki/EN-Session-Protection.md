@@ -2,7 +2,7 @@
 
 ## How a controller joins a session
 
-A connected controller is not automatically considered a player. Controller Session Manager looks for intentional input immediately before and after game startup: button presses, trigger movement above a threshold or substantial stick movement. A ten-second pre-launch window preserves the controller used to start a game from Desktop when the game later captures input exclusively. If the game captures every input before Playnite can observe one, exactly one connected controller is armed as a conservative startup owner. The first real input can replace that inference immediately; other connected controllers do not become players merely by being present. Releases, tiny drift, packet-only changes and Guide/Home presses are ignored.
+A connected controller is not automatically considered a player. Controller Manager looks for intentional input immediately before and after game startup: button presses, trigger movement above a threshold or substantial stick movement. A ten-second pre-launch window preserves the controller used to start a game from Desktop when the game later captures input exclusively. If the game captures every input before Playnite can observe one, exactly one connected controller is armed as a conservative startup owner. The first real input can replace that inference immediately; other connected controllers do not become players merely by being present. Releases, tiny drift, packet-only changes and Guide/Home presses are ignored.
 
 ## Automatic/adaptive mode
 
@@ -16,7 +16,7 @@ Sustained alternating input from several controllers promotes the session to loc
 
 ## Per-game session policy
 
-Open a game's context menu and select **Controller Session Manager > Session protection**:
+Open a game's context menu and select **Controller Manager > Session protection**:
 
 - **Use global settings**: inherit the general configuration.
 - **Automatic / adaptive**: normal handover plus automatic local multiplayer detection.

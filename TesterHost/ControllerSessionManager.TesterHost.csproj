@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A9C41B27-0E55-4D6F-9B18-7F3C2E91D4A8}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>ControllerSessionManager.TesterHost</RootNamespace>
+    <AssemblyName>ControllerSessionManager.TesterHost</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <Prefer32Bit>true</Prefer32Bit>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>true</Prefer32Bit>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>true</Prefer32Bit>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Security" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Sdl2Native.cs" />
+    <Compile Include="SdlGamepadProvider.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\Tester\Services\GamepadProtocol.cs">
+      <Link>Shared\GamepadProtocol.cs</Link>
+    </Compile>
+    <Compile Include="..\Tester\Services\IGamepadInputProvider.cs">
+      <Link>Shared\IGamepadInputProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\Tester\Services\ControllerIdentificationService.cs">
+      <Link>Shared\ControllerIdentificationService.cs</Link>
+    </Compile>
+    <Compile Include="..\Tester\Models\GamepadState.cs">
+      <Link>Shared\GamepadState.cs</Link>
+    </Compile>
+    <Compile Include="..\Tester\Models\GamepadButtonState.cs">
+      <Link>Shared\GamepadButtonState.cs</Link>
+    </Compile>
+    <Compile Include="..\Tester\Models\GamepadControllerInfo.cs">
+      <Link>Shared\GamepadControllerInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Tester\Models\GamepadDeviceNames.cs">
+      <Link>Shared\GamepadDeviceNames.cs</Link>
+    </Compile>
+    <Compile Include="..\Tester\Models\GamepadLayout.cs">
+      <Link>Shared\GamepadLayout.cs</Link>
+    </Compile>
+    <Compile Include="..\Tester\Models\EightBitDoModel.cs">
+      <Link>Shared\EightBitDoModel.cs</Link>
+    </Compile>
+    <Compile Include="..\Tester\Models\StickState.cs">
+      <Link>Shared\StickState.cs</Link>
+    </Compile>
+    <Compile Include="..\Tester\Models\ExtraButtonState.cs">
+      <Link>Shared\ExtraButtonState.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

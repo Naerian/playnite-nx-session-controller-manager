@@ -46,6 +46,8 @@ El `ContentControl` es un placeholder: Playnite lo reemplaza/puebla con el contr
 
 ## 4. Catálogo v1
 
+Además de los bloques de estado, CSM registra bloques de tester. Los nombres canónicos son `ControllerSessionManager_TesterLauncher` (y `TesterStatusBadge`, `TesterButtonMap`, `TesterStickCheck`, `TesterTriggerCheck`, `TesterRumblePad`, `TesterLatencyMini`). Los temas existentes pueden seguir usando `GamepadTester_*`. El muestreo SDL está en `ControllerSessionManager.TesterHost.exe`. Contrato detallado: `docs/theme-integration/CONTRACT.md`.
+
 ### `ControllerStatus`
 
 Resumen compacto del primario: icono, nombre corto, conexión y batería si existe.

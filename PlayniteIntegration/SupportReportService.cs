@@ -17,7 +17,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             var output = new StringBuilder();
             var snapshot = (controllers ?? Enumerable.Empty<ControllerDeviceSnapshot>()).ToList();
-            output.AppendLine("Controller Session Manager - Support report");
+            output.AppendLine("Controller Manager - Support report");
             output.AppendLine("Generated: " + DateTime.Now.ToString("O"));
             output.AppendLine("Privacy: no HID paths, serial numbers, user folders or Playnite log files are included");
             output.AppendLine();

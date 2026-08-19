@@ -1,8 +1,8 @@
-# Controller Session Manager for Playnite
+# Controller Manager for Playnite
 
-Controller Session Manager identifies game controllers, displays their connection and battery status, and protects active Playnite game sessions when a participating controller disconnects.
+Controller Manager identifies game controllers, displays their connection and battery status, tests buttons, sticks, rumble and latency inside Playnite, and protects active game sessions when a participating controller disconnects.
 
-It supports Desktop and Fullscreen workflows, automatic controller handover, local multiplayer sessions, configurable notifications, a disconnect overlay and conservative pause actions.
+It supports Desktop and Fullscreen workflows, the built-in Tester, automatic controller handover, local multiplayer sessions, configurable notifications, a disconnect overlay and conservative pause actions.
 
 ## Choose your language
 
@@ -13,6 +13,8 @@ It supports Desktop and Fullscreen workflows, automatic controller handover, loc
 
 - [Installation & Quick Start](EN-Installation-and-Quick-Start)
 - [Instalación e inicio rápido](ES-Instalacion-e-Inicio-Rapido)
+- [Tester](EN-Tester)
+- [Tester](ES-Tester)
 - [Session Protection](EN-Session-Protection)
 - [Protección de sesiones](ES-Proteccion-de-Sesiones)
 - [Troubleshooting & FAQ](EN-Troubleshooting-and-FAQ)

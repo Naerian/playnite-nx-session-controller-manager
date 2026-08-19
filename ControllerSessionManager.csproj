@@ -84,6 +84,196 @@
       <DependentUpon>ControllerTopPanelControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tester\Commands\RelayCommand.cs">
+      <Link>T\RelayCommand.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Converters\BoolToBrushConverter.cs">
+      <Link>T\BoolToBrushConverter.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Converters\BoolToVisibilityConverter.cs">
+      <Link>T\BoolToVisibilityConverter.cs</Link>
+    </Compile>
+    <Compile Include="Tester\GamepadTesterSettings.cs">
+      <Link>T\GamepadTesterSettings.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Models\ControllerVisualSchemeCatalog.cs">
+      <Link>T\ControllerVisualSchemeCatalog.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Models\ControllerVisualSchemeDefinition.cs">
+      <Link>T\ControllerVisualSchemeDefinition.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Models\ControllerVisualSchemeOption.cs">
+      <Link>T\ControllerVisualSchemeOption.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Models\DiagnosticConfidence.cs">
+      <Link>T\DiagnosticConfidence.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Models\EightBitDoModel.cs">
+      <Link>T\EightBitDoModel.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Models\ExtraButtonState.cs">
+      <Link>T\ExtraButtonState.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Models\GamepadButtonState.cs">
+      <Link>T\GamepadButtonState.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Models\GamepadCompatibilityAssessment.cs">
+      <Link>T\GamepadCompatibilityAssessment.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Models\GamepadControllerInfo.cs">
+      <Link>T\GamepadControllerInfo.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Models\GamepadDeviceNames.cs">
+      <Link>T\GamepadDeviceNames.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Models\GamepadLayout.cs">
+      <Link>T\GamepadLayout.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Models\GamepadState.cs">
+      <Link>T\GamepadState.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Models\GuidedTestInputItem.cs">
+      <Link>T\GuidedTestInputItem.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Models\GuidedTestReportItem.cs">
+      <Link>T\GuidedTestReportItem.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Models\InputHistoryItem.cs">
+      <Link>T\InputHistoryItem.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Models\RestDriftTracker.cs">
+      <Link>T\RestDriftTracker.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Models\StickDiagnosticsTracker.cs">
+      <Link>T\StickDiagnosticsTracker.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Models\StickMotionTrailTracker.cs">
+      <Link>T\StickMotionTrailTracker.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Models\StickState.cs">
+      <Link>T\StickState.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Services\ControllerIdentificationService.cs">
+      <Link>T\ControllerIdentificationService.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Services\GamepadCompatibilityReportBuilder.cs">
+      <Link>T\GamepadCompatibilityReportBuilder.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Services\GamepadCompatibilityService.cs">
+      <Link>T\GamepadCompatibilityService.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Services\GamepadPollingService.cs">
+      <Link>T\GamepadPollingService.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Services\GamepadProtocol.cs">
+      <Link>T\GamepadProtocol.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Services\HostedGamepadInputProvider.cs">
+      <Link>T\HostedGamepadInputProvider.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Services\IGamepadInputProvider.cs">
+      <Link>T\IGamepadInputProvider.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Services\TesterHostClient.cs">
+      <Link>T\TesterHostClient.cs</Link>
+    </Compile>
+    <Compile Include="Tester\TesterIntegration.cs">
+      <Link>T\TesterIntegration.cs</Link>
+    </Compile>
+    <Compile Include="Tester\ViewModels\GamepadTesterViewModel.cs">
+      <Link>T\GamepadTesterViewModel.cs</Link>
+    </Compile>
+    <Compile Include="Tester\ViewModels\ObservableObject.cs">
+      <Link>T\ObservableObject.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Views\ControllerLayouts\DualSenseControllerTesterView.xaml.cs">
+      <Link>T\DualSenseControllerTesterView.xaml.cs</Link>
+      <DependentUpon>DualSenseControllerTesterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Tester\Views\ControllerLayouts\EightBitDoProTesterView.xaml.cs">
+      <Link>T\EightBitDoProTesterView.xaml.cs</Link>
+      <DependentUpon>EightBitDoProTesterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Tester\Views\ControllerLayouts\EightBitDoUltimateTesterView.xaml.cs">
+      <Link>T\EightBitDoUltimateTesterView.xaml.cs</Link>
+      <DependentUpon>EightBitDoUltimateTesterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Tester\Views\ControllerLayouts\PlayStationControllerTesterView.xaml.cs">
+      <Link>T\PlayStationControllerTesterView.xaml.cs</Link>
+      <DependentUpon>PlayStationControllerTesterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Tester\Views\ControllerLayouts\Primitives\FaceButtonView.xaml.cs">
+      <Link>T\FaceButtonView.xaml.cs</Link>
+      <DependentUpon>FaceButtonView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Tester\Views\ControllerLayouts\Primitives\StickIndicatorView.xaml.cs">
+      <Link>T\StickIndicatorView.xaml.cs</Link>
+      <DependentUpon>StickIndicatorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Tester\Views\ControllerLayouts\SteamControllerTesterView.xaml.cs">
+      <Link>T\SteamControllerTesterView.xaml.cs</Link>
+      <DependentUpon>SteamControllerTesterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Tester\Views\ControllerLayouts\SwitchProControllerTesterView.xaml.cs">
+      <Link>T\SwitchProControllerTesterView.xaml.cs</Link>
+      <DependentUpon>SwitchProControllerTesterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Tester\Views\ControllerLayouts\UniversalControllerTesterView.xaml.cs">
+      <Link>T\UniversalControllerTesterView.xaml.cs</Link>
+      <DependentUpon>UniversalControllerTesterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Tester\Views\ControllerLayouts\XboxControllerTesterView.xaml.cs">
+      <Link>T\XboxControllerTesterView.xaml.cs</Link>
+      <DependentUpon>XboxControllerTesterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Tester\Views\ControllerLayouts\XboxSeriesControllerTesterView.xaml.cs">
+      <Link>T\XboxSeriesControllerTesterView.xaml.cs</Link>
+      <DependentUpon>XboxSeriesControllerTesterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Tester\Views\Controls\DiagnosticRadarChart.cs">
+      <Link>T\DiagnosticRadarChart.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Views\Controls\LatencyRateChart.cs">
+      <Link>T\LatencyRateChart.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Views\GamepadTesterThemeLauncherControl.cs">
+      <Link>T\GamepadTesterThemeLauncherControl.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Views\GamepadTesterView.xaml.cs">
+      <Link>T\GamepadTesterView.xaml.cs</Link>
+      <DependentUpon>GamepadTesterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Tester\Views\GuidedTestView.xaml.cs">
+      <Link>T\GuidedTestView.xaml.cs</Link>
+      <DependentUpon>GuidedTestView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Tester\Views\ThemeIntegration\GamepadTesterButtonMapControl.cs">
+      <Link>T\GamepadTesterButtonMapControl.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Views\ThemeIntegration\GamepadTesterLatencyMiniControl.cs">
+      <Link>T\GamepadTesterLatencyMiniControl.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Views\ThemeIntegration\GamepadTesterRumblePadControl.cs">
+      <Link>T\GamepadTesterRumblePadControl.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Views\ThemeIntegration\GamepadTesterStatusBadgeControl.cs">
+      <Link>T\GamepadTesterStatusBadgeControl.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Views\ThemeIntegration\GamepadTesterStickCheckControl.cs">
+      <Link>T\GamepadTesterStickCheckControl.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Views\ThemeIntegration\GamepadTesterThemeContract.cs">
+      <Link>T\GamepadTesterThemeContract.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Views\ThemeIntegration\GamepadTesterThemeControlBase.cs">
+      <Link>T\GamepadTesterThemeControlBase.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Views\ThemeIntegration\GamepadTesterThemeHost.cs">
+      <Link>T\GamepadTesterThemeHost.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Views\ThemeIntegration\GamepadTesterTriggerCheckControl.cs">
+      <Link>T\GamepadTesterTriggerCheckControl.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Include="PlayniteIntegration\ColorPickerDialog.xaml">
@@ -98,7 +288,76 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <None Include="extension.yaml">
+    <Page Include="Tester\Views\ControllerLayouts\ControllerLayoutResources.xaml">
+      <Link>T\ControllerLayoutResources.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tester\Views\ControllerLayouts\DualSenseControllerTesterView.xaml">
+      <Link>T\DualSenseControllerTesterView.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tester\Views\ControllerLayouts\EightBitDoProTesterView.xaml">
+      <Link>T\EightBitDoProTesterView.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tester\Views\ControllerLayouts\EightBitDoUltimateTesterView.xaml">
+      <Link>T\EightBitDoUltimateTesterView.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tester\Views\ControllerLayouts\PlayStationControllerTesterView.xaml">
+      <Link>T\PlayStationControllerTesterView.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tester\Views\ControllerLayouts\Primitives\FaceButtonView.xaml">
+      <Link>T\FaceButtonView.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tester\Views\ControllerLayouts\Primitives\StickIndicatorView.xaml">
+      <Link>T\StickIndicatorView.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tester\Views\ControllerLayouts\SteamControllerTesterView.xaml">
+      <Link>T\SteamControllerTesterView.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tester\Views\ControllerLayouts\SwitchProControllerTesterView.xaml">
+      <Link>T\SwitchProControllerTesterView.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tester\Views\ControllerLayouts\UniversalControllerTesterView.xaml">
+      <Link>T\UniversalControllerTesterView.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tester\Views\ControllerLayouts\XboxControllerTesterView.xaml">
+      <Link>T\XboxControllerTesterView.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tester\Views\ControllerLayouts\XboxSeriesControllerTesterView.xaml">
+      <Link>T\XboxSeriesControllerTesterView.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tester\Views\GamepadTesterView.xaml">
+      <Link>T\GamepadTesterView.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Tester\Views\GuidedTestView.xaml">
+      <Link>T\GuidedTestView.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>    <None Include="extension.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Localization\*.xaml">
@@ -107,6 +366,9 @@
     <None Include="Icons\*.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <EmbeddedResource Include="Icons\gamepad-tester.svg">
+      <LogicalName>ControllerSessionManager.Icons.gamepad-tester.svg</LogicalName>
+    </EmbeddedResource>
     <None Include="README.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

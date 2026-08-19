@@ -10,7 +10,7 @@ Los restos HID USB sin nombre, como una fila genérica **Game Controller**, se o
 
 ## Tipo de conexión
 
-Controller Session Manager combina metadatos y evidencias de transporte de Windows. USB requiere una ruta cableada, Bluetooth requiere evidencias específicas y wireless representa un receptor o dongle. Un wrapper XInput (`&ig_`) se trata como cable o dongle de 2,4 GHz salvo que sea un mando con licencia Xbox que también aparezca por Bluetooth. Algunos drivers ocultan esta diferencia; el plugin prefiere un resultado desconocido o inalámbrico genérico antes que inventar el transporte.
+Controller Manager combina metadatos y evidencias de transporte de Windows. USB requiere una ruta cableada, Bluetooth requiere evidencias específicas y wireless representa un receptor o dongle. Un wrapper XInput (`&ig_`) se trata como cable o dongle de 2,4 GHz salvo que sea un mando con licencia Xbox que también aparezca por Bluetooth. Algunos drivers ocultan esta diferencia; el plugin prefiere un resultado desconocido o inalámbrico genérico antes que inventar el transporte.
 
 ## Niveles de batería
 

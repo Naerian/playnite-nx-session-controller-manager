@@ -14,14 +14,16 @@
 
 ## First setup
 
-Open `Add-ons > Extension settings > Generic > Controller Session Manager`.
+Open `Add-ons > Extension settings > Generic > Controller Manager`.
 
 1. In **Controllers**, confirm that each physical controller appears once.
 2. Assign optional names and icons, then save.
-3. Use the vibration action to identify a controller physically.
+3. Use **Probar** to open the Tester tab for that pad, or vibration to identify it physically.
 4. Keep **Advanced > Monitoring** enabled.
 5. Configure the Desktop shortcut, Fullscreen notification and disconnect overlay under **Appearance**.
 6. Leave automatic/adaptive protection enabled initially.
+
+If the older **Gamepad Tester** extension is still installed, uninstall it. Both plugins cannot register the same Fullscreen `GamepadTester` theme source.
 
 ## First protection test
 

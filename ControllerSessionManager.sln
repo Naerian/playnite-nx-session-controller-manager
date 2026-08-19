@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControllerSessionManager", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControllerSessionManager.OverlayHost", "OverlayHost\ControllerSessionManager.OverlayHost.csproj", "{8D047052-4E85-4FA2-B087-B44E4D2B1602}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControllerSessionManager.TesterHost", "TesterHost\ControllerSessionManager.TesterHost.csproj", "{A9C41B27-0E55-4D6F-9B18-7F3C2E91D4A8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,5 +23,9 @@ Global
 		{8D047052-4E85-4FA2-B087-B44E4D2B1602}.Debug|Any CPU.Build.0 = Debug|AnyCPU
 		{8D047052-4E85-4FA2-B087-B44E4D2B1602}.Release|Any CPU.ActiveCfg = Release|AnyCPU
 		{8D047052-4E85-4FA2-B087-B44E4D2B1602}.Release|Any CPU.Build.0 = Release|AnyCPU
+		{A9C41B27-0E55-4D6F-9B18-7F3C2E91D4A8}.Debug|Any CPU.ActiveCfg = Debug|AnyCPU
+		{A9C41B27-0E55-4D6F-9B18-7F3C2E91D4A8}.Debug|Any CPU.Build.0 = Debug|AnyCPU
+		{A9C41B27-0E55-4D6F-9B18-7F3C2E91D4A8}.Release|Any CPU.ActiveCfg = Release|AnyCPU
+		{A9C41B27-0E55-4D6F-9B18-7F3C2E91D4A8}.Release|Any CPU.Build.0 = Release|AnyCPU
 	EndGlobalSection
 EndGlobal

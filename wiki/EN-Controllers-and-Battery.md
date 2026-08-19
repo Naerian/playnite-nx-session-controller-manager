@@ -10,7 +10,7 @@ Unnamed USB HID leftovers such as a generic **Game Controller** row are hidden u
 
 ## Connection type
 
-Controller Session Manager combines device metadata and Windows transport evidence. USB means a wired path was found, Bluetooth requires Bluetooth-specific evidence, and wireless represents a receiver or dongle. An XInput wrapper (`&ig_`) is treated as a cable or 2.4 GHz dongle unless it is an Xbox-licensed pad that also appears on Bluetooth. Some drivers hide this distinction; the plugin prefers an honest unknown or generic wireless result over a guessed transport.
+Controller Manager combines device metadata and Windows transport evidence. USB means a wired path was found, Bluetooth requires Bluetooth-specific evidence, and wireless represents a receiver or dongle. An XInput wrapper (`&ig_`) is treated as a cable or 2.4 GHz dongle unless it is an Xbox-licensed pad that also appears on Bluetooth. Some drivers hide this distinction; the plugin prefers an honest unknown or generic wireless result over a guessed transport.
 
 ## Battery levels
 

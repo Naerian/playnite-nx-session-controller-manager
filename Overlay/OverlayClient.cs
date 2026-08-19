@@ -129,7 +129,7 @@ namespace ControllerSessionManager.Overlay
                     var executable = Path.Combine(directory, "ControllerSessionManager.OverlayHost.exe");
                     if (!File.Exists(executable))
                     {
-                        logger.Error("Controller Session Manager overlay host was not found: " + executable);
+                        logger.Error("Controller Manager overlay host was not found: " + executable);
                         return;
                     }
 
@@ -142,7 +142,7 @@ namespace ControllerSessionManager.Overlay
                         CreateNoWindow = true,
                         WindowStyle = ProcessWindowStyle.Hidden
                     });
-                    logger.Debug("Controller Session Manager overlay host started safely.");
+                    logger.Debug("Controller Manager overlay host started safely.");
                 }
             }
             catch (Exception ex)

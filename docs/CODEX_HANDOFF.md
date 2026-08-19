@@ -1,4 +1,4 @@
-# Codex Handoff: Controller Session Manager
+# Codex Handoff: Controller Manager
 
 This file is a continuity note for future Codex sessions after a context reset.
 It captures the current project state, release workflow, local paths and the
@@ -6,7 +6,7 @@ important decisions that should be preserved.
 
 ## Project
 
-- Extension name: Controller Session Manager
+- Extension name: Controller Manager
 - Repository: https://github.com/Naerian/playnite-nx-session-controller-manager
 - Add-on id: `ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc`
 - Author shown in Playnite: `Narian`
@@ -32,7 +32,7 @@ assuming this file is still current.
 
 ## What The Extension Does
 
-Controller Session Manager is a Playnite extension that detects connected game
+Controller Manager is a Playnite extension that detects connected game
 controllers, tracks which controllers actually participate in a game session,
 and reacts when a participating controller disconnects.
 
@@ -231,5 +231,5 @@ Recommended recovery flow:
 Suggested prompt:
 
 ```text
-Continue Controller Session Manager. Read docs/CODEX_HANDOFF.md first.
+Continue Controller Manager. Read docs/CODEX_HANDOFF.md first.
 ```

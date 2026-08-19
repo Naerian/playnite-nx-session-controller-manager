@@ -1,5 +1,42 @@
 # Changelog
 
+## 1.0.8 — 2026-08-19
+- Renamed the visible extension name to Controller Manager. AddonId, GUID and theme source names are unchanged.
+- Folded Gamepad Tester into Controller Manager as a Tester settings tab with General test, Sticks, Latency, Diagnostic profile, Guided test, Input log, Device and Options sections.
+- Sample SDL GameController input in a separate TesterHost process so a USB unplug cannot take down Playnite or the disconnect overlay.
+- Kept the GamepadTester Fullscreen theme contract as a compatibility alias and added canonical ControllerSessionManager tester block names.
+- Added a Controllers action that opens the tester for the selected pad, plus an uninstall warning when the old Gamepad Tester extension is still present.
+- Tester helper text now uses the same regular 12pt HintText style as the rest of Controller Manager instead of inheriting Playnite’s bold body font.
+- The sidebar Tester view hides Options; those settings stay in Settings > Tester.
+- With several pads connected, pick one under Tester in the left panel. Device info and the rest of the tester follow that selected pad.
+- Updated the add-on description, About text and README so controller testing is part of the public feature list, matching the other Narian Playnite plugin READMEs.
+- Applied the 20/14/12 type scale and 4/8/16/24 spacing throughout Tester: labels are regular 14 pt, hints are 12 pt, and bold is reserved for page titles.
+- Filled the Desktop sidebar Tester to the available panel height so Input log and Device info match the settings view.
+- Restyled Tester metric tiles in General test and Latency to use the same card chrome as the rest of the tester.
+- Renamed the Test section to General test.
+- Kept a manually chosen visual scheme when the connected-controller list refreshes.
+- Used GlyphBrush for diagnostic-profile percentages so they stay readable on more Playnite themes.
+- Used GlyphBrush for the diagnostic radar fill and stroke, not only the percentage labels.
+- Replaced the General test stick pads with the same circular maps as Sticks, scaled down, and added a live trail that fades after about 1.5 seconds.
+- Matched Tester side tabs to the same hover, accent bar and selected weight as the rest of Controller Manager.
+- Added Segoe Fluent icons to the Tester side tabs.
+- Fitted the polling latency, input history and diagnostic profile cards to the available panel height so they are no longer clipped.
+- Moved the diagnostic profile out of General test into its own Tester tab so the live button map has more room.
+- Gave the four Sticks panels equal height so the stick maps and calibration cards fill the pane together.
+- Added more padding to the Device info compatibility card so leftover panel height sits in that card instead of below the details list.
+- Laid out Controllers as individual summary cards, two per row, with test actions on one row and borderless connection badges.
+- Moved Guided test into its own Tester tab so General test can fill the remaining cards.
+- Showed the live 1.5s stick trail in Sticks until Test sticks starts its capture path.
+- Added jump buttons on Diagnostic profile so each radar axis opens the matching test.
+- Routed Controllers vibration through TesterHost Standard rumble so Bluetooth pads can vibrate like General test.
+- Sized the settings host like Audio Switcher so the left navigation keeps its bottom corner radius.
+- Restored the Input log side tab header between Guided test and Device info.
+- Stretched General test health, current inputs and rumble cards so those rows stay aligned, and scaled controller artwork to fit the test card.
+- Controllers > Test controller now switches to the Tester tab and keeps that pad selected.
+- Removed the redundant General test details card so health, sticks, current inputs and rumble have more room.
+- Guided test results now list each control with a green check or a red cross, plus a status badge.
+- Matched General test current-input chips to the Guided test chip style, stretched rumble to the same card height with taller buttons, and laid out General test sticks in one row with each pad beside its labels.
+
 ## 1.0.7 — 2026-08-18
 - Applied a fixed settings type scale (20/14/12) and spacing scale (4/8/16/24), and added themed status/capability pills for Overview and controller metadata.
 - Stopped tagging non-Xbox XInput wrappers (`&ig_`) as Bluetooth when a sibling BLE interface is present. Dongle and cable XInput stay wireless or unknown; Xbox-licensed pads remain the Bluetooth exception.

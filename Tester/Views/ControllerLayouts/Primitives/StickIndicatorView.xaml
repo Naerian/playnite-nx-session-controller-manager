@@ -1,0 +1,22 @@
+<UserControl x:Class="ControllerLayoutPrimitives.StickIndicatorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Name="Root"
+             IsHitTestVisible="False">
+    <Grid Width="{Binding OuterSize, ElementName=Root}"
+          Height="{Binding OuterSize, ElementName=Root}">
+        <Ellipse Fill="{Binding OuterFill, ElementName=Root}"
+                 Stroke="{Binding OuterStroke, ElementName=Root}"
+                 StrokeThickness="{Binding StrokeThickness, ElementName=Root}" />
+        <Ellipse Width="{Binding DotSize, ElementName=Root}"
+                 Height="{Binding DotSize, ElementName=Root}"
+                 Fill="{Binding DotFill, ElementName=Root}"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center">
+            <Ellipse.RenderTransform>
+                <TranslateTransform X="{Binding DotX, ElementName=Root}"
+                                    Y="{Binding DotY, ElementName=Root}" />
+            </Ellipse.RenderTransform>
+        </Ellipse>
+    </Grid>
+</UserControl>
