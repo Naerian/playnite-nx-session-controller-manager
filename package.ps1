@@ -1,6 +1,6 @@
 param(
     [string]$Configuration = "Release",
-    [string]$Version = "1.0.8",
+    [string]$Version = "1.0.9",
     [string]$ToolboxPath = "C:\Playnite\Toolbox.exe"
 )
 

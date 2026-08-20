@@ -64,6 +64,7 @@
     <sys:String x:Key="LOCCSM_ControllerProfilesHelp">Algılanan her kontrolcüye isteğe bağlı bir Playnite adı ve simge atayın.</sys:String>
     <sys:String x:Key="LOCCSM_DetectedName">Algılanan ad</sys:String>
     <sys:String x:Key="LOCCSM_CustomName">Özel ad</sys:String>
+    <sys:String x:Key="LOCCSM_CustomNameHelp">Playnite, bildirimler ve Kontrolcüler listesinde bu pad için gösterilir.</sys:String>
     <sys:String x:Key="LOCCSM_Icon">Simge</sys:String>
     <sys:String x:Key="LOCCSM_IconGeneric">Genel</sys:String>
     <sys:String x:Key="LOCCSM_NoIcon">Yok</sys:String>
@@ -80,7 +81,10 @@
     <sys:String x:Key="LOCCSM_ControllerGeneralHelp">Kontrolcü bilgilerinin Playnite Masaüstü modunda nasıl gösterileceğini seçin.</sys:String>
     <sys:String x:Key="LOCCSM_DesktopIntegrationTitle">Hızlı erişim</sys:String>
     <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanel">Ana kontrolcü simgesini ve pilini üst panelde göster</sys:String>
-    <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanelHelp">Atanan simge her zaman gösterilir. Pil seviyesi yalnızca mevcut olduğunda eklenir.</sys:String>
+    <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanelHelp">Controller Manager’ın Playnite üst panelinde nasıl görüneceğini seçin. Düğme görünürken ipucu ve pil rengi geçerli kalır.</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelModeHidden">Düğmeyi gösterme</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelModeDefault">Varsayılan simgeyi göster</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelModePrimary">Ana kontrolcü simgesini göster</sys:String>
     <sys:String x:Key="LOCCSM_ValueBluetooth">Bluetooth</sys:String>
     <sys:String x:Key="LOCCSM_VersionAuthorFormat">Sürüm {0} | Narian</sys:String>
     <sys:String x:Key="LOCCSM_ProjectLinksTitle">Proje bağlantıları</sys:String>

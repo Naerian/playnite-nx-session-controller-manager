@@ -499,6 +499,24 @@ namespace ControllerSessionManager.PlayniteIntegration
             RefreshOverview();
         }
 
+        private void ExpanderChevronButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            for (var parent = VisualTreeHelper.GetParent(sender as DependencyObject);
+                 parent != null;
+                 parent = VisualTreeHelper.GetParent(parent))
+            {
+                var expander = parent as Expander;
+                if (expander == null)
+                {
+                    continue;
+                }
+
+                expander.IsExpanded = !expander.IsExpanded;
+                e.Handled = true;
+                return;
+            }
+        }
+
         private void ExportHidDiagnosticsClick(object sender, RoutedEventArgs args)
         {
             plugin.ExportHidDiagnostics();
@@ -577,9 +595,11 @@ namespace ControllerSessionManager.PlayniteIntegration
             XInputStatusPillText.Text = connected.Count > 0
                 ? plugin.Loc("LOCCSM_BadgeActive")
                 : plugin.Loc("LOCCSM_BadgeReady");
+            ApplyStatusBadgeAppearance(XInputStatusPillText, "PositiveRatingBrush");
             LastRefreshText.Text = DateTime.Now.ToString("T", CultureInfo.CurrentCulture);
             SessionStatusText.Text = plugin.GetSessionStatusText();
             SessionStatusPillText.Text = plugin.GetSessionStatusBadge();
+            ApplySessionStatusBadgeAppearance();
             ActiveSessionControllersText.Text = plugin.GetActiveSessionControllersText();
             var listSignature = ControllerDisplayHold.IdentitySignature(connected);
             var rows = connected.Select(CreateRow).ToList();
@@ -604,6 +624,65 @@ namespace ControllerSessionManager.PlayniteIntegration
 
             EmptyControllersText.Visibility = connected.Count == 0
                 ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void ApplySessionStatusBadgeAppearance()
+        {
+            if (SessionStatusPillText == null)
+            {
+                return;
+            }
+
+            var badge = SessionStatusPillText.Text ?? string.Empty;
+            if (badge == plugin.Loc("LOCCSM_BadgeAlert") ||
+                badge == plugin.Loc("LOCCSM_BadgeWaiting"))
+            {
+                ApplyStatusBadgeAppearance(SessionStatusPillText, "WarningBrush");
+                return;
+            }
+
+            if (badge == plugin.Loc("LOCCSM_BadgeIdle"))
+            {
+                ApplyStatusBadgeAppearance(SessionStatusPillText, "GlyphBrush", 0.65);
+                return;
+            }
+
+            ApplyStatusBadgeAppearance(SessionStatusPillText, "PositiveRatingBrush");
+        }
+
+        private static void ApplyStatusBadgeAppearance(TextBlock textBlock, string brushKey, double opacity = 1.0)
+        {
+            if (textBlock == null || string.IsNullOrWhiteSpace(brushKey))
+            {
+                return;
+            }
+
+            textBlock.SetResourceReference(TextBlock.ForegroundProperty, brushKey);
+            textBlock.Opacity = 1.0;
+
+            var badge = textBlock.Parent as Border;
+            if (badge == null)
+            {
+                for (var parent = VisualTreeHelper.GetParent(textBlock);
+                     parent != null;
+                     parent = VisualTreeHelper.GetParent(parent))
+                {
+                    badge = parent as Border;
+                    if (badge != null)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            if (badge == null)
+            {
+                return;
+            }
+
+            // Keep border in sync with the status text color (theme Positive/Warning/Glyph).
+            badge.SetResourceReference(Border.BorderBrushProperty, brushKey);
+            badge.Opacity = opacity;
         }
 
         private ControllerRow CreateRow(ControllerDeviceSnapshot controller)
@@ -699,8 +778,7 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private static bool IsUnknownConnection(string connectionType)
         {
-            return string.IsNullOrWhiteSpace(connectionType) ||
-                string.Equals(connectionType, "Unknown", StringComparison.OrdinalIgnoreCase);
+            return ControllerDeviceIdentity.IsUnknownConnection(connectionType);
         }
 
         private static string GetConnectionIconGeometry(string connectionType)

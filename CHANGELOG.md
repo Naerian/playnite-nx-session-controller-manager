@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.9 — 2026-08-20
+- Hide controllers with Unknown connection (typical charging-dock leftovers) from Mandos, TopBar/theme status and connect/disconnect toasts so dock bounce no longer doubles notifications or shows a fake connected pad.
+- Replaced the top-panel checkbox with three modes: hidden, default icon (`gamepad-tester.svg`), or primary controller icon.
+- Renamed the Mandos profile field to Custom name and added a short hint explaining where that name is shown.
+- Aligned settings chrome with the shared Narian SETTINGS-UI-GUIDE: expander IconSquareButton chevrons, theme action buttons, 4/8/16/24 spacing and status badge borders that match the status text color.
+- Tab labels and icons inherit the tab Foreground; hover and selection use TextBrushDark so light HoverBrush themes stay readable.
+
 ## 1.0.8 — 2026-08-19
 - Renamed the visible extension name to Controller Manager. AddonId, GUID and theme source names are unchanged.
 - Folded Gamepad Tester into Controller Manager as a Tester settings tab with General test, Sticks, Latency, Diagnostic profile, Guided test, Input log, Device and Options sections.

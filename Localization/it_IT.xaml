@@ -64,6 +64,7 @@
     <sys:String x:Key="LOCCSM_ControllerProfilesHelp">Assegna facoltativamente un nome Playnite e un'icona a ogni controller rilevato.</sys:String>
     <sys:String x:Key="LOCCSM_DetectedName">Nome rilevato</sys:String>
     <sys:String x:Key="LOCCSM_CustomName">Nome personalizzato</sys:String>
+    <sys:String x:Key="LOCCSM_CustomNameHelp">Mostrato in Playnite, nelle notifiche e nell’elenco Controller per questo pad.</sys:String>
     <sys:String x:Key="LOCCSM_Icon">Icona</sys:String>
     <sys:String x:Key="LOCCSM_IconGeneric">Generico</sys:String>
     <sys:String x:Key="LOCCSM_NoIcon">Nessuna</sys:String>
@@ -80,7 +81,10 @@
     <sys:String x:Key="LOCCSM_ControllerGeneralHelp">Scegli come mostrare le informazioni dei controller nella modalità Desktop di Playnite.</sys:String>
     <sys:String x:Key="LOCCSM_DesktopIntegrationTitle">Accesso rapido</sys:String>
     <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanel">Mostra icona e batteria del controller principale nel pannello superiore</sys:String>
-    <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanelHelp">L'icona assegnata viene sempre mostrata. Il livello batteria appare solo se disponibile.</sys:String>
+    <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanelHelp">Scegli come Controller Manager appare nella barra superiore di Playnite. Tooltip e colore batteria restano attivi quando il pulsante è visibile.</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelModeHidden">Non mostrare il pulsante</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelModeDefault">Mostra l’icona predefinita</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelModePrimary">Mostra l’icona del controller principale</sys:String>
     <sys:String x:Key="LOCCSM_ValueBluetooth">Bluetooth</sys:String>
     <sys:String x:Key="LOCCSM_VersionAuthorFormat">Versione {0} | Narian</sys:String>
     <sys:String x:Key="LOCCSM_ProjectLinksTitle">Link del progetto</sys:String>

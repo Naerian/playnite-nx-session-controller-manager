@@ -82,6 +82,7 @@ internal static class SessionManagerTests
             DisplayHoldAppliesSameVendorTransportImmediately();
             DisplayHoldCollapsesDongleAndBluetoothOverlap();
             DisplayHoldAddsSecondPadImmediately();
+            UnknownConnectionIsExcludedFromDisplayAndToasts();
             SameModelHidIsNotListedBesideXInput();
             DongleXInputSupersedesStalePlayniteBluetooth();
             IndependentBluetoothPadIsKeptBesideXInput();
@@ -93,7 +94,7 @@ internal static class SessionManagerTests
             BluetoothDisconnectHonoredWhileXInputStillPresent();
             GenericIconIsKeptWhenChosen();
             OverlayIpcAcceptsGamepadSilhouettes();
-            Console.WriteLine("Session manager tests passed: 76 scenarios.");
+            Console.WriteLine("Session manager tests passed: 77 scenarios.");
             return 0;
         }
         catch (Exception error)
@@ -1178,6 +1179,23 @@ internal static class SessionManagerTests
             "A newly connected second pad must appear in Mandos immediately, without the shrink debounce.");
         Equal(true, both.Any(a => a.VendorId == 0x054C) && both.Any(a => a.VendorId == 0x2DC8),
             "DualSense and 8BitDo must both remain listed.");
+    }
+
+    private static void UnknownConnectionIsExcludedFromDisplayAndToasts()
+    {
+        Equal(true, ControllerDeviceIdentity.IsUnknownConnection("Unknown"),
+            "Unknown must be treated as a non-actionable connection.");
+        Equal(true, ControllerDeviceIdentity.IsUnknownConnection((string)null),
+            "A missing connection type must be treated as Unknown.");
+        Equal(false, ControllerDeviceIdentity.IsUnknownConnection("Wireless"),
+            "A known wireless transport must remain visible and notifiable.");
+        var dock = Snapshot("hardware:2DC8:310B:dock", "Playnite", 1, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#vid_2dc8&pid_310b", true);
+        dock.VendorId = 0x2DC8;
+        dock.ProductId = 0x310B;
+        dock.ConnectionType = "Unknown";
+        Equal(true, ControllerDeviceIdentity.IsUnknownConnection(dock),
+            "An 8BitDo charging-dock leftover with Unknown connection must be filterable.");
     }
 
     private static void SameModelHidIsNotListedBesideXInput()

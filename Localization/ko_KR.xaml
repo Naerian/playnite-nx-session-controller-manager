@@ -64,6 +64,7 @@
     <sys:String x:Key="LOCCSM_ControllerProfilesHelp">감지된 각 컨트롤러에 선택적으로 Playnite 이름과 아이콘을 지정합니다.</sys:String>
     <sys:String x:Key="LOCCSM_DetectedName">감지된 이름</sys:String>
     <sys:String x:Key="LOCCSM_CustomName">사용자 지정 이름</sys:String>
+    <sys:String x:Key="LOCCSM_CustomNameHelp">Playnite, 알림 및 컨트롤러 목록에 이 패드의 이름으로 표시됩니다.</sys:String>
     <sys:String x:Key="LOCCSM_Icon">아이콘</sys:String>
     <sys:String x:Key="LOCCSM_IconGeneric">일반</sys:String>
     <sys:String x:Key="LOCCSM_NoIcon">없음</sys:String>
@@ -80,7 +81,10 @@
     <sys:String x:Key="LOCCSM_ControllerGeneralHelp">Playnite 데스크톱 모드에서 컨트롤러 정보를 표시할 방법을 선택합니다.</sys:String>
     <sys:String x:Key="LOCCSM_DesktopIntegrationTitle">빠른 실행</sys:String>
     <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanel">상단 패널에 기본 컨트롤러 아이콘과 배터리 표시</sys:String>
-    <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanelHelp">지정된 아이콘은 항상 표시됩니다. 배터리 수준은 사용 가능할 때만 추가됩니다.</sys:String>
+    <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanelHelp">Playnite 상단 패널에서 Controller Manager 표시 방식을 선택합니다. 버튼이 보일 때 툴팁과 배터리 색상이 유지됩니다.</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelModeHidden">버튼 표시 안 함</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelModeDefault">기본 아이콘 표시</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelModePrimary">기본 컨트롤러 아이콘 표시</sys:String>
     <sys:String x:Key="LOCCSM_ValueBluetooth">Bluetooth</sys:String>
     <sys:String x:Key="LOCCSM_VersionAuthorFormat">버전 {0} | Narian</sys:String>
     <sys:String x:Key="LOCCSM_ProjectLinksTitle">프로젝트 링크</sys:String>

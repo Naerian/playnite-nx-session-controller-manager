@@ -64,6 +64,7 @@
     <sys:String x:Key="LOCCSM_ControllerProfilesHelp">可为每个检测到的控制器指定 Playnite 名称和图标。</sys:String>
     <sys:String x:Key="LOCCSM_DetectedName">检测到的名称</sys:String>
     <sys:String x:Key="LOCCSM_CustomName">自定义名称</sys:String>
+    <sys:String x:Key="LOCCSM_CustomNameHelp">显示在 Playnite、通知以及该手柄的控制器列表中。</sys:String>
     <sys:String x:Key="LOCCSM_Icon">图标</sys:String>
     <sys:String x:Key="LOCCSM_IconGeneric">通用</sys:String>
     <sys:String x:Key="LOCCSM_NoIcon">无</sys:String>
@@ -80,7 +81,10 @@
     <sys:String x:Key="LOCCSM_ControllerGeneralHelp">选择控制器信息在 Playnite 桌面模式中的显示方式。</sys:String>
     <sys:String x:Key="LOCCSM_DesktopIntegrationTitle">快速访问</sys:String>
     <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanel">在顶部面板显示主控制器图标和电池</sys:String>
-    <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanelHelp">始终显示已分配的图标。仅在可用时添加电池电量。</sys:String>
+    <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanelHelp">选择 Controller Manager 在 Playnite 顶部面板中的显示方式。按钮可见时仍使用控制器提示和电池颜色。</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelModeHidden">不显示按钮</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelModeDefault">显示默认图标</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelModePrimary">显示主控制器图标</sys:String>
     <sys:String x:Key="LOCCSM_ValueBluetooth">蓝牙</sys:String>
     <sys:String x:Key="LOCCSM_VersionAuthorFormat">版本 {0} | Narian</sys:String>
     <sys:String x:Key="LOCCSM_ProjectLinksTitle">项目链接</sys:String>

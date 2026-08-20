@@ -150,6 +150,17 @@ namespace ControllerSessionManager.Controllers
             return !IsGenericDisplayName(GetDisplayName(rawName, vendorId, productId));
         }
 
+        public static bool IsUnknownConnection(string connectionType)
+        {
+            return string.IsNullOrWhiteSpace(connectionType) ||
+                string.Equals(connectionType, "Unknown", StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static bool IsUnknownConnection(ControllerDeviceSnapshot controller)
+        {
+            return controller == null || IsUnknownConnection(controller.ConnectionType);
+        }
+
         public static string GetModelKey(ControllerDeviceSnapshot controller)
         {
             if (controller == null)

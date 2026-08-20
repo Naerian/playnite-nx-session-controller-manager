@@ -80,6 +80,26 @@ namespace ControllerSessionManager.PlayniteIntegration
         }
     }
 
+    public sealed class StringEqualsConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var left = value == null ? string.Empty : value.ToString();
+            var right = parameter == null ? string.Empty : parameter.ToString();
+            return string.Equals(left, right, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is bool && (bool)value)
+            {
+                return parameter == null ? string.Empty : parameter.ToString();
+            }
+
+            return Binding.DoNothing;
+        }
+    }
+
     public sealed class EqualityToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

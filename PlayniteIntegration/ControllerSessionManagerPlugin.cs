@@ -191,7 +191,18 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         public IReadOnlyList<ControllerDeviceSnapshot> GetDisplayControllerSnapshot()
         {
-            return displayHold.Apply(GetControllerSnapshot(), DateTime.UtcNow);
+            return FilterUnknownConnections(displayHold.Apply(GetControllerSnapshot(), DateTime.UtcNow));
+        }
+
+        private static IReadOnlyList<ControllerDeviceSnapshot> FilterUnknownConnections(
+            IEnumerable<ControllerDeviceSnapshot> source)
+        {
+            // Charging docks often stay enumerated as Unknown while the pad is off; keep them
+            // out of Mandos, TopBar and connect/disconnect toasts.
+            return (source ?? Enumerable.Empty<ControllerDeviceSnapshot>())
+                .Where(a => a != null && a.IsConnected &&
+                    !ControllerDeviceIdentity.IsUnknownConnection(a))
+                .ToList();
         }
 
         public void RefreshControllers()
@@ -1113,7 +1124,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                     GetEffectiveProtectAllControllers(snapshot, DateTime.UtcNow));
             }
             UpdateInputPollingInterval();
-            var display = displayHold.Apply(snapshot, DateTime.UtcNow);
+            var display = FilterUnknownConnections(displayHold.Apply(snapshot, DateTime.UtcNow));
             UpdateThemeApi(display);
             var signature = GetDisplaySignature(display);
             if (signature == lastDisplaySignature)
@@ -1162,13 +1173,12 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private void UpdateThemeApi()
         {
-            UpdateThemeApi(displayHold.Apply(GetControllerSnapshot(), DateTime.UtcNow));
+            UpdateThemeApi(GetDisplayControllerSnapshot());
         }
 
         private void UpdateThemeApi(IReadOnlyList<ControllerDeviceSnapshot> display)
         {
-            var connected = (display ?? Enumerable.Empty<ControllerDeviceSnapshot>())
-                .Where(a => a != null && a.IsConnected).ToList();
+            var connected = FilterUnknownConnections(display).ToList();
             var primary = connected
                 .OrderByDescending(a => a.LastInputUtc.HasValue)
                 .ThenByDescending(a => a.LastInputUtc)
@@ -1179,16 +1189,29 @@ namespace ControllerSessionManager.PlayniteIntegration
                 ? Loc("LOCCSM_NoControllers")
                 : string.Format(Loc("LOCCSM_StatusFormat"), primaryName, connected.Count);
             Theme.Update(connected.Count, primaryName, status);
-            var icon = ResolveControllerIconFileName(primary);
+            var iconGeometry = ResolveTopPanelIconGeometry(primary);
             var batteryAvailable = primary != null && primary.BatteryLevel != "Unknown" &&
                 primary.BatteryLevel != "Unavailable";
             Theme.UpdatePrimaryPresentation(
-                SvgIconGeometryLoader.GetPathData(icon),
+                iconGeometry,
                 batteryAvailable ? Loc("LOCCSM_Value" + primary.BatteryLevel) : string.Empty,
                 GetBatteryBrush(primary == null ? null : primary.BatteryLevel),
                 batteryAvailable,
                 settings != null && settings.ColorTopPanelIndicatorByBattery);
             RefreshTopPanelItem();
+        }
+
+        private string ResolveTopPanelIconGeometry(ControllerDeviceSnapshot primary)
+        {
+            if (settings != null &&
+                string.Equals(settings.TopPanelControllerMode,
+                    ControllerSessionManagerSettings.TopPanelControllerModeDefault,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return SvgIconGeometryLoader.GetPathData("gamepad-tester.svg");
+            }
+
+            return SvgIconGeometryLoader.GetPathData(ResolveControllerIconFileName(primary));
         }
 
         private static string GetDisplaySignature(IReadOnlyList<ControllerDeviceSnapshot> display)
@@ -1220,7 +1243,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 return;
             }
 
-            controllerTopPanelItem.Visible = settings != null && settings.ShowPrimaryControllerInTopPanel;
+            controllerTopPanelItem.Visible = settings != null && settings.IsTopPanelButtonVisible;
             controllerTopPanelItem.Title = Theme.PrimaryControllerTooltip;
         }
 
@@ -1477,7 +1500,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             var now = DateTime.UtcNow;
             var current = (snapshot ?? new List<ControllerDeviceSnapshot>())
-                .Where(a => a.IsConnected)
+                .Where(a => a.IsConnected && !ControllerDeviceIdentity.IsUnknownConnection(a))
                 .GroupBy(GetToastControllerKey, StringComparer.OrdinalIgnoreCase)
                 .ToDictionary(a => a.Key, a => CreateToastIdentity(a.First()), StringComparer.OrdinalIgnoreCase);
             if (!connectionToastStateInitialized || (DateTime.UtcNow - pluginStartedUtc) < ToastStartupGracePeriod)

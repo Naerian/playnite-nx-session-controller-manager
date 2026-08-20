@@ -64,6 +64,7 @@
     <sys:String x:Key="LOCCSM_ControllerProfilesHelp">При необходимости назначьте каждому обнаруженному контроллеру имя в Playnite и значок.</sys:String>
     <sys:String x:Key="LOCCSM_DetectedName">Обнаруженное имя</sys:String>
     <sys:String x:Key="LOCCSM_CustomName">Пользовательское имя</sys:String>
+    <sys:String x:Key="LOCCSM_CustomNameHelp">Отображается в Playnite, уведомлениях и списке Контроллеров для этого геймпада.</sys:String>
     <sys:String x:Key="LOCCSM_Icon">Значок</sys:String>
     <sys:String x:Key="LOCCSM_IconGeneric">Универсальный</sys:String>
     <sys:String x:Key="LOCCSM_NoIcon">Нет</sys:String>
@@ -80,7 +81,10 @@
     <sys:String x:Key="LOCCSM_ControllerGeneralHelp">Выберите способ отображения информации о контроллерах в режиме рабочего стола Playnite.</sys:String>
     <sys:String x:Key="LOCCSM_DesktopIntegrationTitle">Быстрый доступ</sys:String>
     <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanel">Показывать значок и батарею основного контроллера в верхней панели</sys:String>
-    <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanelHelp">Назначенный значок отображается всегда. Уровень батареи добавляется только при наличии данных.</sys:String>
+    <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanelHelp">Выберите, как Controller Manager отображается на верхней панели Playnite. Подсказка и цвет батареи действуют, когда кнопка видна.</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelModeHidden">Не показывать кнопку</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelModeDefault">Показывать значок по умолчанию</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelModePrimary">Показывать значок основного контроллера</sys:String>
     <sys:String x:Key="LOCCSM_ValueBluetooth">Bluetooth</sys:String>
     <sys:String x:Key="LOCCSM_VersionAuthorFormat">Версия {0} | Narian</sys:String>
     <sys:String x:Key="LOCCSM_ProjectLinksTitle">Ссылки проекта</sys:String>

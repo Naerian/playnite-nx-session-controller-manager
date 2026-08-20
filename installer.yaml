@@ -1,5 +1,14 @@
 AddonId: ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc
 Packages:
+  - Version: 1.0.9
+    RequiredApiVersion: 6.16.0
+    ReleaseDate: 2026-08-20
+    PackageUrl: https://github.com/Naerian/playnite-nx-session-controller-manager/releases/download/v1.0.9/ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc_1_0_9.pext
+    Changelog:
+      - Hide Unknown connection pads (charging-dock leftovers) from Mandos, TopBar and connect/disconnect toasts.
+      - Top-panel controller button supports hidden, default and primary-icon modes.
+      - Settings UI follows the shared Narian guide (spacing, expander chevrons, status badge border colors, tab TextBrushDark on hover/selection).
+      - Mandos custom name field includes a hint for where the name is shown.
   - Version: 1.0.8
     RequiredApiVersion: 6.16.0
     ReleaseDate: 2026-08-19

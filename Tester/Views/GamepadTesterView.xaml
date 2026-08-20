@@ -209,10 +209,8 @@
             <Setter Property="TextAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Margin" Value="0,0,8,0" />
-            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         </Style>
         <Style x:Key="TabHeaderLabel" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
             <Setter Property="FontSize" Value="14" />
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
@@ -220,7 +218,6 @@
         <Style x:Key="SideNavigationTabItem" TargetType="TabItem">
             <Setter Property="OverridesDefaultStyle" Value="True" />
             <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-            <Setter Property="TextBlock.Foreground" Value="{DynamicResource TextBrush}" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
             <Setter Property="VerticalContentAlignment" Value="Stretch" />
@@ -231,23 +228,25 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TabItem">
-                        <Grid ClipToBounds="False">
+                        <Grid ClipToBounds="False" TextElement.Foreground="{TemplateBinding Foreground}">
                             <Rectangle x:Name="NavigationFill" RadiusX="4" RadiusY="4" Fill="Transparent" />
                             <Rectangle x:Name="NavigationAccent" Width="4" HorizontalAlignment="Left"
                                        RadiusX="4" RadiusY="4" Fill="Transparent" />
                             <ContentPresenter x:Name="NavigationHeader" ContentSource="Header"
                                               HorizontalAlignment="Left" VerticalAlignment="Center"
-                                              Margin="16,12,16,12"
-                                              TextElement.Foreground="{DynamicResource TextBrush}" />
+                                              Margin="16,8,16,8"
+                                              TextElement.Foreground="{TemplateBinding Foreground}" />
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="NavigationFill" Property="Fill" Value="{DynamicResource HoverBrush}" />
+                                <Setter Property="Foreground" Value="{DynamicResource TextBrushDark}" />
                             </Trigger>
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter TargetName="NavigationFill" Property="Fill" Value="{DynamicResource HoverBrush}" />
                                 <Setter TargetName="NavigationAccent" Property="Fill" Value="{DynamicResource GlyphBrush}" />
                                 <Setter TargetName="NavigationHeader" Property="TextElement.FontWeight" Value="SemiBold" />
+                                <Setter Property="Foreground" Value="{DynamicResource TextBrushDark}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>

@@ -64,6 +64,7 @@
     <sys:String x:Key="LOCCSM_ControllerProfilesHelp">検出された各コントローラーに任意の Playnite 名とアイコンを割り当てます。</sys:String>
     <sys:String x:Key="LOCCSM_DetectedName">検出名</sys:String>
     <sys:String x:Key="LOCCSM_CustomName">カスタム名</sys:String>
+    <sys:String x:Key="LOCCSM_CustomNameHelp">Playnite、通知、コントローラー一覧にこのパッドの名前として表示されます。</sys:String>
     <sys:String x:Key="LOCCSM_Icon">アイコン</sys:String>
     <sys:String x:Key="LOCCSM_IconGeneric">汎用</sys:String>
     <sys:String x:Key="LOCCSM_NoIcon">なし</sys:String>
@@ -80,7 +81,10 @@
     <sys:String x:Key="LOCCSM_ControllerGeneralHelp">Playnite デスクトップモードでコントローラー情報を表示する方法を選択します。</sys:String>
     <sys:String x:Key="LOCCSM_DesktopIntegrationTitle">クイックアクセス</sys:String>
     <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanel">メインコントローラーのアイコンとバッテリーを上部パネルに表示</sys:String>
-    <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanelHelp">割り当てたアイコンは常に表示されます。バッテリー残量は取得できる場合のみ追加されます。</sys:String>
+    <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanelHelp">Playnite のトップパネルでの Controller Manager の表示方法を選びます。ボタンが表示されている間はツールチップとバッテリー色が有効です。</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelModeHidden">ボタンを表示しない</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelModeDefault">デフォルトのアイコンを表示</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelModePrimary">メインコントローラーのアイコンを表示</sys:String>
     <sys:String x:Key="LOCCSM_ValueBluetooth">Bluetooth</sys:String>
     <sys:String x:Key="LOCCSM_VersionAuthorFormat">バージョン {0} | Narian</sys:String>
     <sys:String x:Key="LOCCSM_ProjectLinksTitle">プロジェクトリンク</sys:String>

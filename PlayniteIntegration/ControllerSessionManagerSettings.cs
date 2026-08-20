@@ -15,6 +15,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private bool enableMonitoring = true;
         private bool enableDebugLogging;
         private bool showPrimaryControllerInTopPanel;
+        private string topPanelControllerMode = TopPanelControllerModeHidden;
         private bool colorTopPanelIndicatorByBattery = true;
         private bool enableSessionTracking = true;
         private bool showDisconnectOverlay = true;
@@ -94,6 +95,10 @@ namespace ControllerSessionManager.PlayniteIntegration
         private List<GameSessionOverride> gameSessionOverrides = new List<GameSessionOverride>();
         private GamepadTesterSettings tester = new GamepadTesterSettings();
 
+        public const string TopPanelControllerModeHidden = "Hidden";
+        public const string TopPanelControllerModeDefault = "Default";
+        public const string TopPanelControllerModePrimary = "Primary";
+
         public ControllerSessionManagerSettings()
         {
         }
@@ -128,10 +133,34 @@ namespace ControllerSessionManager.PlayniteIntegration
             set { SetValue(ref enableDebugLogging, value); }
         }
 
+        public string TopPanelControllerMode
+        {
+            get { return NormalizeTopPanelControllerMode(topPanelControllerMode); }
+            set
+            {
+                var normalized = NormalizeTopPanelControllerMode(value);
+                SetValue(ref topPanelControllerMode, normalized);
+                OnPropertyChanged("IsTopPanelButtonVisible");
+                OnPropertyChanged("ShowPrimaryControllerInTopPanel");
+            }
+        }
+
+        /// <summary>
+        /// Legacy setting kept for deserialize/migration. Prefer <see cref="TopPanelControllerMode"/>.
+        /// </summary>
         public bool ShowPrimaryControllerInTopPanel
         {
-            get { return showPrimaryControllerInTopPanel; }
-            set { SetValue(ref showPrimaryControllerInTopPanel, value); }
+            get { return IsTopPanelButtonVisible; }
+            set { showPrimaryControllerInTopPanel = value; }
+        }
+
+        public bool IsTopPanelButtonVisible
+        {
+            get
+            {
+                return !string.Equals(TopPanelControllerMode, TopPanelControllerModeHidden,
+                    System.StringComparison.OrdinalIgnoreCase);
+            }
         }
 
         public bool ColorTopPanelIndicatorByBattery
@@ -586,6 +615,31 @@ namespace ControllerSessionManager.PlayniteIntegration
                 ProtectAllActiveControllers = false;
                 SettingsSchemaVersion = 4;
             }
+
+            if (SettingsSchemaVersion < 5)
+            {
+                topPanelControllerMode = showPrimaryControllerInTopPanel
+                    ? TopPanelControllerModePrimary
+                    : TopPanelControllerModeHidden;
+                SettingsSchemaVersion = 5;
+            }
+
+            topPanelControllerMode = NormalizeTopPanelControllerMode(topPanelControllerMode);
+        }
+
+        private static string NormalizeTopPanelControllerMode(string value)
+        {
+            if (string.Equals(value, TopPanelControllerModeDefault, System.StringComparison.OrdinalIgnoreCase))
+            {
+                return TopPanelControllerModeDefault;
+            }
+
+            if (string.Equals(value, TopPanelControllerModePrimary, System.StringComparison.OrdinalIgnoreCase))
+            {
+                return TopPanelControllerModePrimary;
+            }
+
+            return TopPanelControllerModeHidden;
         }
 
         private static bool HasSessionOverride(GameSessionOverride value)
@@ -694,6 +748,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 SettingsSchemaVersion = SettingsSchemaVersion,
                 EnableDebugLogging = EnableDebugLogging,
                 ShowPrimaryControllerInTopPanel = ShowPrimaryControllerInTopPanel,
+                TopPanelControllerMode = TopPanelControllerMode,
                 ColorTopPanelIndicatorByBattery = ColorTopPanelIndicatorByBattery,
                 EnableSessionTracking = EnableSessionTracking,
                 ShowDisconnectOverlay = ShowDisconnectOverlay,
@@ -779,7 +834,8 @@ namespace ControllerSessionManager.PlayniteIntegration
             EnableMonitoring = source.EnableMonitoring;
             SettingsSchemaVersion = source.SettingsSchemaVersion;
             EnableDebugLogging = source.EnableDebugLogging;
-            ShowPrimaryControllerInTopPanel = source.ShowPrimaryControllerInTopPanel;
+            showPrimaryControllerInTopPanel = source.showPrimaryControllerInTopPanel;
+            topPanelControllerMode = source.topPanelControllerMode;
             ColorTopPanelIndicatorByBattery = source.ColorTopPanelIndicatorByBattery;
             EnableSessionTracking = source.EnableSessionTracking;
             ShowDisconnectOverlay = source.ShowDisconnectOverlay;

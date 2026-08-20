@@ -16,20 +16,21 @@
         <local:NumberToThicknessConverter x:Key="NumberToThicknessConverter" />
         <local:NumberToCornerRadiusConverter x:Key="NumberToCornerRadiusConverter" />
         <local:OptionalBorderThicknessConverter x:Key="OptionalBorderThicknessConverter" />
+        <local:StringEqualsConverter x:Key="StringEqualsConverter" />
         <Style x:Key="SettingsToggleTitle" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
             <Setter Property="FontSize" Value="14" />
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
-        <Style x:Key="ColorPickerButton" TargetType="Button">
-            <Setter Property="Width" Value="34" />
-            <Setter Property="Height" Value="28" />
-            <Setter Property="MinWidth" Value="34" />
+        <Style x:Key="ColorPickerButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Width" Value="32" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="MinWidth" Value="32" />
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="MaxWidth" Value="32" />
+            <Setter Property="MaxHeight" Value="32" />
             <Setter Property="Padding" Value="4" />
             <Setter Property="Margin" Value="8,0,0,0" />
-            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
-            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource GlyphBrush}" />
             <Setter Property="ToolTip" Value="{DynamicResource LOCCSM_SelectColor}" />
         </Style>
         <Style x:Key="SectionHeaderText" TargetType="TextBlock">
@@ -54,7 +55,7 @@
         </Style>
         <Style x:Key="SectionSubtitleText" TargetType="TextBlock" BasedOn="{StaticResource HintText}">
             <Setter Property="FontStyle" Value="Italic" />
-            <Setter Property="Margin" Value="0,0,0,0" />
+            <Setter Property="Margin" Value="0,0,0,16" />
         </Style>
         <Style x:Key="NoteText" TargetType="TextBlock" BasedOn="{StaticResource HintText}">
             <Setter Property="FontStyle" Value="Italic" />
@@ -73,7 +74,19 @@
             <Setter Property="Margin" Value="22,8,0,0" />
         </Style>
         <Style x:Key="FieldHintText" TargetType="TextBlock" BasedOn="{StaticResource HintText}">
-            <Setter Property="Margin" Value="0,8,0,8" />
+            <Setter Property="Margin" Value="0,8,0,16" />
+        </Style>
+        <Style x:Key="IconSquareButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Width" Value="32" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="MinWidth" Value="32" />
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="MaxWidth" Value="32" />
+            <Setter Property="MaxHeight" Value="32" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0,0,8,0" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
         </Style>
         <Style x:Key="SliderValueText" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
@@ -128,8 +141,8 @@
             <Setter Property="Background" Value="{DynamicResource PopupBackgroundBrush}" />
             <Setter Property="BorderBrush" Value="{DynamicResource HighlightGlyphBrush}" />
             <Setter Property="BorderThickness" Value="4,1,1,1" />
-            <Setter Property="Padding" Value="14,12" />
-            <Setter Property="Margin" Value="0,0,0,24" />
+            <Setter Property="Padding" Value="16,12" />
+            <Setter Property="Margin" Value="0,0,0,16" />
             <Setter Property="CornerRadius" Value="4" />
             <Setter Property="MinHeight" Value="92" />
             <Setter Property="SnapsToDevicePixels" Value="True" />
@@ -320,54 +333,10 @@
             <Setter Property="TextAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Margin" Value="0,0,8,0" />
-            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         </Style>
         <Style x:Key="TabHeaderLabel" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
             <Setter Property="FontSize" Value="14" />
             <Setter Property="VerticalAlignment" Value="Center" />
-        </Style>
-        <Style x:Key="PreviewActionButton" TargetType="Button">
-            <Setter Property="MinWidth" Value="0" />
-            <Setter Property="MinHeight" Value="36" />
-            <Setter Property="Padding" Value="12,6" />
-            <Setter Property="Margin" Value="0,0,8,0" />
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="VerticalAlignment" Value="Stretch" />
-            <Setter Property="HorizontalContentAlignment" Value="Center" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
-            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource GlyphBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="PreviewButtonBorder"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="4"
-                                Padding="{TemplateBinding Padding}"
-                                SnapsToDevicePixels="True">
-                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                              TextElement.Foreground="{TemplateBinding Foreground}" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="PreviewButtonBorder" Property="Background" Value="{DynamicResource HoverBrush}" />
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="PreviewButtonBorder" Property="Opacity" Value="0.86" />
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Opacity" Value="0.5" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
         </Style>
         <Style x:Key="ExpanderHeaderButton" TargetType="ToggleButton">
             <Setter Property="Background" Value="Transparent" />
@@ -391,7 +360,7 @@
         <Style x:Key="SettingsExpander" TargetType="Expander">
             <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
             <Setter Property="FontSize" Value="14" />
-            <Setter Property="Margin" Value="0,0,0,16" />
+            <Setter Property="Margin" Value="0,0,0,8" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
@@ -414,38 +383,53 @@
                                                Fill="{DynamicResource ControlBackgroundBrush}" />
                                     <Rectangle x:Name="ExpanderAccent" Width="4" HorizontalAlignment="Left"
                                                RadiusX="4" RadiusY="4" Fill="Transparent" />
-                                    <ToggleButton Style="{StaticResource ExpanderHeaderButton}"
-                                                  Foreground="{DynamicResource TextBrush}"
-                                                  IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
-                                            <StackPanel Margin="16,10,8,10" VerticalAlignment="Center">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <ToggleButton Style="{StaticResource ExpanderHeaderButton}"
+                                                      Foreground="{DynamicResource TextBrush}"
+                                                      IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                            <Grid Margin="16,8,8,8" VerticalAlignment="Center">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                </Grid.RowDefinitions>
                                                 <ContentPresenter x:Name="ExpanderHeader" ContentSource="Header"
                                                                   RecognizesAccessKey="True"
+                                                                  HorizontalAlignment="Stretch"
                                                                   TextElement.Foreground="{DynamicResource TextBrush}" />
-                                                <TextBlock x:Name="ExpanderHint"
+                                                <TextBlock x:Name="ExpanderHint" Grid.Row="1"
                                                            Text="{DynamicResource LOCCSM_ExpandSectionHint}"
                                                            Style="{StaticResource HintText}"
                                                            Margin="0,8,0,0" />
-                                            </StackPanel>
-                                            <Border x:Name="ExpanderChevron" Grid.Column="1" Width="32" Height="32"
-                                                    CornerRadius="4" VerticalAlignment="Center" Margin="0,0,12,0"
-                                                    BorderBrush="{DynamicResource GlyphBrush}" BorderThickness="1">
-                                                <TextBlock x:Name="ExpanderArrow"
-                                                           FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
-                                                           Text="&#xE70D;" FontSize="14"
-                                                           Foreground="{DynamicResource TextBrush}"
-                                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                            </Border>
-                                        </Grid>
-                                    </ToggleButton>
+                                            </Grid>
+                                        </ToggleButton>
+                                        <Button x:Name="ExpanderChevron" Grid.Column="1"
+                                                Style="{StaticResource IconSquareButton}"
+                                                VerticalAlignment="Center"
+                                                Click="ExpanderChevronButton_OnClick">
+                                            <Viewbox Width="16" Height="16" Stretch="Uniform"
+                                                     HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <Viewbox.RenderTransform>
+                                                    <TranslateTransform X="-1" Y="-1" />
+                                                </Viewbox.RenderTransform>
+                                                <Canvas Width="24" Height="24">
+                                                    <Path x:Name="ExpanderArrow"
+                                                          Data="M6,9 L12,15 L18,9"
+                                                          Stroke="{DynamicResource TextBrush}" StrokeThickness="2"
+                                                          StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                                          StrokeLineJoin="Round" />
+                                                </Canvas>
+                                            </Viewbox>
+                                        </Button>
+                                    </Grid>
                                 </Grid>
                             </Border>
-                            <Border x:Name="ExpanderContent" Visibility="Collapsed" Padding="16,14,8,12"
-                                    TextElement.Foreground="{DynamicResource TextBrush}">
+                            <Border x:Name="ExpanderContent" Visibility="Collapsed" Padding="16,16,8,16"
+                                    TextElement.Foreground="{DynamicResource TextBrush}"
+                                    TextElement.FontSize="14">
                                 <ContentPresenter HorizontalAlignment="Stretch" />
                             </Border>
                         </DockPanel>
@@ -458,7 +442,7 @@
                                 <Setter TargetName="ExpanderFill" Property="Fill" Value="{DynamicResource HoverBrush}" />
                                 <Setter TargetName="ExpanderAccent" Property="Fill" Value="{DynamicResource GlyphBrush}" />
                                 <Setter TargetName="ExpanderHint" Property="Visibility" Value="Collapsed" />
-                                <Setter TargetName="ExpanderArrow" Property="Text" Value="&#xE70E;" />
+                                <Setter TargetName="ExpanderArrow" Property="Data" Value="M6,15 L12,9 L18,15" />
                                 <Setter TargetName="ExpanderHeader" Property="TextElement.FontWeight" Value="SemiBold" />
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -469,7 +453,6 @@
         <Style x:Key="SettingsNavigationTabItem" TargetType="TabItem">
             <Setter Property="OverridesDefaultStyle" Value="True" />
             <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-            <Setter Property="TextBlock.Foreground" Value="{DynamicResource TextBrush}" />
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
             <Setter Property="VerticalContentAlignment" Value="Stretch" />
             <Setter Property="FontSize" Value="14" />
@@ -479,23 +462,25 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TabItem">
-                        <Grid ClipToBounds="False">
+                        <Grid ClipToBounds="False" TextElement.Foreground="{TemplateBinding Foreground}">
                             <Rectangle x:Name="NavigationFill" RadiusX="4" RadiusY="4" Fill="Transparent" />
                             <Rectangle x:Name="NavigationAccent" Width="4" HorizontalAlignment="Left"
                                        RadiusX="4" RadiusY="4" Fill="Transparent" />
                             <ContentPresenter x:Name="NavigationHeader" ContentSource="Header"
                                               HorizontalAlignment="Left" VerticalAlignment="Center"
-                                              Margin="16,12,16,12"
-                                              TextElement.Foreground="{DynamicResource TextBrush}" />
+                                              Margin="16,8,16,8"
+                                              TextElement.Foreground="{TemplateBinding Foreground}" />
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="NavigationFill" Property="Fill" Value="{DynamicResource HoverBrush}" />
+                                <Setter Property="Foreground" Value="{DynamicResource TextBrushDark}" />
                             </Trigger>
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter TargetName="NavigationFill" Property="Fill" Value="{DynamicResource HoverBrush}" />
                                 <Setter TargetName="NavigationAccent" Property="Fill" Value="{DynamicResource GlyphBrush}" />
                                 <Setter TargetName="NavigationHeader" Property="TextElement.FontWeight" Value="SemiBold" />
+                                <Setter Property="Foreground" Value="{DynamicResource TextBrushDark}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -524,7 +509,7 @@
                                 <DockPanel LastChildFill="True">
                                     <TextBlock DockPanel.Dock="Top" Text="{TemplateBinding Tag}"
                                                Foreground="{DynamicResource TextBrush}" FontSize="20" FontWeight="SemiBold"
-                                               Margin="8,4,8,16" TextWrapping="Wrap" />
+                                               Margin="8,8,8,16" TextWrapping="Wrap" />
                                     <StackPanel x:Name="HeaderPanel" IsItemsHost="True" />
                                 </DockPanel>
                             </Border>
@@ -541,7 +526,6 @@
         <Style x:Key="TopTabItem" TargetType="TabItem">
             <Setter Property="OverridesDefaultStyle" Value="True" />
             <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-            <Setter Property="TextBlock.Foreground" Value="{DynamicResource TextBrush}" />
             <Setter Property="FontSize" Value="14" />
             <Setter Property="Margin" Value="0,0,8,0" />
             <Setter Property="MinWidth" Value="148" />
@@ -552,20 +536,22 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TabItem">
-                        <Grid ClipToBounds="False">
+                        <Grid ClipToBounds="False" TextElement.Foreground="{TemplateBinding Foreground}">
                             <Rectangle x:Name="TabFill" RadiusX="4" RadiusY="4" Fill="Transparent" />
                             <ContentPresenter x:Name="Header" ContentSource="Header"
                                               HorizontalAlignment="Center" VerticalAlignment="Center"
-                                              Margin="16,12"
-                                              TextElement.Foreground="{DynamicResource TextBrush}" />
+                                              Margin="16,8"
+                                              TextElement.Foreground="{TemplateBinding Foreground}" />
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="TabFill" Property="Fill" Value="{DynamicResource HoverBrush}" />
+                                <Setter Property="Foreground" Value="{DynamicResource TextBrushDark}" />
                             </Trigger>
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter TargetName="TabFill" Property="Fill" Value="{DynamicResource HoverBrush}" />
                                 <Setter TargetName="Header" Property="TextElement.FontWeight" Value="SemiBold" />
+                                <Setter Property="Foreground" Value="{DynamicResource TextBrushDark}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -585,7 +571,7 @@
                         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
                             <Border Background="{DynamicResource PopupBackgroundBrush}" CornerRadius="4"
-                                    Padding="6" ClipToBounds="False"
+                                    Padding="8" ClipToBounds="False"
                                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                 <WrapPanel x:Name="HeaderPanel" IsItemsHost="True" />
                             </Border>
@@ -603,7 +589,7 @@
         </Style>
     </UserControl.Resources>
 
-    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="16,14">
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="16,16">
         <TabControl x:Name="RootTabs" Style="{StaticResource TopTabs}" SelectionChanged="RootTabsSelectionChanged">
             <TabItem>
                 <TabItem.Header>
@@ -613,7 +599,7 @@
                     </StackPanel>
                 </TabItem.Header>
                 <ScrollViewer Style="{StaticResource FillScrollViewer}">
-                    <StackPanel Margin="8,4,8,16">
+                    <StackPanel Margin="8,8,8,16">
                         <StackPanel Style="{StaticResource PageSection}">
                             <Border Style="{StaticResource PageHeader}">
                                 <TextBlock Text="{DynamicResource LOCCSM_TabOverview}" Style="{StaticResource SectionHeaderText}" />
@@ -755,7 +741,7 @@
                                                                 <ColumnDefinition Width="Auto" />
                                                                 <ColumnDefinition Width="*" />
                                                             </Grid.ColumnDefinitions>
-                                                            <Viewbox Width="64" Height="64" Margin="0,0,14,0"
+                                                            <Viewbox Width="64" Height="64" Margin="0,0,16,0"
                                                                      VerticalAlignment="Center"
                                                                      HorizontalAlignment="Center">
                                                                 <Path Data="{Binding IconGeometry, Converter={StaticResource IconGeometryConverter}}"
@@ -771,10 +757,10 @@
                                                                            TextTrimming="CharacterEllipsis" />
                                                                 <WrapPanel Margin="0,8,0,0">
                                                                     <Border Style="{StaticResource CapabilityPill}"
-                                                                            Margin="0,0,8,6"
+                                                                            Margin="0,0,8,8"
                                                                             ToolTip="{Binding ConnectionTooltip}">
                                                                         <StackPanel Orientation="Horizontal">
-                                                                            <Viewbox Width="14" Height="14" Margin="0,0,6,0"
+                                                                            <Viewbox Width="16" Height="16" Margin="0,0,8,0"
                                                                                      VerticalAlignment="Center">
                                                                                 <Path Data="{Binding ConnectionIconGeometry, Converter={StaticResource IconGeometryConverter}}"
                                                                                       Stroke="{Binding ConnectionBrush}" StrokeThickness="2"
@@ -786,32 +772,33 @@
                                                                         </StackPanel>
                                                                     </Border>
                                                                     <Border Style="{StaticResource CapabilityPill}"
-                                                                            Margin="0,0,8,6"
+                                                                            Margin="0,0,8,8"
                                                                             ToolTip="{Binding BatteryTooltip}">
                                                                         <StackPanel Orientation="Horizontal">
                                                                             <Ellipse Width="8" Height="8" Fill="{Binding BatteryBrush}"
-                                                                                     Margin="0,0,6,0" VerticalAlignment="Center" />
+                                                                                     Margin="0,0,8,0" VerticalAlignment="Center" />
                                                                             <TextBlock Text="{Binding Battery}" Foreground="{Binding BatteryBrush}"
                                                                                        FontWeight="SemiBold" VerticalAlignment="Center" />
                                                                         </StackPanel>
                                                                     </Border>
                                                                     <Border Style="{StaticResource CapabilityPill}"
-                                                                            Margin="0,0,0,6"
+                                                                            Margin="0,0,0,8"
                                                                             ToolTip="{Binding ProviderTooltip}">
                                                                         <TextBlock Text="{Binding Provider}" />
                                                                     </Border>
                                                                 </WrapPanel>
                                                             </StackPanel>
                                                         </Grid>
-                                                        <Grid Grid.Row="1" Margin="0,12,0,0" IsEnabled="{Binding InteractionsEnabled}">
+                                                        <Grid Grid.Row="1" Margin="0,16,0,0" IsEnabled="{Binding InteractionsEnabled}">
                                                             <Grid.ColumnDefinitions>
                                                                 <ColumnDefinition Width="*" />
-                                                                <ColumnDefinition Width="12" />
+                                                                <ColumnDefinition Width="16" />
                                                                 <ColumnDefinition Width="*" />
                                                             </Grid.ColumnDefinitions>
                                                             <StackPanel>
-                                                                <TextBlock Text="{DynamicResource LOCCSM_UserName}" Style="{StaticResource FieldLabel}" />
+                                                                <TextBlock Text="{DynamicResource LOCCSM_CustomName}" Style="{StaticResource FieldLabel}" />
                                                                 <TextBox Text="{Binding Profile.CustomName, UpdateSourceTrigger=PropertyChanged}" />
+                                                                <TextBlock Text="{DynamicResource LOCCSM_CustomNameHelp}" Style="{StaticResource FieldHintText}" />
                                                             </StackPanel>
                                                             <StackPanel Grid.Column="2">
                                                                 <TextBlock Text="{DynamicResource LOCCSM_Icon}" Style="{StaticResource FieldLabel}" />
@@ -848,7 +835,7 @@
                                                                 </ComboBox>
                                                             </StackPanel>
                                                         </Grid>
-                                                        <Grid Grid.Row="2" Margin="0,12,0,0" IsEnabled="{Binding InteractionsEnabled}">
+                                                        <Grid Grid.Row="2" Margin="0,16,0,0" IsEnabled="{Binding InteractionsEnabled}">
                                                             <Grid.ColumnDefinitions>
                                                                 <ColumnDefinition Width="*" />
                                                                 <ColumnDefinition Width="8" />
@@ -907,7 +894,7 @@
                             </StackPanel>
                         </TabItem.Header>
                         <ScrollViewer Style="{StaticResource FillScrollViewer}">
-                            <StackPanel Margin="24,18,24,24">
+                            <StackPanel Margin="16,16,16,16">
                                 <StackPanel Style="{StaticResource PageSection}">
                                     <Border Style="{StaticResource PageHeader}">
                                         <TextBlock Text="{DynamicResource LOCCSM_SessionProtectionTitle}" Style="{StaticResource SectionHeaderText}" />
@@ -939,7 +926,7 @@
                             </StackPanel>
                         </TabItem.Header>
                         <ScrollViewer Style="{StaticResource FillScrollViewer}">
-                            <StackPanel Margin="24,18,24,24">
+                            <StackPanel Margin="16,16,16,16">
                                 <StackPanel Style="{StaticResource PageSection}">
                                     <Border Style="{StaticResource PageHeader}">
                                         <TextBlock Text="{DynamicResource LOCCSM_GamePolicyPauseSection}" Style="{StaticResource SectionHeaderText}" />
@@ -977,16 +964,27 @@
                             </StackPanel>
                         </TabItem.Header>
                         <ScrollViewer Style="{StaticResource FillScrollViewer}">
-                            <StackPanel Margin="24,18,24,24">
+                            <StackPanel Margin="16,16,16,16">
                                 <StackPanel Style="{StaticResource PageSection}">
                                     <Border Style="{StaticResource PageHeader}">
                                         <TextBlock Text="{DynamicResource LOCCSM_DesktopIntegrationTitle}" Style="{StaticResource SectionHeaderText}" />
                                     </Border>
                                     <TextBlock Text="{DynamicResource LOCCSM_ShowPrimaryInTopPanelHelp}" Style="{StaticResource SectionSubtitleText}" />
                                 </StackPanel>
-                                <CheckBox Content="{DynamicResource LOCCSM_ShowPrimaryInTopPanel}" IsChecked="{Binding ShowPrimaryControllerInTopPanel}" />
+                                <RadioButton Content="{DynamicResource LOCCSM_TopPanelModeHidden}"
+                                             GroupName="TopPanelControllerMode"
+                                             Margin="0,0,0,8"
+                                             IsChecked="{Binding TopPanelControllerMode, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Hidden}" />
+                                <RadioButton Content="{DynamicResource LOCCSM_TopPanelModeDefault}"
+                                             GroupName="TopPanelControllerMode"
+                                             Margin="0,0,0,8"
+                                             IsChecked="{Binding TopPanelControllerMode, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Default}" />
+                                <RadioButton Content="{DynamicResource LOCCSM_TopPanelModePrimary}"
+                                             GroupName="TopPanelControllerMode"
+                                             Margin="0,0,0,8"
+                                             IsChecked="{Binding TopPanelControllerMode, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Primary}" />
                                 <CheckBox Content="{DynamicResource LOCCSM_ColorTopPanelByBattery}" IsChecked="{Binding ColorTopPanelIndicatorByBattery}"
-                                          Margin="22,8,0,0" IsEnabled="{Binding ShowPrimaryControllerInTopPanel}" />
+                                          Margin="22,8,0,0" IsEnabled="{Binding IsTopPanelButtonVisible}" />
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>
@@ -998,7 +996,7 @@
                             </StackPanel>
                         </TabItem.Header>
                         <ScrollViewer Style="{StaticResource FillScrollViewer}">
-                            <StackPanel Margin="24,18,24,24">
+                            <StackPanel Margin="16,16,16,16">
                                 <StackPanel Style="{StaticResource PageSection}">
                                     <Border Style="{StaticResource PageHeader}">
                                         <TextBlock Text="{DynamicResource LOCCSM_ControllerNotificationTitle}" Style="{StaticResource SectionHeaderText}" />
@@ -1059,14 +1057,17 @@
                                             </StackPanel>
                                         </Grid>
                                         <TextBlock Text="{DynamicResource LOCCSM_PreviewNotification}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,16,0,8"/>
-                                        <UniformGrid Columns="3" Margin="0,0,-8,0">
+                                        <WrapPanel>
                                             <Button Content="{DynamicResource LOCCSM_ControllerConnectedToast}" Tag="connected"
-                                                    Style="{StaticResource PreviewActionButton}" Click="PreviewNotificationClick"/>
+                                                    Style="{DynamicResource BottomButton}" Margin="0,0,8,8"
+                                                    VerticalAlignment="Center" Click="PreviewNotificationClick"/>
                                             <Button Content="{DynamicResource LOCCSM_ControllerDisconnectedToast}" Tag="disconnected"
-                                                    Style="{StaticResource PreviewActionButton}" Click="PreviewNotificationClick"/>
+                                                    Style="{DynamicResource BottomButton}" Margin="0,0,8,8"
+                                                    VerticalAlignment="Center" Click="PreviewNotificationClick"/>
                                             <Button Content="{DynamicResource LOCCSM_NotificationWarningPreview}" Tag="warning"
-                                                    Style="{StaticResource PreviewActionButton}" Click="PreviewNotificationClick"/>
-                                        </UniformGrid>
+                                                    Style="{DynamicResource BottomButton}" Margin="0,0,0,8"
+                                                    VerticalAlignment="Center" Click="PreviewNotificationClick"/>
+                                        </WrapPanel>
                                         </StackPanel>
                                 </StackPanel>
                                 </Expander>
@@ -1124,14 +1125,17 @@
                                             </StackPanel>
                                         </Grid>
                                         <TextBlock Text="{DynamicResource LOCCSM_PreviewNotification}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,16,0,8"/>
-                                        <UniformGrid Columns="3" Margin="0,0,-8,0">
+                                        <WrapPanel>
                                             <Button Content="{DynamicResource LOCCSM_ControllerConnectedToast}" Tag="connected"
-                                                    Style="{StaticResource PreviewActionButton}" Click="PreviewDesktopNotificationClick"/>
+                                                    Style="{DynamicResource BottomButton}" Margin="0,0,8,8"
+                                                    VerticalAlignment="Center" Click="PreviewDesktopNotificationClick"/>
                                             <Button Content="{DynamicResource LOCCSM_ControllerDisconnectedToast}" Tag="disconnected"
-                                                    Style="{StaticResource PreviewActionButton}" Click="PreviewDesktopNotificationClick"/>
+                                                    Style="{DynamicResource BottomButton}" Margin="0,0,8,8"
+                                                    VerticalAlignment="Center" Click="PreviewDesktopNotificationClick"/>
                                             <Button Content="{DynamicResource LOCCSM_NotificationWarningPreview}" Tag="warning"
-                                                    Style="{StaticResource PreviewActionButton}" Click="PreviewDesktopNotificationClick"/>
-                                        </UniformGrid>
+                                                    Style="{DynamicResource BottomButton}" Margin="0,0,0,8"
+                                                    VerticalAlignment="Center" Click="PreviewDesktopNotificationClick"/>
+                                        </WrapPanel>
                                         </StackPanel>
                                 </StackPanel>
                                 </Expander>
@@ -1145,7 +1149,7 @@
                                 <TextBlock Text="{DynamicResource LOCCSM_OverlayAppearanceTitle}" Style="{StaticResource TabHeaderLabel}" />
                             </StackPanel>
                         </TabItem.Header>
-                        <Grid Margin="20,12,20,16" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Grid Margin="16,16,16,16" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
@@ -1295,7 +1299,7 @@
                             </StackPanel>
                         </TabItem.Header>
                         <ScrollViewer Style="{StaticResource FillScrollViewer}">
-                            <StackPanel Margin="24,18,24,24">
+                            <StackPanel Margin="16,16,16,16">
                                 <StackPanel Style="{StaticResource PageSection}">
                                     <Border Style="{StaticResource PageHeader}">
                                         <TextBlock Text="{DynamicResource LOCCSM_Monitoring}" Style="{StaticResource SectionHeaderText}" />
@@ -1319,7 +1323,7 @@
                             </StackPanel>
                         </TabItem.Header>
                 <ScrollViewer Style="{StaticResource FillScrollViewer}">
-                    <StackPanel Margin="24,18,24,24">
+                    <StackPanel Margin="16,16,16,16">
                         <StackPanel Style="{StaticResource PageSection}">
                             <Border Style="{StaticResource PageHeader}">
                                 <TextBlock Text="{DynamicResource LOCCSM_DiagnosticsTitle}" Style="{StaticResource SectionHeaderText}" />
@@ -1358,7 +1362,7 @@
                     </StackPanel>
                 </TabItem.Header>
                 <ScrollViewer Style="{StaticResource FillScrollViewer}">
-                    <StackPanel Margin="8,4,8,16">
+                    <StackPanel Margin="8,8,8,16">
                         <StackPanel Style="{StaticResource PageSection}">
                             <Border Style="{StaticResource PageHeader}">
                                 <TextBlock Text="{DynamicResource LOCCSM_TabAbout}" Style="{StaticResource SectionHeaderText}" />
@@ -1408,7 +1412,7 @@
                                     </Border>
                                 </StackPanel>
                                 <Button Content="{DynamicResource LOCCSM_KoFiSupport}" Tag="https://ko-fi.com/naerian"
-                                        HorizontalAlignment="Left" MinWidth="150" Padding="16,7"
+                                        HorizontalAlignment="Left" MinWidth="150" Padding="16,8"
                                         Style="{DynamicResource BottomButton}" Click="OpenExternalButton" />
                             </StackPanel>
                         </Grid>

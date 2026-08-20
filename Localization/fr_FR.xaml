@@ -64,6 +64,7 @@
     <sys:String x:Key="LOCCSM_ControllerProfilesHelp">Attribuez facultativement un nom Playnite et une icône à chaque manette détectée.</sys:String>
     <sys:String x:Key="LOCCSM_DetectedName">Nom détecté</sys:String>
     <sys:String x:Key="LOCCSM_CustomName">Nom personnalisé</sys:String>
+    <sys:String x:Key="LOCCSM_CustomNameHelp">Affiché dans Playnite, les notifications et la liste Manettes pour cette manette.</sys:String>
     <sys:String x:Key="LOCCSM_Icon">Icône</sys:String>
     <sys:String x:Key="LOCCSM_IconGeneric">Générique</sys:String>
     <sys:String x:Key="LOCCSM_NoIcon">Aucune</sys:String>
@@ -80,7 +81,10 @@
     <sys:String x:Key="LOCCSM_ControllerGeneralHelp">Choisissez comment les informations des manettes sont affichées dans le mode Bureau de Playnite.</sys:String>
     <sys:String x:Key="LOCCSM_DesktopIntegrationTitle">Accès rapide</sys:String>
     <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanel">Afficher l'icône et la batterie de la manette principale dans la barre supérieure</sys:String>
-    <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanelHelp">L'icône attribuée est toujours affichée. Le niveau de batterie est ajouté uniquement s'il est disponible.</sys:String>
+    <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanelHelp">Choisissez l’affichage de Controller Manager dans la barre supérieure de Playnite. L’info-bulle et la couleur de batterie restent actives lorsque le bouton est visible.</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelModeHidden">Ne pas afficher le bouton</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelModeDefault">Afficher l’icône par défaut</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelModePrimary">Afficher l’icône de la manette principale</sys:String>
     <sys:String x:Key="LOCCSM_ValueBluetooth">Bluetooth</sys:String>
     <sys:String x:Key="LOCCSM_VersionAuthorFormat">Version {0} | Narian</sys:String>
     <sys:String x:Key="LOCCSM_ProjectLinksTitle">Liens du projet</sys:String>
