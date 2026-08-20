@@ -340,6 +340,11 @@ namespace ControllerSessionManager.Tester
                 return button;
             }
 
+            if (!CanWalkVisualTree(root))
+            {
+                return null;
+            }
+
             var childCount = VisualTreeHelper.GetChildrenCount(root);
             for (var index = 0; index < childCount; index++)
             {
@@ -656,6 +661,11 @@ namespace ControllerSessionManager.Tester
                 return rootButton;
             }
 
+            if (!CanWalkVisualTree(root))
+            {
+                return null;
+            }
+
             var childCount = VisualTreeHelper.GetChildrenCount(root);
             for (var i = 0; i < childCount; i++)
             {
@@ -687,6 +697,13 @@ namespace ControllerSessionManager.Tester
                 return null;
             }
 
+            // ContentControl.Content can be a non-Visual DependencyObject (e.g. StreamGeometry).
+            // VisualTreeHelper throws on those; skip them so controller input cannot crash Playnite.
+            if (!CanWalkVisualTree(root))
+            {
+                return root as T;
+            }
+
             var childCount = VisualTreeHelper.GetChildrenCount(root);
             for (var i = 0; i < childCount; i++)
             {
@@ -715,6 +732,11 @@ namespace ControllerSessionManager.Tester
             }
 
             return null;
+        }
+
+        private static bool CanWalkVisualTree(DependencyObject node)
+        {
+            return node is Visual || node is System.Windows.Media.Media3D.Visual3D;
         }
 
         private void FocusFirstTesterControl()

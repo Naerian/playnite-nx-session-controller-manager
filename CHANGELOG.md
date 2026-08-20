@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.10 — 2026-08-20
+- Fixed a Desktop crash when controller input walked the visual tree into non-Visual content such as StreamGeometry (common with Bluetooth reconnects and D-pad navigation on some themes).
+
 ## 1.0.9 — 2026-08-20
 - Hide controllers with Unknown connection (typical charging-dock leftovers) from Mandos, TopBar/theme status and connect/disconnect toasts so dock bounce no longer doubles notifications or shows a fake connected pad.
 - Replaced the top-panel checkbox with three modes: hidden, default icon (`gamepad-tester.svg`), or primary controller icon.

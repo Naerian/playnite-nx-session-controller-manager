@@ -473,7 +473,7 @@ namespace ControllerSessionManager.Tester.Views.ThemeIntegration
 
             var contentControl = root as ContentControl;
             var content = contentControl == null ? null : contentControl.Content as DependencyObject;
-            if (content != null && childCount == 0)
+            if (content != null && childCount == 0 && (content is Visual || content is System.Windows.Media.Media3D.Visual3D))
             {
                 foreach (var match in FindNamedButtons(content, name))
                 {
