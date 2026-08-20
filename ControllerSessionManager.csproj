@@ -78,6 +78,7 @@
     <Compile Include="PlayniteIntegration\ControllerConnectionIcons.cs" />
     <Compile Include="PlayniteIntegration\IconGeometryConverter.cs" />
     <Compile Include="PlayniteIntegration\AppearanceConverters.cs" />
+    <Compile Include="PlayniteIntegration\SettingsAppearance.cs" />
     <Compile Include="PlayniteIntegration\ColorPickerMath.cs" />
     <Compile Include="PlayniteIntegration\ColorPickerDialog.xaml.cs">
       <DependentUpon>ColorPickerDialog.xaml</DependentUpon>
@@ -288,6 +289,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="PlayniteIntegration\ControllerSessionManagerSettingsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="PlayniteIntegration\SettingsChrome.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

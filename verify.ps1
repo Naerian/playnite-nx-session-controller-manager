@@ -44,7 +44,7 @@ foreach ($fileName in $expectedFiles) {
 
 $assemblyPath = Join-Path $root "bin\$Configuration\ControllerSessionManager.dll"
 $assemblyName = [Reflection.AssemblyName]::GetAssemblyName($assemblyPath)
-if ($assemblyName.Version.ToString() -ne "1.0.10.0") {
+if ($assemblyName.Version.ToString() -ne "1.0.17.0") {
     throw "Unexpected assembly version: $($assemblyName.Version)"
 }
 
@@ -53,7 +53,7 @@ if (-not (Test-Path -LiteralPath $overlayPath)) {
     throw "Build output is missing ControllerSessionManager.OverlayHost.exe"
 }
 $overlayName = [Reflection.AssemblyName]::GetAssemblyName($overlayPath)
-if ($overlayName.Version.ToString() -ne "1.0.10.0") {
+if ($overlayName.Version.ToString() -ne "1.0.17.0") {
     throw "Unexpected overlay host version: $($overlayName.Version)"
 }
 
@@ -62,7 +62,7 @@ if (-not (Test-Path -LiteralPath $testerHostPath)) {
     throw "Build output is missing ControllerSessionManager.TesterHost.exe"
 }
 $testerHostName = [Reflection.AssemblyName]::GetAssemblyName($testerHostPath)
-if ($testerHostName.Version.ToString() -ne "1.0.10.0") {
+if ($testerHostName.Version.ToString() -ne "1.0.17.0") {
     throw "Unexpected tester host version: $($testerHostName.Version)"
 }
 

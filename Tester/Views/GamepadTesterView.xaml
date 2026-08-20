@@ -8,6 +8,7 @@
              TextElement.FontSize="14"
              TextElement.FontWeight="Normal"
              TextElement.Foreground="{DynamicResource TextBrush}"
+             Background="{DynamicResource Narian.Bg}"
              HorizontalAlignment="Stretch"
              VerticalAlignment="Stretch">
     <UserControl.Resources>
@@ -30,12 +31,12 @@
                                          TrueBrush="{StaticResource ActivePillTextBrush}" />
 
         <Style x:Key="SectionHeaderText" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{DynamicResource GlyphBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource Narian.Accent}" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="FontSize" Value="20" />
         </Style>
         <Style x:Key="PageHeader" TargetType="Border">
-            <Setter Property="BorderBrush" Value="{DynamicResource GlyphBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Narian.Border}" />
             <Setter Property="BorderThickness" Value="0,0,0,1" />
             <Setter Property="Padding" Value="0,0,0,8" />
             <Setter Property="Margin" Value="0,0,0,8" />
@@ -50,6 +51,9 @@
         <Style x:Key="FieldLabel" TargetType="TextBlock" BasedOn="{StaticResource BodyText}">
             <Setter Property="Margin" Value="0,0,0,4" />
         </Style>
+        <Style x:Key="FieldGroup" TargetType="StackPanel">
+            <Setter Property="Margin" Value="0,0,0,24" />
+        </Style>
 
         <Style TargetType="TextBlock">
             <Setter Property="FontWeight" Value="Normal" />
@@ -57,11 +61,11 @@
             <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         </Style>
         <Style x:Key="HintText" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource GlyphBrush}" />
             <Setter Property="FontSize" Value="12" />
             <Setter Property="FontWeight" Value="Normal" />
             <Setter Property="FontStyle" Value="Normal" />
-            <Setter Property="Opacity" Value="0.78" />
+            <Setter Property="Opacity" Value="1" />
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
         <Style x:Key="HintUnderLabel" TargetType="TextBlock" BasedOn="{StaticResource HintText}">
@@ -85,19 +89,19 @@
         </Style>
 
         <Style x:Key="DashboardPanel" TargetType="Border">
-            <Setter Property="Background" Value="{DynamicResource PopupBackgroundBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource HighlightGlyphBrush}" />
-            <Setter Property="BorderThickness" Value="4,1,1,1" />
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Narian.Border}" />
+            <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="4" />
-            <Setter Property="Padding" Value="14,12" />
-            <Setter Property="Margin" Value="0,0,0,24" />
+            <Setter Property="Padding" Value="16,12" />
+            <Setter Property="Margin" Value="0,0,0,16" />
             <Setter Property="MinHeight" Value="92" />
             <Setter Property="SnapsToDevicePixels" Value="True" />
             <Setter Property="TextElement.Foreground" Value="{DynamicResource TextBrush}" />
         </Style>
 
-        <Style x:Key="DashboardTitle" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+        <Style x:Key="DashboardTitle" TargetType="TextBlock" BasedOn="{StaticResource BodyText}">
+            <Setter Property="Foreground" Value="{DynamicResource Narian.Accent}" />
             <Setter Property="FontSize" Value="14" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -116,7 +120,7 @@
         </Style>
 
         <Style x:Key="SubtleHorizontalSeparator" TargetType="Border">
-            <Setter Property="BorderBrush" Value="{DynamicResource GlyphBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Narian.Border}" />
             <Setter Property="BorderThickness" Value="0,0,0,1" />
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="Padding" Value="0,0,0,8" />
@@ -126,9 +130,9 @@
         </Style>
 
         <Style x:Key="InputPill" TargetType="Border">
-            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource GlyphBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Background" Value="{DynamicResource Narian.BadgeBg}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Narian.Border}" />
+            <Setter Property="BorderThickness" Value="0" />
             <Setter Property="CornerRadius" Value="4" />
             <Setter Property="Padding" Value="8,2" />
             <Setter Property="MinHeight" Value="22" />
@@ -222,9 +226,10 @@
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
             <Setter Property="VerticalContentAlignment" Value="Stretch" />
             <Setter Property="FontSize" Value="14" />
-            <Setter Property="Margin" Value="0,0,0,8" />
+            <Setter Property="Margin" Value="0,0,0,6" />
             <Setter Property="MinHeight" Value="44" />
             <Setter Property="ClipToBounds" Value="False" />
+            <Setter Property="Cursor" Value="Hand" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TabItem">
@@ -239,14 +244,14 @@
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="NavigationFill" Property="Fill" Value="{DynamicResource HoverBrush}" />
-                                <Setter Property="Foreground" Value="{DynamicResource TextBrushDark}" />
+                                <Setter TargetName="NavigationFill" Property="Fill" Value="{DynamicResource Narian.Hover}" />
+                                <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
                             </Trigger>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="NavigationFill" Property="Fill" Value="{DynamicResource HoverBrush}" />
-                                <Setter TargetName="NavigationAccent" Property="Fill" Value="{DynamicResource GlyphBrush}" />
+                                <Setter TargetName="NavigationFill" Property="Fill" Value="{DynamicResource Narian.Selected}" />
+                                <Setter TargetName="NavigationAccent" Property="Fill" Value="{DynamicResource Narian.Accent}" />
                                 <Setter TargetName="NavigationHeader" Property="TextElement.FontWeight" Value="SemiBold" />
-                                <Setter Property="Foreground" Value="{DynamicResource TextBrushDark}" />
+                                <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -272,15 +277,17 @@
                         <Grid KeyboardNavigation.TabNavigation="Local" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="268" />
-                                <ColumnDefinition Width="20" />
+                                <ColumnDefinition Width="16" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <Border Background="{DynamicResource PopupBackgroundBrush}" CornerRadius="4"
-                                    Padding="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <Border Background="{DynamicResource ControlBackgroundBrush}" CornerRadius="4"
+                                    Padding="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                    BorderThickness="0"
+                                    ClipToBounds="False">
                                 <DockPanel LastChildFill="True">
                                     <TextBlock DockPanel.Dock="Top" Text="{TemplateBinding Tag}"
-                                               Foreground="{DynamicResource TextBrush}" FontSize="20" FontWeight="SemiBold"
-                                               Margin="8,4,8,20" TextWrapping="Wrap" />
+                                               Foreground="{DynamicResource Narian.Accent}" FontSize="14" FontWeight="SemiBold"
+                                               Margin="8,8,8,16" TextWrapping="Wrap" />
                                     <ComboBox DockPanel.Dock="Top"
                                               Margin="8,0,8,4"
                                               MaxDropDownHeight="320"
@@ -314,7 +321,7 @@
                                                   HorizontalAlignment="Stretch"
                                                   VerticalAlignment="Stretch"
                                                   ClipToBounds="False" />
-                                <Border Background="{DynamicResource PopupBackgroundBrush}"
+                                <Border Background="{DynamicResource ControlBackgroundBrush}"
                                         CornerRadius="4"
                                         Padding="28"
                                         HorizontalAlignment="Stretch"
@@ -329,7 +336,7 @@
                                                    FontWeight="SemiBold"
                                                    TextAlignment="Center"
                                                    TextWrapping="Wrap"
-                                                   Foreground="{DynamicResource TextBrush}" />
+                                                   Foreground="{DynamicResource Narian.Accent}" />
                                     </StackPanel>
                                 </Border>
                             </Grid>
@@ -1498,20 +1505,11 @@
                                     Margin="0,0,0,12"
                                     Padding="24,22"
                                     VerticalAlignment="Stretch">
-                                <StackPanel VerticalAlignment="Center">
-                                    <Grid Margin="0,0,0,18">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel>
-                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_CompatibilityAssistant}" Style="{StaticResource DashboardTitle}" />
-                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_CompatibilityAssistantHelp}"
-                                                       Style="{StaticResource HintText}"
-                                                       Margin="0,8,18,0" />
-                                        </StackPanel>
+                                <StackPanel VerticalAlignment="Top">
+                                    <DockPanel LastChildFill="True" Margin="0,0,0,0">
                                         <Border x:Name="CompatibilityStatusBadge"
-                                                Grid.Column="1">
+                                                DockPanel.Dock="Right"
+                                                Margin="12,0,0,0">
                                             <TextBlock Text="{Binding CompatibilityAssistantStatusLabel}"
                                                        FontWeight="Normal"
                                                        FontSize="12"
@@ -1519,7 +1517,7 @@
                                             <Border.Style>
                                                 <Style TargetType="Border" BasedOn="{StaticResource InputPill}">
                                                     <Setter Property="Margin" Value="0" />
-                                                    <Setter Property="VerticalAlignment" Value="Top" />
+                                                    <Setter Property="VerticalAlignment" Value="Center" />
                                                     <Setter Property="Background" Value="#667080" />
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding CompatibilityAssistantStatus}" Value="Ready">
@@ -1538,8 +1536,14 @@
                                                 </Style>
                                             </Border.Style>
                                         </Border>
-                                    </Grid>
-                                    <Border Style="{StaticResource SubtleHorizontalSeparator}" Margin="0,0,0,16" />
+                                        <TextBlock Text="{DynamicResource LOCCSM_Tester_CompatibilityAssistant}"
+                                                   Style="{StaticResource DashboardTitle}"
+                                                   VerticalAlignment="Center" />
+                                    </DockPanel>
+                                    <Border Style="{StaticResource SubtleHorizontalSeparator}" />
+                                    <TextBlock Text="{DynamicResource LOCCSM_Tester_CompatibilityAssistantHelp}"
+                                               Style="{StaticResource HintText}"
+                                               Margin="0,0,0,16" />
                                     <Grid Margin="0,0,0,16">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
@@ -1786,14 +1790,16 @@
                                                Style="{StaticResource SectionHeaderText}" />
                                 </Border>
                             </StackPanel>
-                            <CheckBox Content="{DynamicResource LOCCSM_Tester_SettingsShowSidebar}"
-                                      IsChecked="{Binding Settings.ShowSidebarItem}" />
-                            <TextBlock Text="{DynamicResource LOCCSM_Tester_SettingsShowSidebarHelp}"
-                                       Style="{StaticResource HintText}" Margin="22,8,0,16" />
-                            <CheckBox Content="{DynamicResource LOCCSM_Tester_SettingsFullscreenWindow}"
-                                      IsChecked="{Binding Settings.UseFullscreenFriendlyWindow}" />
-                            <TextBlock Text="{DynamicResource LOCCSM_Tester_SettingsFullscreenWindowHelp}"
-                                       Style="{StaticResource HintText}" Margin="22,8,0,24" />
+                            <StackPanel Style="{StaticResource FieldGroup}">
+                                <CheckBox Content="{DynamicResource LOCCSM_Tester_SettingsShowSidebar}"
+                                          IsChecked="{Binding Settings.ShowSidebarItem}" />
+                                <TextBlock Text="{DynamicResource LOCCSM_Tester_SettingsShowSidebarHelp}"
+                                           Style="{StaticResource HintText}" Margin="0,8,0,16" />
+                                <CheckBox Content="{DynamicResource LOCCSM_Tester_SettingsFullscreenWindow}"
+                                          IsChecked="{Binding Settings.UseFullscreenFriendlyWindow}" />
+                                <TextBlock Text="{DynamicResource LOCCSM_Tester_SettingsFullscreenWindowHelp}"
+                                           Style="{StaticResource HintText}" Margin="0,8,0,0" />
+                            </StackPanel>
 
                             <StackPanel Margin="0,0,0,24">
                                 <Border Style="{StaticResource PageHeader}">
@@ -1801,14 +1807,16 @@
                                                Style="{StaticResource SectionHeaderText}" />
                                 </Border>
                             </StackPanel>
-                            <CheckBox Content="{DynamicResource LOCCSM_Tester_SettingsResetOnSwitch}"
-                                      IsChecked="{Binding Settings.AutoResetDiagnosticsOnControllerChange}" Margin="0,0,0,8" />
-                            <CheckBox Content="{DynamicResource LOCCSM_Tester_SettingsShowSingleSelector}"
-                                      IsChecked="{Binding Settings.ShowDeviceSelectorWhenSingleController}" Margin="0,0,0,8" />
-                            <CheckBox Content="{DynamicResource LOCCSM_Tester_SettingsEnableRumble}"
-                                      IsChecked="{Binding Settings.EnableRumbleTests}" Margin="0,0,0,8" />
-                            <CheckBox Content="{DynamicResource LOCCSM_Tester_SettingsInputLogDefault}"
-                                      IsChecked="{Binding Settings.EnableInputLogByDefault}" Margin="0,0,0,24" />
+                            <StackPanel Style="{StaticResource FieldGroup}">
+                                <CheckBox Content="{DynamicResource LOCCSM_Tester_SettingsResetOnSwitch}"
+                                          IsChecked="{Binding Settings.AutoResetDiagnosticsOnControllerChange}" Margin="0,0,0,8" />
+                                <CheckBox Content="{DynamicResource LOCCSM_Tester_SettingsShowSingleSelector}"
+                                          IsChecked="{Binding Settings.ShowDeviceSelectorWhenSingleController}" Margin="0,0,0,8" />
+                                <CheckBox Content="{DynamicResource LOCCSM_Tester_SettingsEnableRumble}"
+                                          IsChecked="{Binding Settings.EnableRumbleTests}" Margin="0,0,0,8" />
+                                <CheckBox Content="{DynamicResource LOCCSM_Tester_SettingsInputLogDefault}"
+                                          IsChecked="{Binding Settings.EnableInputLogByDefault}" />
+                            </StackPanel>
 
                             <StackPanel Margin="0,0,0,24">
                                 <Border Style="{StaticResource PageHeader}">
@@ -1818,6 +1826,7 @@
                                 <TextBlock Text="{DynamicResource LOCCSM_Tester_SettingsThresholdsHelp}"
                                            Style="{StaticResource HintText}" FontStyle="Italic" />
                             </StackPanel>
+                            <StackPanel Style="{StaticResource FieldGroup}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -1845,6 +1854,7 @@
                                 <TextBlock Grid.Row="5" Text="{DynamicResource LOCCSM_Tester_SettingsCalibrationDuration}" Style="{StaticResource FieldLabel}" />
                                 <TextBox Grid.Row="5" Grid.Column="2" Text="{Binding Settings.CenterCalibrationMilliseconds}" />
                             </Grid>
+                            </StackPanel>
                         </StackPanel>
                     </ScrollViewer>
                 </TabItem>

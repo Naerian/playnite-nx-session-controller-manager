@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using ControllerSessionManager.Controllers;
@@ -69,12 +71,19 @@ namespace ControllerSessionManager.PlayniteIntegration
                 boundSettings.PropertyChanged += OnBoundSettingsPropertyChanged;
             }
 
+            ApplyAppearancePreset();
+            BuildAppearancePresetChips();
             RefreshOverlayPreviewControllerLayout();
         }
 
         private void OnBoundSettingsPropertyChanged(object sender,
             System.ComponentModel.PropertyChangedEventArgs args)
         {
+            if (args != null && args.PropertyName == "AppearancePreset")
+            {
+                ApplyAppearancePreset();
+            }
+
             if (args == null ||
                 string.IsNullOrEmpty(args.PropertyName) ||
                 args.PropertyName == "OverlayControllerIconPosition" ||
@@ -196,6 +205,8 @@ namespace ControllerSessionManager.PlayniteIntegration
         private void OnLoaded(object sender, RoutedEventArgs args)
         {
             plugin.ControllerSnapshotChanged += OnControllerSnapshotChanged;
+            ApplyAppearancePreset();
+            BuildAppearancePresetChips();
             ApplyPreferredWindowSize();
             AttachToHost();
             ApplyLegacyTesterWarning();
@@ -209,6 +220,200 @@ namespace ControllerSessionManager.PlayniteIntegration
             Dispatcher.BeginInvoke(new Action(FillSelectedContentHosts), DispatcherPriority.Loaded);
             Dispatcher.BeginInvoke(new Action(FillSelectedContentHosts), DispatcherPriority.ApplicationIdle);
             RefreshOverview();
+        }
+
+        private void ApplyAppearancePreset()
+        {
+            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            var preset = settings != null ? settings.AppearancePreset : SettingsAppearance.Midnight;
+            SettingsAppearance.Apply(this, preset);
+            RefreshAppearancePresetChips();
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                var palette = SettingsAppearance.GetPalette(preset);
+                SettingsAppearance.ApplyHostChrome(this, palette);
+            }), DispatcherPriority.Loaded);
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                var palette = SettingsAppearance.GetPalette(preset);
+                SettingsAppearance.ApplyHostChrome(this, palette);
+            }), DispatcherPriority.ApplicationIdle);
+        }
+
+        private void BuildAppearancePresetChips()
+        {
+            if (AppearancePresetChips == null)
+            {
+                return;
+            }
+
+            AppearancePresetChips.Children.Clear();
+            var options = new[]
+            {
+                Tuple.Create(SettingsAppearance.Midnight, "LOCCSM_PresetMidnight", "Midnight"),
+                Tuple.Create(SettingsAppearance.Paper, "LOCCSM_PresetPaper", "Paper"),
+                Tuple.Create(SettingsAppearance.Oled, "LOCCSM_PresetOled", "OLED"),
+                Tuple.Create(SettingsAppearance.Ocean, "LOCCSM_PresetOcean", "Ocean"),
+                Tuple.Create(SettingsAppearance.Ember, "LOCCSM_PresetEmber", "Ember")
+            };
+
+            foreach (var option in options)
+            {
+                var label = plugin == null ? option.Item3 : plugin.Loc(option.Item2);
+                if (string.IsNullOrWhiteSpace(label) || label == option.Item2)
+                {
+                    label = option.Item3;
+                }
+
+                var button = new Button
+                {
+                    Content = label,
+                    Tag = option.Item1,
+                    MinHeight = 36,
+                    Height = 36,
+                    MinWidth = 88,
+                    Padding = new Thickness(12, 0, 12, 0),
+                    Margin = new Thickness(0, 0, 8, 8),
+                    Cursor = Cursors.Hand,
+                    Focusable = true,
+                    BorderThickness = new Thickness(1),
+                    FontSize = 14,
+                    Template = CreateAppearanceChipTemplate()
+                };
+                button.Click += AppearancePresetChip_OnClick;
+                button.MouseEnter += AppearancePresetChip_OnMouseEnter;
+                button.MouseLeave += AppearancePresetChip_OnMouseLeave;
+                AppearancePresetChips.Children.Add(button);
+            }
+
+            RefreshAppearancePresetChips();
+        }
+
+        private static ControlTemplate CreateAppearanceChipTemplate()
+        {
+            var template = new ControlTemplate(typeof(Button));
+            var border = new FrameworkElementFactory(typeof(Border));
+            border.Name = "Bd";
+            border.SetValue(Border.CornerRadiusProperty, new CornerRadius(4));
+            border.SetValue(Border.SnapsToDevicePixelsProperty, true);
+            border.SetBinding(Border.BackgroundProperty, new System.Windows.Data.Binding("Background")
+            {
+                RelativeSource = new System.Windows.Data.RelativeSource(System.Windows.Data.RelativeSourceMode.TemplatedParent)
+            });
+            border.SetBinding(Border.BorderBrushProperty, new System.Windows.Data.Binding("BorderBrush")
+            {
+                RelativeSource = new System.Windows.Data.RelativeSource(System.Windows.Data.RelativeSourceMode.TemplatedParent)
+            });
+            border.SetBinding(Border.BorderThicknessProperty, new System.Windows.Data.Binding("BorderThickness")
+            {
+                RelativeSource = new System.Windows.Data.RelativeSource(System.Windows.Data.RelativeSourceMode.TemplatedParent)
+            });
+            border.SetBinding(Border.PaddingProperty, new System.Windows.Data.Binding("Padding")
+            {
+                RelativeSource = new System.Windows.Data.RelativeSource(System.Windows.Data.RelativeSourceMode.TemplatedParent)
+            });
+            var presenter = new FrameworkElementFactory(typeof(ContentPresenter));
+            presenter.SetValue(ContentPresenter.HorizontalAlignmentProperty, HorizontalAlignment.Center);
+            presenter.SetValue(ContentPresenter.VerticalAlignmentProperty, VerticalAlignment.Center);
+            presenter.SetBinding(TextElement.ForegroundProperty, new System.Windows.Data.Binding("Foreground")
+            {
+                RelativeSource = new System.Windows.Data.RelativeSource(System.Windows.Data.RelativeSourceMode.TemplatedParent)
+            });
+            border.AppendChild(presenter);
+            template.VisualTree = border;
+            return template;
+        }
+
+        private void AppearancePresetChip_OnMouseEnter(object sender, MouseEventArgs e)
+        {
+            var button = sender as Button;
+            if (button == null || IsAppearanceChipSelected(button))
+            {
+                return;
+            }
+
+            var palette = GetCurrentAppearancePalette();
+            button.Background = new SolidColorBrush(palette.Hover);
+        }
+
+        private void AppearancePresetChip_OnMouseLeave(object sender, MouseEventArgs e)
+        {
+            var button = sender as Button;
+            if (button == null || IsAppearanceChipSelected(button))
+            {
+                return;
+            }
+
+            var palette = GetCurrentAppearancePalette();
+            button.Background = new SolidColorBrush(palette.BadgeBg);
+        }
+
+        private bool IsAppearanceChipSelected(Button button)
+        {
+            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            var selected = settings != null
+                ? SettingsAppearance.Normalize(settings.AppearancePreset)
+                : SettingsAppearance.Midnight;
+            return string.Equals(button.Tag as string, selected, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private SettingsAppearance.Palette GetCurrentAppearancePalette()
+        {
+            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            var selected = settings != null ? settings.AppearancePreset : SettingsAppearance.Midnight;
+            return SettingsAppearance.GetPalette(selected);
+        }
+
+        private void AppearancePresetChip_OnClick(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var preset = button == null ? null : button.Tag as string;
+            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            if (settings == null || string.IsNullOrWhiteSpace(preset))
+            {
+                return;
+            }
+
+            settings.AppearancePreset = preset;
+            ApplyAppearancePreset();
+        }
+
+        private void RefreshAppearancePresetChips()
+        {
+            if (AppearancePresetChips == null)
+            {
+                return;
+            }
+
+            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            var selected = settings != null
+                ? SettingsAppearance.Normalize(settings.AppearancePreset)
+                : SettingsAppearance.Midnight;
+            var palette = SettingsAppearance.GetPalette(selected);
+            var accent = new SolidColorBrush(palette.Accent);
+            var accentOn = new SolidColorBrush(palette.AccentOn);
+            var badgeBg = new SolidColorBrush(palette.BadgeBg);
+            var text = new SolidColorBrush(palette.Text);
+            accent.Freeze();
+            accentOn.Freeze();
+            badgeBg.Freeze();
+            text.Freeze();
+
+            foreach (var child in AppearancePresetChips.Children)
+            {
+                var button = child as Button;
+                if (button == null)
+                {
+                    continue;
+                }
+
+                var isSelected = string.Equals(button.Tag as string, selected, StringComparison.OrdinalIgnoreCase);
+                button.Background = isSelected ? accent : badgeBg;
+                button.Foreground = isSelected ? accentOn : text;
+                button.BorderBrush = isSelected ? accent : new SolidColorBrush(palette.Border);
+                button.BorderThickness = new Thickness(1);
+                button.FontWeight = isSelected ? FontWeights.SemiBold : FontWeights.Normal;
+            }
         }
 
         private void AttachToHost()
@@ -595,7 +800,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             XInputStatusPillText.Text = connected.Count > 0
                 ? plugin.Loc("LOCCSM_BadgeActive")
                 : plugin.Loc("LOCCSM_BadgeReady");
-            ApplyStatusBadgeAppearance(XInputStatusPillText, "PositiveRatingBrush");
+            ApplyStatusBadgeAppearance(XInputStatusPillText, "PositiveRatingBrush", "Narian.BadgeSuccessBg");
             LastRefreshText.Text = DateTime.Now.ToString("T", CultureInfo.CurrentCulture);
             SessionStatusText.Text = plugin.GetSessionStatusText();
             SessionStatusPillText.Text = plugin.GetSessionStatusBadge();
@@ -637,20 +842,20 @@ namespace ControllerSessionManager.PlayniteIntegration
             if (badge == plugin.Loc("LOCCSM_BadgeAlert") ||
                 badge == plugin.Loc("LOCCSM_BadgeWaiting"))
             {
-                ApplyStatusBadgeAppearance(SessionStatusPillText, "WarningBrush");
+                ApplyStatusBadgeAppearance(SessionStatusPillText, "WarningBrush", "Narian.BadgeWarningBg");
                 return;
             }
 
             if (badge == plugin.Loc("LOCCSM_BadgeIdle"))
             {
-                ApplyStatusBadgeAppearance(SessionStatusPillText, "GlyphBrush", 0.65);
+                ApplyStatusBadgeAppearance(SessionStatusPillText, "GlyphBrush", "Narian.BadgeMutedBg");
                 return;
             }
 
-            ApplyStatusBadgeAppearance(SessionStatusPillText, "PositiveRatingBrush");
+            ApplyStatusBadgeAppearance(SessionStatusPillText, "PositiveRatingBrush", "Narian.BadgeSuccessBg");
         }
 
-        private static void ApplyStatusBadgeAppearance(TextBlock textBlock, string brushKey, double opacity = 1.0)
+        private static void ApplyStatusBadgeAppearance(TextBlock textBlock, string brushKey, string backgroundKey)
         {
             if (textBlock == null || string.IsNullOrWhiteSpace(brushKey))
             {
@@ -680,9 +885,12 @@ namespace ControllerSessionManager.PlayniteIntegration
                 return;
             }
 
-            // Keep border in sync with the status text color (theme Positive/Warning/Glyph).
-            badge.SetResourceReference(Border.BorderBrushProperty, brushKey);
-            badge.Opacity = opacity;
+            badge.BorderThickness = new Thickness(0);
+            badge.Opacity = 1.0;
+            if (!string.IsNullOrWhiteSpace(backgroundKey))
+            {
+                badge.SetResourceReference(Border.BackgroundProperty, backgroundKey);
+            }
         }
 
         private ControllerRow CreateRow(ControllerDeviceSnapshot controller)

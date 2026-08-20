@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.0.17 — 2026-08-20
+- Redesigned settings with the shared Narian chrome: own background, text, borders, accents, inputs, buttons, tabs, navigation, badges, and scrollbars instead of relying on the Playnite theme for contrast.
+- Added five appearance presets (Midnight, Paper, OLED, Ocean, Ember) so layout structure stays fixed while colors change.
+- Unified type and spacing scale (20/14/12 type, 4/8/16/24 spacing, radius 4, control height 36).
+- Forms sit flat on the page background with section headers; elevated cards are reserved for Overview summary tiles, Controllers, Tester live panels, and the About narrative.
+- Overview and Controllers card title underlines use the same border color as the card; Controllers cards are titled with the device name.
+- Unified controls: TextBox, PasswordBox, ComboBox, CheckBox, and RadioButton share Narian chrome; badges are neutral or status-tinted without shadows; sliders match Audio Switcher.
+- About tab matches Metadata AI (GitHub, Wiki, issue, Ko-fi); add-on description uses the Galva store wording.
+- Tester sidebar and live panels (including Guided test) use the same Narian surface/accent chrome; Device info cards use accent titles with separators.
+- Notifications and Overlay appearance options are nested in compact expanders; Overlay keeps a sticky ~60/40 live preview beside the controls.
+- FieldGroup spacing keeps a consistent 24 px gap before the next section title; SETTINGS-UI-GUIDE updated for alignment with other Narian plugins.
+- Overview session cards use “Suspend on disconnect” / “Suspended controllers” with updated idle and empty-tracking copy.
+
 ## 1.0.10 — 2026-08-20
 - Fixed a Desktop crash when controller input walked the visual tree into non-Visual content such as StreamGeometry (common with Bluetooth reconnects and D-pad navigation on some themes).
 

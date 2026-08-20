@@ -88,6 +88,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private bool allowControllerTakeover = true;
         private bool protectAllActiveControllers;
         private int settingsSchemaVersion;
+        private string appearancePreset = SettingsAppearance.Midnight;
         private bool pauseGameOnDisconnect;
         private int disconnectGracePeriodMilliseconds = 1500;
         private int reconciliationIntervalSeconds = 5;
@@ -125,6 +126,12 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             get { return settingsSchemaVersion; }
             set { SetValue(ref settingsSchemaVersion, value); }
+        }
+
+        public string AppearancePreset
+        {
+            get { return SettingsAppearance.Normalize(appearancePreset); }
+            set { SetValue(ref appearancePreset, SettingsAppearance.Normalize(value)); }
         }
 
         public bool EnableDebugLogging
@@ -624,7 +631,14 @@ namespace ControllerSessionManager.PlayniteIntegration
                 SettingsSchemaVersion = 5;
             }
 
+            if (SettingsSchemaVersion < 6)
+            {
+                appearancePreset = SettingsAppearance.Normalize(appearancePreset);
+                SettingsSchemaVersion = 6;
+            }
+
             topPanelControllerMode = NormalizeTopPanelControllerMode(topPanelControllerMode);
+            appearancePreset = SettingsAppearance.Normalize(appearancePreset);
         }
 
         private static string NormalizeTopPanelControllerMode(string value)
@@ -746,6 +760,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             {
                 EnableMonitoring = EnableMonitoring,
                 SettingsSchemaVersion = SettingsSchemaVersion,
+                AppearancePreset = AppearancePreset,
                 EnableDebugLogging = EnableDebugLogging,
                 ShowPrimaryControllerInTopPanel = ShowPrimaryControllerInTopPanel,
                 TopPanelControllerMode = TopPanelControllerMode,
@@ -833,6 +848,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             EnableMonitoring = source.EnableMonitoring;
             SettingsSchemaVersion = source.SettingsSchemaVersion;
+            AppearancePreset = source.AppearancePreset;
             EnableDebugLogging = source.EnableDebugLogging;
             showPrimaryControllerInTopPanel = source.showPrimaryControllerInTopPanel;
             topPanelControllerMode = source.topPanelControllerMode;
