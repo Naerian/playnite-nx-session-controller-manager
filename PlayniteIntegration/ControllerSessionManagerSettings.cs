@@ -18,6 +18,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private string topPanelControllerMode = TopPanelControllerModeHidden;
         private bool colorTopPanelIndicatorByBattery = true;
         private bool launchFullscreenOnGuideButton;
+        private bool setupWizardCompleted;
         private bool enableSessionTracking = true;
         private bool showDisconnectOverlay = true;
         private bool showFullscreenControllerNotifications = true;
@@ -184,6 +185,12 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             get { return launchFullscreenOnGuideButton; }
             set { SetValue(ref launchFullscreenOnGuideButton, value); }
+        }
+
+        public bool SetupWizardCompleted
+        {
+            get { return setupWizardCompleted; }
+            set { SetValue(ref setupWizardCompleted, value); }
         }
 
         public int ReconciliationIntervalSeconds
@@ -606,6 +613,8 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private void MigrateSettings()
         {
+            var originalSchema = SettingsSchemaVersion;
+
             if (SettingsSchemaVersion < 3)
             {
                 // Versions before 0.4 did not distinguish an intentional local-multiplayer choice
@@ -651,6 +660,17 @@ namespace ControllerSessionManager.PlayniteIntegration
             {
                 launchFullscreenOnGuideButton = false;
                 SettingsSchemaVersion = 7;
+            }
+
+            if (originalSchema > 0 && originalSchema < 8)
+            {
+                // Existing installs already configured; don't force the first-run wizard.
+                setupWizardCompleted = true;
+            }
+
+            if (SettingsSchemaVersion < 8)
+            {
+                SettingsSchemaVersion = 8;
             }
 
             topPanelControllerMode = NormalizeTopPanelControllerMode(topPanelControllerMode);
@@ -778,6 +798,19 @@ namespace ControllerSessionManager.PlayniteIntegration
             return errors.Count == 0;
         }
 
+        public ControllerSessionManagerSettings CloneForWizard()
+        {
+            return Clone();
+        }
+
+        internal void RefreshEditingCloneAfterExternalChange()
+        {
+            if (editingClone != null)
+            {
+                editingClone = Clone();
+            }
+        }
+
         private ControllerSessionManagerSettings Clone()
         {
             return new ControllerSessionManagerSettings
@@ -790,6 +823,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 TopPanelControllerMode = TopPanelControllerMode,
                 ColorTopPanelIndicatorByBattery = ColorTopPanelIndicatorByBattery,
                 LaunchFullscreenOnGuideButton = LaunchFullscreenOnGuideButton,
+                SetupWizardCompleted = SetupWizardCompleted,
                 EnableSessionTracking = EnableSessionTracking,
                 ShowDisconnectOverlay = ShowDisconnectOverlay,
                 ShowFullscreenControllerNotifications = ShowFullscreenControllerNotifications,
@@ -879,6 +913,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             topPanelControllerMode = source.topPanelControllerMode;
             ColorTopPanelIndicatorByBattery = source.ColorTopPanelIndicatorByBattery;
             LaunchFullscreenOnGuideButton = source.LaunchFullscreenOnGuideButton;
+            SetupWizardCompleted = source.SetupWizardCompleted;
             EnableSessionTracking = source.EnableSessionTracking;
             ShowDisconnectOverlay = source.ShowDisconnectOverlay;
             ShowFullscreenControllerNotifications = source.ShowFullscreenControllerNotifications;

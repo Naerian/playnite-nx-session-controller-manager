@@ -763,6 +763,11 @@ namespace ControllerSessionManager.PlayniteIntegration
             plugin.ExportSupportReport();
         }
 
+        private void OpenSetupWizardClick(object sender, RoutedEventArgs args)
+        {
+            plugin.OpenSetupWizard();
+        }
+
         private void PreviewNotificationClick(object sender, RoutedEventArgs args)
         {
             var button = sender as Button;

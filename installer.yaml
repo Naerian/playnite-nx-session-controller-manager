@@ -5,9 +5,10 @@ Packages:
     ReleaseDate: 2026-08-21
     PackageUrl: https://github.com/Naerian/playnite-nx-session-controller-manager/releases/download/v1.0.20/ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc_1_0_20.pext
     Changelog:
+      - Desktop setup wizard on first run and from Advanced → Initial setup (Narian chrome, summary cards, multi-monitor centering).
       - Optional Desktop Guide/PS/Home hold (~0.5 s) opens Playnite Fullscreen when no game is running; long holds are ignored.
       - Uses Playnite SwitchAppMode(Fullscreen); OverlayHost --focus-fullscreen clears stuck taskbar after Desktop exits.
-      - Quick access (top panel + Guide → Fullscreen) moved to a top-level Options tab.
+      - Quick access (top panel + Guide fullscreen shortcut) moved to a top-level Options tab.
       - Color picker follows Narian chrome; overlay expanders and icon position layout polished.
       - Gamepad Tester sidebar toggle shows a restart hint and Playnite's restart dialog on save.
   - Version: 1.0.17

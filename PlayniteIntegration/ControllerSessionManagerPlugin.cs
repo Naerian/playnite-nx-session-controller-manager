@@ -880,6 +880,97 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             diagnosticEvents.Add("lifecycle", "Playnite application started");
             RefreshControllers();
+            TryOfferFirstRunSetupWizard();
+        }
+
+        public void OpenSetupWizard()
+        {
+            if (PlayniteApi.ApplicationInfo.Mode != ApplicationMode.Desktop)
+            {
+                PlayniteApi.Dialogs.ShowMessage(
+                    Loc("LOCCSM_SetupWizardDesktopOnly"),
+                    Loc("LOCCSM_SetupWizardTitle"));
+                return;
+            }
+
+            if (settings == null)
+            {
+                return;
+            }
+
+            var draft = settings.CloneForWizard();
+            var window = new SetupWizardWindow(this, draft);
+            var owner = PlayniteApi.Dialogs.GetCurrentAppWindow();
+            if (owner != null)
+            {
+                window.Owner = owner;
+            }
+
+            SettingsAppearance.ApplyWindow(window, settings.AppearancePreset);
+            var result = window.ShowDialog();
+            if (result == true)
+            {
+                ApplyWizardDraft(draft);
+                PlayniteApi.Dialogs.ShowMessage(
+                    Loc("LOCCSM_SetupWizardSaved"),
+                    Loc("LOCCSM_SetupWizardTitle"));
+                return;
+            }
+
+            // Skip, Escape, or close without finishing: do not keep prompting.
+            settings.SetupWizardCompleted = true;
+            SavePluginSettings(settings);
+            settings.RefreshEditingCloneAfterExternalChange();
+        }
+
+        private void TryOfferFirstRunSetupWizard()
+        {
+            try
+            {
+                if (settings == null || settings.SetupWizardCompleted)
+                {
+                    return;
+                }
+
+                if (PlayniteApi.ApplicationInfo.Mode != ApplicationMode.Desktop)
+                {
+                    return;
+                }
+
+                Dispatcher.CurrentDispatcher.BeginInvoke(
+                    new Action(OpenSetupWizard),
+                    DispatcherPriority.ApplicationIdle);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Failed to offer the first-run setup wizard.");
+            }
+        }
+
+        private void ApplyWizardDraft(ControllerSessionManagerSettings draft)
+        {
+            if (draft == null || settings == null)
+            {
+                return;
+            }
+
+            settings.AutoPauseMode = draft.AutoPauseMode;
+            settings.ShowDisconnectOverlay = draft.ShowDisconnectOverlay;
+            settings.ShowFullscreenControllerNotifications = draft.ShowFullscreenControllerNotifications;
+            settings.ShowDesktopControllerNotifications = draft.ShowDesktopControllerNotifications;
+            settings.TopPanelControllerMode = draft.TopPanelControllerMode;
+            settings.LaunchFullscreenOnGuideButton = draft.LaunchFullscreenOnGuideButton;
+            settings.EnableMonitoring = draft.EnableMonitoring;
+            settings.EnableSessionTracking = draft.EnableSessionTracking;
+            if (settings.Tester != null && draft.Tester != null)
+            {
+                settings.Tester.ShowSidebarItem = draft.Tester.ShowSidebarItem;
+            }
+
+            settings.SetupWizardCompleted = true;
+            SavePluginSettings(settings);
+            ApplySettings();
+            settings.RefreshEditingCloneAfterExternalChange();
         }
 
         public override void OnApplicationStopped(OnApplicationStoppedEventArgs args)

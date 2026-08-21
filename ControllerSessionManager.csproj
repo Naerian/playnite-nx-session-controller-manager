@@ -36,7 +36,9 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-            <Reference Include="System.Xaml" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase" />
@@ -82,6 +84,9 @@
     <Compile Include="PlayniteIntegration\ColorPickerMath.cs" />
     <Compile Include="PlayniteIntegration\ColorPickerDialog.xaml.cs">
       <DependentUpon>ColorPickerDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PlayniteIntegration\SetupWizardWindow.xaml.cs">
+      <DependentUpon>SetupWizardWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="PlayniteIntegration\ControllerSessionManagerSettingsView.cs">
       <DependentUpon>ControllerSessionManagerSettingsView.xaml</DependentUpon>
@@ -285,6 +290,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="PlayniteIntegration\ColorPickerDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="PlayniteIntegration\SetupWizardWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

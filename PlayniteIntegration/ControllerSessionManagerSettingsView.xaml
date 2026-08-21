@@ -1409,6 +1409,27 @@
                     <TabItem>
                         <TabItem.Header>
                             <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource TabGlyph}" Text="&#xE8F1;" />
+                                <TextBlock Text="{DynamicResource LOCCSM_TabSetup}" Style="{StaticResource TabHeaderLabel}" />
+                            </StackPanel>
+                        </TabItem.Header>
+                        <ScrollViewer Style="{StaticResource FillScrollViewer}">
+                            <StackPanel Margin="16,16,16,16">
+                                <StackPanel Style="{StaticResource PageSection}">
+                                    <Border Style="{StaticResource PageHeader}">
+                                        <TextBlock Text="{DynamicResource LOCCSM_TabSetup}" Style="{StaticResource SectionHeaderText}" />
+                                    </Border>
+                                    <TextBlock Text="{DynamicResource LOCCSM_SetupPageHelp}" Style="{StaticResource SectionSubtitleText}" />
+                                </StackPanel>
+                                <Button Content="{DynamicResource LOCCSM_OpenSetupWizard}" HorizontalAlignment="Left"
+                                        MinWidth="220" Style="{StaticResource NarianPrimaryButton}"
+                                        Click="OpenSetupWizardClick" />
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+                    <TabItem>
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
                                 <TextBlock Style="{StaticResource TabGlyph}" Text="&#xEC4A;" />
                                 <TextBlock Text="{DynamicResource LOCCSM_Monitoring}" Style="{StaticResource TabHeaderLabel}" />
                             </StackPanel>
