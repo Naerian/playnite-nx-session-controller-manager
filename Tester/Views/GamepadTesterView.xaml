@@ -68,6 +68,11 @@
             <Setter Property="Opacity" Value="1" />
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
+        <Style x:Key="WarningHintText" TargetType="TextBlock" BasedOn="{StaticResource HintText}">
+            <Setter Property="Foreground" Value="#FFE24B4B" />
+            <Setter Property="Opacity" Value="1" />
+            <Setter Property="FontStyle" Value="Italic" />
+        </Style>
         <Style x:Key="HintUnderLabel" TargetType="TextBlock" BasedOn="{StaticResource HintText}">
             <Setter Property="Margin" Value="0,8,0,0" />
         </Style>
@@ -1794,7 +1799,11 @@
                                 <CheckBox Content="{DynamicResource LOCCSM_Tester_SettingsShowSidebar}"
                                           IsChecked="{Binding Settings.ShowSidebarItem}" />
                                 <TextBlock Text="{DynamicResource LOCCSM_Tester_SettingsShowSidebarHelp}"
-                                           Style="{StaticResource HintText}" Margin="0,8,0,16" />
+                                           Style="{StaticResource HintText}" Margin="0,8,0,0" />
+                                <TextBlock Text="{DynamicResource LOCSettingsRestartNotification}"
+                                           Style="{StaticResource WarningHintText}"
+                                           Margin="0,8,0,16"
+                                           Visibility="{Binding IsSidebarRestartRequired, Converter={StaticResource BoolToVisibility}}" />
                                 <CheckBox Content="{DynamicResource LOCCSM_Tester_SettingsFullscreenWindow}"
                                           IsChecked="{Binding Settings.UseFullscreenFriendlyWindow}" />
                                 <TextBlock Text="{DynamicResource LOCCSM_Tester_SettingsFullscreenWindowHelp}"

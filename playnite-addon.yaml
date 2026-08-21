@@ -2,13 +2,14 @@ AddonId: ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc
 Type: Generic
 Name: Controller Manager
 Author: Narian
-ShortDescription: Identifies and tracks controllers actively used during a game session, with adaptive switching, tester, connect/disconnect notifications and auto-pause.
+ShortDescription: Controller Manager tracks active gamepads to provide adaptive switching, connection alerts, auto-pausing on disconnect, and built-in input testing.
 InstallerManifestUrl: https://raw.githubusercontent.com/Naerian/playnite-nx-session-controller-manager/main/installer.yaml
 SourceUrl: https://github.com/Naerian/playnite-nx-session-controller-manager
 Description: |
-  Controller Session Manager identifies and tracks controllers actively used during a game session. It provides five core features: adaptive controller switching for local and multiplayer games, gamepad tester, connection notifications, disconnection notifications, and automatic game pausing when a controller disconnects. It is highly customizable, adapting to both desktop and fullscreen modes while supporting battery state displays, custom names, and icons.
+  Controller Manager identifies and tracks controllers actively used during a game session. It provides five core features: adaptive controller switching for single-player and multiplayer games, built-in gamepad testing, connection notifications, disconnection alerts, and automatic game pausing upon disconnection. It is highly customizable, adapting to both desktop and fullscreen modes while supporting battery status indicators, custom device names, and icons.
 IconUrl: https://raw.githubusercontent.com/Naerian/playnite-nx-session-controller-manager/main/media/icon.png
-Tags: ['controller', 'gamepad', 'tester', 'battery', 'fullscreen', 'accessibility', 'utility']
+Tags: ['controller', 'gamepad', 'battery', 'utility', 'accessibility', 'qol', 'fullscreen', 'input']
 Links:
   GitHub: https://github.com/Naerian/playnite-nx-session-controller-manager
+  Wiki: https://github.com/Naerian/playnite-nx-session-controller-manager/wiki
   Support: https://ko-fi.com/naerian

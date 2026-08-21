@@ -86,12 +86,16 @@
     <sys:String x:Key="LOCCSM_BatteryUnknownHint">コントローラー、レシーバー、または Windows ドライバーが標準 API に残量を公開しない場合、バッテリーは不明と表示されます。独自 USB レシーバーでは一般的です。</sys:String>
     <sys:String x:Key="LOCCSM_ControllerGeneralTitle">コントローラー表示</sys:String>
     <sys:String x:Key="LOCCSM_ControllerGeneralHelp">Playnite デスクトップモードでコントローラー情報を表示する方法を選択します。</sys:String>
-    <sys:String x:Key="LOCCSM_DesktopIntegrationTitle">クイックアクセス</sys:String>
+    <sys:String x:Key="LOCCSM_DesktopIntegrationTitle">オプション</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelSectionTitle">トップパネル</sys:String>
+    <sys:String x:Key="LOCCSM_GuideFullscreenSectionTitle">Guide → Fullscreen</sys:String>
     <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanel">メインコントローラーのアイコンとバッテリーを上部パネルに表示</sys:String>
     <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanelHelp">Playnite のトップパネルでの Controller Manager の表示方法を選びます。ボタンが表示されている間はツールチップとバッテリー色が有効です。</sys:String>
     <sys:String x:Key="LOCCSM_TopPanelModeHidden">ボタンを表示しない</sys:String>
     <sys:String x:Key="LOCCSM_TopPanelModeDefault">デフォルトのアイコンを表示</sys:String>
     <sys:String x:Key="LOCCSM_TopPanelModePrimary">メインコントローラーのアイコンを表示</sys:String>
+    <sys:String x:Key="LOCCSM_LaunchFullscreenOnGuide">Hold Guide 0.5 s (then release) to open Fullscreen</sys:String>
+    <sys:String x:Key="LOCCSM_LaunchFullscreenOnGuideHelp">Desktop only, and only when no game is running. Hold Guide / PS / Home for about 0.5 seconds and release to open Fullscreen (same as the menu / F11). A short tap is ignored. A long hold (as when powering off the controller) is also ignored. Does nothing if Fullscreen is already open. If Windows is set to open Xbox Game Bar with the controller Guide button, turn that off or both can trigger at once.</sys:String>
     <sys:String x:Key="LOCCSM_ValueBluetooth">Bluetooth</sys:String>
     <sys:String x:Key="LOCCSM_VersionAuthorFormat">バージョン {0} | Narian</sys:String>
     <sys:String x:Key="LOCCSM_ProjectLinksTitle">プロジェクトリンク</sys:String>
@@ -134,6 +138,7 @@
     <sys:String x:Key="LOCCSM_GamePolicyLocalMultiplayer">ローカルマルチプレイ. すべての使用中コントローラーを保護</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">Temporarily stop the game when a controller disconnects</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnectHelp">ネットワークの有無を確認せず、コントローラーが切れるたびにゲームプロセスを一時停止します。入力方式を問わずすべてのゲームで動作します。ゲーム終了後にプラグインが自動で再開することはありません。</sys:String>
+    <sys:String x:Key="LOCCSM_PauseGameOnDisconnectWarning">オンライン対戦も一時停止します。プラグインはゲームを自動では再開しません。</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyEnablePause">このゲームを自動的に一時停止</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyDisablePause">このゲームを自動的に一時停止しない</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPauseDisabled">自動一時停止は無効</sys:String>
@@ -209,6 +214,7 @@
     <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">Show the controller icon</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowControllerName">Show the controller name</sys:String>
     <sys:String x:Key="LOCCSM_OverlayControllerIconPosition">Controller icon position</sys:String>
+    <sys:String x:Key="LOCCSM_IconPositionCenter">中央</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowStatusIcon">一時停止または警告の状態アイコンを表示</sys:String>
     <sys:String x:Key="LOCCSM_DesktopNotificationsTitle">デスクトップ通知</sys:String>
     <sys:String x:Key="LOCCSM_ShowDesktopControllerNotifications">Notify when a controller connects or disconnects in the Desktop interface</sys:String>
@@ -292,7 +298,7 @@
     <sys:String x:Key="LOCCSM_Tester_Ramp">ランプ</sys:String>
     <sys:String x:Key="LOCCSM_Tester_SettingsPlayniteIntegration">Playnite統合</sys:String>
     <sys:String x:Key="LOCCSM_Tester_SettingsShowSidebar">Playnite サイドバーに Gamepad Tester を表示</sys:String>
-    <sys:String x:Key="LOCCSM_Tester_SettingsShowSidebarHelp">デスクトップ モードのサイドバーに Gamepad Tester エントリを追加します。このオプションを変更した後、Playnite を再起動して、サイドバーを再構築できるようにします。</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_SettingsShowSidebarHelp">デスクトップ モードのサイドバーに Gamepad Tester エントリを追加します。</sys:String>
     <sys:String x:Key="LOCCSM_Tester_SettingsShowTopPanel">Playnite トップパネルに Gamepad Tester を表示</sys:String>
     <sys:String x:Key="LOCCSM_Tester_SettingsShowTopPanelHelp">コンパクトな Gamepad Tester ショートカットを Playnite トップパネルに追加します。これは、フルスクリーン対応のテーマに役立ちます。</sys:String>
     <sys:String x:Key="LOCCSM_Tester_SettingsFullscreenWindow">全画面モードで全画面対応ウィンドウを使用する</sys:String>

@@ -2,13 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Interop;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Threading;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using System.Diagnostics;
 using Microsoft.Win32;
 using ControllerSessionManager.Controllers;
 using ControllerSessionManager.Overlay;
@@ -70,6 +74,13 @@ namespace ControllerSessionManager.PlayniteIntegration
         private SessionProtectionPolicy activeSessionPolicy;
         private TopPanelItem controllerTopPanelItem;
         private TesterIntegration testerIntegration;
+        private DateTime lastFullscreenLaunchUtc = DateTime.MinValue;
+        private DateTime? guideButtonPressedUtc;
+        private static readonly TimeSpan FullscreenLaunchCooldown = TimeSpan.FromSeconds(2);
+        private static readonly TimeSpan FullscreenRestoreSettleDelay = TimeSpan.FromMilliseconds(200);
+        // Fire on release only, in this window: long holds (power-off) and short taps are ignored.
+        private static readonly TimeSpan GuideFullscreenMinHold = TimeSpan.FromMilliseconds(500);
+        private static readonly TimeSpan GuideFullscreenMaxHold = TimeSpan.FromSeconds(2);
 
         public override Guid Id
         {
@@ -528,6 +539,116 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
         }
 
+        /// <summary>
+        /// Playnite only rebuilds sidebar items on startup. Use the same restart
+        /// prompt as Playnite's own settings (LOCSettingsRestart*).
+        /// </summary>
+        public void OfferPlayniteRestartForSidebarChange()
+        {
+            try
+            {
+                var message = ResolvePlayniteString(
+                    "LOCSettingsRestartAskMessage",
+                    "Playnite needs to be restarted to apply new settings. Restart now?");
+                var title = ResolvePlayniteString(
+                    "LOCSettingsRestartTitle",
+                    "Restart Playnite?");
+                if (PlayniteApi.Dialogs.ShowMessage(
+                        message, title, MessageBoxButton.YesNo, MessageBoxImage.Question)
+                    != MessageBoxResult.Yes)
+                {
+                    return;
+                }
+
+                // Defer so EndEdit / settings dialog can finish closing first.
+                Dispatcher.CurrentDispatcher.BeginInvoke(
+                    new Action(RestartPlayniteApplication),
+                    DispatcherPriority.ApplicationIdle);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Failed to offer Playnite restart after sidebar setting change.");
+            }
+        }
+
+        private string ResolvePlayniteString(string key, string fallback)
+        {
+            try
+            {
+                var value = PlayniteApi.Resources.GetString(key);
+                if (!string.IsNullOrWhiteSpace(value) &&
+                    !string.Equals(value, key, StringComparison.Ordinal))
+                {
+                    return value;
+                }
+            }
+            catch
+            {
+            }
+
+            return fallback;
+        }
+
+        private void RestartPlayniteApplication()
+        {
+            try
+            {
+                var appType = Type.GetType("Playnite.PlayniteApplication, Playnite", false);
+                if (appType == null)
+                {
+                    foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+                    {
+                        if (!string.Equals(assembly.GetName().Name, "Playnite", StringComparison.OrdinalIgnoreCase))
+                        {
+                            continue;
+                        }
+
+                        appType = assembly.GetType("Playnite.PlayniteApplication", false);
+                        if (appType != null)
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                if (appType == null)
+                {
+                    logger.Error("PlayniteApplication type was not found; cannot restart.");
+                    return;
+                }
+
+                var current = appType.GetProperty("Current", BindingFlags.Public | BindingFlags.Static);
+                var instance = current == null ? null : current.GetValue(null, null);
+                if (instance == null)
+                {
+                    logger.Error("PlayniteApplication.Current was null; cannot restart.");
+                    return;
+                }
+
+                var restartWithBool = instance.GetType().GetMethod(
+                    "Restart", BindingFlags.Public | BindingFlags.Instance, null, new[] { typeof(bool) }, null);
+                if (restartWithBool != null)
+                {
+                    restartWithBool.Invoke(instance, new object[] { true });
+                    return;
+                }
+
+                var restart = instance.GetType().GetMethod(
+                    "Restart", BindingFlags.Public | BindingFlags.Instance, null, Type.EmptyTypes, null);
+                if (restart != null)
+                {
+                    restart.Invoke(instance, null);
+                    return;
+                }
+
+                logger.Error("PlayniteApplication.Restart method was not found.");
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Failed to restart Playnite after sidebar setting change.");
+            }
+        }
+
         public GamepadTesterView CreateTesterView(out GamepadTesterViewModel viewModel)
         {
             viewModel = null;
@@ -817,12 +938,281 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         public override void OnDesktopControllerButtonStateChanged(OnControllerButtonStateChangedArgs args)
         {
+            HandleGuideFullscreenGesture(args);
             RecordControllerInput(args);
             if (testerIntegration != null)
             {
                 testerIntegration.HandleControllerInput(args);
             }
         }
+
+        private void HandleGuideFullscreenGesture(OnControllerButtonStateChangedArgs args)
+        {
+            if (settings == null || !settings.LaunchFullscreenOnGuideButton || args == null ||
+                args.Controller == null ||
+                !string.Equals(args.Button.ToString(), "Guide", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            if (PlayniteApi.ApplicationInfo.Mode != ApplicationMode.Desktop || activeGameId.HasValue)
+            {
+                guideButtonPressedUtc = null;
+                return;
+            }
+
+            if (args.State == ControllerInputState.Pressed)
+            {
+                guideButtonPressedUtc = DateTime.UtcNow;
+                return;
+            }
+
+            if (args.State != ControllerInputState.Released || !guideButtonPressedUtc.HasValue)
+            {
+                return;
+            }
+
+            var heldFor = DateTime.UtcNow - guideButtonPressedUtc.Value;
+            guideButtonPressedUtc = null;
+
+            // Controllers power off with a long Guide hold; only a mid-length hold+release switches mode.
+            if (heldFor < GuideFullscreenMinHold || heldFor > GuideFullscreenMaxHold)
+            {
+                return;
+            }
+
+            TryLaunchFullscreenFromGuide();
+        }
+
+        private void TryLaunchFullscreenFromGuide()
+        {
+            try
+            {
+                if (settings == null || !settings.LaunchFullscreenOnGuideButton ||
+                    PlayniteApi.ApplicationInfo.Mode != ApplicationMode.Desktop ||
+                    activeGameId.HasValue)
+                {
+                    return;
+                }
+
+                if (Process.GetProcessesByName("Playnite.FullscreenApp").Length > 0)
+                {
+                    return;
+                }
+
+                var now = DateTime.UtcNow;
+                if (now - lastFullscreenLaunchUtc < FullscreenLaunchCooldown)
+                {
+                    return;
+                }
+
+                lastFullscreenLaunchUtc = now;
+                // Call Playnite's own SwitchAppMode on the UI thread (same as menu/F11).
+                // Do not keybd_event(F11) — that hits whichever window is focused.
+                // Do not Process.Start(--startfullscreen) — a second DesktopApp process is a
+                // known way to leave the Windows taskbar stuck above Fullscreen.
+                var wasMinimized = TryRestoreDesktopIfMinimized();
+                var dispatcher = PlayniteApi.MainView == null ? GetUiDispatcher() : PlayniteApi.MainView.UIDispatcher;
+                if (dispatcher == null)
+                {
+                    logger.Warn("Guide→Fullscreen: UI dispatcher unavailable.");
+                    return;
+                }
+
+                Action sendSwitch = () =>
+                {
+                    try
+                    {
+                        // DesktopApp shuts down during SwitchAppMode, so activation must run in
+                        // a detached helper that outlives this process.
+                        StartFullscreenFocusHelper();
+                        if (TrySwitchToFullscreenViaPlaynite())
+                        {
+                            diagnosticEvents.Add("desktop", "Guide press invoked Playnite SwitchAppMode(Fullscreen)");
+                            return;
+                        }
+
+                        logger.Warn("Guide→Fullscreen: Playnite SwitchAppMode was not available.");
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Error(ex, "Guide→Fullscreen SwitchAppMode path failed.");
+                    }
+                };
+
+                if (wasMinimized)
+                {
+                    var settle = new DispatcherTimer(DispatcherPriority.Normal, dispatcher)
+                    {
+                        Interval = FullscreenRestoreSettleDelay
+                    };
+                    settle.Tick += (s, e) =>
+                    {
+                        settle.Stop();
+                        sendSwitch();
+                    };
+                    settle.Start();
+                }
+                else
+                {
+                    dispatcher.BeginInvoke(DispatcherPriority.Normal, sendSwitch);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Failed to switch Playnite to Fullscreen from Guide.");
+            }
+        }
+
+        /// <summary>
+        /// Invokes DesktopApplication.Current.SwitchAppMode(Fullscreen) — the same path as F11.
+        /// </summary>
+        private bool TrySwitchToFullscreenViaPlaynite()
+        {
+            Type desktopAppType = null;
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                try
+                {
+                    desktopAppType = assembly.GetType("Playnite.DesktopApp.DesktopApplication", false);
+                }
+                catch
+                {
+                    desktopAppType = null;
+                }
+
+                if (desktopAppType != null)
+                {
+                    break;
+                }
+            }
+
+            if (desktopAppType == null)
+            {
+                return false;
+            }
+
+            var currentProp = desktopAppType.GetProperty("Current", BindingFlags.Public | BindingFlags.Static);
+            var current = currentProp == null ? null : currentProp.GetValue(null, null);
+            if (current == null)
+            {
+                return false;
+            }
+
+            var switchMethod = desktopAppType.GetMethod(
+                "SwitchAppMode",
+                BindingFlags.Public | BindingFlags.Instance,
+                null,
+                new[] { typeof(ApplicationMode) },
+                null);
+            if (switchMethod == null)
+            {
+                return false;
+            }
+
+            switchMethod.Invoke(current, new object[] { ApplicationMode.Fullscreen });
+            return true;
+        }
+
+        private void StartFullscreenFocusHelper()
+        {
+            try
+            {
+                var directory = Path.GetDirectoryName(GetType().Assembly.Location);
+                if (string.IsNullOrWhiteSpace(directory))
+                {
+                    return;
+                }
+
+                var executable = Path.Combine(directory, "ControllerSessionManager.OverlayHost.exe");
+                if (!File.Exists(executable))
+                {
+                    logger.Warn("Guide→Fullscreen: focus helper not found at " + executable);
+                    return;
+                }
+
+                var helper = Process.Start(new ProcessStartInfo
+                {
+                    FileName = executable,
+                    Arguments = "--focus-fullscreen",
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    WindowStyle = ProcessWindowStyle.Hidden
+                });
+                if (helper != null)
+                {
+                    // Let the helper steal focus after Desktop exits / Fullscreen starts.
+                    AllowSetForegroundWindow(helper.Id);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Failed to start Guide→Fullscreen focus helper.");
+            }
+        }
+
+        /// <returns>True when Desktop was minimized and a restore was requested.</returns>
+        private bool TryRestoreDesktopIfMinimized()
+        {
+            var restored = false;
+            try
+            {
+                var main = Application.Current == null ? null : Application.Current.MainWindow;
+                if (main != null && main.WindowState == WindowState.Minimized)
+                {
+                    var helper = new WindowInteropHelper(main);
+                    if (helper.Handle != IntPtr.Zero && IsIconic(helper.Handle))
+                    {
+                        // SW_RESTORE from minimized restores the previous state (incl. maximized).
+                        ShowWindow(helper.Handle, SwRestore);
+                        restored = true;
+                    }
+                    else
+                    {
+                        main.WindowState = WindowState.Normal;
+                        restored = true;
+                    }
+
+                    main.Activate();
+                }
+            }
+            catch
+            {
+                // Fall through to process-handle check.
+            }
+
+            foreach (var process in Process.GetProcessesByName("Playnite.DesktopApp"))
+            {
+                try
+                {
+                    var handle = process.MainWindowHandle;
+                    if (handle == IntPtr.Zero || !IsIconic(handle))
+                    {
+                        continue;
+                    }
+
+                    ShowWindow(handle, SwRestore);
+                    restored = true;
+                }
+                catch
+                {
+                    // Best-effort.
+                }
+            }
+
+            return restored;
+        }
+
+        private const int SwRestore = 9;
+
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        [DllImport("user32.dll")]
+        private static extern bool IsIconic(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        private static extern bool AllowSetForegroundWindow(int processId);
 
         public override void OnGameStarted(OnGameStartedEventArgs args)
         {
@@ -1701,7 +2091,9 @@ namespace ControllerSessionManager.PlayniteIntegration
                 settings.OverlayBorderThickness.ToString(), settings.OverlayCornerRadius.ToString(),
                 settings.OverlayShowControllerIcon.ToString(), settings.OverlayShowStatusIcon.ToString(),
                 settings.OverlayElementSpacing.ToString(),
-                settings.OverlayControllerIconPosition ?? "Left",
+                settings.OverlayShowControllerName
+                    ? (settings.OverlayControllerIconPosition ?? "Left")
+                    : "Center",
                 settings.OverlayShowControllerName.ToString()
             });
         }

@@ -1,6 +1,6 @@
 # Controller Manager
 
-Controller Manager is a Playnite extension that identifies connected game controllers, shows their status and battery when Windows exposes it, tests buttons, sticks, rumble and latency inside Playnite, and protects active game sessions when a controller disconnects.
+Controller Manager identifies and tracks controllers actively used during a game session. It provides five core features: adaptive controller switching for single-player and multiplayer games, built-in gamepad testing, connection notifications, disconnection alerts, and automatic game pausing upon disconnection. It is highly customizable, adapting to both desktop and fullscreen modes while supporting battery status indicators, custom device names, and icons.
 
 It is designed for Desktop, Fullscreen and couch-gaming setups, including single-player games, controller handover and local multiplayer sessions with several controllers.
 

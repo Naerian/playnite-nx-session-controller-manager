@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
+    <Compile Include="FullscreenFocusHelper.cs" />
     <Compile Include="OverlayWindow.cs" />
     <Compile Include="ToastWindow.cs" />
     <Compile Include="PathAspectSizer.cs" />

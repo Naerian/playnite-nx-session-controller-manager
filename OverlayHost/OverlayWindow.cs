@@ -105,7 +105,7 @@ namespace ControllerSessionManager.OverlayHost
             {
                 HorizontalAlignment = HorizontalAlignment.Center
             };
-            ConfigureControllerLayout("Left", 10);
+            ConfigureControllerLayout("Left", 10, true, true);
 
             content = new StackPanel
             {
@@ -260,10 +260,11 @@ namespace ControllerSessionManager.OverlayHost
             instructionText.Foreground = new SolidColorBrush(presentationAccent);
 
             var gap = Math.Max(0, elementSpacing);
-            var iconGap = gap;
-            ConfigureControllerLayout(iconPosition, iconGap);
+            ConfigureControllerLayout(iconPosition, gap, showControllerIcon, showControllerName);
             titleText.Margin = new Thickness(0);
-            controllerHost.Margin = new Thickness(0, gap, 0, 0);
+            controllerHost.Margin = controllerHost.Visibility == Visibility.Visible
+                ? new Thickness(0, gap, 0, 0)
+                : new Thickness(0);
             instructionText.Margin = new Thickness(0, gap, 0, 0);
             pauseStatusBadge.Margin = new Thickness(0, gap, 0, 0);
 
@@ -276,26 +277,41 @@ namespace ControllerSessionManager.OverlayHost
             incidentCard.LayoutTransform = new ScaleTransform(scale, scale);
         }
 
-        private void ConfigureControllerLayout(string position, double gap)
+        private void ConfigureControllerLayout(string position, double gap, bool showIcon, bool showName)
         {
             controllerHost.Children.Clear();
             controllerHost.RowDefinitions.Clear();
             controllerHost.ColumnDefinitions.Clear();
             controllerIcon.Margin = new Thickness(0);
             messageText.Margin = new Thickness(0);
+            Grid.SetRow(controllerIcon, 0);
+            Grid.SetColumn(controllerIcon, 0);
+            Grid.SetRow(messageText, 0);
+            Grid.SetColumn(messageText, 0);
 
+            if (!showIcon && !showName)
+            {
+                controllerHost.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            controllerHost.Visibility = Visibility.Visible;
+            var both = showIcon && showName;
             var normalized = string.IsNullOrWhiteSpace(position) ? "Left" : position;
-            if (string.Equals(normalized, "Top", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(normalized, "Bottom", StringComparison.OrdinalIgnoreCase))
+            if (both &&
+                (string.Equals(normalized, "Top", StringComparison.OrdinalIgnoreCase) ||
+                 string.Equals(normalized, "Bottom", StringComparison.OrdinalIgnoreCase)))
             {
                 controllerHost.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
                 controllerHost.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
                 var iconFirst = string.Equals(normalized, "Top", StringComparison.OrdinalIgnoreCase);
                 Grid.SetRow(controllerIcon, iconFirst ? 0 : 1);
                 Grid.SetRow(messageText, iconFirst ? 1 : 0);
+                // Only space icon↔name when both are visible; otherwise the gap stacks with the
+                // instruction margin and looks larger than title↔controller.
                 controllerIcon.Margin = iconFirst ? new Thickness(0, 0, 0, gap) : new Thickness(0, gap, 0, 0);
             }
-            else
+            else if (both)
             {
                 controllerHost.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
                 controllerHost.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
@@ -304,9 +320,21 @@ namespace ControllerSessionManager.OverlayHost
                 Grid.SetColumn(messageText, iconFirst ? 1 : 0);
                 controllerIcon.Margin = iconFirst ? new Thickness(0, 0, gap, 0) : new Thickness(gap, 0, 0, 0);
             }
+            else
+            {
+                controllerHost.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                controllerHost.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            }
 
-            controllerHost.Children.Add(controllerIcon);
-            controllerHost.Children.Add(messageText);
+            if (showIcon)
+            {
+                controllerHost.Children.Add(controllerIcon);
+            }
+
+            if (showName)
+            {
+                controllerHost.Children.Add(messageText);
+            }
         }
 
         private static bool IsIconPosition(string value)

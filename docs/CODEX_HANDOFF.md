@@ -23,7 +23,7 @@ important decisions that should be preserved.
 - Current package name:
   `ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc_1_0_7.pext`
 - Package output folder:
-  `C:\Proyectos\playnite-nx-session-controller-manager\dist\v1.0.7`
+  `C:\Proyectos\playnite-nx-session-controller-manager\dist\1.0.7`
 - Public package SHA-256 verified for v1.0.7:
   `67B0537EE6032D196B08872A8D4350D35718437EE3C73295A82330F7969E053C`
 
@@ -91,25 +91,32 @@ Main capabilities currently implemented:
 This is a classic Playnite C# plugin project. Use the existing scripts and
 tooling rather than inventing a new build path.
 
-Preferred verification flow:
+Preferred package flow (build + `.pext`, same pattern as Metadata AI):
 
 ```powershell
-.\verify.ps1
+.\package.ps1
 ```
 
-If you need a direct build, use the repository's existing MSBuild-based flow
+Optional local checks before packaging:
+
+```powershell
+.\tests\run-session-tests.ps1
+.\tests\run-tester-tests.ps1
+```
+
+If you need a direct build, use Framework MSBuild on `ControllerSessionManager.sln`
 instead of `dotnet build`.
 
 ## Package
 
-Use the existing package script and Playnite Toolbox flow when preparing a
-release package.
+Use `package.ps1` and Playnite Toolbox when preparing a release package.
+The script writes `dist\{version}\*.pext`.
 
 Typical release artifacts:
 
 - `extension.yaml`
 - `installer.yaml`
-- `.pext` generated under `dist\`
+- `.pext` generated under `dist\{version}\`
 
 Verify the installer manifest before release.
 
@@ -143,15 +150,14 @@ unless they explicitly say otherwise:
    - `installer.yaml`
    - assembly metadata if it is used for display
    - README/version text if necessary
-4. Run `verify.ps1`.
-5. Build/package the `.pext`.
-6. Verify `installer.yaml`.
-7. Commit only intended files.
-8. Push `main`.
-9. Create and push the tag.
-10. Create the GitHub release and upload the `.pext`.
-11. Compare the public release asset hash with the local package.
-12. Verify the raw or API-visible `installer.yaml` references the new package.
+4. Run `package.ps1`.
+5. Verify `installer.yaml`.
+6. Commit only intended files.
+7. Push `main`.
+8. Create and push the tag.
+9. Create the GitHub release and upload the `.pext`.
+10. Compare the public release asset hash with the local package.
+11. Verify the raw or API-visible `installer.yaml` references the new package.
 
 Write all public release text in English. This includes the GitHub release body,
 release notes and manifest changelog entries.
@@ -195,7 +201,7 @@ foreach ($name in $keySets.Keys) {
 Check package hashes:
 
 ```powershell
-Get-FileHash C:\Proyectos\playnite-nx-session-controller-manager\dist\v1.0.7\*.pext -Algorithm SHA256
+Get-FileHash C:\Proyectos\playnite-nx-session-controller-manager\dist\1.0.7\*.pext -Algorithm SHA256
 ```
 
 ## Current Follow-Up Ideas

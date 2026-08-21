@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.20 — 2026-08-21
+- Optional Desktop setting: hold Guide / PS / Home (~0.5 s then release) to open Playnite Fullscreen when no game is running; long holds (controller power-off) are ignored.
+- Uses Playnite's own `SwitchAppMode(Fullscreen)` (same as menu/F11); only restores Desktop when it is minimized.
+- OverlayHost `--focus-fullscreen` helper activates Fullscreen after Desktop exits (clears stuck Windows taskbar).
+- Moved Quick access (top panel + Guide → Fullscreen) to a top-level Options tab.
+- Color picker dialog follows Narian settings chrome and the active appearance preset.
+- Overlay appearance expanders get consistent padding; controller icon position aligns with the other fields.
+- Changing Gamepad Tester sidebar visibility shows a red restart hint and Playnite's standard restart dialog on save.
+- package.ps1 aligned with Metadata AI (packages land in `dist\{version}\`).
+
 ## 1.0.17 — 2026-08-20
 - Redesigned settings with the shared Narian chrome: own background, text, borders, accents, inputs, buttons, tabs, navigation, badges, and scrollbars instead of relying on the Playnite theme for contrast.
 - Added five appearance presets (Midnight, Paper, OLED, Ocean, Ember) so layout structure stays fixed while colors change.

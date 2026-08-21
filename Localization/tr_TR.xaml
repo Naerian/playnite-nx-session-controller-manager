@@ -86,12 +86,16 @@
     <sys:String x:Key="LOCCSM_BatteryUnknownHint">Kontrolcü, alıcı veya Windows sürücüsü şarj seviyesini standart API'lere sunmadığında pil Bilinmiyor görünebilir. Bu, özel USB alıcılarda yaygındır.</sys:String>
     <sys:String x:Key="LOCCSM_ControllerGeneralTitle">Kontrolcü görünümü</sys:String>
     <sys:String x:Key="LOCCSM_ControllerGeneralHelp">Kontrolcü bilgilerinin Playnite Masaüstü modunda nasıl gösterileceğini seçin.</sys:String>
-    <sys:String x:Key="LOCCSM_DesktopIntegrationTitle">Hızlı erişim</sys:String>
+    <sys:String x:Key="LOCCSM_DesktopIntegrationTitle">Seçenekler</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelSectionTitle">Üst panel</sys:String>
+    <sys:String x:Key="LOCCSM_GuideFullscreenSectionTitle">Guide → Fullscreen</sys:String>
     <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanel">Ana kontrolcü simgesini ve pilini üst panelde göster</sys:String>
     <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanelHelp">Controller Manager’ın Playnite üst panelinde nasıl görüneceğini seçin. Düğme görünürken ipucu ve pil rengi geçerli kalır.</sys:String>
     <sys:String x:Key="LOCCSM_TopPanelModeHidden">Düğmeyi gösterme</sys:String>
     <sys:String x:Key="LOCCSM_TopPanelModeDefault">Varsayılan simgeyi göster</sys:String>
     <sys:String x:Key="LOCCSM_TopPanelModePrimary">Ana kontrolcü simgesini göster</sys:String>
+    <sys:String x:Key="LOCCSM_LaunchFullscreenOnGuide">Hold Guide 0.5 s (then release) to open Fullscreen</sys:String>
+    <sys:String x:Key="LOCCSM_LaunchFullscreenOnGuideHelp">Desktop only, and only when no game is running. Hold Guide / PS / Home for about 0.5 seconds and release to open Fullscreen (same as the menu / F11). A short tap is ignored. A long hold (as when powering off the controller) is also ignored. Does nothing if Fullscreen is already open. If Windows is set to open Xbox Game Bar with the controller Guide button, turn that off or both can trigger at once.</sys:String>
     <sys:String x:Key="LOCCSM_ValueBluetooth">Bluetooth</sys:String>
     <sys:String x:Key="LOCCSM_VersionAuthorFormat">Sürüm {0} | Narian</sys:String>
     <sys:String x:Key="LOCCSM_ProjectLinksTitle">Proje bağlantıları</sys:String>
@@ -134,6 +138,7 @@
     <sys:String x:Key="LOCCSM_GamePolicyLocalMultiplayer">Yerel çok oyunculu. Tüm etkin kontrolcüleri koru</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">Temporarily stop the game when a controller disconnects</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnectHelp">Ağ etkinliğini kontrol etmeden, bir kontrolcü her koptuğunda oyun sürecini duraklatır. Tüm oyunlarda çalışır. Eklenti, oyun bittikten sonra oyunu otomatik olarak sürdürmez.</sys:String>
+    <sys:String x:Key="LOCCSM_PauseGameOnDisconnectWarning">Çevrimiçi maçları da duraklatır; eklenti oyunu kendi başına sürdürmez.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyEnablePause">Bu oyunu otomatik duraklat</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyDisablePause">Bu oyunu otomatik duraklatma</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPauseDisabled">Otomatik duraklatma kapalı</sys:String>
@@ -209,6 +214,7 @@
     <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">Show the controller icon</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowControllerName">Show the controller name</sys:String>
     <sys:String x:Key="LOCCSM_OverlayControllerIconPosition">Controller icon position</sys:String>
+    <sys:String x:Key="LOCCSM_IconPositionCenter">Ortalanmış</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowStatusIcon">Duraklatma veya uyarı durumu simgesini göster</sys:String>
     <sys:String x:Key="LOCCSM_DesktopNotificationsTitle">Masaüstü bildirimi</sys:String>
     <sys:String x:Key="LOCCSM_ShowDesktopControllerNotifications">Notify when a controller connects or disconnects in the Desktop interface</sys:String>
@@ -292,7 +298,7 @@
     <sys:String x:Key="LOCCSM_Tester_Ramp">Rampa</sys:String>
     <sys:String x:Key="LOCCSM_Tester_SettingsPlayniteIntegration">Playnite entegrasyonu</sys:String>
     <sys:String x:Key="LOCCSM_Tester_SettingsShowSidebar">Playnite kenar çubuğunda Gamepad Tester'yi göster</sys:String>
-    <sys:String x:Key="LOCCSM_Tester_SettingsShowSidebarHelp">Masaüstü modu kenar çubuğuna bir Gamepad Tester girişi ekler. Kenar çubuğunun yeniden oluşturulabilmesi için bu seçeneği değiştirdikten sonra Playnite'yi yeniden başlatın.</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_SettingsShowSidebarHelp">Masaüstü modu kenar çubuğuna bir Gamepad Tester girişi ekler.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_SettingsShowTopPanel">Playnite üst panelinde Gamepad Tester'yi göster</sys:String>
     <sys:String x:Key="LOCCSM_Tester_SettingsShowTopPanelHelp">Tam ekran dostu temalar için kullanışlı olan, Playnite üst paneline kompakt bir Gamepad Tester kısayolu ekler.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_SettingsFullscreenWindow">Tam ekran modunda tam ekran dostu pencereyi kullanın</sys:String>

@@ -148,6 +148,7 @@ namespace ControllerSessionManager.Tester.ViewModels
         private int selectedTabIndex;
         private bool isFullscreenSimplifiedMode;
         private bool isOptionsTabVisible = true;
+        private readonly bool sidebarItemAtOpen;
 
         public GamepadTesterViewModel(GamepadPollingService pollingService, GamepadTesterSettings settings = null, Func<string, string> localizer = null, Action<GamepadTesterViewModel> openGuidedTest = null)
         {
@@ -155,6 +156,7 @@ namespace ControllerSessionManager.Tester.ViewModels
             this.settings = settings ?? new GamepadTesterSettings();
             this.localizer = localizer;
             this.openGuidedTest = openGuidedTest;
+            sidebarItemAtOpen = this.settings.ShowSidebarItem;
             state = new GamepadState();
             latestInputState = state;
             Controllers = new ObservableCollection<GamepadControllerInfo>();
@@ -392,6 +394,15 @@ namespace ControllerSessionManager.Tester.ViewModels
         public GamepadTesterSettings Settings
         {
             get { return settings; }
+        }
+
+        /// <summary>
+        /// Playnite rebuilds the Desktop sidebar only on startup, so toggling
+        /// <see cref="GamepadTesterSettings.ShowSidebarItem"/> needs a restart.
+        /// </summary>
+        public bool IsSidebarRestartRequired
+        {
+            get { return settings.ShowSidebarItem != sidebarItemAtOpen; }
         }
 
         public GamepadControllerInfo SelectedController
@@ -4778,9 +4789,16 @@ namespace ControllerSessionManager.Tester.ViewModels
 
         private void OnSettingsPropertyChanged(object sender, PropertyChangedEventArgs args)
         {
-            if (args == null || args.PropertyName == "ShowDeviceSelectorWhenSingleController" || string.IsNullOrEmpty(args.PropertyName))
+            if (args == null || string.IsNullOrEmpty(args.PropertyName) ||
+                args.PropertyName == "ShowDeviceSelectorWhenSingleController")
             {
                 OnPropertyChanged("IsControllerSelectorVisible");
+            }
+
+            if (args == null || string.IsNullOrEmpty(args.PropertyName) ||
+                args.PropertyName == "ShowSidebarItem")
+            {
+                OnPropertyChanged("IsSidebarRestartRequired");
             }
         }
     }

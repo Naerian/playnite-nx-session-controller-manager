@@ -22,6 +22,8 @@
         <local:NumberToCornerRadiusConverter x:Key="NumberToCornerRadiusConverter" />
         <local:OptionalBorderThicknessConverter x:Key="OptionalBorderThicknessConverter" />
         <local:StringEqualsConverter x:Key="StringEqualsConverter" />
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <local:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVis" />
         <Style x:Key="BodyText" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
             <Setter Property="FontSize" Value="14" />
@@ -133,6 +135,24 @@
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        <!-- Transparent square used by expander chevrons; theme Button padding offsets Path otherwise. -->
+        <Style x:Key="ExpanderChevronButton" TargetType="Button" BasedOn="{StaticResource IconSquareButton}">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="Transparent"
+                                Width="{TemplateBinding Width}"
+                                Height="{TemplateBinding Height}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
         <Style x:Key="SliderValueText" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
@@ -256,7 +276,8 @@
             </Style.Resources>
         </Style>
         <Style x:Key="CompactChoicePanel" TargetType="StackPanel">
-            <Setter Property="Width" Value="205" />
+            <Setter Property="Width" Value="240" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
             <Setter Property="Margin" Value="0,0,16,16" />
             <Style.Resources>
                 <Style TargetType="TextBlock" BasedOn="{StaticResource FieldLabel}" />
@@ -459,22 +480,18 @@
                                             </Grid>
                                         </ToggleButton>
                                         <Button x:Name="ExpanderChevron" Grid.Column="1"
-                                                Style="{StaticResource IconSquareButton}"
+                                                Style="{StaticResource ExpanderChevronButton}"
                                                 VerticalAlignment="Center"
                                                 Click="ExpanderChevronButton_OnClick">
-                                            <Viewbox Width="16" Height="16" Stretch="Uniform"
-                                                     HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                <Viewbox.RenderTransform>
-                                                    <TranslateTransform X="-1" Y="-1" />
-                                                </Viewbox.RenderTransform>
-                                                <Canvas Width="24" Height="24">
-                                                    <Path x:Name="ExpanderArrow"
-                                                          Data="M6,9 L12,15 L18,9"
-                                                          Stroke="{DynamicResource TextBrush}" StrokeThickness="2"
-                                                          StrokeStartLineCap="Round" StrokeEndLineCap="Round"
-                                                          StrokeLineJoin="Round" />
-                                                </Canvas>
-                                            </Viewbox>
+                                            <Path x:Name="ExpanderArrow"
+                                                  Width="12" Height="7"
+                                                  Stretch="Uniform"
+                                                  Data="M0,0 L6,6 L12,0"
+                                                  Stroke="{DynamicResource TextBrush}" StrokeThickness="1.75"
+                                                  StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                                  StrokeLineJoin="Round"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center" />
                                         </Button>
                                     </Grid>
                                 </Grid>
@@ -494,7 +511,7 @@
                                 <Setter TargetName="ExpanderFill" Property="Fill" Value="{DynamicResource Narian.Hover}" />
                                 <Setter TargetName="ExpanderAccent" Property="Fill" Value="{DynamicResource Narian.Accent}" />
                                 <Setter TargetName="ExpanderHint" Property="Visibility" Value="Collapsed" />
-                                <Setter TargetName="ExpanderArrow" Property="Data" Value="M6,15 L12,9 L18,15" />
+                                <Setter TargetName="ExpanderArrow" Property="Data" Value="M0,6 L6,0 L12,6" />
                                 <Setter TargetName="ExpanderHeader" Property="TextElement.FontWeight" Value="SemiBold" />
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -532,27 +549,23 @@
                                                               TextElement.Foreground="{DynamicResource TextBrush}" />
                                         </ToggleButton>
                                         <Button x:Name="ExpanderChevron" Grid.Column="1"
-                                                Style="{StaticResource IconSquareButton}"
+                                                Style="{StaticResource ExpanderChevronButton}"
                                                 VerticalAlignment="Center"
                                                 Click="ExpanderChevronButton_OnClick">
-                                            <Viewbox Width="16" Height="16" Stretch="Uniform"
-                                                     HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                <Viewbox.RenderTransform>
-                                                    <TranslateTransform X="-1" Y="-1" />
-                                                </Viewbox.RenderTransform>
-                                                <Canvas Width="24" Height="24">
-                                                    <Path x:Name="ExpanderArrow"
-                                                          Data="M6,9 L12,15 L18,9"
-                                                          Stroke="{DynamicResource TextBrush}" StrokeThickness="2"
-                                                          StrokeStartLineCap="Round" StrokeEndLineCap="Round"
-                                                          StrokeLineJoin="Round" />
-                                                </Canvas>
-                                            </Viewbox>
+                                            <Path x:Name="ExpanderArrow"
+                                                  Width="12" Height="7"
+                                                  Stretch="Uniform"
+                                                  Data="M0,0 L6,6 L12,0"
+                                                  Stroke="{DynamicResource TextBrush}" StrokeThickness="1.75"
+                                                  StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                                  StrokeLineJoin="Round"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center" />
                                         </Button>
                                     </Grid>
                                 </Grid>
                             </Border>
-                            <Border x:Name="ExpanderContent" Visibility="Collapsed" Padding="8,8,0,4"
+                            <Border x:Name="ExpanderContent" Visibility="Collapsed" Padding="16,12,16,12"
                                     TextElement.Foreground="{DynamicResource TextBrush}"
                                     TextElement.FontSize="14">
                                 <ContentPresenter HorizontalAlignment="Stretch" />
@@ -566,7 +579,7 @@
                                 <Setter TargetName="ExpanderContent" Property="Visibility" Value="Visible" />
                                 <Setter TargetName="ExpanderFill" Property="Fill" Value="{DynamicResource Narian.Hover}" />
                                 <Setter TargetName="ExpanderAccent" Property="Fill" Value="{DynamicResource Narian.Accent}" />
-                                <Setter TargetName="ExpanderArrow" Property="Data" Value="M6,15 L12,9 L18,15" />
+                                <Setter TargetName="ExpanderArrow" Property="Data" Value="M0,6 L6,0 L12,6" />
                                 <Setter TargetName="ExpanderHeader" Property="TextElement.FontWeight" Value="SemiBold" />
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -1074,6 +1087,7 @@
                                 <TextBlock Text="{DynamicResource LOCCSM_ForcePauseOfflineGamesWarning}" Style="{StaticResource WarningHintText}" Margin="0,8,0,16" />
                                 <RadioButton Content="{DynamicResource LOCCSM_PauseGameOnDisconnect}" IsChecked="{Binding IsAutoPauseModeAlways}" GroupName="AutoPauseMode" />
                                 <TextBlock Text="{DynamicResource LOCCSM_PauseGameOnDisconnectHelp}" Style="{StaticResource ControlHintTextLast}" />
+                                <TextBlock Text="{DynamicResource LOCCSM_PauseGameOnDisconnectWarning}" Style="{StaticResource WarningHintText}" Margin="0,8,0,0" />
                                 </StackPanel>
                             </StackPanel>
                         </ScrollViewer>
@@ -1081,6 +1095,7 @@
                 </TabControl>
                 </Grid>
             </TabItem>
+
 
             <TabItem>
                 <TabItem.Header>
@@ -1091,40 +1106,6 @@
                 </TabItem.Header>
                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <TabControl Style="{StaticResource SettingsNavigationTabControl}" Tag="{DynamicResource LOCCSM_TabAppearance}">
-                    <TabItem>
-                        <TabItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Style="{StaticResource TabGlyph}" Text="&#xE7F4;" />
-                                <TextBlock Text="{DynamicResource LOCCSM_DesktopIntegrationTitle}" Style="{StaticResource TabHeaderLabel}" />
-                            </StackPanel>
-                        </TabItem.Header>
-                        <ScrollViewer Style="{StaticResource FillScrollViewer}">
-                            <StackPanel Margin="16,16,16,16">
-                                <StackPanel Style="{StaticResource PageSection}">
-                                    <Border Style="{StaticResource PageHeader}">
-                                        <TextBlock Text="{DynamicResource LOCCSM_DesktopIntegrationTitle}" Style="{StaticResource SectionHeaderText}" />
-                                    </Border>
-                                    <TextBlock Text="{DynamicResource LOCCSM_ShowPrimaryInTopPanelHelp}" Style="{StaticResource SectionSubtitleText}" />
-                                </StackPanel>
-                                <StackPanel Style="{StaticResource FieldGroup}">
-                                <RadioButton Content="{DynamicResource LOCCSM_TopPanelModeHidden}"
-                                             GroupName="TopPanelControllerMode"
-                                             Margin="0,0,0,8"
-                                             IsChecked="{Binding TopPanelControllerMode, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Hidden}" />
-                                <RadioButton Content="{DynamicResource LOCCSM_TopPanelModeDefault}"
-                                             GroupName="TopPanelControllerMode"
-                                             Margin="0,0,0,8"
-                                             IsChecked="{Binding TopPanelControllerMode, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Default}" />
-                                <RadioButton Content="{DynamicResource LOCCSM_TopPanelModePrimary}"
-                                             GroupName="TopPanelControllerMode"
-                                             Margin="0,0,0,8"
-                                             IsChecked="{Binding TopPanelControllerMode, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Primary}" />
-                                <CheckBox Content="{DynamicResource LOCCSM_ColorTopPanelByBattery}" IsChecked="{Binding ColorTopPanelIndicatorByBattery}"
-                                          Margin="0,8,0,0" IsEnabled="{Binding IsTopPanelButtonVisible}" />
-                                </StackPanel>
-                            </StackPanel>
-                        </ScrollViewer>
-                    </TabItem>
                     <TabItem>
                         <TabItem.Header>
                             <StackPanel Orientation="Horizontal">
@@ -1324,15 +1305,21 @@
                                             <WrapPanel>
                                                 <StackPanel Style="{StaticResource OverlaySliderPanel}">
                                                     <CheckBox Content="{DynamicResource LOCCSM_OverlayShowControllerIcon}" IsChecked="{Binding OverlayShowControllerIcon}" Margin="0,0,0,8" />
-                                                    <StackPanel Style="{StaticResource CompactChoicePanel}" IsEnabled="{Binding OverlayShowControllerIcon}" Margin="0,0,0,8">
-                                                        <TextBlock Text="{DynamicResource LOCCSM_OverlayControllerIconPosition}"/>
-                                                        <ComboBox SelectedValue="{Binding OverlayControllerIconPosition}" SelectedValuePath="Tag">
-                                                            <ComboBoxItem Tag="Left" Content="{DynamicResource LOCCSM_BorderLeft}"/>
-                                                            <ComboBoxItem Tag="Right" Content="{DynamicResource LOCCSM_BorderRight}"/>
-                                                            <ComboBoxItem Tag="Top" Content="{DynamicResource LOCCSM_BorderTop}"/>
-                                                            <ComboBoxItem Tag="Bottom" Content="{DynamicResource LOCCSM_BorderBottom}"/>
-                                                        </ComboBox>
-                                                    </StackPanel>
+                                                    <TextBlock Text="{DynamicResource LOCCSM_OverlayControllerIconPosition}"
+                                                               IsEnabled="{Binding OverlayShowControllerIcon}" />
+                                                    <ComboBox Margin="0,0,0,8"
+                                                              IsEnabled="{Binding OverlayShowControllerIcon}"
+                                                              SelectedValue="{Binding OverlayControllerIconPosition}" SelectedValuePath="Tag"
+                                                              Visibility="{Binding OverlayShowControllerName, Converter={StaticResource BoolToVis}}">
+                                                        <ComboBoxItem Tag="Left" Content="{DynamicResource LOCCSM_BorderLeft}"/>
+                                                        <ComboBoxItem Tag="Right" Content="{DynamicResource LOCCSM_BorderRight}"/>
+                                                        <ComboBoxItem Tag="Top" Content="{DynamicResource LOCCSM_BorderTop}"/>
+                                                        <ComboBoxItem Tag="Bottom" Content="{DynamicResource LOCCSM_BorderBottom}"/>
+                                                    </ComboBox>
+                                                    <ComboBox Margin="0,0,0,8" IsEnabled="False" SelectedIndex="0"
+                                                              Visibility="{Binding OverlayShowControllerName, Converter={StaticResource InverseBoolToVis}}">
+                                                        <ComboBoxItem Content="{DynamicResource LOCCSM_IconPositionCenter}" IsSelected="True"/>
+                                                    </ComboBox>
                                                     <DockPanel IsEnabled="{Binding OverlayShowControllerIcon}"><TextBlock Text="{DynamicResource LOCCSM_OverlayControllerIconSize}"/><TextBlock DockPanel.Dock="Right" Text="{Binding OverlayControllerIconSize}" Style="{StaticResource SliderValueText}"/></DockPanel>
                                                     <Slider Minimum="16" Maximum="128" TickFrequency="2" IsSnapToTickEnabled="True" IsEnabled="{Binding OverlayShowControllerIcon}" Value="{Binding OverlayControllerIconSize, UpdateSourceTrigger=PropertyChanged}"/>
                                                 </StackPanel>
@@ -1391,8 +1378,8 @@
                                                             <RowDefinition Height="Auto"/>
                                                             <RowDefinition Height="Auto"/>
                                                         </Grid.RowDefinitions>
-                                                        <Path x:Name="OverlayPreviewControllerIcon" Grid.Row="0" Grid.Column="0" Stretch="Uniform" Fill="{Binding OverlayTextColor, Converter={StaticResource HexColorBrushConverter}}" Stroke="{Binding OverlayTextColor, Converter={StaticResource HexColorBrushConverter}}" StrokeThickness="0.35" StrokeLineJoin="Round" Margin="0,0,9,0" VerticalAlignment="Center" HorizontalAlignment="Center"><Path.Style><Style TargetType="Path"><Setter Property="Visibility" Value="Visible"/><Style.Triggers><DataTrigger Binding="{Binding OverlayShowControllerIcon}" Value="False"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers></Style></Path.Style></Path>
-                                                        <TextBlock x:Name="OverlayPreviewControllerName" Grid.Row="0" Grid.Column="1" Text="{DynamicResource LOCCSM_PreviewControllerName}" Foreground="{Binding OverlayTextColor, Converter={StaticResource HexColorBrushConverter}}" FontSize="{Binding OverlayControllerFontSize}" VerticalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"><TextBlock.Style><Style TargetType="TextBlock"><Setter Property="Visibility" Value="Visible"/><Style.Triggers><DataTrigger Binding="{Binding OverlayShowControllerName}" Value="False"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers></Style></TextBlock.Style></TextBlock>
+                                                        <Path x:Name="OverlayPreviewControllerIcon" Grid.Row="0" Grid.Column="0" Stretch="Uniform" Fill="{Binding OverlayTextColor, Converter={StaticResource HexColorBrushConverter}}" Stroke="{Binding OverlayTextColor, Converter={StaticResource HexColorBrushConverter}}" StrokeThickness="0.35" StrokeLineJoin="Round" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                        <TextBlock x:Name="OverlayPreviewControllerName" Grid.Row="0" Grid.Column="1" Text="{DynamicResource LOCCSM_PreviewControllerName}" Foreground="{Binding OverlayTextColor, Converter={StaticResource HexColorBrushConverter}}" FontSize="{Binding OverlayControllerFontSize}" VerticalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"/>
                                                     </Grid>
                                                     <TextBlock Text="{DynamicResource LOCCSM_OverlayAllowTakeover}" Foreground="{Binding OverlayAccentColor, Converter={StaticResource HexColorBrushConverter}}" FontSize="{Binding OverlayInstructionFontSize}" HorizontalAlignment="Center" Margin="{Binding OverlayElementSpacing, Converter={StaticResource NumberToThicknessConverter}, ConverterParameter=Top}" TextWrapping="Wrap" TextAlignment="Center"/>
                                                     <Border Background="#302391FF" CornerRadius="4" Padding="9,5" HorizontalAlignment="Center" Margin="{Binding OverlayElementSpacing, Converter={StaticResource NumberToThicknessConverter}, ConverterParameter=Top}">
@@ -1480,6 +1467,52 @@
                     </TabItem>
                 </TabControl>
                 </Grid>
+            </TabItem>
+
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource TabGlyph}" Text="&#xE713;" />
+                        <TextBlock Text="{DynamicResource LOCCSM_DesktopIntegrationTitle}" Style="{StaticResource TabHeaderLabel}" />
+                    </StackPanel>
+                </TabItem.Header>
+                <ScrollViewer Style="{StaticResource FillScrollViewer}">
+                    <StackPanel Margin="16,16,16,16">
+                        <StackPanel Style="{StaticResource PageSection}">
+                            <Border Style="{StaticResource PageHeader}">
+                                <TextBlock Text="{DynamicResource LOCCSM_TopPanelSectionTitle}" Style="{StaticResource SectionHeaderText}" />
+                            </Border>
+                            <TextBlock Text="{DynamicResource LOCCSM_ShowPrimaryInTopPanelHelp}" Style="{StaticResource SectionSubtitleText}" />
+                        </StackPanel>
+                        <StackPanel Style="{StaticResource FieldGroup}">
+                            <RadioButton Content="{DynamicResource LOCCSM_TopPanelModeHidden}"
+                                         GroupName="TopPanelControllerMode"
+                                         Margin="0,0,0,8"
+                                         IsChecked="{Binding TopPanelControllerMode, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Hidden}" />
+                            <RadioButton Content="{DynamicResource LOCCSM_TopPanelModeDefault}"
+                                         GroupName="TopPanelControllerMode"
+                                         Margin="0,0,0,8"
+                                         IsChecked="{Binding TopPanelControllerMode, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Default}" />
+                            <RadioButton Content="{DynamicResource LOCCSM_TopPanelModePrimary}"
+                                         GroupName="TopPanelControllerMode"
+                                         Margin="0,0,0,8"
+                                         IsChecked="{Binding TopPanelControllerMode, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Primary}" />
+                            <CheckBox Content="{DynamicResource LOCCSM_ColorTopPanelByBattery}" IsChecked="{Binding ColorTopPanelIndicatorByBattery}"
+                                      Margin="0,8,0,0" IsEnabled="{Binding IsTopPanelButtonVisible}" />
+                        </StackPanel>
+
+                        <StackPanel Style="{StaticResource PageSection}" Margin="0,24,0,0">
+                            <Border Style="{StaticResource PageHeader}">
+                                <TextBlock Text="{DynamicResource LOCCSM_GuideFullscreenSectionTitle}" Style="{StaticResource SectionHeaderText}" />
+                            </Border>
+                            <TextBlock Text="{DynamicResource LOCCSM_LaunchFullscreenOnGuideHelp}" Style="{StaticResource SectionSubtitleText}" />
+                        </StackPanel>
+                        <StackPanel Style="{StaticResource FieldGroup}">
+                            <CheckBox Content="{DynamicResource LOCCSM_LaunchFullscreenOnGuide}"
+                                      IsChecked="{Binding LaunchFullscreenOnGuideButton}" />
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
             </TabItem>
 
             <TabItem>

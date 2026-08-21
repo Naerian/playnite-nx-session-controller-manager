@@ -1,92 +1,104 @@
 <Window x:Class="ControllerSessionManager.PlayniteIntegration.ColorPickerDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="" Width="468" SizeToContent="Height"
+        Title="" Width="480" SizeToContent="Height"
         WindowStyle="None" ResizeMode="NoResize" ShowInTaskbar="False"
         WindowStartupLocation="CenterOwner"
-        Background="{DynamicResource PopupBackgroundBrush}"
+        Background="{DynamicResource Narian.Bg}"
         Foreground="{DynamicResource TextBrush}"
         TextElement.Foreground="{DynamicResource TextBrush}"
         TextElement.FontSize="14"
         SnapsToDevicePixels="True"
         PreviewKeyDown="OnPreviewKeyDown">
     <Window.Resources>
-        <Style x:Key="PickerButton" TargetType="Button">
-            <Setter Property="MinHeight" Value="36" />
-            <Setter Property="Padding" Value="16,6" />
-            <Setter Property="Margin" Value="8,0,0,0" />
-            <Setter Property="HorizontalContentAlignment" Value="Center" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
-            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource GlyphBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="ButtonBorder"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="4"
-                                Padding="{TemplateBinding Padding}"
-                                SnapsToDevicePixels="True">
-                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                              TextElement.Foreground="{TemplateBinding Foreground}" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource HoverBrush}" />
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.86" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style x:Key="PickerLabel" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="Margin" Value="0,0,0,4" />
-        </Style>
-        <DrawingBrush x:Key="CheckerBrush" TileMode="Tile" Viewport="0,0,10,10" ViewportUnits="Absolute">
-            <DrawingBrush.Drawing>
-                <DrawingGroup>
-                    <GeometryDrawing Brush="#FFB8B8B8">
-                        <GeometryDrawing.Geometry>
-                            <RectangleGeometry Rect="0,0,10,10" />
-                        </GeometryDrawing.Geometry>
-                    </GeometryDrawing>
-                    <GeometryDrawing Brush="#FF8A8A8A">
-                        <GeometryDrawing.Geometry>
-                            <GeometryGroup>
-                                <RectangleGeometry Rect="0,0,5,5" />
-                                <RectangleGeometry Rect="5,5,5,5" />
-                            </GeometryGroup>
-                        </GeometryDrawing.Geometry>
-                    </GeometryDrawing>
-                </DrawingGroup>
-            </DrawingBrush.Drawing>
-        </DrawingBrush>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="SettingsChrome.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="PickerLabel" TargetType="TextBlock">
+                <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="Margin" Value="0,0,0,6" />
+            </Style>
+            <Style x:Key="PickerPrimaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                <Setter Property="Background" Value="{DynamicResource Narian.Accent}"/>
+                <Setter Property="Foreground" Value="{DynamicResource Narian.AccentOn}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource Narian.Accent}"/>
+                <Setter Property="Margin" Value="8,0,0,0"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Bd"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="4"
+                                    Padding="{TemplateBinding Padding}"
+                                    SnapsToDevicePixels="True">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                  TextElement.Foreground="{TemplateBinding Foreground}"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Narian.AccentHover}"/>
+                                    <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Narian.AccentHover}"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="Bd" Property="Opacity" Value="0.92"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="Bd" Property="Opacity" Value="0.55"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <DrawingBrush x:Key="CheckerBrush" TileMode="Tile" Viewport="0,0,10,10" ViewportUnits="Absolute">
+                <DrawingBrush.Drawing>
+                    <DrawingGroup>
+                        <GeometryDrawing Brush="#FF2A3140">
+                            <GeometryDrawing.Geometry>
+                                <RectangleGeometry Rect="0,0,10,10" />
+                            </GeometryDrawing.Geometry>
+                        </GeometryDrawing>
+                        <GeometryDrawing Brush="#FF1A1F2A">
+                            <GeometryDrawing.Geometry>
+                                <GeometryGroup>
+                                    <RectangleGeometry Rect="0,0,5,5" />
+                                    <RectangleGeometry Rect="5,5,5,5" />
+                                </GeometryGroup>
+                            </GeometryDrawing.Geometry>
+                        </GeometryDrawing>
+                    </DrawingGroup>
+                </DrawingBrush.Drawing>
+            </DrawingBrush>
+        </ResourceDictionary>
     </Window.Resources>
-    <Border BorderBrush="{DynamicResource GlyphBrush}" BorderThickness="1" CornerRadius="4"
-            Background="{DynamicResource PopupBackgroundBrush}">
+    <Border BorderBrush="{DynamicResource Narian.Border}" BorderThickness="1" CornerRadius="4"
+            Background="{DynamicResource Narian.Bg}">
         <DockPanel LastChildFill="True" Margin="18,16">
-            <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource GlyphBrush}"
-                    BorderThickness="0,0,0,1" Padding="0,0,0,8" Margin="0,0,0,16">
-                <TextBlock x:Name="TitleText" FontSize="20" FontWeight="SemiBold"
-                           Foreground="{DynamicResource GlyphBrush}" />
+            <Border DockPanel.Dock="Top"
+                    BorderBrush="{DynamicResource Narian.Border}"
+                    BorderThickness="0,0,0,1"
+                    Padding="0,0,0,10"
+                    Margin="0,0,0,16">
+                <TextBlock x:Name="TitleText"
+                           FontSize="20" FontWeight="SemiBold"
+                           Foreground="{DynamicResource Narian.Accent}" />
             </Border>
             <StackPanel DockPanel.Dock="Bottom" Margin="0,16,0,0">
                 <TextBlock x:Name="HexLabel" Style="{StaticResource PickerLabel}" />
-                <TextBox x:Name="HexBox" Height="32" VerticalContentAlignment="Center"
+                <TextBox x:Name="HexBox"
+                         MinHeight="36"
+                         VerticalContentAlignment="Center"
                          TextChanged="HexBoxTextChanged" />
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
-                    <Button x:Name="CancelButton" Style="{StaticResource PickerButton}" Click="CancelClick" />
-                    <Button x:Name="ApplyButton" Style="{StaticResource PickerButton}" Click="ApplyClick" />
+                    <Button x:Name="CancelButton" IsCancel="True" Click="CancelClick" />
+                    <Button x:Name="ApplyButton" Style="{StaticResource PickerPrimaryButton}"
+                            IsDefault="True" Click="ApplyClick" />
                 </StackPanel>
             </StackPanel>
             <Grid>
@@ -95,9 +107,10 @@
                     <ColumnDefinition Width="14" />
                     <ColumnDefinition Width="22" />
                     <ColumnDefinition Width="18" />
-                    <ColumnDefinition Width="132" />
+                    <ColumnDefinition Width="140" />
                 </Grid.ColumnDefinitions>
                 <Border x:Name="SvSurface" Height="220" CornerRadius="4" ClipToBounds="True"
+                        BorderBrush="{DynamicResource Narian.Border}" BorderThickness="1"
                         Cursor="Cross" MouseLeftButtonDown="SvSurfaceMouseLeftButtonDown"
                         MouseMove="SvSurfaceMouseMove" MouseLeftButtonUp="SvSurfaceMouseLeftButtonUp">
                     <Grid>
@@ -129,10 +142,12 @@
                     </Grid>
                 </Border>
                 <Border Grid.Column="2" x:Name="HueBar" Height="220" CornerRadius="4" Cursor="Hand"
+                        BorderBrush="{DynamicResource Narian.Border}" BorderThickness="1"
+                        ClipToBounds="True"
                         MouseLeftButtonDown="HueBarMouseLeftButtonDown"
                         MouseMove="HueBarMouseMove" MouseLeftButtonUp="HueBarMouseLeftButtonUp">
                     <Grid>
-                        <Border CornerRadius="4">
+                        <Border CornerRadius="3">
                             <Border.Background>
                                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                                     <GradientStop Color="#FFFF0000" Offset="0" />
@@ -160,15 +175,18 @@
                     <TextBlock x:Name="PreviewLabel" Style="{StaticResource PickerLabel}" />
                     <Border Height="72" CornerRadius="4" ClipToBounds="True"
                             Background="{StaticResource CheckerBrush}"
-                            BorderBrush="{DynamicResource GlyphBrush}" BorderThickness="1">
+                            BorderBrush="{DynamicResource Narian.Border}" BorderThickness="1">
                         <Border x:Name="PreviewSwatch" />
                     </Border>
-                    <TextBlock x:Name="OpacityLabel" Style="{StaticResource PickerLabel}" Margin="0,16,0,4" />
+                    <TextBlock x:Name="OpacityLabel" Style="{StaticResource PickerLabel}" Margin="0,16,0,6" />
                     <DockPanel>
                         <TextBlock x:Name="OpacityValueText" DockPanel.Dock="Right"
+                                   Foreground="{DynamicResource Narian.Accent}"
                                    FontWeight="SemiBold" VerticalAlignment="Center" Margin="8,0,0,0" />
-                        <Slider x:Name="OpacitySlider" Minimum="0" Maximum="100" TickFrequency="1"
-                                IsSnapToTickEnabled="True" ValueChanged="OpacitySliderChanged" />
+                        <Slider x:Name="OpacitySlider" Minimum="0" Maximum="100"
+                                TickFrequency="1" IsSnapToTickEnabled="True"
+                                VerticalAlignment="Center"
+                                ValueChanged="OpacitySliderChanged" />
                     </DockPanel>
                 </StackPanel>
             </Grid>

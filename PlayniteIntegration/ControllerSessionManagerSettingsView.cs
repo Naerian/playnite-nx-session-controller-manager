@@ -105,18 +105,36 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
 
             var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
-            var position = settings == null || string.IsNullOrWhiteSpace(settings.OverlayControllerIconPosition)
-                ? "Left" : settings.OverlayControllerIconPosition;
             var gap = settings == null ? 0 : Math.Max(0, settings.OverlayElementSpacing);
+            var showIcon = settings == null || settings.OverlayShowControllerIcon;
+            var showName = settings == null || settings.OverlayShowControllerName;
+            var position = !showName
+                ? "Center"
+                : (settings == null || string.IsNullOrWhiteSpace(settings.OverlayControllerIconPosition)
+                    ? "Left" : settings.OverlayControllerIconPosition);
 
             OverlayPreviewControllerHost.Children.Clear();
             OverlayPreviewControllerHost.RowDefinitions.Clear();
             OverlayPreviewControllerHost.ColumnDefinitions.Clear();
             OverlayPreviewControllerIcon.Margin = new Thickness(0);
             OverlayPreviewControllerName.Margin = new Thickness(0);
+            Grid.SetRow(OverlayPreviewControllerIcon, 0);
+            Grid.SetColumn(OverlayPreviewControllerIcon, 0);
+            Grid.SetRow(OverlayPreviewControllerName, 0);
+            Grid.SetColumn(OverlayPreviewControllerName, 0);
 
-            if (string.Equals(position, "Top", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(position, "Bottom", StringComparison.OrdinalIgnoreCase))
+            if (!showIcon && !showName)
+            {
+                OverlayPreviewControllerHost.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            OverlayPreviewControllerHost.Visibility = Visibility.Visible;
+            var both = showIcon && showName;
+
+            if (both &&
+                (string.Equals(position, "Top", StringComparison.OrdinalIgnoreCase) ||
+                 string.Equals(position, "Bottom", StringComparison.OrdinalIgnoreCase)))
             {
                 OverlayPreviewControllerHost.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
                 OverlayPreviewControllerHost.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
@@ -128,7 +146,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 OverlayPreviewControllerIcon.Margin = iconFirst
                     ? new Thickness(0, 0, 0, gap) : new Thickness(0, gap, 0, 0);
             }
-            else
+            else if (both)
             {
                 OverlayPreviewControllerHost.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
                 OverlayPreviewControllerHost.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
@@ -140,9 +158,22 @@ namespace ControllerSessionManager.PlayniteIntegration
                 OverlayPreviewControllerIcon.Margin = iconFirst
                     ? new Thickness(0, 0, gap, 0) : new Thickness(gap, 0, 0, 0);
             }
+            else
+            {
+                OverlayPreviewControllerHost.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                OverlayPreviewControllerHost.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            }
 
-            OverlayPreviewControllerHost.Children.Add(OverlayPreviewControllerIcon);
-            OverlayPreviewControllerHost.Children.Add(OverlayPreviewControllerName);
+            if (showIcon)
+            {
+                OverlayPreviewControllerHost.Children.Add(OverlayPreviewControllerIcon);
+            }
+
+            if (showName)
+            {
+                OverlayPreviewControllerHost.Children.Add(OverlayPreviewControllerName);
+            }
+
             FitPreviewControllerIcon(settings == null ? 30 : settings.OverlayControllerIconSize);
         }
 
@@ -760,6 +791,13 @@ namespace ControllerSessionManager.PlayniteIntegration
             {
                 dialog.Owner = owner;
             }
+
+            var appearanceSettings = boundSettings ?? settings;
+            SettingsAppearance.ApplyWindow(
+                dialog,
+                appearanceSettings != null
+                    ? appearanceSettings.AppearancePreset
+                    : SettingsAppearance.Midnight);
 
             if (dialog.ShowDialog() != true)
             {

@@ -16,6 +16,12 @@ namespace ControllerSessionManager.OverlayHost
         [STAThread]
         private static void Main(string[] args)
         {
+            if (HasFlag(args, "--focus-fullscreen"))
+            {
+                FullscreenFocusHelper.Run();
+                return;
+            }
+
             var pipeName = ReadArgument(args, "--pipe");
             var token = ReadArgument(args, "--token");
             int parentProcessId;
@@ -170,6 +176,24 @@ namespace ControllerSessionManager.OverlayHost
             }
 
             return null;
+        }
+
+        private static bool HasFlag(string[] args, string name)
+        {
+            if (args == null)
+            {
+                return false;
+            }
+
+            for (var index = 0; index < args.Length; index++)
+            {
+                if (string.Equals(args[index], name, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

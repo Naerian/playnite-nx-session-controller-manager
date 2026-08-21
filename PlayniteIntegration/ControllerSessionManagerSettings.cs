@@ -17,6 +17,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private bool showPrimaryControllerInTopPanel;
         private string topPanelControllerMode = TopPanelControllerModeHidden;
         private bool colorTopPanelIndicatorByBattery = true;
+        private bool launchFullscreenOnGuideButton;
         private bool enableSessionTracking = true;
         private bool showDisconnectOverlay = true;
         private bool showFullscreenControllerNotifications = true;
@@ -174,6 +175,15 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             get { return colorTopPanelIndicatorByBattery; }
             set { SetValue(ref colorTopPanelIndicatorByBattery, value); }
+        }
+
+        /// <summary>
+        /// Desktop-only: hold Guide/PS/Home briefly (then release) to switch to Fullscreen. Off by default.
+        /// </summary>
+        public bool LaunchFullscreenOnGuideButton
+        {
+            get { return launchFullscreenOnGuideButton; }
+            set { SetValue(ref launchFullscreenOnGuideButton, value); }
         }
 
         public int ReconciliationIntervalSeconds
@@ -637,6 +647,12 @@ namespace ControllerSessionManager.PlayniteIntegration
                 SettingsSchemaVersion = 6;
             }
 
+            if (SettingsSchemaVersion < 7)
+            {
+                launchFullscreenOnGuideButton = false;
+                SettingsSchemaVersion = 7;
+            }
+
             topPanelControllerMode = NormalizeTopPanelControllerMode(topPanelControllerMode);
             appearancePreset = SettingsAppearance.Normalize(appearancePreset);
         }
@@ -692,9 +708,17 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             if (plugin != null)
             {
+                var sidebarChanged = editingClone != null
+                    && editingClone.Tester != null
+                    && Tester != null
+                    && Tester.ShowSidebarItem != editingClone.Tester.ShowSidebarItem;
                 Tester.Normalize();
                 plugin.SavePluginSettings(this);
                 plugin.ApplySettings();
+                if (sidebarChanged)
+                {
+                    plugin.OfferPlayniteRestartForSidebarChange();
+                }
             }
         }
 
@@ -765,6 +789,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 ShowPrimaryControllerInTopPanel = ShowPrimaryControllerInTopPanel,
                 TopPanelControllerMode = TopPanelControllerMode,
                 ColorTopPanelIndicatorByBattery = ColorTopPanelIndicatorByBattery,
+                LaunchFullscreenOnGuideButton = LaunchFullscreenOnGuideButton,
                 EnableSessionTracking = EnableSessionTracking,
                 ShowDisconnectOverlay = ShowDisconnectOverlay,
                 ShowFullscreenControllerNotifications = ShowFullscreenControllerNotifications,
@@ -853,6 +878,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             showPrimaryControllerInTopPanel = source.showPrimaryControllerInTopPanel;
             topPanelControllerMode = source.topPanelControllerMode;
             ColorTopPanelIndicatorByBattery = source.ColorTopPanelIndicatorByBattery;
+            LaunchFullscreenOnGuideButton = source.LaunchFullscreenOnGuideButton;
             EnableSessionTracking = source.EnableSessionTracking;
             ShowDisconnectOverlay = source.ShowDisconnectOverlay;
             ShowFullscreenControllerNotifications = source.ShowFullscreenControllerNotifications;

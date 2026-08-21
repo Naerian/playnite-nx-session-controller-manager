@@ -86,12 +86,16 @@
     <sys:String x:Key="LOCCSM_BatteryUnknownHint">A bateria pode aparecer como Desconhecida quando o controle, receptor ou driver do Windows não expõe o nível pelas APIs padrão. Isso é comum com receptores USB proprietários.</sys:String>
     <sys:String x:Key="LOCCSM_ControllerGeneralTitle">Exibição dos controles</sys:String>
     <sys:String x:Key="LOCCSM_ControllerGeneralHelp">Escolha como as informações dos controles são mostradas no modo Desktop do Playnite.</sys:String>
-    <sys:String x:Key="LOCCSM_DesktopIntegrationTitle">Acesso rápido</sys:String>
+    <sys:String x:Key="LOCCSM_DesktopIntegrationTitle">Opções</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelSectionTitle">Painel superior</sys:String>
+    <sys:String x:Key="LOCCSM_GuideFullscreenSectionTitle">Guide → Fullscreen</sys:String>
     <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanel">Mostrar ícone e bateria do controle principal no painel superior</sys:String>
     <sys:String x:Key="LOCCSM_ShowPrimaryInTopPanelHelp">Escolha como o Controller Manager aparece no painel superior do Playnite. A dica e a cor da bateria continuam válidas quando o botão está visível.</sys:String>
     <sys:String x:Key="LOCCSM_TopPanelModeHidden">Não mostrar o botão</sys:String>
     <sys:String x:Key="LOCCSM_TopPanelModeDefault">Mostrar o ícone padrão</sys:String>
     <sys:String x:Key="LOCCSM_TopPanelModePrimary">Mostrar o ícone do controle principal</sys:String>
+    <sys:String x:Key="LOCCSM_LaunchFullscreenOnGuide">Hold Guide 0.5 s (then release) to open Fullscreen</sys:String>
+    <sys:String x:Key="LOCCSM_LaunchFullscreenOnGuideHelp">Desktop only, and only when no game is running. Hold Guide / PS / Home for about 0.5 seconds and release to open Fullscreen (same as the menu / F11). A short tap is ignored. A long hold (as when powering off the controller) is also ignored. Does nothing if Fullscreen is already open. If Windows is set to open Xbox Game Bar with the controller Guide button, turn that off or both can trigger at once.</sys:String>
     <sys:String x:Key="LOCCSM_ValueBluetooth">Bluetooth</sys:String>
     <sys:String x:Key="LOCCSM_VersionAuthorFormat">Versão {0} | Narian</sys:String>
     <sys:String x:Key="LOCCSM_ProjectLinksTitle">Links do projeto</sys:String>
@@ -134,6 +138,7 @@
     <sys:String x:Key="LOCCSM_GamePolicyLocalMultiplayer">Multijogador local. Proteger todos os controles ativos</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">Temporarily stop the game when a controller disconnects</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnectHelp">Suspende o processo do jogo sempre que um controle desconecta, sem verificar atividade de rede. Funciona em todos os jogos. O plugin não retoma o jogo automaticamente quando a partida termina.</sys:String>
+    <sys:String x:Key="LOCCSM_PauseGameOnDisconnectWarning">Também suspende partidas online; o plugin não retoma o jogo sozinho.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyEnablePause">Pausar automaticamente neste jogo</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyDisablePause">Não pausar automaticamente neste jogo</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPauseDisabled">Pausa automática desativada</sys:String>
@@ -209,6 +214,7 @@
     <sys:String x:Key="LOCCSM_OverlayShowControllerIcon">Show the controller icon</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowControllerName">Show the controller name</sys:String>
     <sys:String x:Key="LOCCSM_OverlayControllerIconPosition">Controller icon position</sys:String>
+    <sys:String x:Key="LOCCSM_IconPositionCenter">Centralizado</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowStatusIcon">Mostrar o ícone de pausa ou aviso</sys:String>
     <sys:String x:Key="LOCCSM_DesktopNotificationsTitle">Notificação da área de trabalho</sys:String>
     <sys:String x:Key="LOCCSM_ShowDesktopControllerNotifications">Notify when a controller connects or disconnects in the Desktop interface</sys:String>
@@ -292,7 +298,7 @@
     <sys:String x:Key="LOCCSM_Tester_Ramp">Rampa</sys:String>
     <sys:String x:Key="LOCCSM_Tester_SettingsPlayniteIntegration">Integração Playnite</sys:String>
     <sys:String x:Key="LOCCSM_Tester_SettingsShowSidebar">Mostrar Gamepad Tester na barra lateral Playnite</sys:String>
-    <sys:String x:Key="LOCCSM_Tester_SettingsShowSidebarHelp">Adiciona uma entrada Gamepad Tester à barra lateral do modo Desktop. Reinicie Playnite após alterar esta opção para que a barra lateral possa ser reconstruída.</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_SettingsShowSidebarHelp">Adiciona uma entrada Gamepad Tester à barra lateral do modo Desktop.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_SettingsShowTopPanel">Mostrar Gamepad Tester no painel superior Playnite</sys:String>
     <sys:String x:Key="LOCCSM_Tester_SettingsShowTopPanelHelp">Adiciona um atalho Gamepad Tester compacto ao painel superior do Playnite, que é útil para temas compatíveis com tela cheia.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_SettingsFullscreenWindow">Use uma janela compatível com tela cheia no modo Tela cheia</sys:String>
