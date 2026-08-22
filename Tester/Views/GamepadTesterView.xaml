@@ -159,6 +159,25 @@
             </Style.Resources>
         </Style>
 
+        <Style x:Key="StickStatBadge" TargetType="Border" BasedOn="{StaticResource InputPill}">
+            <Setter Property="Margin" Value="0,0,8,8" />
+            <Setter Property="Padding" Value="10,6" />
+            <Setter Property="MinHeight" Value="28" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Style.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+                    <Setter Property="FontSize" Value="12" />
+                    <Setter Property="FontWeight" Value="Normal" />
+                    <Setter Property="TextAlignment" Value="Left" />
+                    <Setter Property="HorizontalAlignment" Value="Left" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                    <Setter Property="TextWrapping" Value="Wrap" />
+                </Style>
+            </Style.Resources>
+        </Style>
+
         <Style x:Key="LiveInputChip" TargetType="Border">
             <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
             <Setter Property="BorderBrush" Value="{StaticResource LineBrush}" />
@@ -715,93 +734,37 @@
                                 </Grid>
                             </Grid>
 
-                            <Grid Grid.Row="2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <Border Style="{StaticResource DashboardPanel}" Margin="0,0,12,0" VerticalAlignment="Stretch">
+                            <Border Grid.Row="2"
+                                    Style="{StaticResource DashboardPanel}"
+                                    Margin="0"
+                                    VerticalAlignment="Stretch"
+                                    Visibility="{Binding IsFullTesterMode, Converter={StaticResource BoolToVisibility}}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
                                     <StackPanel>
-                                        <TextBlock Text="{DynamicResource LOCCSM_Tester_InputOverview}" Style="{StaticResource DashboardTitle}" />
+                                        <TextBlock Text="{DynamicResource LOCCSM_Tester_RumbleTests}" Style="{StaticResource DashboardTitle}" />
                                         <Border Style="{StaticResource SubtleHorizontalSeparator}" Margin="0,0,0,8" />
-                                        <WrapPanel>
-                                            <Border Style="{StaticResource LiveInputChip}" Background="{Binding State.Buttons.South, Converter={StaticResource InputFillBrush}}" TextElement.Foreground="{Binding State.Buttons.South, Converter={StaticResource PillTextBrush}}"><TextBlock Text="{Binding SouthLabel}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
-                                            <Border Style="{StaticResource LiveInputChip}" Background="{Binding State.Buttons.East, Converter={StaticResource InputFillBrush}}" TextElement.Foreground="{Binding State.Buttons.East, Converter={StaticResource PillTextBrush}}"><TextBlock Text="{Binding EastLabel}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
-                                            <Border Style="{StaticResource LiveInputChip}" Background="{Binding State.Buttons.West, Converter={StaticResource InputFillBrush}}" TextElement.Foreground="{Binding State.Buttons.West, Converter={StaticResource PillTextBrush}}"><TextBlock Text="{Binding WestLabel}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
-                                            <Border Style="{StaticResource LiveInputChip}" Background="{Binding State.Buttons.North, Converter={StaticResource InputFillBrush}}" TextElement.Foreground="{Binding State.Buttons.North, Converter={StaticResource PillTextBrush}}"><TextBlock Text="{Binding NorthLabel}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
-                                            <Border Style="{StaticResource LiveInputChip}" Background="{Binding State.Buttons.Guide, Converter={StaticResource InputFillBrush}}" TextElement.Foreground="{Binding State.Buttons.Guide, Converter={StaticResource PillTextBrush}}"><TextBlock Text="{Binding GuideButtonLabel}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
-                                            <Border Style="{StaticResource LiveInputChip}" Background="{Binding State.Buttons.LeftShoulder, Converter={StaticResource InputFillBrush}}" TextElement.Foreground="{Binding State.Buttons.LeftShoulder, Converter={StaticResource PillTextBrush}}"><TextBlock Text="{Binding LeftShoulderLabel}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
-                                            <Border Style="{StaticResource LiveInputChip}" Background="{Binding State.Buttons.RightShoulder, Converter={StaticResource InputFillBrush}}" TextElement.Foreground="{Binding State.Buttons.RightShoulder, Converter={StaticResource PillTextBrush}}"><TextBlock Text="{Binding RightShoulderLabel}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
-                                            <Border Style="{StaticResource LiveInputChip}" Background="{Binding IsLeftTriggerActive, Converter={StaticResource InputFillBrush}}" TextElement.Foreground="{Binding IsLeftTriggerActive, Converter={StaticResource PillTextBrush}}"><TextBlock Text="{Binding LeftTriggerLabel}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
-                                            <Border Style="{StaticResource LiveInputChip}" Background="{Binding IsRightTriggerActive, Converter={StaticResource InputFillBrush}}" TextElement.Foreground="{Binding IsRightTriggerActive, Converter={StaticResource PillTextBrush}}"><TextBlock Text="{Binding RightTriggerLabel}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
-                                            <Border Style="{StaticResource LiveInputChip}" Background="{Binding State.Buttons.LeftStick, Converter={StaticResource InputFillBrush}}" TextElement.Foreground="{Binding State.Buttons.LeftStick, Converter={StaticResource PillTextBrush}}"><TextBlock Text="{Binding LeftStickButtonLabel}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
-                                            <Border Style="{StaticResource LiveInputChip}" Background="{Binding State.Buttons.RightStick, Converter={StaticResource InputFillBrush}}" TextElement.Foreground="{Binding State.Buttons.RightStick, Converter={StaticResource PillTextBrush}}"><TextBlock Text="{Binding RightStickButtonLabel}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
-                                            <Border Style="{StaticResource LiveInputChip}" Background="{Binding State.Buttons.Back, Converter={StaticResource InputFillBrush}}" TextElement.Foreground="{Binding State.Buttons.Back, Converter={StaticResource PillTextBrush}}"><TextBlock Text="{Binding BackButtonLabel}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
-                                            <Border Style="{StaticResource LiveInputChip}" Background="{Binding State.Buttons.Start, Converter={StaticResource InputFillBrush}}" TextElement.Foreground="{Binding State.Buttons.Start, Converter={StaticResource PillTextBrush}}"><TextBlock Text="{Binding StartButtonLabel}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
-                                            <Border Style="{StaticResource LiveInputChip}" Background="{Binding State.Buttons.DpadUp, Converter={StaticResource InputFillBrush}}" TextElement.Foreground="{Binding State.Buttons.DpadUp, Converter={StaticResource PillTextBrush}}"><TextBlock Text="{Binding DpadUpLabel}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
-                                            <Border Style="{StaticResource LiveInputChip}" Background="{Binding State.Buttons.DpadDown, Converter={StaticResource InputFillBrush}}" TextElement.Foreground="{Binding State.Buttons.DpadDown, Converter={StaticResource PillTextBrush}}"><TextBlock Text="{Binding DpadDownLabel}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
-                                            <Border Style="{StaticResource LiveInputChip}" Background="{Binding State.Buttons.DpadLeft, Converter={StaticResource InputFillBrush}}" TextElement.Foreground="{Binding State.Buttons.DpadLeft, Converter={StaticResource PillTextBrush}}"><TextBlock Text="{Binding DpadLeftLabel}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
-                                            <Border Style="{StaticResource LiveInputChip}" Background="{Binding State.Buttons.DpadRight, Converter={StaticResource InputFillBrush}}" TextElement.Foreground="{Binding State.Buttons.DpadRight, Converter={StaticResource PillTextBrush}}"><TextBlock Text="{Binding DpadRightLabel}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
-                                        </WrapPanel>
-                                        <StackPanel Margin="0,10,0,0"
-                                                    Visibility="{Binding HasExtraButtons, Converter={StaticResource BoolToVisibility}}">
-                                            <TextBlock Text="{Binding ExtraButtonSummaryLabel}"
-                                                       Style="{StaticResource HintText}"
-                                                       Margin="0,0,0,8" />
-                                            <ItemsControl ItemsSource="{Binding State.ExtraButtons}">
-                                                <ItemsControl.ItemsPanel>
-                                                    <ItemsPanelTemplate>
-                                                        <WrapPanel />
-                                                    </ItemsPanelTemplate>
-                                                </ItemsControl.ItemsPanel>
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <Border Style="{StaticResource LiveInputChip}"
-                                                                MinWidth="78"
-                                                                Background="{Binding IsPressed, Converter={StaticResource InputFillBrush}}"
-                                                                TextElement.Foreground="{Binding IsPressed, Converter={StaticResource PillTextBrush}}">
-                                                            <TextBlock Text="{Binding Label}"
-                                                                       HorizontalAlignment="Center"
-                                                                       VerticalAlignment="Center" />
-                                                        </Border>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
-                                        </StackPanel>
+                                        <TextBlock Text="{Binding RumbleStatusLabel}"
+                                                   Style="{StaticResource HintText}"
+                                                   Margin="0,0,0,8" />
                                     </StackPanel>
-                                </Border>
-
-                                <Border Grid.Column="1"
-                                        Style="{StaticResource DashboardPanel}"
-                                        Margin="0"
-                                        VerticalAlignment="Stretch"
-                                        Visibility="{Binding IsFullTesterMode, Converter={StaticResource BoolToVisibility}}">
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto" />
-                                            <RowDefinition Height="*" MinHeight="0" />
-                                        </Grid.RowDefinitions>
-                                        <StackPanel>
-                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_RumbleTests}" Style="{StaticResource DashboardTitle}" />
-                                            <Border Style="{StaticResource SubtleHorizontalSeparator}" Margin="0,0,0,8" />
-                                            <TextBlock Text="{Binding RumbleStatusLabel}"
-                                                       Style="{StaticResource HintText}"
-                                                       Margin="0,0,0,8" />
-                                        </StackPanel>
-                                        <UniformGrid Grid.Row="1" Columns="3">
-                                            <Button Content="{DynamicResource LOCCSM_Tester_Standard}" MinHeight="48" Margin="0,0,6,6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding RumbleCommand}" />
-                                            <Button Content="{DynamicResource LOCCSM_Tester_Light}" MinHeight="48" Margin="0,0,6,6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding LightRumbleCommand}" />
-                                            <Button Content="{DynamicResource LOCCSM_Tester_Medium}" MinHeight="48" Margin="0,0,0,6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding MediumRumbleCommand}" />
-                                            <Button Content="{DynamicResource LOCCSM_Tester_Heavy}" MinHeight="48" Margin="0,0,6,6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding HeavyRumbleCommand}" />
-                                            <Button Content="{DynamicResource LOCCSM_Tester_LowMotor}" MinHeight="48" Margin="0,0,6,6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding LowMotorRumbleCommand}" />
-                                            <Button Content="{DynamicResource LOCCSM_Tester_HighMotor}" MinHeight="48" Margin="0,0,0,6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding HighMotorRumbleCommand}" />
-                                            <Button Content="{DynamicResource LOCCSM_Tester_Pulse}" MinHeight="48" Margin="0,0,6,6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding PulseRumbleCommand}" />
-                                            <Button Content="{DynamicResource LOCCSM_Tester_Alternating}" MinHeight="48" Margin="0,0,6,6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding AlternatingRumbleCommand}" />
-                                            <Button Content="{DynamicResource LOCCSM_Tester_Ramp}" MinHeight="48" Margin="0,0,0,6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding RampRumbleCommand}" />
-                                        </UniformGrid>
-                                    </Grid>
-                                </Border>
-                            </Grid>
+                                    <UniformGrid Grid.Row="1" Columns="5">
+                                        <Button Content="{DynamicResource LOCCSM_Tester_Standard}" MinHeight="40" Margin="0,0,6,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding RumbleCommand}" />
+                                        <Button Content="{DynamicResource LOCCSM_Tester_Light}" MinHeight="40" Margin="0,0,6,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding LightRumbleCommand}" />
+                                        <Button Content="{DynamicResource LOCCSM_Tester_Medium}" MinHeight="40" Margin="0,0,6,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding MediumRumbleCommand}" />
+                                        <Button Content="{DynamicResource LOCCSM_Tester_Heavy}" MinHeight="40" Margin="0,0,6,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding HeavyRumbleCommand}" />
+                                        <Button Content="{DynamicResource LOCCSM_Tester_LowMotor}" MinHeight="40" Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding LowMotorRumbleCommand}" />
+                                        <Button Content="{DynamicResource LOCCSM_Tester_HighMotor}" MinHeight="40" Margin="0,6,6,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding HighMotorRumbleCommand}" />
+                                        <Button Content="{DynamicResource LOCCSM_Tester_Pulse}" MinHeight="40" Margin="0,6,6,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding PulseRumbleCommand}" />
+                                        <Button Content="{DynamicResource LOCCSM_Tester_Alternating}" MinHeight="40" Margin="0,6,6,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding AlternatingRumbleCommand}" />
+                                        <Button Content="{DynamicResource LOCCSM_Tester_Ramp}" MinHeight="40" Margin="0,6,6,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding RampRumbleCommand}" />
+                                        <Button Content="{DynamicResource LOCCSM_Tester_Burst}" MinHeight="40" Margin="0,6,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding BurstRumbleCommand}" />
+                                    </UniformGrid>
+                                </Grid>
+                            </Border>
                         </Grid>
                 </TabItem>
 
@@ -936,12 +899,33 @@
                                                     <ProgressBar Minimum="0" Maximum="100" Value="{Binding LeftStickCurrentMagnitudePercent, Mode=OneWay}" Height="8" Margin="0,6,0,0" />
                                                 </StackPanel>
                                                 <StackPanel Grid.Row="1" Margin="0,14,0,0">
-                                                    <TextBlock Text="{Binding LeftStickVector}" />
-                                                    <TextBlock Text="{Binding LeftStickAngleLabel}" Style="{StaticResource HintText}" Margin="0,8,0,0" />
-                                                    <TextBlock Text="{Binding LeftStickDriftStatus}" Style="{StaticResource HintText}" Margin="0,8,0,0" />
-                                                    <TextBlock Text="{Binding LeftStickAxisRangeLabel}" Style="{StaticResource HintText}" Margin="0,8,0,0" TextWrapping="Wrap" />
-                                                    <TextBlock Text="{Binding LeftStickAverageMagnitudeLabel}" Style="{StaticResource HintText}" Margin="0,8,0,0" />
-                                                    <TextBlock Text="{Binding LeftStickPathSampleLabel}" Style="{StaticResource HintText}" Margin="0,8,0,0" />
+                                                    <TextBlock Text="{Binding LeftStickVector}" Margin="0,0,0,8" />
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="*" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto" />
+                                                            <RowDefinition Height="Auto" />
+                                                            <RowDefinition Height="Auto" />
+                                                        </Grid.RowDefinitions>
+                                                        <Border Style="{StaticResource StickStatBadge}" Margin="0,0,4,8">
+                                                            <TextBlock Text="{Binding LeftStickAngleLabel}" />
+                                                        </Border>
+                                                        <Border Grid.Column="1" Style="{StaticResource StickStatBadge}" Margin="4,0,0,8">
+                                                            <TextBlock Text="{Binding LeftStickDriftStatus}" />
+                                                        </Border>
+                                                        <Border Grid.Row="1" Style="{StaticResource StickStatBadge}" Margin="0,0,4,8">
+                                                            <TextBlock Text="{Binding LeftStickAverageMagnitudeLabel}" />
+                                                        </Border>
+                                                        <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource StickStatBadge}" Margin="4,0,0,8">
+                                                            <TextBlock Text="{Binding LeftStickPathSampleLabel}" />
+                                                        </Border>
+                                                        <Border Grid.Row="2" Grid.ColumnSpan="2" Style="{StaticResource StickStatBadge}" Margin="0,0,0,0">
+                                                            <TextBlock Text="{Binding LeftStickAxisRangeLabel}" />
+                                                        </Border>
+                                                    </Grid>
                                                 </StackPanel>
                                             </Grid>
                                         </Grid>
@@ -1028,12 +1012,33 @@
                                                     <ProgressBar Minimum="0" Maximum="100" Value="{Binding RightStickCurrentMagnitudePercent, Mode=OneWay}" Height="8" Margin="0,6,0,0" />
                                                 </StackPanel>
                                                 <StackPanel Grid.Row="1" Margin="0,14,0,0">
-                                                    <TextBlock Text="{Binding RightStickVector}" />
-                                                    <TextBlock Text="{Binding RightStickAngleLabel}" Style="{StaticResource HintText}" Margin="0,8,0,0" />
-                                                    <TextBlock Text="{Binding RightStickDriftStatus}" Style="{StaticResource HintText}" Margin="0,8,0,0" />
-                                                    <TextBlock Text="{Binding RightStickAxisRangeLabel}" Style="{StaticResource HintText}" Margin="0,8,0,0" TextWrapping="Wrap" />
-                                                    <TextBlock Text="{Binding RightStickAverageMagnitudeLabel}" Style="{StaticResource HintText}" Margin="0,8,0,0" />
-                                                    <TextBlock Text="{Binding RightStickPathSampleLabel}" Style="{StaticResource HintText}" Margin="0,8,0,0" />
+                                                    <TextBlock Text="{Binding RightStickVector}" Margin="0,0,0,8" />
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="*" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto" />
+                                                            <RowDefinition Height="Auto" />
+                                                            <RowDefinition Height="Auto" />
+                                                        </Grid.RowDefinitions>
+                                                        <Border Style="{StaticResource StickStatBadge}" Margin="0,0,4,8">
+                                                            <TextBlock Text="{Binding RightStickAngleLabel}" />
+                                                        </Border>
+                                                        <Border Grid.Column="1" Style="{StaticResource StickStatBadge}" Margin="4,0,0,8">
+                                                            <TextBlock Text="{Binding RightStickDriftStatus}" />
+                                                        </Border>
+                                                        <Border Grid.Row="1" Style="{StaticResource StickStatBadge}" Margin="0,0,4,8">
+                                                            <TextBlock Text="{Binding RightStickAverageMagnitudeLabel}" />
+                                                        </Border>
+                                                        <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource StickStatBadge}" Margin="4,0,0,8">
+                                                            <TextBlock Text="{Binding RightStickPathSampleLabel}" />
+                                                        </Border>
+                                                        <Border Grid.Row="2" Grid.ColumnSpan="2" Style="{StaticResource StickStatBadge}" Margin="0,0,0,0">
+                                                            <TextBlock Text="{Binding RightStickAxisRangeLabel}" />
+                                                        </Border>
+                                                    </Grid>
                                                 </StackPanel>
                                             </Grid>
                                         </Grid>
@@ -1510,6 +1515,10 @@
                                     Margin="0,0,0,12"
                                     Padding="24,22"
                                     VerticalAlignment="Stretch">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                              HorizontalScrollBarVisibility="Disabled"
+                                              CanContentScroll="False"
+                                              Focusable="False">
                                 <StackPanel VerticalAlignment="Top">
                                     <DockPanel LastChildFill="True" Margin="0,0,0,0">
                                         <Border x:Name="CompatibilityStatusBadge"
@@ -1518,11 +1527,13 @@
                                             <TextBlock Text="{Binding CompatibilityAssistantStatusLabel}"
                                                        FontWeight="Normal"
                                                        FontSize="12"
-                                                       Foreground="White" />
+                                                       Foreground="White"
+                                                       TextWrapping="Wrap" />
                                             <Border.Style>
                                                 <Style TargetType="Border" BasedOn="{StaticResource InputPill}">
                                                     <Setter Property="Margin" Value="0" />
                                                     <Setter Property="VerticalAlignment" Value="Center" />
+                                                    <Setter Property="MaxWidth" Value="220" />
                                                     <Setter Property="Background" Value="#667080" />
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding CompatibilityAssistantStatus}" Value="Ready">
@@ -1543,7 +1554,8 @@
                                         </Border>
                                         <TextBlock Text="{DynamicResource LOCCSM_Tester_CompatibilityAssistant}"
                                                    Style="{StaticResource DashboardTitle}"
-                                                   VerticalAlignment="Center" />
+                                                   VerticalAlignment="Center"
+                                                   TextWrapping="Wrap" />
                                     </DockPanel>
                                     <Border Style="{StaticResource SubtleHorizontalSeparator}" />
                                     <TextBlock Text="{DynamicResource LOCCSM_Tester_CompatibilityAssistantHelp}"
@@ -1556,11 +1568,11 @@
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Margin="0,0,18,0">
                                             <TextBlock Text="{DynamicResource LOCCSM_Tester_CompatibilityInputMode}" Style="{StaticResource HintText}" />
-                                            <TextBlock Text="{Binding CompatibilityInputModeLabel}" Style="{StaticResource BodyText}" Margin="0,4,0,0" />
+                                            <TextBlock Text="{Binding CompatibilityInputModeLabel}" Style="{StaticResource BodyText}" Margin="0,4,0,0" TextWrapping="Wrap" />
                                         </StackPanel>
                                         <StackPanel Grid.Column="1">
                                             <TextBlock Text="{DynamicResource LOCCSM_Tester_CompatibilityMappingCoverage}" Style="{StaticResource HintText}" />
-                                            <TextBlock Text="{Binding CompatibilityMappingCoverageLabel}" Style="{StaticResource BodyText}" Margin="0,4,0,0" />
+                                            <TextBlock Text="{Binding CompatibilityMappingCoverageLabel}" Style="{StaticResource BodyText}" Margin="0,4,0,0" TextWrapping="Wrap" />
                                         </StackPanel>
                                     </Grid>
                                     <ItemsControl ItemsSource="{Binding CompatibilityFindings}">
@@ -1579,9 +1591,10 @@
                                                         </Border.Style>
                                                     </Border>
                                                     <StackPanel Grid.Column="1" Margin="12,0,0,0">
-                                                        <TextBlock Text="{Binding Title}" Style="{StaticResource BodyText}" />
+                                                        <TextBlock Text="{Binding Title}" Style="{StaticResource BodyText}" TextWrapping="Wrap" />
                                                         <TextBlock Text="{Binding Detail}"
-                                                                   Style="{StaticResource HintUnderLabel}" />
+                                                                   Style="{StaticResource HintUnderLabel}"
+                                                                   TextWrapping="Wrap" />
                                                         <Border Style="{StaticResource SubtleHorizontalSeparator}" Margin="0,10,0,0" />
                                                     </StackPanel>
                                                 </Grid>
@@ -1603,6 +1616,7 @@
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
                                 </StackPanel>
+                                </ScrollViewer>
                             </Border>
 
                             <Border Grid.Row="1" Style="{StaticResource DashboardPanel}" Margin="0" Padding="20,18">
@@ -1623,7 +1637,7 @@
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
@@ -1631,35 +1645,37 @@
                                     <TextBlock Text="{DynamicResource LOCCSM_Tester_DeviceSection}" Style="{StaticResource DashboardTitle}" />
                                     <TextBlock Text="{Binding SelectedController.DisplayName}"
                                                Style="{StaticResource HintText}"
-                                               Margin="0,8,0,0" />
+                                               Margin="0,8,0,0"
+                                               TextWrapping="Wrap" />
                                     <TextBlock Text="{DynamicResource LOCCSM_Tester_DeviceSelectedHelp}"
                                                Style="{StaticResource HintText}"
                                                Margin="0,8,0,0"
+                                               TextWrapping="Wrap"
                                                Visibility="{Binding HasMultipleControllers, Converter={StaticResource BoolToVisibility}}" />
                                     <Border Style="{StaticResource SubtleHorizontalSeparator}" Margin="0,8,0,0" />
                                 </StackPanel>
                                 <TextBlock Grid.Row="1" Text="{DynamicResource LOCCSM_Tester_Name}" Style="{StaticResource FieldLabel}" Margin="0,0,0,16" />
-                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding State.ControllerName}" Style="{StaticResource BodyText}" Margin="0,0,0,16" />
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding State.ControllerName}" Style="{StaticResource BodyText}" Margin="0,0,0,16" TextWrapping="Wrap" />
                                 <TextBlock Grid.Row="2" Text="{DynamicResource LOCCSM_Tester_DetectedModel}" Style="{StaticResource FieldLabel}" Margin="0,0,0,16" />
-                                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding DeviceModelLabel}" Style="{StaticResource BodyText}" Margin="0,0,0,16" />
+                                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding DeviceModelLabel}" Style="{StaticResource BodyText}" Margin="0,0,0,16" TextWrapping="Wrap" />
                                 <TextBlock Grid.Row="3" Text="{DynamicResource LOCCSM_Tester_VidPid}" Style="{StaticResource FieldLabel}" Margin="0,0,0,16" />
-                                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding DeviceIdLabel}" Style="{StaticResource BodyText}" Margin="0,0,0,16" />
+                                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding DeviceIdLabel}" Style="{StaticResource BodyText}" Margin="0,0,0,16" TextWrapping="Wrap" />
                                 <TextBlock Grid.Row="4" Text="{DynamicResource LOCCSM_Tester_Layout}" Style="{StaticResource FieldLabel}" Margin="0,0,0,16" />
-                                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding State.Layout}" Style="{StaticResource BodyText}" Margin="0,0,0,16" />
+                                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding State.Layout}" Style="{StaticResource BodyText}" Margin="0,0,0,16" TextWrapping="Wrap" />
                                 <TextBlock Grid.Row="5" Text="{DynamicResource LOCCSM_Tester_Backend}" Style="{StaticResource FieldLabel}" Margin="0,0,0,16" />
-                                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding BackendLabel}" Style="{StaticResource BodyText}" Margin="0,0,0,16" />
+                                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding BackendLabel}" Style="{StaticResource BodyText}" Margin="0,0,0,16" TextWrapping="Wrap" />
                                 <TextBlock Grid.Row="6" Text="{DynamicResource LOCCSM_Tester_MappingStatus}" Style="{StaticResource FieldLabel}" Margin="0,0,0,16" />
-                                <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding MappingStatusLabel}" Style="{StaticResource BodyText}" Margin="0,0,0,16" />
+                                <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding MappingStatusLabel}" Style="{StaticResource BodyText}" Margin="0,0,0,16" TextWrapping="Wrap" />
                                 <TextBlock Grid.Row="7" Text="{DynamicResource LOCCSM_Tester_InputApi}" Style="{StaticResource FieldLabel}" Margin="0,0,0,16" />
-                                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding DeviceApiLabel}" Style="{StaticResource BodyText}" Margin="0,0,0,16" />
+                                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding DeviceApiLabel}" Style="{StaticResource BodyText}" Margin="0,0,0,16" TextWrapping="Wrap" />
                                 <TextBlock Grid.Row="8" Text="{DynamicResource LOCCSM_Tester_Capabilities}" Style="{StaticResource FieldLabel}" Margin="0,0,0,16" />
-                                <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding DeviceCapabilitiesLabel}" Style="{StaticResource BodyText}" Margin="0,0,0,16" />
+                                <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding DeviceCapabilitiesLabel}" Style="{StaticResource BodyText}" Margin="0,0,0,16" TextWrapping="Wrap" />
                                 <TextBlock Grid.Row="9" Text="{DynamicResource LOCCSM_Tester_ExtraControls}" Style="{StaticResource FieldLabel}" Margin="0,0,0,16" />
-                                <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding ExtraButtonDetailLabel}" Style="{StaticResource BodyText}" Margin="0,0,0,16" />
+                                <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding ExtraButtonDetailLabel}" Style="{StaticResource BodyText}" Margin="0,0,0,16" TextWrapping="Wrap" />
                                 <TextBlock Grid.Row="10" Text="{DynamicResource LOCCSM_Tester_Rumble}" Style="{StaticResource FieldLabel}" Margin="0,0,0,16" />
-                                <TextBlock Grid.Row="10" Grid.Column="1" Text="{Binding DeviceRumbleCapabilityLabel}" Style="{StaticResource BodyText}" Margin="0,0,0,16" />
+                                <TextBlock Grid.Row="10" Grid.Column="1" Text="{Binding DeviceRumbleCapabilityLabel}" Style="{StaticResource BodyText}" Margin="0,0,0,16" TextWrapping="Wrap" />
                                 <TextBlock Grid.Row="11" Text="{DynamicResource LOCCSM_Tester_Notes}" Style="{StaticResource FieldLabel}" />
-                                <TextBlock Grid.Row="11" Grid.Column="1" Text="{DynamicResource LOCCSM_Tester_DeviceNotes}" Style="{StaticResource HintText}" />
+                                <TextBlock Grid.Row="11" Grid.Column="1" Text="{DynamicResource LOCCSM_Tester_DeviceNotes}" Style="{StaticResource HintText}" TextWrapping="Wrap" />
                                 <Grid Grid.Row="12" Grid.ColumnSpan="2" Margin="0,18,0,0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />

@@ -330,6 +330,7 @@
     <sys:String x:Key="LOCCSM_Tester_Pulse">Puls</sys:String>
     <sys:String x:Key="LOCCSM_Tester_Alternating">Zmienny</sys:String>
     <sys:String x:Key="LOCCSM_Tester_Ramp">Rampa</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_Burst">Burst</sys:String>
     <sys:String x:Key="LOCCSM_Tester_SettingsPlayniteIntegration">Integracja Playnite</sys:String>
     <sys:String x:Key="LOCCSM_Tester_SettingsShowSidebar">Pokaż Gamepad Tester na pasku bocznym Playnite</sys:String>
     <sys:String x:Key="LOCCSM_Tester_SettingsShowSidebarHelp">Dodaje wpis Gamepad Tester do paska bocznego trybu pulpitu.</sys:String>

@@ -361,6 +361,7 @@
     <sys:String x:Key="LOCCSM_Tester_Pulse">Pulse</sys:String>
     <sys:String x:Key="LOCCSM_Tester_Alternating">Alternating</sys:String>
     <sys:String x:Key="LOCCSM_Tester_Ramp">Ramp</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_Burst">Burst</sys:String>
     <sys:String x:Key="LOCCSM_Tester_SettingsPlayniteIntegration">Playnite integration</sys:String>
     <sys:String x:Key="LOCCSM_Tester_SettingsShowSidebar">Show Gamepad Tester in Playnite sidebar</sys:String>
     <sys:String x:Key="LOCCSM_Tester_SettingsShowSidebarHelp">Adds a Gamepad Tester entry to the Desktop mode sidebar.</sys:String>

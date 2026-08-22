@@ -330,6 +330,7 @@
     <sys:String x:Key="LOCCSM_Tester_Pulse">맥박</sys:String>
     <sys:String x:Key="LOCCSM_Tester_Alternating">교대</sys:String>
     <sys:String x:Key="LOCCSM_Tester_Ramp">비탈길</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_Burst">Burst</sys:String>
     <sys:String x:Key="LOCCSM_Tester_SettingsPlayniteIntegration">Playnite 통합</sys:String>
     <sys:String x:Key="LOCCSM_Tester_SettingsShowSidebar">Playnite 사이드바에 Gamepad Tester 표시</sys:String>
     <sys:String x:Key="LOCCSM_Tester_SettingsShowSidebarHelp">데스크탑 모드 사이드바에 Gamepad Tester 항목을 추가합니다.</sys:String>

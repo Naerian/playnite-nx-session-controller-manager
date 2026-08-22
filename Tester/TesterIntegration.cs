@@ -1070,8 +1070,13 @@ namespace ControllerSessionManager.Tester
 
         private static void ApplyTesterWindowSize(Window window, bool fullscreenFriendly, double width, double height, double minWidth, double minHeight)
         {
-            window.MinWidth = minWidth;
-            window.MinHeight = minHeight;
+            var work = SystemParameters.WorkArea;
+            // Leave a small chrome margin so mins/sizes still fit high-DPI / short work areas.
+            var maxWidth = Math.Max(480, work.Width - 32);
+            var maxHeight = Math.Max(360, work.Height - 32);
+
+            window.MinWidth = Math.Min(minWidth, maxWidth);
+            window.MinHeight = Math.Min(minHeight, maxHeight);
 
             if (fullscreenFriendly)
             {
@@ -1079,8 +1084,8 @@ namespace ControllerSessionManager.Tester
                 return;
             }
 
-            window.Width = width;
-            window.Height = height;
+            window.Width = Math.Min(width, maxWidth);
+            window.Height = Math.Min(height, maxHeight);
         }
 
         private static void CloseWindowOnEscape(object sender, KeyEventArgs eventArgs)

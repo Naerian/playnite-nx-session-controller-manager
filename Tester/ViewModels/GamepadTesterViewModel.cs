@@ -34,6 +34,7 @@ namespace ControllerSessionManager.Tester.ViewModels
         private readonly RelayCommand pulseRumbleCommand;
         private readonly RelayCommand alternatingRumbleCommand;
         private readonly RelayCommand rampRumbleCommand;
+        private readonly RelayCommand burstRumbleCommand;
         private readonly RelayCommand resetDiagnosticsCommand;
         private readonly RelayCommand startCenterCalibrationCommand;
         private readonly RelayCommand resetCalibrationCommand;
@@ -175,6 +176,7 @@ namespace ControllerSessionManager.Tester.ViewModels
             pulseRumbleCommand = new RelayCommand(TestPulseRumble, CanRunRumble);
             alternatingRumbleCommand = new RelayCommand(TestAlternatingRumble, CanRunRumble);
             rampRumbleCommand = new RelayCommand(TestRampRumble, CanRunRumble);
+            burstRumbleCommand = new RelayCommand(TestBurstRumble, CanRunRumble);
             resetDiagnosticsCommand = new RelayCommand(ResetDiagnostics);
             startCenterCalibrationCommand = new RelayCommand(StartCenterCalibration, () => State.IsConnected && !isCenterCalibrationRunning);
             resetCalibrationCommand = new RelayCommand(ResetCalibration);
@@ -280,6 +282,11 @@ namespace ControllerSessionManager.Tester.ViewModels
         public ICommand RampRumbleCommand
         {
             get { return rampRumbleCommand; }
+        }
+
+        public ICommand BurstRumbleCommand
+        {
+            get { return burstRumbleCommand; }
         }
 
         public ICommand ResetDiagnosticsCommand
@@ -2878,6 +2885,18 @@ namespace ControllerSessionManager.Tester.ViewModels
             });
         }
 
+        private void TestBurstRumble()
+        {
+            RunRumblePattern(L("LOCCSM_Tester_Burst", "Burst"), () =>
+            {
+                for (var index = 0; index < 6; index++)
+                {
+                    pollingService.TryRumble(42000, 42000, 45);
+                    Thread.Sleep(95);
+                }
+            });
+        }
+
         private void RunRumblePattern(string label, Action pattern)
         {
             SetRumbleState(true, string.Format(L("LOCCSM_Tester_RumbleRunningFormat", "{0} running..."), label));
@@ -2921,6 +2940,7 @@ namespace ControllerSessionManager.Tester.ViewModels
             pulseRumbleCommand.RaiseCanExecuteChanged();
             alternatingRumbleCommand.RaiseCanExecuteChanged();
             rampRumbleCommand.RaiseCanExecuteChanged();
+            burstRumbleCommand.RaiseCanExecuteChanged();
         }
 
         private void ResetDiagnostics()

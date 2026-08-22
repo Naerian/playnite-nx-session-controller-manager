@@ -330,6 +330,7 @@
     <sys:String x:Key="LOCCSM_Tester_Pulse">Nabız</sys:String>
     <sys:String x:Key="LOCCSM_Tester_Alternating">Alternatif</sys:String>
     <sys:String x:Key="LOCCSM_Tester_Ramp">Rampa</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_Burst">Burst</sys:String>
     <sys:String x:Key="LOCCSM_Tester_SettingsPlayniteIntegration">Playnite entegrasyonu</sys:String>
     <sys:String x:Key="LOCCSM_Tester_SettingsShowSidebar">Playnite kenar çubuğunda Gamepad Tester'yi göster</sys:String>
     <sys:String x:Key="LOCCSM_Tester_SettingsShowSidebarHelp">Masaüstü modu kenar çubuğuna bir Gamepad Tester girişi ekler.</sys:String>

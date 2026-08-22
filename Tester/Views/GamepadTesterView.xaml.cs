@@ -158,6 +158,9 @@ namespace ControllerSessionManager.Tester.Views
 
         private void AttachHostScrollViewer()
         {
+            // Only the Playnite/window host ScrollViewer is disabled so the tester can
+            // fill the viewport. Tab content ScrollViewers (General test, Options, …)
+            // are descendants of this view and must stay enabled.
             var scrollViewer = FindAncestorScrollViewer();
             if (ReferenceEquals(hostScrollViewer, scrollViewer))
             {
