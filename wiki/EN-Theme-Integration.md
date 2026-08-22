@@ -1,49 +1,119 @@
-# Theme Integration
+# Theme integration
 
-Controller Manager exposes three custom elements and a small settings API for Playnite themes. The automatic Desktop top-panel button is separate and does not require theme changes.
+Controller Manager exposes two official layers:
 
-## Custom elements
+1. **Data API** (`PluginSettings` + `PluginConverter`) — full composition freedom.
+2. **ContentControl elements** — drop-in, resizable shortcuts.
 
-Register a placeholder with the exact case-sensitive name:
+The automatic Desktop top-panel button is independent and does not require theme changes.
 
-```xml
-<ContentControl x:Name="ControllerSessionManager_ControllerStatus"
-                Visibility="{PluginStatus Plugin=ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc, Status=Installed}" />
-```
+Addon Id: `ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc`  
+SourceName: `ControllerSessionManager`  
+SettingsRoot: `Theme` (paths are **without** a `Theme.` prefix)
 
-Available elements:
-
-- `ControllerSessionManager_ControllerStatus`: compact live status text.
-- `ControllerSessionManager_ControllerCount`: connected-controller count.
-- `ControllerSessionManager_PrimaryController`: current primary controller name.
-- `ControllerSessionManager_TesterLauncher`, `TesterStatusBadge`, `TesterButtonMap`, `TesterStickCheck`, `TesterTriggerCheck`, `TesterRumblePad`, `TesterLatencyMini`: embedded Gamepad Tester blocks. SDL input is sampled in an external host, not in the Playnite process.
-
-Compatibility aliases keep `SourceName = GamepadTester` and the original 1.1 block names (`GamepadTesterLauncher`, `StatusBadge`, `ButtonMap`, `StickCheck`, `TriggerCheck`, `RumblePad`, `LatencyMini`). Uninstall the standalone Gamepad Tester extension before using these names.
-
-Themes that show or hide tester UI with `{PluginStatus Plugin=GamepadTester_518dc982-32b5-4493-b32d-1f71de2fe4ad, Status=Installed}` will treat the tester as missing after that uninstall. Add a second trigger for `ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc`. Block names, `Tag` values, `GamepadTester_*` brushes and `GamepadTester_BackButton` stay compatible; Aniki's tester window already uses those aliases.
-
-The source name for status blocks is `ControllerSessionManager`. Tester blocks also answer to `GamepadTester`. Themes should provide a graceful collapsed or empty fallback when the plugin is absent.
-
-## Theme settings API
-
-The stable `Theme` object currently exposes:
-
-- `ThemeApiVersion`
-- `ConnectedCount` and `HasConnectedControllers`
-- `PrimaryControllerName` and `StatusText`
-- `PrimaryControllerIconGeometry`
-- `PrimaryControllerBatteryLabel`, `PrimaryControllerBatteryBrush` and `HasPrimaryControllerBattery`
-- `PrimaryControllerTooltip`
-- `UsePrimaryControllerBatteryColor`
-
-Example:
+## 1. Data API (free composition)
 
 ```xml
-<TextBlock Text="{PluginSettings Plugin=ControllerSessionManager, Path=Theme.PrimaryControllerName}" />
+<!-- Profile icon + battery dot (icon color follows the plugin setting) -->
+<StackPanel Orientation="Horizontal"
+            Visibility="{PluginStatus Plugin=ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc, Status=Installed}">
+    <Path Width="28" Height="28" Stretch="Uniform" StrokeThickness="0.45" StrokeLineJoin="Round"
+          Data="{PluginSettings Plugin=ControllerSessionManager, Path=PrimaryControllerIconGeometry, Converter={PluginConverter Plugin=ControllerSessionManager, Converter=IconGeometryConverter}}"
+          Fill="{DynamicResource TextBrush}"
+          Stroke="{DynamicResource TextBrush}"
+          ToolTip="{PluginSettings Plugin=ControllerSessionManager, Path=PrimaryControllerTooltip}"/>
+    <Ellipse Width="10" Height="10" Margin="6,0,0,0"
+             Fill="{PluginSettings Plugin=ControllerSessionManager, Path=PrimaryControllerBatteryBrush}">
+        <Ellipse.Style>
+            <Style TargetType="Ellipse">
+                <Setter Property="Visibility" Value="Collapsed"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{PluginSettings Plugin=ControllerSessionManager, Path=HasPrimaryControllerBattery}" Value="True">
+                        <Setter Property="Visibility" Value="Visible"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Ellipse.Style>
+    </Ellipse>
+</StackPanel>
 ```
 
-## Desktop quick-access indicator
+Common recipes:
 
-The built-in Desktop indicator finds its internal `TopPanelItem` ancestor by runtime type name and listens to its real width. At 58 px or more it can show icon and battery; under 58 px it uses the icon only. No theme names or theme-specific exceptions are used. The `SizeChanged` subscription is released when the control unloads.
+| Goal | How |
+|------|-----|
+| Icon only, always battery-colored | `Fill`/`Stroke` → `PrimaryControllerBatteryBrush` |
+| Icon only, theme foreground | `Fill` → `{DynamicResource TextBrush}` |
+| Fixed pack icon (not the pad silhouette) | `Path=DefaultIconGeometry` (+ converter) |
+| Same icon as Desktop top panel | `Path=TopPanelIconGeometry` |
+| Level text only | `Text` → `PrimaryControllerBatteryLabel` |
+| Theme-owned glyph + CSM color | Your FontIcon/Path + `PrimaryControllerBatteryBrush` on a dot |
+| Honor Hidden/Default/Primary | Read `TopPanelControllerMode` / `IsTopPanelButtonVisible` / `ColorIconByBattery` |
 
-For implementation details and the evolving API roadmap, see [`docs/THEME-INTEGRATION.md`](https://github.com/Naerian/playnite-nx-session-controller-manager/blob/main/docs/THEME-INTEGRATION.md). Only the three elements and properties listed above should currently be treated as implemented.
+### Properties (`Theme`)
+
+| Property | Purpose |
+|----------|---------|
+| `ThemeApiVersion` | Contract version (currently `1`) |
+| `ConnectedCount`, `HasConnectedControllers` | Count / presence |
+| `PrimaryControllerName`, `StatusText`, `PrimaryControllerTooltip` | Text |
+| `PrimaryControllerIconGeometry` | Chosen profile silhouette for the primary pad |
+| `TopPanelIconGeometry` | Same logic as Desktop top panel (Default vs Primary) |
+| `DefaultIconGeometry` | Fixed pack icon (e.g. tester) |
+| `PrimaryControllerBatteryLabel` | Localized label (`Low`, `Full`, …) |
+| `PrimaryControllerBatteryLevel` | Raw key: `Empty` / `Low` / `Medium` / `Full` |
+| `PrimaryControllerBatteryBrush` | Level color whenever battery is known |
+| `PrimaryControllerIconBrush` | Icon color **after** applying “color by battery”; may be `null`. Do not use `TargetNullValue={DynamicResource ...}` with `PluginSettings` (crashes the theme). For a setting-aware icon, use `ControllerIcon`. |
+| `HasPrimaryControllerBattery` | Known battery level |
+| `UsePrimaryControllerBatteryColor` | Known battery **and** user enabled coloring |
+| `ColorIconByBattery` | Mirror of the settings checkbox |
+| `TopPanelControllerMode` | `Hidden` / `Default` / `Primary` |
+| `IsTopPanelButtonVisible` | Desktop top-panel button is visible |
+
+### Converter
+
+```xml
+Converter={PluginConverter Plugin=ControllerSessionManager, Converter=IconGeometryConverter}
+```
+
+Turns the SVG path string into `Geometry` for `Path.Data`.
+
+> **WPF note:** do not put `{PluginSettings ...}` inside `Setter.Value` on a `Style`/`DataTrigger`. Bind the property on the control, or use the `ControllerIcon` ContentControl, which applies the color setting in code.
+
+## 2. ContentControl elements (shortcuts)
+
+One `x:Name` per element per view (WPF names must be unique). Size with `Width`/`Height` on the placeholder; content scales.
+
+```xml
+<ContentControl x:Name="ControllerSessionManager_ControllerIcon"
+                Width="28" Height="28"
+                Foreground="{DynamicResource TextBrush}"
+                Visibility="{PluginStatus Plugin=ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc, Status=Installed}"/>
+
+<ContentControl x:Name="ControllerSessionManager_ControllerBatteryDot"
+                Width="10" Height="10" Margin="6,0,0,0"/>
+
+<ContentControl x:Name="ControllerSessionManager_ControllerBatteryText"
+                FontSize="16" Margin="6,0,0,0"/>
+```
+
+| Element | Shows |
+|---------|-------|
+| `ControllerStatus` | Compact status text |
+| `ControllerCount` | Connected count |
+| `PrimaryController` | Primary name |
+| `ControllerIcon` | Profile icon; color follows battery setting / placeholder `Foreground` |
+| `TopPanelIcon` | Same as Desktop top panel |
+| `ControllerBatteryText` | Level label (collapsed without battery); battery color |
+| `ControllerBatteryDot` | Level-colored dot (collapsed without battery) |
+| `TesterLauncher`, `TesterStatusBadge`, … | Tester blocks |
+
+## 3. Tester (Gamepad Tester compatibility)
+
+`SourceName = GamepadTester` aliases and 1.1 names remain. If a theme only checks `GamepadTester_518dc982-…`, also add:
+
+`ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc`.
+
+## 4. Technical detail
+
+See [`docs/THEME-INTEGRATION.md`](https://github.com/Naerian/playnite-nx-session-controller-manager/blob/main/docs/THEME-INTEGRATION.md). Only items listed here are implemented and supported.

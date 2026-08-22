@@ -134,6 +134,10 @@ namespace ControllerSessionManager.PlayniteIntegration
                     "ControllerStatus",
                     "ControllerCount",
                     "PrimaryController",
+                    "ControllerIcon",
+                    "TopPanelIcon",
+                    "ControllerBatteryText",
+                    "ControllerBatteryDot",
                     "TesterLauncher",
                     "TesterStatusBadge",
                     "TesterButtonMap",
@@ -152,6 +156,14 @@ namespace ControllerSessionManager.PlayniteIntegration
             {
                 SourceName = "ControllerSessionManager",
                 SettingsRoot = "Theme"
+            });
+            AddConvertersSupport(new AddConvertersSupportArgs
+            {
+                SourceName = "ControllerSessionManager",
+                Converters = new List<System.Windows.Data.IValueConverter>
+                {
+                    new IconGeometryConverter()
+                }
             });
             AddSettingsSupport(new AddSettingsSupportArgs
             {
@@ -750,7 +762,10 @@ namespace ControllerSessionManager.PlayniteIntegration
                 return null;
             }
 
-            if (args.Name == "ControllerStatus" || args.Name == "ControllerCount" || args.Name == "PrimaryController")
+            if (args.Name == "ControllerStatus" || args.Name == "ControllerCount" ||
+                args.Name == "PrimaryController" || args.Name == "ControllerIcon" ||
+                args.Name == "TopPanelIcon" || args.Name == "ControllerBatteryText" ||
+                args.Name == "ControllerBatteryDot")
             {
                 return new ControllerThemeControl(Theme, args.Name);
             }
@@ -1690,12 +1705,22 @@ namespace ControllerSessionManager.PlayniteIntegration
                 ? Loc("LOCCSM_NoControllers")
                 : string.Format(Loc("LOCCSM_StatusFormat"), primaryName, connected.Count);
             Theme.Update(connected.Count, primaryName, status);
-            var iconGeometry = ResolveTopPanelIconGeometry(primary);
+            Theme.UpdateSettingsMirrors(
+                settings == null
+                    ? ControllerSessionManagerSettings.TopPanelControllerModeHidden
+                    : settings.TopPanelControllerMode,
+                settings != null && settings.ColorTopPanelIndicatorByBattery,
+                settings != null && settings.IsTopPanelButtonVisible,
+                SvgIconGeometryLoader.GetPathData("gamepad-tester.svg"));
+            var primaryIcon = SvgIconGeometryLoader.GetPathData(ResolveControllerIconFileName(primary));
+            var topPanelIcon = ResolveTopPanelIconGeometry(primary);
             var batteryAvailable = primary != null && primary.BatteryLevel != "Unknown" &&
                 primary.BatteryLevel != "Unavailable";
             Theme.UpdatePrimaryPresentation(
-                iconGeometry,
+                primaryIcon,
+                topPanelIcon,
                 batteryAvailable ? Loc("LOCCSM_Value" + primary.BatteryLevel) : string.Empty,
+                batteryAvailable ? primary.BatteryLevel : string.Empty,
                 GetBatteryBrush(primary == null ? null : primary.BatteryLevel),
                 batteryAvailable,
                 settings != null && settings.ColorTopPanelIndicatorByBattery);

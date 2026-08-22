@@ -12,7 +12,7 @@
     <Viewbox Width="24" Height="24" Margin="2,0"
              VerticalAlignment="Center" HorizontalAlignment="Center"
              ToolTip="{Binding PrimaryControllerTooltip}">
-        <Path Data="{Binding PrimaryControllerIconGeometry, Converter={StaticResource IconGeometryConverter}}" Stretch="Uniform"
+        <Path Data="{Binding TopPanelIconGeometry, Converter={StaticResource IconGeometryConverter}}" Stretch="Uniform"
               StrokeThickness="0.45"
               StrokeLineJoin="Round">
             <Path.Style>
