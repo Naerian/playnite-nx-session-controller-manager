@@ -23,6 +23,9 @@ namespace ControllerSessionManager.PlayniteIntegration
         private bool showDisconnectOverlay = true;
         private bool showFullscreenControllerNotifications = true;
         private bool showDesktopControllerNotifications = true;
+        private bool showFullscreenLowBatteryNotifications = true;
+        private bool showDesktopLowBatteryNotifications = true;
+        private string lowBatteryNotificationThreshold = Controllers.LowBatteryNotificationTracker.ThresholdLow;
         private bool forcePauseOfflineGames = true;
         private int notificationWidth = 520;
         private int notificationScalePercent = 110;
@@ -34,6 +37,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private string notificationConnectedColor = "#FF4FC27E";
         private string notificationDisconnectedColor = "#FF50AAFF";
         private string notificationWarningColor = "#FFF5B542";
+        private string notificationLowBatteryColor = "#FFE05252";
         private int notificationTitleFontSize = 19;
         private int notificationMessageFontSize = 15;
         private int notificationIconSize = 32;
@@ -56,6 +60,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private string desktopNotificationConnectedColor = "#FF4FC27E";
         private string desktopNotificationDisconnectedColor = "#FF50AAFF";
         private string desktopNotificationWarningColor = "#FFF5B542";
+        private string desktopNotificationLowBatteryColor = "#FFE05252";
         private int desktopNotificationTitleFontSize = 17;
         private int desktopNotificationMessageFontSize = 14;
         private int desktopNotificationIconSize = 28;
@@ -235,6 +240,36 @@ namespace ControllerSessionManager.PlayniteIntegration
             set { SetValue(ref showDesktopControllerNotifications, value); }
         }
 
+        public bool ShowFullscreenLowBatteryNotifications
+        {
+            get { return showFullscreenLowBatteryNotifications; }
+            set { SetValue(ref showFullscreenLowBatteryNotifications, value); }
+        }
+
+        public bool ShowDesktopLowBatteryNotifications
+        {
+            get { return showDesktopLowBatteryNotifications; }
+            set { SetValue(ref showDesktopLowBatteryNotifications, value); }
+        }
+
+        /// <summary>
+        /// Notify when battery is at or below this coarse level: "Low" (Empty+Low) or "Empty".
+        /// </summary>
+        public string LowBatteryNotificationThreshold
+        {
+            get
+            {
+                return Controllers.LowBatteryNotificationTracker.NormalizeThreshold(
+                    lowBatteryNotificationThreshold);
+            }
+            set
+            {
+                SetValue(
+                    ref lowBatteryNotificationThreshold,
+                    Controllers.LowBatteryNotificationTracker.NormalizeThreshold(value));
+            }
+        }
+
         public bool ForcePauseOfflineGames
         {
             get { return forcePauseOfflineGames; }
@@ -251,6 +286,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         public string NotificationConnectedColor { get { return notificationConnectedColor; } set { SetValue(ref notificationConnectedColor, value); } }
         public string NotificationDisconnectedColor { get { return notificationDisconnectedColor; } set { SetValue(ref notificationDisconnectedColor, value); } }
         public string NotificationWarningColor { get { return notificationWarningColor; } set { SetValue(ref notificationWarningColor, value); } }
+        public string NotificationLowBatteryColor { get { return notificationLowBatteryColor; } set { SetValue(ref notificationLowBatteryColor, value); } }
         public int NotificationTitleFontSize { get { return notificationTitleFontSize; } set { SetValue(ref notificationTitleFontSize, value); } }
         public int NotificationMessageFontSize { get { return notificationMessageFontSize; } set { SetValue(ref notificationMessageFontSize, value); } }
         public int NotificationIconSize { get { return notificationIconSize; } set { SetValue(ref notificationIconSize, value); } }
@@ -273,6 +309,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         public string DesktopNotificationConnectedColor { get { return desktopNotificationConnectedColor; } set { SetValue(ref desktopNotificationConnectedColor, value); } }
         public string DesktopNotificationDisconnectedColor { get { return desktopNotificationDisconnectedColor; } set { SetValue(ref desktopNotificationDisconnectedColor, value); } }
         public string DesktopNotificationWarningColor { get { return desktopNotificationWarningColor; } set { SetValue(ref desktopNotificationWarningColor, value); } }
+        public string DesktopNotificationLowBatteryColor { get { return desktopNotificationLowBatteryColor; } set { SetValue(ref desktopNotificationLowBatteryColor, value); } }
         public int DesktopNotificationTitleFontSize { get { return desktopNotificationTitleFontSize; } set { SetValue(ref desktopNotificationTitleFontSize, value); } }
         public int DesktopNotificationMessageFontSize { get { return desktopNotificationMessageFontSize; } set { SetValue(ref desktopNotificationMessageFontSize, value); } }
         public int DesktopNotificationIconSize { get { return desktopNotificationIconSize; } set { SetValue(ref desktopNotificationIconSize, value); } }
@@ -827,6 +864,9 @@ namespace ControllerSessionManager.PlayniteIntegration
                 EnableSessionTracking = EnableSessionTracking,
                 ShowDisconnectOverlay = ShowDisconnectOverlay,
                 ShowFullscreenControllerNotifications = ShowFullscreenControllerNotifications,
+                ShowFullscreenLowBatteryNotifications = ShowFullscreenLowBatteryNotifications,
+                ShowDesktopLowBatteryNotifications = ShowDesktopLowBatteryNotifications,
+                LowBatteryNotificationThreshold = LowBatteryNotificationThreshold,
                 ForcePauseOfflineGames = ForcePauseOfflineGames,
                 NotificationWidth = NotificationWidth,
                 NotificationScalePercent = NotificationScalePercent,
@@ -838,6 +878,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 NotificationConnectedColor = NotificationConnectedColor,
                 NotificationDisconnectedColor = NotificationDisconnectedColor,
                 NotificationWarningColor = NotificationWarningColor,
+                NotificationLowBatteryColor = NotificationLowBatteryColor,
                 NotificationTitleFontSize = NotificationTitleFontSize,
                 NotificationMessageFontSize = NotificationMessageFontSize,
                 NotificationIconSize = NotificationIconSize,
@@ -861,6 +902,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 DesktopNotificationConnectedColor = DesktopNotificationConnectedColor,
                 DesktopNotificationDisconnectedColor = DesktopNotificationDisconnectedColor,
                 DesktopNotificationWarningColor = DesktopNotificationWarningColor,
+                DesktopNotificationLowBatteryColor = DesktopNotificationLowBatteryColor,
                 DesktopNotificationTitleFontSize = DesktopNotificationTitleFontSize,
                 DesktopNotificationMessageFontSize = DesktopNotificationMessageFontSize,
                 DesktopNotificationIconSize = DesktopNotificationIconSize,
@@ -918,6 +960,9 @@ namespace ControllerSessionManager.PlayniteIntegration
             ShowDisconnectOverlay = source.ShowDisconnectOverlay;
             ShowFullscreenControllerNotifications = source.ShowFullscreenControllerNotifications;
             ShowDesktopControllerNotifications = source.ShowDesktopControllerNotifications;
+            ShowFullscreenLowBatteryNotifications = source.ShowFullscreenLowBatteryNotifications;
+            ShowDesktopLowBatteryNotifications = source.ShowDesktopLowBatteryNotifications;
+            LowBatteryNotificationThreshold = source.LowBatteryNotificationThreshold;
             ForcePauseOfflineGames = source.ForcePauseOfflineGames;
             NotificationWidth = source.NotificationWidth;
             NotificationScalePercent = source.NotificationScalePercent;
@@ -929,6 +974,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             NotificationConnectedColor = source.NotificationConnectedColor;
             NotificationDisconnectedColor = source.NotificationDisconnectedColor;
             NotificationWarningColor = source.NotificationWarningColor;
+            NotificationLowBatteryColor = source.NotificationLowBatteryColor;
             NotificationTitleFontSize = source.NotificationTitleFontSize;
             NotificationMessageFontSize = source.NotificationMessageFontSize;
             NotificationIconSize = source.NotificationIconSize;
@@ -951,6 +997,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             DesktopNotificationConnectedColor = source.DesktopNotificationConnectedColor;
             DesktopNotificationDisconnectedColor = source.DesktopNotificationDisconnectedColor;
             DesktopNotificationWarningColor = source.DesktopNotificationWarningColor;
+            DesktopNotificationLowBatteryColor = source.DesktopNotificationLowBatteryColor;
             DesktopNotificationTitleFontSize = source.DesktopNotificationTitleFontSize;
             DesktopNotificationMessageFontSize = source.DesktopNotificationMessageFontSize;
             DesktopNotificationIconSize = source.DesktopNotificationIconSize;
@@ -1043,6 +1090,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             yield return NotificationConnectedColor;
             yield return NotificationDisconnectedColor;
             yield return NotificationWarningColor;
+            yield return NotificationLowBatteryColor;
             yield return OverlayDimColor;
             yield return OverlayCardColor;
             yield return OverlayAccentColor;

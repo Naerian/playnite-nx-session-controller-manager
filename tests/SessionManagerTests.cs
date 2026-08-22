@@ -37,8 +37,10 @@ internal static class SessionManagerTests
             AdaptiveScopeDoesNotPromoteOneAccidentalControllerSwitch();
             PlayniteXInputBridgeUsesPathSlotInsteadOfInstanceId();
             DualSenseUsbBatteryReportIsParsed();
+            DualSenseSyntheticDongleReportIsRejected();
             DualShock4UsbBatteryReportIsParsed();
             UnknownPlayStationReportIsRejected();
+            LowBatteryNotificationTrackerLatchesAndRecovers();
             BluetoothTransportOverridesEightBitDoReceiverHint();
             EightBitDoXInputWrapperIsNotBluetooth();
             HidPathMetadataRestoresConnectionWithoutSdl();
@@ -618,6 +620,21 @@ internal static class SessionManagerTests
         Equal("Medium", level, "DualSense capacity 6 should map to the coarse medium level.");
     }
 
+    private static void DualSenseSyntheticDongleReportIsRejected()
+    {
+        var report = new byte[64];
+        report[0] = 0x01;
+        report[1] = report[2] = report[3] = report[4] = 0x7F;
+        report[8] = 0x08;
+        string level;
+        Equal(true, PlayStationHidBatteryProvider.IsSyntheticDualSenseDisconnectReport(report),
+            "Centered-stick DualSense USB sentinel should be recognized.");
+        Equal(false, PlayStationHidBatteryProvider.TryParseReport(0x0CE6, report, out level),
+            "Synthetic dongle disconnect reports must not yield a battery level.");
+        Equal(false, PlayStationHidBatteryProvider.TryParseReport(0x0DF2, report, out level),
+            "DualSense Edge must apply the same synthetic dongle filter.");
+    }
+
     private static void DualShock4UsbBatteryReportIsParsed()
     {
         var report = new byte[64];
@@ -636,6 +653,25 @@ internal static class SessionManagerTests
             "A report without the documented report ID must be rejected.");
         Equal(false, PlayStationHidBatteryProvider.TryParseReport(0x1234, new byte[64], out level),
             "An unverified product ID must never use the Sony provider.");
+    }
+
+    private static void LowBatteryNotificationTrackerLatchesAndRecovers()
+    {
+        var tracker = new LowBatteryNotificationTracker();
+        Equal(true, tracker.ShouldShow("pad-a", "Low", "Low", true),
+            "First transition into Low must raise a notification.");
+        Equal(false, tracker.ShouldShow("pad-a", "Low", "Low", true),
+            "A latched Low episode must not spam notifications.");
+        Equal(false, tracker.ShouldShow("pad-a", "Medium", "Low", true),
+            "First recovered sample only starts the debounce.");
+        Equal(false, tracker.ShouldShow("pad-a", "Medium", "Low", true),
+            "Second recovered sample clears the latch without notifying.");
+        Equal(true, tracker.ShouldShow("pad-a", "Empty", "Low", true),
+            "After recovery, a new Empty episode must notify again.");
+        Equal(false, LowBatteryNotificationTracker.IsAtOrBelowThreshold("Low", "Empty"),
+            "Empty-only threshold must ignore Low.");
+        Equal(true, LowBatteryNotificationTracker.IsAtOrBelowThreshold("Empty", "Empty"),
+            "Empty-only threshold must still match Empty.");
     }
 
     private static void PlayniteXInputBridgeUsesPathSlotInsteadOfInstanceId()

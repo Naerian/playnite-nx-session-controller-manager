@@ -49,6 +49,7 @@
     <Compile Include="Controllers\DiagnosticEventBuffer.cs" />
     <Compile Include="Controllers\IControllerBatteryProvider.cs" />
     <Compile Include="Controllers\PlayStationHidBatteryProvider.cs" />
+    <Compile Include="Controllers\LowBatteryNotificationTracker.cs" />
     <Compile Include="Controllers\WindowsBluetoothBatteryProvider.cs" />
     <Compile Include="Controllers\ControllerManager.cs" />
     <Compile Include="Controllers\HidDiagnosticsService.cs" />

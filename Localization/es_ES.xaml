@@ -201,9 +201,16 @@
     <sys:String x:Key="LOCCSM_BackdropHelp">El fondo cubre el juego detrás del overlay. Usa el control de opacidad del selector de color para hacerlo más o menos transparente.</sys:String>
     <sys:String x:Key="LOCCSM_NotificationIconPosition">Posición del icono</sys:String>
     <sys:String x:Key="LOCCSM_IconHidden">Ocultar icono</sys:String>
-    <sys:String x:Key="LOCCSM_NotificationWarningPreview">Aviso</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationWarningPreview">Aviso general</sys:String>
     <sys:String x:Key="LOCCSM_ShowFullscreenControllerNotifications">Avisar al conectar o desconectar un mando en pantalla completa</sys:String>
     <sys:String x:Key="LOCCSM_ShowFullscreenControllerNotificationsHelp">Muestra una notificación breve cuando se conecta o desconecta un mando en el modo pantalla completa de Playnite.</sys:String>
+    <sys:String x:Key="LOCCSM_ShowFullscreenLowBatteryNotifications">Avisar cuando la batería de un mando esté baja en pantalla completa</sys:String>
+    <sys:String x:Key="LOCCSM_ShowDesktopLowBatteryNotifications">Avisar cuando la batería de un mando esté baja en escritorio</sys:String>
+    <sys:String x:Key="LOCCSM_LowBatteryNotificationThreshold">Avisar en o por debajo de</sys:String>
+    <sys:String x:Key="LOCCSM_LowBatteryThresholdLow">Baja o vacía</sys:String>
+    <sys:String x:Key="LOCCSM_LowBatteryThresholdEmpty">Solo vacía</sys:String>
+    <sys:String x:Key="LOCCSM_LowBatteryNotificationHelp">Una notificación por episodio de batería baja en cualquier mando que reporte batería. Se reactiva cuando el nivel se recupera o el mando se vuelve a conectar.</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerLowBatteryToast">Batería baja</sys:String>
     <sys:String x:Key="LOCCSM_OverlayForcePaused">Juego detenido temporalmente</sys:String>
     <sys:String x:Key="LOCCSM_OverlayForcePauseFailed">No se pudo detener temporalmente el juego</sys:String>
     <sys:String x:Key="LOCCSM_OnlineFallbackToastTitle">Mando desconectado</sys:String>
@@ -230,6 +237,7 @@
     <sys:String x:Key="LOCCSM_ConnectedColor">Acento conectado</sys:String>
     <sys:String x:Key="LOCCSM_DisconnectedColor">Acento desconectado</sys:String>
     <sys:String x:Key="LOCCSM_WarningColor">Acento de aviso</sys:String>
+    <sys:String x:Key="LOCCSM_LowBatteryColor">Acento de batería baja</sys:String>
     <sys:String x:Key="LOCCSM_PreviewNotification">Vista previa de la notificación</sys:String>
     <sys:String x:Key="LOCCSM_OverlayAppearanceTitle">Overlay de desconexión</sys:String>
     <sys:String x:Key="LOCCSM_OverlayAppearanceHelp">Personaliza el overlay aislado de la partida. Sus colores son independientes del tema de Playnite para conservar la legibilidad sobre los juegos.</sys:String>

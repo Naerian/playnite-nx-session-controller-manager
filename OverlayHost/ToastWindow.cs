@@ -197,33 +197,31 @@ namespace ControllerSessionManager.OverlayHost
             titleText.Foreground = Brush(style.PrimaryText, Colors.White);
             messageText.Foreground = Brush(style.SecondaryText, Color.FromRgb(198, 203, 212));
             var secondaryBrush = Brush(style.SecondaryText, Color.FromRgb(198, 203, 212));
-            var accent = ParseColor(string.Equals(current.Kind, "warning", StringComparison.OrdinalIgnoreCase)
-                ? style.WarningAccent
-                : string.Equals(current.Kind, "connected", StringComparison.OrdinalIgnoreCase)
-                    ? style.ConnectedAccent
-                    : style.DisconnectedAccent,
-                string.Equals(current.Kind, "warning", StringComparison.OrdinalIgnoreCase)
-                    ? Color.FromRgb(245, 181, 66)
-                    : string.Equals(current.Kind, "connected", StringComparison.OrdinalIgnoreCase)
-                        ? Color.FromRgb(79, 194, 126)
-                        : Color.FromRgb(80, 170, 255));
+            var isWarning = string.Equals(current.Kind, "warning", StringComparison.OrdinalIgnoreCase);
+            var isLowBattery = string.Equals(current.Kind, "lowbattery", StringComparison.OrdinalIgnoreCase);
+            var accent = ParseColor(
+                isLowBattery
+                    ? style.LowBatteryAccent
+                    : isWarning
+                        ? style.WarningAccent
+                        : string.Equals(current.Kind, "connected", StringComparison.OrdinalIgnoreCase)
+                            ? style.ConnectedAccent
+                            : style.DisconnectedAccent,
+                isLowBattery
+                    ? Color.FromRgb(224, 82, 82)
+                    : isWarning
+                        ? Color.FromRgb(245, 181, 66)
+                        : string.Equals(current.Kind, "connected", StringComparison.OrdinalIgnoreCase)
+                            ? Color.FromRgb(79, 194, 126)
+                            : Color.FromRgb(80, 170, 255));
             var accentBrush = new SolidColorBrush(accent);
             card.BorderBrush = accentBrush;
             card.BorderThickness = style.ShowBorder
                 ? CreateBorderThickness(style.BorderPosition, style.BorderThickness)
                 : new Thickness(0);
-            if (string.Equals(current.Kind, "warning", StringComparison.OrdinalIgnoreCase))
-            {
-                icon.Fill = Brushes.Transparent;
-                icon.Stroke = accentBrush;
-                icon.StrokeThickness = 2;
-            }
-            else
-            {
-                icon.Fill = accentBrush;
-                icon.Stroke = Brushes.Transparent;
-                icon.StrokeThickness = 0;
-            }
+            icon.Fill = accentBrush;
+            icon.Stroke = Brushes.Transparent;
+            icon.StrokeThickness = 0;
 
             ApplyConnectionIcon(current.ConnectionIconGeometry, secondaryBrush, scale);
             card.Measure(new Size(Width, double.PositiveInfinity));
@@ -240,8 +238,7 @@ namespace ControllerSessionManager.OverlayHost
 
         private void ApplyConnectionIcon(string geometry, Brush stroke, double scale)
         {
-            if (string.IsNullOrWhiteSpace(geometry) ||
-                string.Equals(current.Kind, "warning", StringComparison.OrdinalIgnoreCase))
+            if (string.IsNullOrWhiteSpace(geometry))
             {
                 connectionIcon.Data = null;
                 connectionIcon.Visibility = Visibility.Collapsed;
@@ -410,6 +407,7 @@ namespace ControllerSessionManager.OverlayHost
             public string ConnectedAccent = "#FF4FC27E";
             public string DisconnectedAccent = "#FF50AAFF";
             public string WarningAccent = "#FFF5B542";
+            public string LowBatteryAccent = "#FFE05252";
             public int TitleFontSize = 19;
             public int MessageFontSize = 15;
             public int IconSize = 32;
@@ -446,6 +444,7 @@ namespace ControllerSessionManager.OverlayHost
                 if (parts.Length > 16 && int.TryParse(parts[16], out parsed)) style.CornerRadius = Math.Max(0, Math.Min(40, parsed));
                 if (parts.Length > 17 && IsIconPosition(parts[17])) style.IconPosition = parts[17];
                 if (parts.Length > 18 && int.TryParse(parts[18], out parsed)) style.ElementSpacing = Math.Max(0, Math.Min(40, parsed));
+                if (parts.Length > 19 && !string.IsNullOrWhiteSpace(parts[19])) style.LowBatteryAccent = parts[19];
                 return style;
             }
 

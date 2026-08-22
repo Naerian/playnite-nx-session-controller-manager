@@ -88,6 +88,13 @@ namespace ControllerSessionManager.Controllers
             int statusOffset;
             if (report != null && report.Length == 64 && report[0] == 0x01)
             {
+                // Compatible DualSense receivers (e.g. ds5dongle) can keep emitting a
+                // synthetic "pad absent" USB report; do not treat it as battery data.
+                if (IsSyntheticDualSenseDisconnectReport(report))
+                {
+                    return false;
+                }
+
                 statusOffset = 53;
             }
             else if (report != null && report.Length == 78 && report[0] == 0x31 && HasValidBluetoothCrc(report))
@@ -112,6 +119,34 @@ namespace ControllerSessionManager.Controllers
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// USB DualSense report with centered sticks (0x7F) and only the digital
+        /// neutral bit set — typical when a wireless dongle has no pad attached.
+        /// </summary>
+        internal static bool IsSyntheticDualSenseDisconnectReport(byte[] report)
+        {
+            if (report == null || report.Length < 64 || report[0] != 0x01)
+            {
+                return false;
+            }
+
+            if (report[1] != 0x7F || report[2] != 0x7F ||
+                report[3] != 0x7F || report[4] != 0x7F || report[8] != 0x08)
+            {
+                return false;
+            }
+
+            for (var index = 5; index < 64; index++)
+            {
+                if (index != 8 && report[index] != 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private static bool TryParseDualShock4(byte[] report, out int capacity)

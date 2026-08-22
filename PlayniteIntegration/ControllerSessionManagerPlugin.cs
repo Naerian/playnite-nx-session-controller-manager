@@ -66,7 +66,10 @@ namespace ControllerSessionManager.PlayniteIntegration
             new Dictionary<string, ControllerToastIdentity>(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, ControllerToastCandidate> pendingToastControllers =
             new Dictionary<string, ControllerToastCandidate>(StringComparer.OrdinalIgnoreCase);
+        private readonly LowBatteryNotificationTracker lowBatteryToastTracker =
+            new LowBatteryNotificationTracker();
         private bool connectionToastStateInitialized;
+        private bool lowBatteryToastStateInitialized;
         private readonly DateTime pluginStartedUtc = DateTime.UtcNow;
         private static readonly TimeSpan ToastStartupGracePeriod = TimeSpan.FromSeconds(8);
         private List<string> activeGameOnlineMetadata = new List<string>();
@@ -410,20 +413,32 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         public void ShowNotificationPreview(string kind)
         {
+            var isLowBattery = string.Equals(kind, "lowbattery", StringComparison.OrdinalIgnoreCase);
             var previewKind = string.Equals(kind, "disconnected", StringComparison.OrdinalIgnoreCase)
                 ? "disconnected"
-                : string.Equals(kind, "warning", StringComparison.OrdinalIgnoreCase) ? "warning" : "connected";
+                : string.Equals(kind, "warning", StringComparison.OrdinalIgnoreCase)
+                    ? "warning"
+                    : isLowBattery
+                        ? "lowbattery"
+                        : "connected";
             var isWarning = previewKind == "warning";
-            var title = isWarning
-                ? Loc("LOCCSM_OnlineFallbackToastTitle")
-                : Loc(previewKind == "connected" ? "LOCCSM_ControllerConnectedToast" : "LOCCSM_ControllerDisconnectedToast");
-            var message = isWarning
-                ? Loc("LOCCSM_OnlineFallbackToastMessage")
-                : settings.ShowControllerNameInNotifications ? Loc("LOCCSM_NotificationPreviewMessage") : string.Empty;
+            var title = isLowBattery
+                ? Loc("LOCCSM_ControllerLowBatteryToast")
+                : isWarning
+                    ? Loc("LOCCSM_OnlineFallbackToastTitle")
+                    : Loc(previewKind == "connected" ? "LOCCSM_ControllerConnectedToast" : "LOCCSM_ControllerDisconnectedToast");
+            var message = isLowBattery
+                ? (settings.ShowControllerNameInNotifications
+                    ? Loc("LOCCSM_NotificationPreviewMessage") + " · " + Loc("LOCCSM_ValueLow")
+                    : Loc("LOCCSM_ValueLow"))
+                : isWarning
+                    ? Loc("LOCCSM_OnlineFallbackToastMessage")
+                    : settings.ShowControllerNameInNotifications ? Loc("LOCCSM_NotificationPreviewMessage") : string.Empty;
+            var iconFile = ControllerIconCatalog.DefaultFileName;
             overlayClient.ShowToastPreview(notificationSessionId, 0, previewKind, title, message,
-                SvgIconGeometryLoader.GetPathData(isWarning ? "alert-triangle.svg" : ControllerIconCatalog.DefaultFileName),
+                SvgIconGeometryLoader.GetPathData(iconFile),
                 settings.NotificationDurationMilliseconds, GetToastStylePayload(),
-                isWarning ? string.Empty : ControllerConnectionIcons.GetPathData("Wireless"));
+                GetToastBadgeIconGeometry(previewKind, "Wireless"));
         }
 
         public void ExportHidDiagnostics()
@@ -1541,6 +1556,10 @@ namespace ControllerSessionManager.PlayniteIntegration
                 {
                     UpdateConnectionNotifications(GetControllerSnapshot());
                 }
+
+                // Low-battery recover debounce needs consecutive samples even when the
+                // hardware signature is unchanged (level already Medium/Full).
+                UpdateLowBatteryNotifications(GetControllerSnapshot());
                 return;
             }
 
@@ -1598,6 +1617,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             var snapshot = GetControllerSnapshot();
             UpdateConnectionNotifications(snapshot);
+            UpdateLowBatteryNotifications(snapshot);
             if (sessionManager.IsRunning)
             {
                 sessionManager.Update(snapshot, DateTime.UtcNow,
@@ -1899,8 +1919,9 @@ namespace ControllerSessionManager.PlayniteIntegration
                     {
                         overlayClient.ShowToast(activeSessionId, activePauseReceipt.TargetProcessId, "warning",
                             Loc("LOCCSM_OnlineFallbackToastTitle"), Loc("LOCCSM_OnlineFallbackToastMessage"),
-                            SvgIconGeometryLoader.GetPathData("alert-triangle.svg"),
-                            settings.NotificationDurationMilliseconds, GetToastStylePayload());
+                            SvgIconGeometryLoader.GetPathData(ControllerIconCatalog.DefaultFileName),
+                            settings.NotificationDurationMilliseconds, GetToastStylePayload(),
+                            GetToastBadgeIconGeometry("warning"));
                         diagnosticEvents.Add("pause", "Suspend skipped: strong online session detected");
                     }
                     else
@@ -2074,6 +2095,87 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
         }
 
+        private void UpdateLowBatteryNotifications(IReadOnlyList<ControllerDeviceSnapshot> snapshot)
+        {
+            var controllers = (snapshot ?? new List<ControllerDeviceSnapshot>())
+                .Where(a => a.IsConnected && !ControllerDeviceIdentity.IsUnknownConnection(a))
+                .GroupBy(GetToastControllerKey, StringComparer.OrdinalIgnoreCase)
+                .Select(a => a.First())
+                .ToList();
+            var threshold = settings == null
+                ? LowBatteryNotificationTracker.ThresholdLow
+                : settings.LowBatteryNotificationThreshold;
+            var presentKeys = controllers.Select(GetToastControllerKey).ToList();
+
+            if (!lowBatteryToastStateInitialized ||
+                (DateTime.UtcNow - pluginStartedUtc) < ToastStartupGracePeriod)
+            {
+                lowBatteryToastTracker.Clear();
+                lowBatteryToastTracker.SeedWithoutNotify(
+                    controllers
+                        .Where(a => LowBatteryNotificationTracker.IsAtOrBelowThreshold(
+                            a.BatteryLevel, threshold))
+                        .Select(GetToastControllerKey));
+                lowBatteryToastStateInitialized = true;
+                return;
+            }
+
+            lowBatteryToastTracker.RetainOnly(presentKeys);
+
+            var showFullscreen = settings != null &&
+                settings.ShowFullscreenLowBatteryNotifications &&
+                PlayniteApi.ApplicationInfo.Mode == ApplicationMode.Fullscreen;
+            var showDesktop = settings != null &&
+                settings.ShowDesktopLowBatteryNotifications &&
+                PlayniteApi.ApplicationInfo.Mode == ApplicationMode.Desktop;
+
+            foreach (var controller in controllers)
+            {
+                var key = GetToastControllerKey(controller);
+                if (!lowBatteryToastTracker.ShouldShow(
+                    key, controller.BatteryLevel, threshold, true))
+                {
+                    continue;
+                }
+
+                if (!showFullscreen && !showDesktop)
+                {
+                    continue;
+                }
+
+                var title = Loc("LOCCSM_ControllerLowBatteryToast");
+                var levelLabel = Loc("LOCCSM_Value" + controller.BatteryLevel);
+                var icon = SvgIconGeometryLoader.GetPathData(
+                    ResolveControllerIconFileName(controller));
+                var badgeIcon = GetToastBadgeIconGeometry("lowbattery");
+
+                if (showFullscreen)
+                {
+                    var name = GetToastControllerName(controller.Name);
+                    var message = string.IsNullOrWhiteSpace(name)
+                        ? levelLabel
+                        : name + " · " + levelLabel;
+                    overlayClient.ShowToast(
+                        notificationSessionId, 0, "lowbattery", title, message, icon,
+                        settings.NotificationDurationMilliseconds, GetToastStylePayload(),
+                        badgeIcon);
+                }
+
+                if (showDesktop)
+                {
+                    var message = settings.ShowControllerNameInDesktopNotifications &&
+                        !string.IsNullOrWhiteSpace(controller.Name)
+                        ? controller.Name + " · " + levelLabel
+                        : levelLabel;
+                    overlayClient.ShowToast(
+                        notificationSessionId, 0, "lowbattery", title, message, icon,
+                        settings.DesktopNotificationDurationMilliseconds,
+                        GetDesktopToastStylePayload(),
+                        badgeIcon);
+                }
+            }
+        }
+
         private ControllerToastIdentity CreateToastIdentity(ControllerDeviceSnapshot controller)
         {
             return new ControllerToastIdentity
@@ -2123,7 +2225,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 settings.NotificationBorderPosition ?? "Bottom",
                 settings.NotificationBorderThickness.ToString(), settings.NotificationCornerRadius.ToString(),
                 settings.NotificationIconPosition ?? "Left",
-                settings.NotificationElementSpacing.ToString()
+                settings.NotificationElementSpacing.ToString(),
+                settings.NotificationLowBatteryColor
             });
         }
 
@@ -2141,26 +2244,54 @@ namespace ControllerSessionManager.PlayniteIntegration
                 settings.DesktopNotificationBorderPosition ?? "Bottom",
                 settings.DesktopNotificationBorderThickness.ToString(), settings.DesktopNotificationCornerRadius.ToString(),
                 settings.DesktopNotificationIconPosition ?? "Left",
-                settings.DesktopNotificationElementSpacing.ToString()
+                settings.DesktopNotificationElementSpacing.ToString(),
+                settings.DesktopNotificationLowBatteryColor
             });
         }
 
         public void ShowDesktopNotificationPreview(string kind)
         {
+            var isLowBattery = string.Equals(kind, "lowbattery", StringComparison.OrdinalIgnoreCase);
             var previewKind = string.Equals(kind, "disconnected", StringComparison.OrdinalIgnoreCase)
                 ? "disconnected"
-                : string.Equals(kind, "warning", StringComparison.OrdinalIgnoreCase) ? "warning" : "connected";
+                : string.Equals(kind, "warning", StringComparison.OrdinalIgnoreCase)
+                    ? "warning"
+                    : isLowBattery
+                        ? "lowbattery"
+                        : "connected";
             var isWarning = previewKind == "warning";
-            var title = isWarning
-                ? Loc("LOCCSM_OnlineFallbackToastTitle")
-                : Loc(previewKind == "connected" ? "LOCCSM_ControllerConnectedToast" : "LOCCSM_ControllerDisconnectedToast");
-            var message = isWarning
-                ? Loc("LOCCSM_OnlineFallbackToastMessage")
-                : settings.ShowControllerNameInDesktopNotifications ? Loc("LOCCSM_NotificationPreviewMessage") : string.Empty;
+            var title = isLowBattery
+                ? Loc("LOCCSM_ControllerLowBatteryToast")
+                : isWarning
+                    ? Loc("LOCCSM_OnlineFallbackToastTitle")
+                    : Loc(previewKind == "connected" ? "LOCCSM_ControllerConnectedToast" : "LOCCSM_ControllerDisconnectedToast");
+            var message = isLowBattery
+                ? (settings.ShowControllerNameInDesktopNotifications
+                    ? Loc("LOCCSM_NotificationPreviewMessage") + " · " + Loc("LOCCSM_ValueLow")
+                    : Loc("LOCCSM_ValueLow"))
+                : isWarning
+                    ? Loc("LOCCSM_OnlineFallbackToastMessage")
+                    : settings.ShowControllerNameInDesktopNotifications ? Loc("LOCCSM_NotificationPreviewMessage") : string.Empty;
+            var iconFile = ControllerIconCatalog.DefaultFileName;
             overlayClient.ShowToastPreview(notificationSessionId, 0, previewKind, title, message,
-                SvgIconGeometryLoader.GetPathData(isWarning ? "alert-triangle.svg" : ControllerIconCatalog.DefaultFileName),
+                SvgIconGeometryLoader.GetPathData(iconFile),
                 settings.DesktopNotificationDurationMilliseconds, GetDesktopToastStylePayload(),
-                isWarning ? string.Empty : ControllerConnectionIcons.GetPathData("Bluetooth"));
+                GetToastBadgeIconGeometry(previewKind, "Bluetooth"));
+        }
+
+        private static string GetToastBadgeIconGeometry(string kind, string connectionType = null)
+        {
+            if (string.Equals(kind, "warning", StringComparison.OrdinalIgnoreCase))
+            {
+                return SvgIconGeometryLoader.GetPathData("alert-triangle.svg");
+            }
+
+            if (string.Equals(kind, "lowbattery", StringComparison.OrdinalIgnoreCase))
+            {
+                return SvgIconGeometryLoader.GetPathData("battery.svg");
+            }
+
+            return ControllerConnectionIcons.GetPathData(connectionType);
         }
 
         private string GetToastControllerName(string name)

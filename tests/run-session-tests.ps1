@@ -17,6 +17,7 @@ $testExecutable = Join-Path $output "SessionManagerTests.exe"
     (Join-Path $root "Controllers\IControllerBatteryProvider.cs") `
     (Join-Path $root "Controllers\HidDiagnosticsService.cs") `
     (Join-Path $root "Controllers\PlayStationHidBatteryProvider.cs") `
+    (Join-Path $root "Controllers\LowBatteryNotificationTracker.cs") `
     (Join-Path $root "Controllers\WindowsBluetoothBatteryProvider.cs") `
     (Join-Path $root "Controllers\ControllerDeviceIdentity.cs") `
     (Join-Path $root "Controllers\ControllerIconCatalog.cs") `
