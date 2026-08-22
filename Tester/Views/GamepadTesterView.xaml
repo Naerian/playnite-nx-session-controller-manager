@@ -117,6 +117,12 @@
             <Setter Property="MinHeight" Value="88" />
         </Style>
 
+        <Style x:Key="DashboardMetricTileCompact" TargetType="Border" BasedOn="{StaticResource DashboardMetricTile}">
+            <Setter Property="MinHeight" Value="72" />
+            <Setter Property="Padding" Value="14,12" />
+            <Setter Property="Margin" Value="0,0,8,8" />
+        </Style>
+
         <Style x:Key="SubtleVerticalSeparator" TargetType="Border">
             <Setter Property="Width" Value="1" />
             <Setter Property="Background" Value="{StaticResource LineBrush}" />
@@ -544,61 +550,56 @@
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="*" MinHeight="0" />
                                     </Grid.RowDefinitions>
-                                    <Border Style="{StaticResource DashboardPanel}" Margin="0,0,0,12" VerticalAlignment="Stretch">
-                                        <StackPanel VerticalAlignment="Center">
-                                            <TextBlock Text="{DynamicResource LOCCSM_Tester_ControllerHealth}" Style="{StaticResource DashboardTitle}" />
-                                            <Border Style="{StaticResource SubtleHorizontalSeparator}" Margin="0,0,0,12" />
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition Width="*" />
-                                                </Grid.ColumnDefinitions>
-                                                <TextBlock Text="{Binding HealthScoreDisplayLabel}" FontSize="20" FontWeight="SemiBold" />
-                                                <StackPanel Grid.Column="1" Margin="16,6,0,0">
-                                                    <ProgressBar Minimum="0" Maximum="100" Value="{Binding HealthDisplayProgress, Mode=OneWay}" Height="12" />
-                                                    <TextBlock Text="{Binding HealthLabel}" Style="{StaticResource BodyText}" Margin="0,8,0,0" />
-                                                </StackPanel>
-                                            </Grid>
-                                            <TextBlock Text="{Binding HealthSummaryLabel}"
-                                                       Style="{StaticResource HintText}"
-                                                       Margin="0,8,0,0" />
-                                            <TextBlock Text="{Binding HealthConfidenceLabel}"
-                                                       Style="{StaticResource HintText}"
-                                                       Margin="0,8,0,0" />
-                                        </StackPanel>
+                                    <Border Style="{StaticResource DashboardPanel}" Margin="0,0,0,8" Padding="16,12" VerticalAlignment="Stretch">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="{Binding HealthScoreDisplayLabel}"
+                                                       FontSize="22"
+                                                       FontWeight="SemiBold"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,0,14,0" />
+                                            <ProgressBar Grid.Column="1"
+                                                         Minimum="0"
+                                                         Maximum="100"
+                                                         Value="{Binding HealthDisplayProgress, Mode=OneWay}"
+                                                         Height="10"
+                                                         VerticalAlignment="Center"
+                                                         Margin="0,0,12,0" />
+                                            <TextBlock Grid.Column="2"
+                                                       Text="{Binding HealthLabel}"
+                                                       Style="{StaticResource BodyText}"
+                                                       VerticalAlignment="Center"
+                                                       TextWrapping="NoWrap" />
+                                        </Grid>
                                     </Border>
 
-                                    <UniformGrid Grid.Row="1" Columns="2" Margin="0,0,0,4">
-                                        <Border Style="{StaticResource DashboardMetricTile}">
-                                            <StackPanel>
-                                                <TextBlock Text="{DynamicResource LOCCSM_Tester_ActiveInputs}" Style="{StaticResource DashboardTitle}" />
-                                                <Border Style="{StaticResource SubtleHorizontalSeparator}" Margin="0,0,0,8" />
-                                                <TextBlock Text="{Binding ActiveButtonCount}" Style="{StaticResource MetricValue}" />
-                                                <TextBlock Text="{DynamicResource LOCCSM_Tester_ButtonsCurrentlyPressed}" Style="{StaticResource HintText}" Margin="0,8,0,0" />
-                                            </StackPanel>
-                                        </Border>
-                                        <Border Style="{StaticResource DashboardMetricTile}">
+                                    <UniformGrid Grid.Row="1" Columns="3" Margin="0,0,0,4">
+                                        <Border Style="{StaticResource DashboardMetricTileCompact}">
                                             <StackPanel>
                                                 <TextBlock Text="{DynamicResource LOCCSM_Tester_CenterDrift}" Style="{StaticResource DashboardTitle}" />
-                                                <Border Style="{StaticResource SubtleHorizontalSeparator}" Margin="0,0,0,8" />
+                                                <Border Style="{StaticResource SubtleHorizontalSeparator}" Margin="0,0,0,6" />
                                                 <TextBlock Text="{Binding MaxDriftLabel}" Style="{StaticResource MetricValue}" />
-                                                <TextBlock Text="{DynamicResource LOCCSM_Tester_Current}" Style="{StaticResource HintText}" Margin="0,8,0,0" />
+                                                <TextBlock Text="{DynamicResource LOCCSM_Tester_Current}" Style="{StaticResource HintText}" Margin="0,6,0,0" />
                                             </StackPanel>
                                         </Border>
-                                        <Border Style="{StaticResource DashboardMetricTile}">
+                                        <Border Style="{StaticResource DashboardMetricTileCompact}">
                                             <StackPanel>
                                                 <TextBlock Text="{Binding LeftTriggerLabel}" Style="{StaticResource DashboardTitle}" />
-                                                <Border Style="{StaticResource SubtleHorizontalSeparator}" Margin="0,0,0,8" />
+                                                <Border Style="{StaticResource SubtleHorizontalSeparator}" Margin="0,0,0,6" />
                                                 <TextBlock Text="{Binding LeftTriggerPercent, StringFormat={}{0}%}" Style="{StaticResource MetricValue}" />
-                                                <ProgressBar Minimum="0" Maximum="100" Value="{Binding LeftTriggerPercent, Mode=OneWay}" Height="8" Margin="0,8,0,0" />
+                                                <ProgressBar Minimum="0" Maximum="100" Value="{Binding LeftTriggerPercent, Mode=OneWay}" Height="8" Margin="0,6,0,0" />
                                             </StackPanel>
                                         </Border>
-                                        <Border Style="{StaticResource DashboardMetricTile}">
+                                        <Border Style="{StaticResource DashboardMetricTileCompact}" Margin="0,0,0,8">
                                             <StackPanel>
                                                 <TextBlock Text="{Binding RightTriggerLabel}" Style="{StaticResource DashboardTitle}" />
-                                                <Border Style="{StaticResource SubtleHorizontalSeparator}" Margin="0,0,0,8" />
+                                                <Border Style="{StaticResource SubtleHorizontalSeparator}" Margin="0,0,0,6" />
                                                 <TextBlock Text="{Binding RightTriggerPercent, StringFormat={}{0}%}" Style="{StaticResource MetricValue}" />
-                                                <ProgressBar Minimum="0" Maximum="100" Value="{Binding RightTriggerPercent, Mode=OneWay}" Height="8" Margin="0,8,0,0" />
+                                                <ProgressBar Minimum="0" Maximum="100" Value="{Binding RightTriggerPercent, Mode=OneWay}" Height="8" Margin="0,6,0,0" />
                                             </StackPanel>
                                         </Border>
                                     </UniformGrid>
