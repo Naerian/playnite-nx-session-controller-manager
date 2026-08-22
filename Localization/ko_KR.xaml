@@ -398,9 +398,11 @@
     <sys:String x:Key="LOCCSM_Tester_CalibrationHelp">실제 휴식 센터를 캡처한 다음 스틱 탭에서 각 스틱을 회전하여 외부 범위를 측정합니다. 이러한 값은 진단용이며 시스템 입력을 수정하지 않습니다.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CaptureCenter">캡쳐센터</sys:String>
     <sys:String x:Key="LOCCSM_Tester_ResetCalibration">교정 재설정</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_ResetCalibrationHelp">Clears the captured center and the suggested deadzone so you can capture again.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CenterCalibration">중앙 및 데드존</sys:String>
     <sys:String x:Key="LOCCSM_Tester_RangeCalibration">범위 품질</sys:String>
     <sys:String x:Key="LOCCSM_Tester_ResetRange">재설정 범위</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_ResetRangeHelp">Range quality comes from the stick test above. Use Reset sticks to clear coverage and range data.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_RangeCalibrationHelp">각 스틱을 바깥쪽 가장자리 전체를 중심으로 움직입니다. 가장자리에 도달할 수 없는 수리 또는 교체된 스틱은 낮은 범위 품질을 나타냅니다.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CalibrationRunningFormat">스틱을 놓아두세요. {0:0.0}의 캡처 센터입니다.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CalibrationNotRun">중앙 보정이 아직 캡처되지 않았습니다.</sys:String>
@@ -553,6 +555,7 @@
     <sys:String x:Key="LOCCSM_Tester_DiagnosticProfile">진단 프로필</sys:String>
     <sys:String x:Key="LOCCSM_Tester_DiagnosticProfileHelp">아래 작업에 따라 각 축을 완료하세요. 백분율은 각각의 테스트 결과이며 하나의 상태 점수가 아닙니다.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureReady">스틱 테스트를 시작한 다음 두 스틱을 바깥쪽 가장자리를 따라 한 바퀴 돌리세요.</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_StickCaptureNeedsController">Connect a controller to start the stick test.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureRunningHelp">스틱을 샘플링 중입니다. 두 스틱을 바깥쪽 가장자리를 따라 천천히 돌리세요.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureComplete">두 스틱 모두 원형 커버리지 100%에 도달하여 샘플링이 자동으로 중지되었습니다.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureLimit">샘플링이 안전 한도에 도달하여 중지되었습니다. 재설정 후 누락된 방향을 다시 테스트하세요.</sys:String>

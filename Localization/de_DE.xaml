@@ -399,9 +399,11 @@
     <sys:String x:Key="LOCCSM_Tester_CalibrationHelp">Erfassen Sie das tatsächliche Ruhezentrum und drehen Sie dann jeden Stock auf der Registerkarte „Stöcke“, um den äußeren Bereich zu messen. Diese Werte dienen nur der Diagnose und verändern die Systemeingabe nicht.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CaptureCenter">Aufnahmezentrum</sys:String>
     <sys:String x:Key="LOCCSM_Tester_ResetCalibration">Kalibrierung zurücksetzen</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_ResetCalibrationHelp">Clears the captured center and the suggested deadzone so you can capture again.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CenterCalibration">Zentrum und Totzone</sys:String>
     <sys:String x:Key="LOCCSM_Tester_RangeCalibration">Sortimentsqualität</sys:String>
     <sys:String x:Key="LOCCSM_Tester_ResetRange">Bereich zurücksetzen</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_ResetRangeHelp">Range quality comes from the stick test above. Use Reset sticks to clear coverage and range data.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_RangeCalibrationHelp">Bewegen Sie jeden Stab um seine gesamte Außenkante. Ein reparierter oder ersetzter Stick, der nicht bis zum Rand reicht, weist eine geringere Reichweitenqualität auf.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CalibrationRunningFormat">Halten Sie die Stöcke frei. Erfassungszentrum für {0:0.0}s.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CalibrationNotRun">Die Mittenkalibrierung wurde noch nicht erfasst.</sys:String>
@@ -554,6 +556,7 @@
     <sys:String x:Key="LOCCSM_Tester_DiagnosticProfile">Diagnoseprofil</sys:String>
     <sys:String x:Key="LOCCSM_Tester_DiagnosticProfileHelp">Vervollständige jede Achse mit den unten beschriebenen Aktionen. Die Prozentwerte sind einzelne Testergebnisse und keine gemeinsame Zustandswertung.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureReady">Starte den Stick-Test und drehe beide Sticks vollständig am äußeren Rand entlang.</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_StickCaptureNeedsController">Connect a controller to start the stick test.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureRunningHelp">Stick-Daten werden erfasst. Drehe beide Sticks langsam am gesamten äußeren Rand entlang.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureComplete">Die Erfassung wurde automatisch beendet, nachdem beide Sticks 100 % Kreisabdeckung erreicht hatten.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureLimit">Die Erfassung hat ihr Sicherheitslimit erreicht und wurde beendet. Setze sie zurück und wiederhole fehlende Richtungen.</sys:String>

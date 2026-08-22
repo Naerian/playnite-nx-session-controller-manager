@@ -398,9 +398,11 @@
     <sys:String x:Key="LOCCSM_Tester_CalibrationHelp">Uchwyć prawdziwy ośrodek odpoczynku, a następnie obróć każdy drążek w zakładce Kije, aby zmierzyć zasięg zewnętrzny. Wartości te mają charakter wyłącznie diagnostyczny i nie modyfikują danych wejściowych systemu.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CaptureCenter">Centrum przechwytywania</sys:String>
     <sys:String x:Key="LOCCSM_Tester_ResetCalibration">Zresetuj kalibrację</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_ResetCalibrationHelp">Clears the captured center and the suggested deadzone so you can capture again.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CenterCalibration">Centrum i martwa strefa</sys:String>
     <sys:String x:Key="LOCCSM_Tester_RangeCalibration">Jakość asortymentu</sys:String>
     <sys:String x:Key="LOCCSM_Tester_ResetRange">Zresetuj zakres</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_ResetRangeHelp">Range quality comes from the stick test above. Use Reset sticks to clear coverage and range data.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_RangeCalibrationHelp">Przesuń każdy drążek wokół jego pełnej zewnętrznej krawędzi. Naprawiony lub wymieniony drążek, który nie może dosięgnąć krawędzi, będzie wykazywać niższą jakość.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CalibrationRunningFormat">Trzymaj pałeczki puszczone. Centrum przechwytywania dla {0:0.0}.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CalibrationNotRun">Kalibracja środkowa nie została jeszcze przechwycona.</sys:String>
@@ -553,6 +555,7 @@
     <sys:String x:Key="LOCCSM_Tester_DiagnosticProfile">Profil diagnostyczny</sys:String>
     <sys:String x:Key="LOCCSM_Tester_DiagnosticProfileHelp">Uzupełnij każdą oś, wykonując opisane czynności. Wartości procentowe są niezależnymi wynikami, a nie jedną oceną stanu.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureReady">Uruchom test drążków, a następnie obróć oba po całej zewnętrznej krawędzi.</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_StickCaptureNeedsController">Connect a controller to start the stick test.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureRunningHelp">Trwa próbkowanie drążków. Powoli obróć oba po całej zewnętrznej krawędzi.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureComplete">Próbkowanie zatrzymało się automatycznie po osiągnięciu 100% pokrycia kołowego przez oba drążki.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureLimit">Próbkowanie osiągnęło limit bezpieczeństwa i zostało zatrzymane. Zresetuj je i powtórz brakujące kierunki.</sys:String>

@@ -398,9 +398,11 @@
     <sys:String x:Key="LOCCSM_Tester_CalibrationHelp">実際の静止中心をキャプチャし、[スティック] タブで各スティックを回転させて外側の範囲を測定します。これらの値は診断専用であり、システム入力を変更するものではありません。</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CaptureCenter">キャプチャセンター</sys:String>
     <sys:String x:Key="LOCCSM_Tester_ResetCalibration">リセットキャリブレーション</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_ResetCalibrationHelp">Clears the captured center and the suggested deadzone so you can capture again.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CenterCalibration">センターとデッドゾーン</sys:String>
     <sys:String x:Key="LOCCSM_Tester_RangeCalibration">範囲品質</sys:String>
     <sys:String x:Key="LOCCSM_Tester_ResetRange">リセット範囲</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_ResetRangeHelp">Range quality comes from the stick test above. Use Reset sticks to clear coverage and range data.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_RangeCalibrationHelp">各スティックをその外側の端全体に沿って動かします。修理または交換されたスティックがエッジに届かない場合、レンジの品質が低下します。</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CalibrationRunningFormat">スティックを放したままにしてください。 {0:0.0}のキャプチャセンター。</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CalibrationNotRun">センターキャリブレーションはまだキャプチャされていません。</sys:String>
@@ -553,6 +555,7 @@
     <sys:String x:Key="LOCCSM_Tester_DiagnosticProfile">診断プロファイル</sys:String>
     <sys:String x:Key="LOCCSM_Tester_DiagnosticProfileHelp">以下の操作で各軸を完了してください。各パーセンテージは独立したテスト結果であり、単一の健康スコアではありません。</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureReady">スティックテストを開始し、両方のスティックを外周に沿って一周させてください。</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_StickCaptureNeedsController">Connect a controller to start the stick test.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureRunningHelp">スティックを測定中です。両方のスティックを外周に沿ってゆっくり一周させてください。</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureComplete">両方のスティックが円周カバレッジ 100% に達したため、測定を自動的に停止しました。</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureLimit">測定が安全上限に達して停止しました。リセットして不足している方向を再試行してください。</sys:String>

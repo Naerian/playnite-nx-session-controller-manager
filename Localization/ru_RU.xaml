@@ -398,9 +398,11 @@
     <sys:String x:Key="LOCCSM_Tester_CalibrationHelp">Запечатлейте настоящий центр покоя, а затем вращайте каждый джойстик на вкладке «Пучки», чтобы измерить внешний диапазон. Эти значения предназначены только для диагностики и не изменяют входные данные системы.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CaptureCenter">Центр захвата</sys:String>
     <sys:String x:Key="LOCCSM_Tester_ResetCalibration">Сбросить калибровку</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_ResetCalibrationHelp">Clears the captured center and the suggested deadzone so you can capture again.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CenterCalibration">Центр и мертвая зона</sys:String>
     <sys:String x:Key="LOCCSM_Tester_RangeCalibration">Качество диапазона</sys:String>
     <sys:String x:Key="LOCCSM_Tester_ResetRange">Сбросить диапазон</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_ResetRangeHelp">Range quality comes from the stick test above. Use Reset sticks to clear coverage and range data.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_RangeCalibrationHelp">Перемещайте каждую палочку по ее полному внешнему краю. Отремонтированная или замененная клюшка, которая не может дотянуться до края, будет иметь более низкую дальность стрельбы.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CalibrationRunningFormat">Держите палочки отпущенными. Центр захвата {0:0.0}.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CalibrationNotRun">Калибровка центра еще не зафиксирована.</sys:String>
@@ -553,6 +555,7 @@
     <sys:String x:Key="LOCCSM_Tester_DiagnosticProfile">Диагностический профиль</sys:String>
     <sys:String x:Key="LOCCSM_Tester_DiagnosticProfileHelp">Заполните каждую ось, выполнив указанные действия. Проценты — это независимые результаты тестов, а не единая оценка состояния.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureReady">Запустите тест стиков, затем проведите оба стика по всей внешней окружности.</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_StickCaptureNeedsController">Connect a controller to start the stick test.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureRunningHelp">Идёт сбор данных стиков. Медленно проведите оба стика по всей внешней окружности.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureComplete">Сбор данных остановлен автоматически после достижения 100% кругового покрытия обоими стиками.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureLimit">Достигнут предел безопасности, сбор данных остановлен. Сбросьте результаты и повторите недостающие направления.</sys:String>

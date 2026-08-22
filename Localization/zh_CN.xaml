@@ -398,9 +398,11 @@
     <sys:String x:Key="LOCCSM_Tester_CalibrationHelp">捕获真实的静止中心，然后旋转“棒”选项卡中的每根棒以测量外部范围。这些值仅用于诊断，不会修改系统输入。</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CaptureCenter">捕获中心</sys:String>
     <sys:String x:Key="LOCCSM_Tester_ResetCalibration">重置校准</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_ResetCalibrationHelp">Clears the captured center and the suggested deadzone so you can capture again.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CenterCalibration">中心和死区</sys:String>
     <sys:String x:Key="LOCCSM_Tester_RangeCalibration">范围质量</sys:String>
     <sys:String x:Key="LOCCSM_Tester_ResetRange">复位范围</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_ResetRangeHelp">Range quality comes from the stick test above. Use Reset sticks to clear coverage and range data.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_RangeCalibrationHelp">将每根棍子围绕其整个外边缘移动。无法到达边缘的修复或更换的棍子将显示较低的射程质量。</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CalibrationRunningFormat">保持棍棒释放。 {0:0.0} 的捕获中心。</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CalibrationNotRun">尚未捕获中心校准。</sys:String>
@@ -553,6 +555,7 @@
     <sys:String x:Key="LOCCSM_Tester_DiagnosticProfile">诊断概览</sys:String>
     <sys:String x:Key="LOCCSM_Tester_DiagnosticProfileHelp">按照下方操作完成每个轴。各百分比是独立测试结果，并非统一的健康评分。</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureReady">启动摇杆测试，然后让两个摇杆沿最外圈完整旋转一周。</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_StickCaptureNeedsController">Connect a controller to start the stick test.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureRunningHelp">正在采样摇杆。请让两个摇杆沿最外圈缓慢旋转一周。</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureComplete">两个摇杆均达到 100% 圆周覆盖率，采样已自动停止。</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureLimit">采样达到安全上限并已停止。请重置后重新测试缺失方向。</sys:String>

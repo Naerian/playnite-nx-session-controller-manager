@@ -427,9 +427,11 @@
     <sys:String x:Key="LOCCSM_Tester_CalibrationHelp">Captura el centro real en reposo y despues gira cada stick en la pestana Sticks para medir el rango exterior. Estos valores son solo diagnosticos y no modifican el input del sistema.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CaptureCenter">Capturar centro</sys:String>
     <sys:String x:Key="LOCCSM_Tester_ResetCalibration">Reiniciar calibracion</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_ResetCalibrationHelp">Borra el centro capturado y la zona muerta sugerida para poder capturar de nuevo.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CenterCalibration">Centro y zona muerta</sys:String>
     <sys:String x:Key="LOCCSM_Tester_RangeCalibration">Calidad de rango</sys:String>
     <sys:String x:Key="LOCCSM_Tester_ResetRange">Reiniciar rango</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_ResetRangeHelp">La calidad de rango sale de la prueba de sticks de arriba. Usa Reiniciar sticks para limpiar cobertura y rango.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_RangeCalibrationHelp">Mueve cada stick por todo su borde exterior. Un stick reparado o reemplazado que no llegue al borde mostrara una calidad de rango mas baja.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CalibrationRunningFormat">Deja los sticks sueltos. Capturando centro durante {0:0.0}s.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CalibrationNotRun">Aun no se ha capturado la calibracion de centro.</sys:String>
@@ -582,6 +584,7 @@
     <sys:String x:Key="LOCCSM_Tester_DiagnosticProfile">Perfil de diagnóstico</sys:String>
     <sys:String x:Key="LOCCSM_Tester_DiagnosticProfileHelp">Cada eje es una prueba independiente, no una única puntuación de salud. Usa los botones para ir a la prueba que rellena ese eje.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureReady">Inicia la prueba de sticks y gira ambos por todo su borde exterior.</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_StickCaptureNeedsController">Conecta un mando para iniciar la prueba de sticks.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureRunningHelp">Muestreando sticks. Gira ambos lentamente por todo su borde exterior.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureComplete">El muestreo se detuvo automáticamente al alcanzar el 100% de cobertura circular en ambos sticks.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureLimit">El muestreo alcanzó su límite de seguridad y se detuvo. Reinicia y repite las direcciones que falten.</sys:String>

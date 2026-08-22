@@ -400,9 +400,11 @@
     <sys:String x:Key="LOCCSM_Tester_CalibrationHelp">Capturez le véritable centre de repos, puis faites pivoter chaque bâton dans l'onglet Bâtons pour mesurer la portée extérieure. Ces valeurs sont uniquement destinées au diagnostic et ne modifient pas les entrées du système.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CaptureCenter">Centre de capture</sys:String>
     <sys:String x:Key="LOCCSM_Tester_ResetCalibration">Réinitialiser l'étalonnage</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_ResetCalibrationHelp">Clears the captured center and the suggested deadzone so you can capture again.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CenterCalibration">Centre et zone morte</sys:String>
     <sys:String x:Key="LOCCSM_Tester_RangeCalibration">Qualité de la gamme</sys:String>
     <sys:String x:Key="LOCCSM_Tester_ResetRange">Réinitialiser la plage</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_ResetRangeHelp">Range quality comes from the stick test above. Use Reset sticks to clear coverage and range data.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_RangeCalibrationHelp">Déplacez chaque bâton sur tout son bord extérieur. Un bâton réparé ou remplacé qui ne peut pas atteindre le bord affichera une qualité de gamme inférieure.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CalibrationRunningFormat">Gardez les bâtons libérés. Centre de capture pour les {0:0.0}.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CalibrationNotRun">L'étalonnage du centre n'a pas encore été capturé.</sys:String>
@@ -555,6 +557,7 @@
     <sys:String x:Key="LOCCSM_Tester_DiagnosticProfile">Profil de diagnostic</sys:String>
     <sys:String x:Key="LOCCSM_Tester_DiagnosticProfileHelp">Complétez chaque axe avec les actions indiquées. Les pourcentages sont des résultats indépendants, pas une note de santé unique.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureReady">Démarrez le test des sticks puis faites-les tourner sur tout leur bord extérieur.</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_StickCaptureNeedsController">Connect a controller to start the stick test.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureRunningHelp">Échantillonnage des sticks. Faites-les tourner lentement sur tout leur bord extérieur.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureComplete">L'échantillonnage s'est arrêté automatiquement après que les deux sticks ont atteint 100 % de couverture circulaire.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureLimit">La limite de sécurité a été atteinte. Réinitialisez puis recommencez les directions manquantes.</sys:String>

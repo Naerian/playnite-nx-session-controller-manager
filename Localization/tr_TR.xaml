@@ -398,9 +398,11 @@
     <sys:String x:Key="LOCCSM_Tester_CalibrationHelp">Gerçek dinlenme merkezini yakalayın, ardından dış aralığı ölçmek için Çubuklar sekmesindeki her çubuğu döndürün. Bu değerler yalnızca teşhis amaçlıdır ve sistem girişini değiştirmez.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CaptureCenter">Yakalama merkezi</sys:String>
     <sys:String x:Key="LOCCSM_Tester_ResetCalibration">Kalibrasyonu sıfırla</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_ResetCalibrationHelp">Clears the captured center and the suggested deadzone so you can capture again.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CenterCalibration">Merkez ve ölü bölge</sys:String>
     <sys:String x:Key="LOCCSM_Tester_RangeCalibration">Menzil kalitesi</sys:String>
     <sys:String x:Key="LOCCSM_Tester_ResetRange">Aralığı sıfırla</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_ResetRangeHelp">Range quality comes from the stick test above. Use Reset sticks to clear coverage and range data.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_RangeCalibrationHelp">Her çubuğu tam dış kenarı etrafında hareket ettirin. Kenara ulaşamayan onarılmış veya değiştirilmiş bir çubuk, daha düşük bir menzil kalitesi gösterecektir.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CalibrationRunningFormat">Çubukları serbest bırakın. {0:0.0}'ler için yakalama merkezi.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CalibrationNotRun">Merkez kalibrasyonu henüz yakalanmadı.</sys:String>
@@ -553,6 +555,7 @@
     <sys:String x:Key="LOCCSM_Tester_DiagnosticProfile">Tanılama profili</sys:String>
     <sys:String x:Key="LOCCSM_Tester_DiagnosticProfileHelp">Aşağıdaki işlemleri uygulayarak her ekseni tamamlayın. Yüzdeler bağımsız test sonuçlarıdır; tek bir sağlık puanı değildir.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureReady">Analog çubuk testini başlatın ve iki çubuğu da dış kenar boyunca tam tur döndürün.</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_StickCaptureNeedsController">Connect a controller to start the stick test.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureRunningHelp">Analog çubuklar örnekleniyor. İkisini de dış kenar boyunca yavaşça tam tur döndürün.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureComplete">Her iki çubuk da %100 dairesel kapsama ulaştığı için örnekleme otomatik olarak durdu.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureLimit">Örnekleme güvenlik sınırına ulaşıp durdu. Sıfırlayın ve eksik yönleri yeniden deneyin.</sys:String>

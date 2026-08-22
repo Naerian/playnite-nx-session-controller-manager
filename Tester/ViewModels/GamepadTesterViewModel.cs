@@ -179,8 +179,8 @@ namespace ControllerSessionManager.Tester.ViewModels
             burstRumbleCommand = new RelayCommand(TestBurstRumble, CanRunRumble);
             resetDiagnosticsCommand = new RelayCommand(ResetDiagnostics);
             startCenterCalibrationCommand = new RelayCommand(StartCenterCalibration, () => State.IsConnected && !isCenterCalibrationRunning);
-            resetCalibrationCommand = new RelayCommand(ResetCalibration);
-            resetStickRangeCommand = new RelayCommand(ResetStickRangeDiagnostics, () => !isStickCaptureRunning);
+            resetCalibrationCommand = new RelayCommand(ResetCalibration, CanResetCalibration);
+            resetStickRangeCommand = new RelayCommand(ResetStickRangeDiagnostics, CanResetStickRange);
             resetLatencyCommand = new RelayCommand(ResetLatency, () => State.IsConnected && !isLatencyTestRunning);
             startLatencyTestCommand = new RelayCommand(ToggleLatencyTest, () => isLatencyTestRunning || State.IsConnected);
             startButtonCaptureCommand = new RelayCommand(
@@ -188,7 +188,7 @@ namespace ControllerSessionManager.Tester.ViewModels
                 () => isButtonCaptureRunning || (!isLatencyTestRunning && !isStickCaptureRunning));
             startStickCaptureCommand = new RelayCommand(
                 ToggleStickCapture,
-                () => isStickCaptureRunning || (!isLatencyTestRunning && !isButtonCaptureRunning && State.IsConnected));
+                () => isStickCaptureRunning || State.IsConnected);
             openGuidedTestCommand = new RelayCommand(OpenGuidedTest, () => State.IsConnected);
             startGuidedTestCommand = new RelayCommand(ToggleGuidedTest, () => State.IsConnected);
             openSticksTabCommand = new RelayCommand(() => SelectedTabIndex = TabSticks);
@@ -1425,6 +1425,11 @@ namespace ControllerSessionManager.Tester.ViewModels
         {
             get
             {
+                if (!State.IsConnected)
+                {
+                    return L("LOCCSM_Tester_StickCaptureNeedsController", "Connect a controller to start the stick test.");
+                }
+
                 if (isStickCaptureRunning)
                 {
                     return L("LOCCSM_Tester_StickCaptureRunningHelp", "Sampling sticks. Rotate both sticks slowly around their full outer edge.");
@@ -3001,6 +3006,7 @@ namespace ControllerSessionManager.Tester.ViewModels
             OnPropertyChanged("CalibrationStatusLabel");
             OnPropertyChanged("CalibrationProgress");
             startCenterCalibrationCommand.RaiseCanExecuteChanged();
+            resetCalibrationCommand.RaiseCanExecuteChanged();
         }
 
         private void ToggleGuidedTest()
@@ -3140,6 +3146,11 @@ namespace ControllerSessionManager.Tester.ViewModels
 
         private void ResetCalibration()
         {
+            if (!CanResetCalibration())
+            {
+                return;
+            }
+
             isCenterCalibrationRunning = false;
             centerCalibrationSamples = 0;
             leftCenterXSum = 0d;
@@ -3163,16 +3174,48 @@ namespace ControllerSessionManager.Tester.ViewModels
             OnPropertyChanged("LeftRecommendedDeadzonePercent");
             OnPropertyChanged("RightRecommendedDeadzonePercent");
             startCenterCalibrationCommand.RaiseCanExecuteChanged();
+            resetCalibrationCommand.RaiseCanExecuteChanged();
+        }
+
+        private bool CanResetCalibration()
+        {
+            return isCenterCalibrationRunning || centerCalibrationSamples > 0;
+        }
+
+        private bool CanResetStickRange()
+        {
+            return !isStickCaptureRunning
+                && (leftStickDiagnostics.SampleCount > 0
+                    || rightStickDiagnostics.SampleCount > 0
+                    || maxLeftStickMagnitude > 0d
+                    || maxRightStickMagnitude > 0d
+                    || stickCaptureCompletedAutomatically
+                    || stickCaptureReachedLimit);
         }
 
         private void ResetStickRangeDiagnostics()
         {
+            if (isStickCaptureRunning)
+            {
+                return;
+            }
+
             stickCaptureCompletedAutomatically = false;
             stickCaptureReachedLimit = false;
             maxLeftStickMagnitude = 0d;
             maxRightStickMagnitude = 0d;
             leftStickDiagnostics.Reset();
             rightStickDiagnostics.Reset();
+            leftStickTrail.Reset();
+            rightStickTrail.Reset();
+            OnPropertyChanged("LeftStickPathGeometry");
+            OnPropertyChanged("RightStickPathGeometry");
+            OnPropertyChanged("LeftStickTrailRecentGeometry");
+            OnPropertyChanged("LeftStickTrailMidGeometry");
+            OnPropertyChanged("LeftStickTrailFadeGeometry");
+            OnPropertyChanged("RightStickTrailRecentGeometry");
+            OnPropertyChanged("RightStickTrailMidGeometry");
+            OnPropertyChanged("RightStickTrailFadeGeometry");
             OnPropertyChanged("LeftStickCircularCoverageGeometry");
             OnPropertyChanged("RightStickCircularCoverageGeometry");
             OnPropertyChanged("LeftStickCircularCoveragePercent");
@@ -3193,9 +3236,14 @@ namespace ControllerSessionManager.Tester.ViewModels
             OnPropertyChanged("RightRangeQualityLabel");
             OnPropertyChanged("LeftRangeQualityPercent");
             OnPropertyChanged("RightRangeQualityPercent");
+            OnPropertyChanged("LeftRangeDisplayProgress");
+            OnPropertyChanged("RightRangeDisplayProgress");
+            OnPropertyChanged("LeftRangeConfidenceLabel");
+            OnPropertyChanged("RightRangeConfidenceLabel");
             OnPropertyChanged("HealthRangeFactorLabel");
             OnPropertyChanged("StickCaptureStatusLabel");
             OnPropertyChanged("DiagnosticRadarValues");
+            resetStickRangeCommand.RaiseCanExecuteChanged();
         }
 
         private void ResetLatency()
@@ -3280,9 +3328,22 @@ namespace ControllerSessionManager.Tester.ViewModels
                 return;
             }
 
-            if (!State.IsConnected || isButtonCaptureRunning || isLatencyTestRunning)
+            if (!State.IsConnected)
             {
+                OnPropertyChanged("StickCaptureStatusLabel");
                 return;
+            }
+
+            if (isLatencyTestRunning)
+            {
+                StopLatencyTest();
+            }
+
+            if (isButtonCaptureRunning)
+            {
+                isButtonCaptureRunning = false;
+                OnPropertyChanged("IsButtonCaptureRunning");
+                OnPropertyChanged("ButtonCaptureButtonLabel");
             }
 
             ResetStickRangeDiagnostics();
@@ -3791,6 +3852,7 @@ namespace ControllerSessionManager.Tester.ViewModels
             calibratedLeftCenterNoise = leftCenterMaxNoise;
             calibratedRightCenterNoise = rightCenterMaxNoise;
             startCenterCalibrationCommand.RaiseCanExecuteChanged();
+            resetCalibrationCommand.RaiseCanExecuteChanged();
         }
 
         private void UpdateLatency(GamepadState nextState)

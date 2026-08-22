@@ -429,9 +429,11 @@
     <sys:String x:Key="LOCCSM_Tester_CalibrationHelp">Capture the real resting center, then rotate each stick in the Sticks tab to measure outer range. These values are diagnostic only and do not modify system input.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CaptureCenter">Capture center</sys:String>
     <sys:String x:Key="LOCCSM_Tester_ResetCalibration">Reset calibration</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_ResetCalibrationHelp">Clears the captured center and the suggested deadzone so you can capture again.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CenterCalibration">Center and deadzone</sys:String>
     <sys:String x:Key="LOCCSM_Tester_RangeCalibration">Range quality</sys:String>
     <sys:String x:Key="LOCCSM_Tester_ResetRange">Reset range</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_ResetRangeHelp">Range quality comes from the stick test above. Use Reset sticks to clear coverage and range data.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_RangeCalibrationHelp">Move each stick around its full outer edge. A repaired or replaced stick that cannot reach the edge will show a lower range quality.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CalibrationRunningFormat">Keep sticks released. Capturing center for {0:0.0}s.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CalibrationNotRun">Center calibration has not been captured yet.</sys:String>
@@ -584,6 +586,7 @@
     <sys:String x:Key="LOCCSM_Tester_DiagnosticProfile">Diagnostic profile</sys:String>
     <sys:String x:Key="LOCCSM_Tester_DiagnosticProfileHelp">Each axis is an independent check, not a single health score. Use the buttons to jump to the test that fills that axis.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureReady">Start the stick test, then rotate both sticks around their full outer edge.</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_StickCaptureNeedsController">Connect a controller to start the stick test.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureRunningHelp">Sampling sticks. Rotate both sticks slowly around their full outer edge.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureComplete">Stick sampling stopped automatically after both sticks reached 100% circular coverage.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureLimit">Stick sampling reached its safety limit and stopped. Reset and retry any directions that are still missing.</sys:String>

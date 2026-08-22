@@ -398,9 +398,11 @@
     <sys:String x:Key="LOCCSM_Tester_CalibrationHelp">Capture o centro de repouso real e gire cada stick na guia Sticks para medir o alcance externo. Esses valores são apenas para diagnóstico e não modificam a entrada do sistema.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CaptureCenter">Centro de captura</sys:String>
     <sys:String x:Key="LOCCSM_Tester_ResetCalibration">Redefinir calibração</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_ResetCalibrationHelp">Clears the captured center and the suggested deadzone so you can capture again.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CenterCalibration">Centro e zona morta</sys:String>
     <sys:String x:Key="LOCCSM_Tester_RangeCalibration">Qualidade de alcance</sys:String>
     <sys:String x:Key="LOCCSM_Tester_ResetRange">Redefinir intervalo</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_ResetRangeHelp">Range quality comes from the stick test above. Use Reset sticks to clear coverage and range data.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_RangeCalibrationHelp">Mova cada palito ao redor de toda a borda externa. Um stick reparado ou substituído que não consegue alcançar a borda apresentará uma qualidade de alcance inferior.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CalibrationRunningFormat">Mantenha os gravetos soltos. Centro de captura para {0:0.0}s.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_CalibrationNotRun">A calibração central ainda não foi capturada.</sys:String>
@@ -553,6 +555,7 @@
     <sys:String x:Key="LOCCSM_Tester_DiagnosticProfile">Perfil de diagnóstico</sys:String>
     <sys:String x:Key="LOCCSM_Tester_DiagnosticProfileHelp">Complete cada eixo seguindo as ações indicadas. As porcentagens são resultados independentes, não uma única pontuação de integridade.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureReady">Inicie o teste dos analógicos e gire ambos por toda a borda externa.</sys:String>
+    <sys:String x:Key="LOCCSM_Tester_StickCaptureNeedsController">Connect a controller to start the stick test.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureRunningHelp">Amostrando os analógicos. Gire ambos lentamente por toda a borda externa.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureComplete">A amostragem parou automaticamente após os dois analógicos atingirem 100% de cobertura circular.</sys:String>
     <sys:String x:Key="LOCCSM_Tester_StickCaptureLimit">A amostragem atingiu o limite de segurança e parou. Redefina e repita as direções que faltam.</sys:String>
