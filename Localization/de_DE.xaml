@@ -144,8 +144,8 @@
     <sys:String x:Key="LOCCSM_VibrationUnavailable">Dieser Controller hat den Vibrationsbefehl mit dem aktuellen Verbindungsmodus oder Treiber nicht angenommen.</sys:String>
     <sys:String x:Key="LOCCSM_SessionStatus">Suspend on disconnect</sys:String>
     <sys:String x:Key="LOCCSM_ActiveSessionControllers">Suspended controllers</sys:String>
-    <sys:String x:Key="LOCCSM_SessionProtectionTitle">Grundlage des Trennungsschutzes</sys:String>
-    <sys:String x:Key="LOCCSM_SessionProtectionHelp">Verfolgt im Spiel verwendete Controller, bestätigt Trennungen nach einer einstellbaren Wartezeit und kann ein externes Overlay anzeigen oder die konfigurierte sichere Pause ausführen.</sys:String>
+    <sys:String x:Key="LOCCSM_SessionProtectionTitle">Trennungsschutz</sys:String>
+    <sys:String x:Key="LOCCSM_SessionProtectionHelp">Wenn sich der Controller, den du verwendest, während eines Spiels trennt, kann Controller Manager nach einer kurzen Wartezeit ein Overlay anzeigen oder pausieren. Es verfolgt aktive Controller; spielen mehrere Personen an diesem PC, ist jeder aktive Controller abgedeckt. Pro Spiel änderbar über das Kontextmenü.</sys:String>
     <sys:String x:Key="LOCCSM_EnableSessionTracking">Aktive Controller während des Spiels verfolgen</sys:String>
     <sys:String x:Key="LOCCSM_EnableSessionTrackingHelp">Erfasst, welche Controller aktiv sind, während ein Spiel läuft.</sys:String>
     <sys:String x:Key="LOCCSM_DisconnectGracePeriod">Trennungstoleranz</sys:String>
@@ -167,7 +167,9 @@
     <sys:String x:Key="LOCCSM_MenuSettings">Einstellungen</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlay">Nach bestätigter Controller-Trennung ein Overlay anzeigen</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlayHelp">Das externe Overlay ist informativ und schließt automatisch, wenn der Vorfall behoben oder das Spiel beendet wird.</sys:String>
-    <sys:String x:Key="LOCCSM_ProtectAllActiveControllers">Lokalen Mehrspielerschutz standardmäßig verwenden</sys:String>
+    <sys:String x:Key="LOCCSM_DisconnectOverlayAppearanceHint">Aktiviere oder deaktiviere das Trennungs-Overlay und passe sein Aussehen unter</sys:String>
+    <sys:String x:Key="LOCCSM_DisconnectOverlayAppearanceHintTrail"> an.</sys:String>
+<sys:String x:Key="LOCCSM_ProtectAllActiveControllers">Lokalen Mehrspielerschutz standardmäßig verwenden</sys:String>
     <sys:String x:Key="LOCCSM_ProtectAllActiveControllersHelp">Nur aktivieren, wenn mehrere lokale Spieler getrennte Controller verwenden. Automatisch wird für Einzelspieler und Online-Mehrspieler empfohlen.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyLocalMultiplayer">Lokaler Mehrspielermodus. Alle aktiven Controller schützen</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">Temporarily stop the game when a controller disconnects</sys:String>

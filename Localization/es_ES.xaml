@@ -144,8 +144,8 @@
     <sys:String x:Key="LOCCSM_VibrationUnavailable">Este mando no ha aceptado la orden de vibración con su modo de conexión o controlador actual.</sys:String>
     <sys:String x:Key="LOCCSM_SessionStatus">Suspender al desconectar</sys:String>
     <sys:String x:Key="LOCCSM_ActiveSessionControllers">Mandos en suspensión</sys:String>
-    <sys:String x:Key="LOCCSM_SessionProtectionTitle">Base de protección ante desconexiones</sys:String>
-    <sys:String x:Key="LOCCSM_SessionProtectionHelp">Registra los mandos usados durante una partida, confirma su desconexión tras una espera configurable y puede mostrar un overlay externo o realizar la acción de pausa segura configurada.</sys:String>
+    <sys:String x:Key="LOCCSM_SessionProtectionTitle">Protección ante desconexiones</sys:String>
+    <sys:String x:Key="LOCCSM_SessionProtectionHelp">Si se desconecta el mando que estás usando durante una partida, Controller Manager puede mostrar un overlay o pausar tras una breve espera. Sigue qué mandos están activos; si hay varios jugadores en este PC, cubre cada uno. Puedes cambiarlo por juego desde el menú contextual.</sys:String>
     <sys:String x:Key="LOCCSM_EnableSessionTracking">Seguir los mandos activos durante la partida</sys:String>
     <sys:String x:Key="LOCCSM_EnableSessionTrackingHelp">Registra qué mandos están activos mientras corre un juego.</sys:String>
     <sys:String x:Key="LOCCSM_DisconnectGracePeriod">Margen de desconexión</sys:String>
@@ -167,6 +167,8 @@
     <sys:String x:Key="LOCCSM_MenuSettings">Configuración</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlay">Mostrar un overlay tras confirmar la desconexión de un mando</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlayHelp">El overlay externo es informativo y se cierra automáticamente al resolver la incidencia o terminar el juego.</sys:String>
+    <sys:String x:Key="LOCCSM_DisconnectOverlayAppearanceHint">Activa o desactiva el overlay de desconexión y cambia su aspecto en</sys:String>
+    <sys:String x:Key="LOCCSM_DisconnectOverlayAppearanceHintTrail">.</sys:String>
     <sys:String x:Key="LOCCSM_ProtectAllActiveControllers">Usar protección de multijugador local por defecto</sys:String>
     <sys:String x:Key="LOCCSM_ProtectAllActiveControllersHelp">Actívala solo cuando varios jugadores locales usen mandos distintos. El modo automático es el recomendado para un jugador y multijugador en línea.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyLocalMultiplayer">Varios jugadores en el mismo equipo. Proteger el mando de cada jugador</sys:String>
@@ -220,7 +222,7 @@
     <sys:String x:Key="LOCCSM_GamePolicyForcePauseOffline">Detener temporalmente el juego si no hay actividad de red. Mostrar solo el aviso si la hay</sys:String>
     <sys:String x:Key="LOCCSM_TabSession">En partida</sys:String>
     <sys:String x:Key="LOCCSM_TabAppearance">Apariencia</sys:String>
-    <sys:String x:Key="LOCCSM_AdaptiveProtectionHelp">Protege el mando que estás usando. Si hay varios jugadores en el mismo PC, protege cada uno. Puedes cambiarlo por juego desde el menú contextual.</sys:String>
+    <sys:String x:Key="LOCCSM_AdaptiveProtectionHelp">El modo automático empieza en un jugador y solo pasa a multijugador local tras entradas alternadas y sostenidas de varios mandos. Probar un mando y cambiar a otro no activa ese modo. Si hace falta, cámbialo por juego desde el menú contextual.</sys:String>
     <sys:String x:Key="LOCCSM_PauseModesHelp">Elige qué hacer si se desconecta un mando. Cada juego puede tener su propio ajuste.</sys:String>
     <sys:String x:Key="LOCCSM_NotificationWidth">Ancho (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationScale">Tamaño (%)</sys:String>

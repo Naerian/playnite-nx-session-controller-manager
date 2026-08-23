@@ -144,8 +144,8 @@
     <sys:String x:Key="LOCCSM_VibrationUnavailable">Cette manette n'a pas accepté la commande de vibration avec son mode de connexion ou son pilote actuel.</sys:String>
     <sys:String x:Key="LOCCSM_SessionStatus">Suspend on disconnect</sys:String>
     <sys:String x:Key="LOCCSM_ActiveSessionControllers">Suspended controllers</sys:String>
-    <sys:String x:Key="LOCCSM_SessionProtectionTitle">Base de protection contre les déconnexions</sys:String>
-    <sys:String x:Key="LOCCSM_SessionProtectionHelp">Suit les manettes utilisées, confirme leur déconnexion après un délai configurable et peut afficher un overlay externe ou effectuer l’action de pause sécurisée configurée.</sys:String>
+    <sys:String x:Key="LOCCSM_SessionProtectionTitle">Protection contre les déconnexions</sys:String>
+    <sys:String x:Key="LOCCSM_SessionProtectionHelp">Si la manette que vous utilisez se déconnecte pendant une partie, Controller Manager peut afficher un overlay ou mettre en pause après un court délai. Il suit les manettes actives ; si plusieurs personnes jouent sur ce PC, chacune est couverte. Modifiable par jeu via le menu contextuel.</sys:String>
     <sys:String x:Key="LOCCSM_EnableSessionTracking">Suivre les manettes actives pendant la partie</sys:String>
     <sys:String x:Key="LOCCSM_EnableSessionTrackingHelp">Suit les manettes actives pendant qu’une partie tourne.</sys:String>
     <sys:String x:Key="LOCCSM_DisconnectGracePeriod">Délai de déconnexion</sys:String>
@@ -167,7 +167,9 @@
     <sys:String x:Key="LOCCSM_MenuSettings">Paramètres</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlay">Afficher un overlay après la déconnexion confirmée d'une manette</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlayHelp">L'overlay externe est informatif et se ferme automatiquement lorsque l'incident est résolu ou que le jeu se termine.</sys:String>
-    <sys:String x:Key="LOCCSM_ProtectAllActiveControllers">Utiliser la protection multijoueur local par défaut</sys:String>
+    <sys:String x:Key="LOCCSM_DisconnectOverlayAppearanceHint">Activez ou désactivez l'overlay de déconnexion et modifiez son apparence sous</sys:String>
+    <sys:String x:Key="LOCCSM_DisconnectOverlayAppearanceHintTrail">.</sys:String>
+<sys:String x:Key="LOCCSM_ProtectAllActiveControllers">Utiliser la protection multijoueur local par défaut</sys:String>
     <sys:String x:Key="LOCCSM_ProtectAllActiveControllersHelp">Activez-la uniquement si plusieurs joueurs locaux utilisent des manettes distinctes. Le mode automatique est recommandé en solo et multijoueur en ligne.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyLocalMultiplayer">Multijoueur local. Protéger toutes les manettes actives</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">Essayer de mettre le jeu en pause après une déconnexion confirmée</sys:String>

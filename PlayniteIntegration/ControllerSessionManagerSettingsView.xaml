@@ -215,6 +215,39 @@
             <Setter Property="SnapsToDevicePixels" Value="True" />
             <Setter Property="TextElement.Foreground" Value="{DynamicResource TextBrush}" />
         </Style>
+        <Style x:Key="InfoCallout" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource Narian.BadgeBg}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Narian.Border}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0,16,0,0" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Setter Property="ClipToBounds" Value="True" />
+        </Style>
+        <Style x:Key="InfoCalloutAccentBar" TargetType="Border">
+            <Setter Property="Width" Value="3" />
+            <Setter Property="Background" Value="{DynamicResource Narian.Accent}" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+        </Style>
+        <Style x:Key="InfoCalloutTitle" TargetType="TextBlock" BasedOn="{StaticResource BodyText}">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Margin" Value="0,0,0,4" />
+        </Style>
+        <Style x:Key="InfoCalloutBody" TargetType="TextBlock" BasedOn="{StaticResource HintText}">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="LineHeight" Value="18" />
+        </Style>
+        <Style x:Key="InfoCalloutGlyph" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets" />
+            <Setter Property="Foreground" Value="{DynamicResource Narian.Accent}" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="Width" Value="20" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="Margin" Value="0,1,10,0" />
+        </Style>
         <Style x:Key="SummaryCard" TargetType="Border">
             <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
             <Setter Property="BorderBrush" Value="{DynamicResource Narian.Border}" />
@@ -1042,22 +1075,42 @@
                                     <Border Style="{StaticResource PageHeader}">
                                         <TextBlock Text="{DynamicResource LOCCSM_SessionProtectionTitle}" Style="{StaticResource SectionHeaderText}" />
                                     </Border>
-                                    <TextBlock Text="{DynamicResource LOCCSM_AdaptiveProtectionHelp}" Style="{StaticResource SectionSubtitleText}" />
+                                    <TextBlock Text="{DynamicResource LOCCSM_SessionProtectionHelp}" Style="{StaticResource SectionSubtitleText}" />
                                 </StackPanel>
                                 <StackPanel Style="{StaticResource FieldGroup}">
                                 <CheckBox Content="{DynamicResource LOCCSM_EnableSessionTracking}"
                                           IsChecked="{Binding EnableSessionTracking}" />
                                 <TextBlock Text="{DynamicResource LOCCSM_EnableSessionTrackingHelp}" Style="{StaticResource ControlHintText}" />
                                 <StackPanel IsEnabled="{Binding EnableSessionTracking}">
-                                    <CheckBox Content="{DynamicResource LOCCSM_ShowDisconnectOverlay}" IsChecked="{Binding ShowDisconnectOverlay}" />
-                                    <TextBlock Text="{DynamicResource LOCCSM_ShowDisconnectOverlayHelp}" Style="{StaticResource ControlHintText}" />
                                     <TextBlock Text="{DynamicResource LOCCSM_DisconnectGracePeriod}" Style="{StaticResource SettingsToggleTitle}" />
                                     <TextBlock Text="{DynamicResource LOCCSM_DisconnectGracePeriodHelp}" Style="{StaticResource FieldHintText}" />
                                     <DockPanel LastChildFill="False">
                                         <TextBox Width="82" Text="{Binding DisconnectGracePeriodMilliseconds, UpdateSourceTrigger=PropertyChanged}" />
                                         <TextBlock Text="ms" VerticalAlignment="Center" Margin="8,0,0,0" />
                                     </DockPanel>
-                                    <TextBlock Text="{DynamicResource LOCCSM_GameOverridesHelp}" Style="{StaticResource HintText}" Margin="0,16,0,0" />
+                                    <Border Style="{StaticResource InfoCallout}">
+                                        <DockPanel LastChildFill="True">
+                                            <Border DockPanel.Dock="Left" Style="{StaticResource InfoCalloutAccentBar}" />
+                                            <DockPanel Margin="12,10,12,10" LastChildFill="True">
+                                                <TextBlock DockPanel.Dock="Left"
+                                                           Style="{StaticResource InfoCalloutGlyph}"
+                                                           Text="&#xE946;" />
+                                                <StackPanel>
+                                                    <TextBlock Text="{DynamicResource LOCCSM_OverlayAppearanceTitle}"
+                                                               Style="{StaticResource InfoCalloutTitle}" />
+                                                    <TextBlock Style="{StaticResource InfoCalloutBody}">
+                                                        <Run Text="{DynamicResource LOCCSM_DisconnectOverlayAppearanceHint}" />
+                                                        <Run Text=" " />
+                                                        <Run Text="{DynamicResource LOCCSM_TabAppearance}" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}" />
+                                                        <Run Text=" → " FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}" />
+                                                        <Run Text="{DynamicResource LOCCSM_OverlayAppearanceTitle}" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}" />
+                                                        <Run Text="{DynamicResource LOCCSM_DisconnectOverlayAppearanceHintTrail}" />
+                                                    </TextBlock>
+                                                </StackPanel>
+                                            </DockPanel>
+                                        </DockPanel>
+                                    </Border>
+                                    <TextBlock Text="{DynamicResource LOCCSM_GameOverridesHelp}" Style="{StaticResource HintText}" Margin="0,8,0,0" />
                                 </StackPanel>
                                 </StackPanel>
                             </StackPanel>
@@ -1293,7 +1346,10 @@
                                 </Border>
                                 <TextBlock Text="{DynamicResource LOCCSM_OverlayAppearanceHelp}" Style="{StaticResource SectionSubtitleText}" />
                             </StackPanel>
-                            <CheckBox Grid.Row="1" Content="{DynamicResource LOCCSM_EnableDisconnectOverlay}" IsChecked="{Binding ShowDisconnectOverlay}" Margin="0,0,0,16" />
+                            <StackPanel Grid.Row="1" Margin="0,0,0,16">
+                                <CheckBox Content="{DynamicResource LOCCSM_EnableDisconnectOverlay}" IsChecked="{Binding ShowDisconnectOverlay}" />
+                                <TextBlock Text="{DynamicResource LOCCSM_ShowDisconnectOverlayHelp}" Style="{StaticResource ControlHintText}" />
+                            </StackPanel>
                             <Grid Grid.Row="2" IsEnabled="{Binding ShowDisconnectOverlay}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="3*" />

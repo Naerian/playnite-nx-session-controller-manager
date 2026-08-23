@@ -144,8 +144,8 @@
     <sys:String x:Key="LOCCSM_VibrationUnavailable">現在の接続モードまたはドライバーでは、このコントローラーは振動コマンドを受け付けませんでした。</sys:String>
     <sys:String x:Key="LOCCSM_SessionStatus">Suspend on disconnect</sys:String>
     <sys:String x:Key="LOCCSM_ActiveSessionControllers">Suspended controllers</sys:String>
-    <sys:String x:Key="LOCCSM_SessionProtectionTitle">切断保護の基盤</sys:String>
-    <sys:String x:Key="LOCCSM_SessionProtectionHelp">ゲーム中に使用したコントローラーを追跡し、設定した待機時間後に切断を確定して、外部オーバーレイの表示や設定済みの安全な一時停止操作を行えます。</sys:String>
+    <sys:String x:Key="LOCCSM_SessionProtectionTitle">切断保護</sys:String>
+    <sys:String x:Key="LOCCSM_SessionProtectionHelp">プレイ中に使用中のコントローラーが切断されると、Controller Manager は短い待機の後にオーバーレイ表示や一時停止ができます。使用中のコントローラーを追跡し、この PC で複数人が遊ぶ場合は各コントローラーが対象になります。ゲームのコンテキストメニューから変更できます。</sys:String>
     <sys:String x:Key="LOCCSM_EnableSessionTracking">プレイ中のアクティブコントローラーを追跡</sys:String>
     <sys:String x:Key="LOCCSM_EnableSessionTrackingHelp">ゲームの実行中に、どのコントローラーが使われているかを追跡します。</sys:String>
     <sys:String x:Key="LOCCSM_DisconnectGracePeriod">切断猶予時間</sys:String>
@@ -167,7 +167,9 @@
     <sys:String x:Key="LOCCSM_MenuSettings">設定</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlay">コントローラーの切断確認後にオーバーレイを表示</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlayHelp">外部オーバーレイは情報表示専用で、問題の解決時またはゲーム終了時に自動的に閉じます。</sys:String>
-    <sys:String x:Key="LOCCSM_ProtectAllActiveControllers">ローカルマルチプレイ保護を既定で使用</sys:String>
+    <sys:String x:Key="LOCCSM_DisconnectOverlayAppearanceHint">切断オーバーレイのオン/オフと見た目の変更は、</sys:String>
+    <sys:String x:Key="LOCCSM_DisconnectOverlayAppearanceHintTrail">で行います。</sys:String>
+<sys:String x:Key="LOCCSM_ProtectAllActiveControllers">ローカルマルチプレイ保護を既定で使用</sys:String>
     <sys:String x:Key="LOCCSM_ProtectAllActiveControllersHelp">複数のローカルプレイヤーが別々のコントローラーを使う場合のみ有効にしてください。シングルプレイとオンラインマルチプレイには自動モードを推奨します。</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyLocalMultiplayer">ローカルマルチプレイ. すべての使用中コントローラーを保護</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">Temporarily stop the game when a controller disconnects</sys:String>

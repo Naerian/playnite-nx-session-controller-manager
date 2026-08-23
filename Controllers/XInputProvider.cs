@@ -471,10 +471,13 @@ namespace ControllerSessionManager.Controllers
             XInputBatteryInformation battery, bool wired, bool wireless)
         {
             if (metadata != null &&
-                string.Equals(metadata.ConnectionType, "Bluetooth",
-                    StringComparison.OrdinalIgnoreCase) &&
                 !string.IsNullOrWhiteSpace(metadata.BatteryLevel) &&
-                metadata.BatteryLevel != "Unknown" && metadata.BatteryLevel != "Unavailable")
+                metadata.BatteryLevel != "Unknown" && metadata.BatteryLevel != "Unavailable" &&
+                (string.Equals(metadata.ConnectionType, "Bluetooth",
+                    StringComparison.OrdinalIgnoreCase) ||
+                 string.Equals(metadata.BatteryProviderId, "Windows.BluetoothPnP",
+                    StringComparison.OrdinalIgnoreCase) ||
+                 WindowsBluetoothBatteryProvider.IsBluetoothPath(metadata.DevicePath)))
             {
                 return metadata.BatteryLevel;
             }

@@ -144,8 +144,8 @@
     <sys:String x:Key="LOCCSM_VibrationUnavailable">현재 연결 모드 또는 드라이버에서 이 컨트롤러가 진동 명령을 수락하지 않았습니다.</sys:String>
     <sys:String x:Key="LOCCSM_SessionStatus">Suspend on disconnect</sys:String>
     <sys:String x:Key="LOCCSM_ActiveSessionControllers">Suspended controllers</sys:String>
-    <sys:String x:Key="LOCCSM_SessionProtectionTitle">연결 끊김 보호 기반</sys:String>
-    <sys:String x:Key="LOCCSM_SessionProtectionHelp">게임 중 사용한 컨트롤러를 추적하고 설정된 대기 시간 후 연결 끊김을 확인하여 외부 오버레이를 표시하거나 구성된 안전한 일시 정지 작업을 수행할 수 있습니다.</sys:String>
+    <sys:String x:Key="LOCCSM_SessionProtectionTitle">연결 끊김 보호</sys:String>
+    <sys:String x:Key="LOCCSM_SessionProtectionHelp">게임 중 사용 중인 컨트롤러 연결이 끊기면 Controller Manager가 짧은 대기 후 오버레이를 표시하거나 일시 정지할 수 있습니다. 활성 컨트롤러를 추적하며, 이 PC에서 여러 명이 플레이하면 각 활성 컨트롤러가 포함됩니다. 게임 컨텍스트 메뉴에서 변경할 수 있습니다.</sys:String>
     <sys:String x:Key="LOCCSM_EnableSessionTracking">플레이 중 활성 컨트롤러 추적</sys:String>
     <sys:String x:Key="LOCCSM_EnableSessionTrackingHelp">게임이 실행되는 동안 어떤 컨트롤러가 활성인지 추적합니다.</sys:String>
     <sys:String x:Key="LOCCSM_DisconnectGracePeriod">연결 끊김 유예 시간</sys:String>
@@ -167,7 +167,9 @@
     <sys:String x:Key="LOCCSM_MenuSettings">설정</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlay">컨트롤러 연결 끊김 확인 후 오버레이 표시</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlayHelp">외부 오버레이는 정보용이며 문제가 해결되거나 게임이 종료되면 자동으로 닫힙니다.</sys:String>
-    <sys:String x:Key="LOCCSM_ProtectAllActiveControllers">기본적으로 로컬 멀티플레이 보호 사용</sys:String>
+    <sys:String x:Key="LOCCSM_DisconnectOverlayAppearanceHint">연결 끊김 오버레이 켜기/끄기와 모양 변경은</sys:String>
+    <sys:String x:Key="LOCCSM_DisconnectOverlayAppearanceHintTrail">에서 할 수 있습니다.</sys:String>
+<sys:String x:Key="LOCCSM_ProtectAllActiveControllers">기본적으로 로컬 멀티플레이 보호 사용</sys:String>
     <sys:String x:Key="LOCCSM_ProtectAllActiveControllersHelp">여러 로컬 플레이어가 별도 컨트롤러를 사용할 때만 활성화하세요. 싱글 플레이와 온라인 멀티플레이에는 자동 모드를 권장합니다.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyLocalMultiplayer">로컬 멀티플레이. 모든 활성 컨트롤러 보호</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">Temporarily stop the game when a controller disconnects</sys:String>

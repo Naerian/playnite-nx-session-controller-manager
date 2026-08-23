@@ -144,8 +144,8 @@
     <sys:String x:Key="LOCCSM_VibrationUnavailable">此控制器在当前连接模式或驱动下未接受振动命令。</sys:String>
     <sys:String x:Key="LOCCSM_SessionStatus">Suspend on disconnect</sys:String>
     <sys:String x:Key="LOCCSM_ActiveSessionControllers">Suspended controllers</sys:String>
-    <sys:String x:Key="LOCCSM_SessionProtectionTitle">断开保护基础</sys:String>
-    <sys:String x:Key="LOCCSM_SessionProtectionHelp">跟踪游戏中使用的控制器，在设定等待时间后确认断开，并可显示外部覆盖层或执行已配置的安全暂停操作。</sys:String>
+    <sys:String x:Key="LOCCSM_SessionProtectionTitle">断线保护</sys:String>
+    <sys:String x:Key="LOCCSM_SessionProtectionHelp">游戏过程中若正在使用的手柄断开，Controller Manager 可在短暂等待后显示叠加层或暂停。它会跟踪处于活动状态的手柄；若多人在此电脑上游玩，每个活动手柄都会被覆盖。可在游戏的上下文菜单中按游戏更改。</sys:String>
     <sys:String x:Key="LOCCSM_EnableSessionTracking">在游戏过程中跟踪活动控制器</sys:String>
     <sys:String x:Key="LOCCSM_EnableSessionTrackingHelp">在游戏运行时跟踪哪些手柄处于活动状态。</sys:String>
     <sys:String x:Key="LOCCSM_DisconnectGracePeriod">断开宽限期</sys:String>
@@ -167,7 +167,9 @@
     <sys:String x:Key="LOCCSM_MenuSettings">设置</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlay">确认控制器断开连接后显示覆盖层</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlayHelp">外部覆盖层仅用于提示，并会在事件解决或游戏结束时自动关闭。</sys:String>
-    <sys:String x:Key="LOCCSM_ProtectAllActiveControllers">默认使用本地多人保护</sys:String>
+    <sys:String x:Key="LOCCSM_DisconnectOverlayAppearanceHint">可在</sys:String>
+    <sys:String x:Key="LOCCSM_DisconnectOverlayAppearanceHintTrail">中开启或关闭断开覆盖层并更改其外观。</sys:String>
+<sys:String x:Key="LOCCSM_ProtectAllActiveControllers">默认使用本地多人保护</sys:String>
     <sys:String x:Key="LOCCSM_ProtectAllActiveControllersHelp">仅当多个本地玩家使用独立控制器时启用。单人游戏和在线多人游戏建议使用自动模式。</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyLocalMultiplayer">本地多人游戏. 保护所有活动控制器</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">Temporarily stop the game when a controller disconnects</sys:String>

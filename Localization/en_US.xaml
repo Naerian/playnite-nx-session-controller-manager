@@ -146,8 +146,8 @@
     <sys:String x:Key="LOCCSM_VibrationUnavailable">This controller did not accept the vibration command in its current connection mode or driver.</sys:String>
     <sys:String x:Key="LOCCSM_SessionStatus">Suspend on disconnect</sys:String>
     <sys:String x:Key="LOCCSM_ActiveSessionControllers">Suspended controllers</sys:String>
-    <sys:String x:Key="LOCCSM_SessionProtectionTitle">Disconnect protection foundation</sys:String>
-    <sys:String x:Key="LOCCSM_SessionProtectionHelp">Tracks controllers used during a game, confirms disconnections after a configurable delay and can show an external overlay or perform the configured safe pause action.</sys:String>
+    <sys:String x:Key="LOCCSM_SessionProtectionTitle">Disconnect protection</sys:String>
+    <sys:String x:Key="LOCCSM_SessionProtectionHelp">When a controller you are using disconnects during a game, Controller Manager can show an overlay or pause after a short grace period. It tracks which controllers are active; if several people play on this PC, each active controller is covered. You can change this per game from the context menu.</sys:String>
     <sys:String x:Key="LOCCSM_EnableSessionTracking">Track active controllers while you play</sys:String>
     <sys:String x:Key="LOCCSM_EnableSessionTrackingHelp">Tracks which controllers are active while a game is running.</sys:String>
     <sys:String x:Key="LOCCSM_DisconnectGracePeriod">Disconnect grace period</sys:String>
@@ -169,6 +169,8 @@
     <sys:String x:Key="LOCCSM_MenuSettings">Settings</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlay">Show an overlay after a confirmed controller disconnection</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlayHelp">The external overlay is informational and closes automatically when the incident is resolved or the game ends.</sys:String>
+    <sys:String x:Key="LOCCSM_DisconnectOverlayAppearanceHint">Turn the disconnect overlay on or off, and change how it looks, under</sys:String>
+    <sys:String x:Key="LOCCSM_DisconnectOverlayAppearanceHintTrail">.</sys:String>
     <sys:String x:Key="LOCCSM_ProtectAllActiveControllers">Use local multiplayer protection by default</sys:String>
     <sys:String x:Key="LOCCSM_ProtectAllActiveControllersHelp">Enable only when several local players use separate controllers. Automatic mode is recommended for single-player and online multiplayer games.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyLocalMultiplayer">Several players on this PC. Protect each player's controller</sys:String>
@@ -222,7 +224,7 @@
     <sys:String x:Key="LOCCSM_GamePolicyForcePauseOffline">Temporarily stop the game when there is no network activity. Show only the warning when there is</sys:String>
     <sys:String x:Key="LOCCSM_TabSession">In-game</sys:String>
     <sys:String x:Key="LOCCSM_TabAppearance">Appearance</sys:String>
-    <sys:String x:Key="LOCCSM_AdaptiveProtectionHelp">Protects the controller you are using. If several people play on this PC, each controller is protected. You can change this per game from the context menu.</sys:String>
+    <sys:String x:Key="LOCCSM_AdaptiveProtectionHelp">Automatic mode starts as single-player and only switches to local multiplayer after sustained alternating input from several controllers. Trying one pad and switching to another does not enable that mode. Override per game from the context menu when needed.</sys:String>
     <sys:String x:Key="LOCCSM_PauseModesHelp">Choose what happens if a controller disconnects. Each game can use its own setting.</sys:String>
     <sys:String x:Key="LOCCSM_NotificationWidth">Width (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationScale">Size (%)</sys:String>

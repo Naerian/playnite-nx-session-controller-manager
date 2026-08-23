@@ -144,8 +144,8 @@
     <sys:String x:Key="LOCCSM_VibrationUnavailable">Bu kontrolcü mevcut bağlantı modu veya sürücüsüyle titreşim komutunu kabul etmedi.</sys:String>
     <sys:String x:Key="LOCCSM_SessionStatus">Suspend on disconnect</sys:String>
     <sys:String x:Key="LOCCSM_ActiveSessionControllers">Suspended controllers</sys:String>
-    <sys:String x:Key="LOCCSM_SessionProtectionTitle">Bağlantı kesilme koruması temeli</sys:String>
-    <sys:String x:Key="LOCCSM_SessionProtectionHelp">Oyun sırasında kullanılan kontrolcüleri izler, ayarlanan bekleme süresinden sonra bağlantı kesilmesini doğrular ve harici kaplama gösterebilir veya yapılandırılmış güvenli duraklatma işlemini uygulayabilir.</sys:String>
+    <sys:String x:Key="LOCCSM_SessionProtectionTitle">Bağlantı kesilme koruması</sys:String>
+    <sys:String x:Key="LOCCSM_SessionProtectionHelp">Oyun sırasında kullandığınız denetleyicinin bağlantısı kesilirse Controller Manager kısa bir beklemeden sonra bir kaplama gösterebilir veya oyunu duraklatabilir. Etkin denetleyicileri izler; bu bilgisayarda birden fazla kişi oynuyorsa her etkin denetleyici kapsanır. Oyun bağlam menüsünden değiştirebilirsiniz.</sys:String>
     <sys:String x:Key="LOCCSM_EnableSessionTracking">Oyun sırasında etkin kontrolcüleri izle</sys:String>
     <sys:String x:Key="LOCCSM_EnableSessionTrackingHelp">Bir oyun çalışırken hangi kontrolcülerin etkin olduğunu izler.</sys:String>
     <sys:String x:Key="LOCCSM_DisconnectGracePeriod">Bağlantı kesilme bekleme süresi</sys:String>
@@ -167,7 +167,9 @@
     <sys:String x:Key="LOCCSM_MenuSettings">Ayarlar</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlay">Kontrolcü bağlantısı onaylı olarak kesildiğinde kaplama göster</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlayHelp">Harici kaplama bilgilendirme amaçlıdır ve olay çözüldüğünde veya oyun bittiğinde otomatik kapanır.</sys:String>
-    <sys:String x:Key="LOCCSM_ProtectAllActiveControllers">Varsayılan olarak yerel çok oyunculu korumayı kullan</sys:String>
+    <sys:String x:Key="LOCCSM_DisconnectOverlayAppearanceHint">Bağlantı kesilme kaplamasını Açık/Kapalı yapmak ve görünümünü değiştirmek için</sys:String>
+    <sys:String x:Key="LOCCSM_DisconnectOverlayAppearanceHintTrail"> bölümüne gidin.</sys:String>
+<sys:String x:Key="LOCCSM_ProtectAllActiveControllers">Varsayılan olarak yerel çok oyunculu korumayı kullan</sys:String>
     <sys:String x:Key="LOCCSM_ProtectAllActiveControllersHelp">Yalnızca birden fazla yerel oyuncu ayrı kontrolcüler kullanıyorsa etkinleştirin. Tek oyunculu ve çevrimiçi çok oyunculu için otomatik mod önerilir.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyLocalMultiplayer">Yerel çok oyunculu. Tüm etkin kontrolcüleri koru</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">Temporarily stop the game when a controller disconnects</sys:String>

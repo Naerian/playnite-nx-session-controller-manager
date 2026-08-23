@@ -144,8 +144,8 @@
     <sys:String x:Key="LOCCSM_VibrationUnavailable">Контроллер не принял команду вибрации при текущем режиме подключения или драйвере.</sys:String>
     <sys:String x:Key="LOCCSM_SessionStatus">Suspend on disconnect</sys:String>
     <sys:String x:Key="LOCCSM_ActiveSessionControllers">Suspended controllers</sys:String>
-    <sys:String x:Key="LOCCSM_SessionProtectionTitle">Основа защиты от отключений</sys:String>
-    <sys:String x:Key="LOCCSM_SessionProtectionHelp">Отслеживает контроллеры во время игры, подтверждает отключение после заданной задержки и может показать внешний оверлей или выполнить настроенное безопасное действие паузы.</sys:String>
+    <sys:String x:Key="LOCCSM_SessionProtectionTitle">Защита от отключений</sys:String>
+    <sys:String x:Key="LOCCSM_SessionProtectionHelp">Если геймпад, которым вы играете, отключится во время игры, Controller Manager может показать оверлей или поставить паузу после короткой задержки. Отслеживаются активные геймпады; если за этим ПК играют несколько человек, каждый активный геймпад учитывается. Можно изменить для игры через контекстное меню.</sys:String>
     <sys:String x:Key="LOCCSM_EnableSessionTracking">Отслеживать активные контроллеры во время игры</sys:String>
     <sys:String x:Key="LOCCSM_EnableSessionTrackingHelp">Отслеживает, какие контроллеры активны, пока запущена игра.</sys:String>
     <sys:String x:Key="LOCCSM_DisconnectGracePeriod">Задержка подтверждения отключения</sys:String>
@@ -167,7 +167,9 @@
     <sys:String x:Key="LOCCSM_MenuSettings">Настройки</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlay">Показывать оверлей после подтверждённого отключения контроллера</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlayHelp">Внешний оверлей носит информационный характер и автоматически закрывается после устранения инцидента или завершения игры.</sys:String>
-    <sys:String x:Key="LOCCSM_ProtectAllActiveControllers">По умолчанию использовать защиту локальной игры</sys:String>
+    <sys:String x:Key="LOCCSM_DisconnectOverlayAppearanceHint">Включите или отключите оверлей отключения и измените его вид в разделе</sys:String>
+    <sys:String x:Key="LOCCSM_DisconnectOverlayAppearanceHintTrail">.</sys:String>
+<sys:String x:Key="LOCCSM_ProtectAllActiveControllers">По умолчанию использовать защиту локальной игры</sys:String>
     <sys:String x:Key="LOCCSM_ProtectAllActiveControllersHelp">Включайте только для нескольких локальных игроков с отдельными контроллерами. Автоматический режим рекомендуется для одного игрока и сетевой игры.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyLocalMultiplayer">Локальная игра. Защищать все активные контроллеры</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">Temporarily stop the game when a controller disconnects</sys:String>

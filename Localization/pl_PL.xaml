@@ -144,8 +144,8 @@
     <sys:String x:Key="LOCCSM_VibrationUnavailable">Ten kontroler nie przyjął polecenia wibracji w bieżącym trybie połączenia lub sterowniku.</sys:String>
     <sys:String x:Key="LOCCSM_SessionStatus">Suspend on disconnect</sys:String>
     <sys:String x:Key="LOCCSM_ActiveSessionControllers">Suspended controllers</sys:String>
-    <sys:String x:Key="LOCCSM_SessionProtectionTitle">Podstawa ochrony przed rozłączeniem</sys:String>
-    <sys:String x:Key="LOCCSM_SessionProtectionHelp">Śledzi kontrolery używane podczas gry, potwierdza rozłączenia po ustawionym czasie i może wyświetlić zewnętrzną nakładkę lub wykonać skonfigurowaną bezpieczną akcję pauzy.</sys:String>
+    <sys:String x:Key="LOCCSM_SessionProtectionTitle">Ochrona przed rozłączeniem</sys:String>
+    <sys:String x:Key="LOCCSM_SessionProtectionHelp">Gdy kontroler, którego używasz, rozłączy się podczas gry, Controller Manager może pokazać nakładkę lub wstrzymać grę po krótkim okresie oczekiwania. Śledzi aktywne kontrolery; jeśli kilka osób gra na tym PC, każdy aktywny kontroler jest objęty ochroną. Można to zmienić dla gry w menu kontekstowym.</sys:String>
     <sys:String x:Key="LOCCSM_EnableSessionTracking">Śledź aktywne kontrolery podczas gry</sys:String>
     <sys:String x:Key="LOCCSM_EnableSessionTrackingHelp">Śledzi, które kontrolery są aktywne, gdy gra jest uruchomiona.</sys:String>
     <sys:String x:Key="LOCCSM_DisconnectGracePeriod">Czas tolerancji rozłączenia</sys:String>
@@ -167,7 +167,9 @@
     <sys:String x:Key="LOCCSM_MenuSettings">Ustawienia</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlay">Pokaż nakładkę po potwierdzonym rozłączeniu kontrolera</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlayHelp">Zewnętrzna nakładka ma charakter informacyjny i zamyka się automatycznie po rozwiązaniu incydentu lub zakończeniu gry.</sys:String>
-    <sys:String x:Key="LOCCSM_ProtectAllActiveControllers">Domyślnie używaj ochrony lokalnego trybu wieloosobowego</sys:String>
+    <sys:String x:Key="LOCCSM_DisconnectOverlayAppearanceHint">Włącz lub wyłącz nakładkę rozłączenia i zmień jej wygląd w</sys:String>
+    <sys:String x:Key="LOCCSM_DisconnectOverlayAppearanceHintTrail">.</sys:String>
+<sys:String x:Key="LOCCSM_ProtectAllActiveControllers">Domyślnie używaj ochrony lokalnego trybu wieloosobowego</sys:String>
     <sys:String x:Key="LOCCSM_ProtectAllActiveControllersHelp">Włącz tylko wtedy, gdy kilku lokalnych graczy używa osobnych kontrolerów. Tryb automatyczny jest zalecany dla jednego gracza i trybu online.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyLocalMultiplayer">Lokalny tryb wieloosobowy. Chroń wszystkie aktywne kontrolery</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">Temporarily stop the game when a controller disconnects</sys:String>

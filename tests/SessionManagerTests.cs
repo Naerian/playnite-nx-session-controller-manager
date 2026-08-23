@@ -372,7 +372,7 @@ internal static class SessionManagerTests
         Equal("Bluetooth", ControllerDeviceIdentity.GetConnectionType(
             "Xbox Wireless Controller Bluetooth", 0x045E, 0x0B13,
             @"\\?\hid#vid_045e&pid_0b13&ig_00"),
-            "Xbox-licensed pads may still speak XInput over Bluetooth.");
+            "An XInput wrapper whose product name includes Bluetooth stays Bluetooth without brand PID rules.");
     }
 
     private static void EightBitDoXInputWrapperIsNotBluetooth()
@@ -412,6 +412,20 @@ internal static class SessionManagerTests
         };
         Equal(true, new WindowsBluetoothBatteryProvider().Supports(bluetooth),
             "A real Bluetooth HID path must remain eligible for Windows battery lookup.");
+        var mislabeledWireless = new ControllerMetadata
+        {
+            DisplayName = "8BitDo Ultimate 2 Wireless",
+            DevicePath =
+                @"\\?\hid#{00001812-0000-1000-8000-00805f9b34fb}_dev_vid&122dc8_pid&6013",
+            VendorId = 0x2DC8,
+            ProductId = 0x6013,
+            ConnectionType = "Wireless"
+        };
+        Equal(true, new WindowsBluetoothBatteryProvider().Supports(mislabeledWireless),
+            "A Bluetooth HID mislabelled Wireless from the product name must still read Windows battery.");
+        Equal("8BitDo Ultimate 2 Wireless",
+            ControllerDeviceIdentity.GetDisplayName(string.Empty, 0x2DC8, 0x6013),
+            "Ultimate 2 Bluetooth PID 6013 must map like 6012.");
     }
 
     private static void HidPathMetadataRestoresConnectionWithoutSdl()
@@ -594,8 +608,9 @@ internal static class SessionManagerTests
             "BTHENUM keys encode the Bluetooth PID as PID&.");
         var aliases = new List<ushort>(
             ControllerDeviceIdentity.GetBluetoothAliasProductIds(0x2DC8, 0x310A));
-        Equal(true, aliases.Contains(0x301B),
-            "Ultimate 2C XInput PID 310A shares a Bluetooth identity with DInput PID 301B.");
+        Equal(1, aliases.Count, "Bluetooth presence uses the exact product ID only.");
+        Equal((ushort)0x310A, aliases[0],
+            "No hardcoded sibling PID aliases — battery correlates via address/container instead.");
     }
 
     private static void EquivalentHidPathsAreDeduplicated()

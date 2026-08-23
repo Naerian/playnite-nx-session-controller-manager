@@ -61,7 +61,9 @@ namespace ControllerSessionManager.Tester.Services
                 return EightBitDoModel.Ultimate2CWireless;
             }
 
-            if (productId == 0x202F || productId == 0x310B || productId == 0x6012 || productId == 0x3011 || productId == 0x3012 || productId == 0x3013 || name.Contains("ultimate 2") || name.Contains("ultimate"))
+            if (productId == 0x202F || productId == 0x310B || productId == 0x6012 || productId == 0x6013 ||
+                productId == 0x3011 || productId == 0x3012 || productId == 0x3013 ||
+                name.Contains("ultimate 2") || name.Contains("ultimate"))
             {
                 return EightBitDoModel.Ultimate2Wireless;
             }

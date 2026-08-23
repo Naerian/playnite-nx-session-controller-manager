@@ -32,20 +32,30 @@ namespace ControllerSessionManager.Controllers
         public bool Supports(ControllerMetadata controller)
         {
             if (controller == null || IsXInputWrapperPath(controller.DevicePath) ||
-                string.Equals(controller.ConnectionType, "Wired", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(controller.ConnectionType, "Wireless",
-                    StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(controller.ConnectionType, "WirelessReceiver",
-                    StringComparison.OrdinalIgnoreCase))
+                string.Equals(controller.ConnectionType, "Wired", StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }
 
-            return string.Equals(controller.ConnectionType, "Bluetooth",
-                    StringComparison.OrdinalIgnoreCase) ||
-                IsBluetoothPath(controller.DevicePath) ||
+            var bluetoothEvidence = IsBluetoothPath(controller.DevicePath) ||
                 ControllerDeviceIdentity.HasBluetoothPresence(controller.VendorId,
-                    controller.ProductId);
+                    controller.ProductId) ||
+                string.Equals(controller.ConnectionType, "Bluetooth",
+                    StringComparison.OrdinalIgnoreCase);
+
+            // Dongle / receiver rows are often labelled Wireless. Skip them unless Windows
+            // already proves a Bluetooth path or BLE presence (e.g. product name "Wireless"
+            // on a real Bluetooth HID, which must still read BTHLE battery).
+            if (!bluetoothEvidence &&
+                (string.Equals(controller.ConnectionType, "Wireless",
+                    StringComparison.OrdinalIgnoreCase) ||
+                 string.Equals(controller.ConnectionType, "WirelessReceiver",
+                    StringComparison.OrdinalIgnoreCase)))
+            {
+                return false;
+            }
+
+            return bluetoothEvidence;
         }
 
         public bool TryGetBatteryLevel(ControllerMetadata controller, out string level)

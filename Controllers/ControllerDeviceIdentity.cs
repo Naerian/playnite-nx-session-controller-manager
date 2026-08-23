@@ -15,6 +15,7 @@ namespace ControllerSessionManager.Controllers
                         return "8BitDo Ultimate 3";
                     case 0x310B:
                     case 0x6012:
+                    case 0x6013:
                     case 0x3011:
                     case 0x3012:
                     case 0x3013:
@@ -231,15 +232,9 @@ namespace ControllerSessionManager.Controllers
 
             if (Contains(devicePath, "&ig_"))
             {
-                // XInput wrappers are almost always a cable or a 2.4 GHz dongle. Only Xbox
-                // licensed pads also speak XInput over Bluetooth; other brands keep a separate
-                // DInput/BLE HID path for that transport.
-                if (vendorId == 0x045E && productId != 0 &&
-                    HasBluetoothPresence(vendorId, productId))
-                {
-                    return "Bluetooth";
-                }
-
+                // XInput wrappers drop the real transport. Prefer an honest Wireless/Unknown
+                // result over inheriting Bluetooth from a sibling BLE node of the same brand
+                // (dongle + leftover BT pairing). Product/name hints remain last-resort only.
                 if (Contains(deviceName, "bluetooth"))
                 {
                     return "Bluetooth";
@@ -253,18 +248,20 @@ namespace ControllerSessionManager.Controllers
                 return "Unknown";
             }
 
-            if (vendorId == 0x054C && (productId == 0x05C4 || productId == 0x09CC ||
-                productId == 0x0CE6 || productId == 0x0DF2))
+            // Path lacked explicit USB/BT markers. Prefer live Windows PnP evidence over
+            // brand-specific PID tables or product-name guesses.
+            if (vendorId != 0 && productId != 0)
             {
-                return HidDiagnosticsService.HasUsbInterface(vendorId, productId) ? "Wired" : "Bluetooth";
-            }
+                if (HidDiagnosticsService.HasUsbInterface(vendorId, productId) &&
+                    !HasBluetoothPresence(vendorId, productId))
+                {
+                    return "Wired";
+                }
 
-            // Non-wrapper HID paths can still hide the transport. Query BTHENUM/BTHLE for
-            // this VID/PID (and known aliases) before falling back to the product name.
-            if (vendorId != 0 && productId != 0 &&
-                HasBluetoothPresence(vendorId, productId))
-            {
-                return "Bluetooth";
+                if (HasBluetoothPresence(vendorId, productId))
+                {
+                    return "Bluetooth";
+                }
             }
 
             if (Contains(deviceName, "bluetooth"))
@@ -282,33 +279,23 @@ namespace ControllerSessionManager.Controllers
 
         internal static bool HasBluetoothPresence(ushort vendorId, ushort productId)
         {
-            foreach (var alias in GetBluetoothAliasProductIds(vendorId, productId))
+            if (vendorId == 0 || productId == 0)
             {
-                if (HidDiagnosticsService.HasBluetoothInterface(vendorId, alias))
-                {
-                    return true;
-                }
+                return false;
             }
 
-            return false;
+            // Exact VID/PID only. Sibling BLE/HID PIDs are correlated later via Bluetooth
+            // address / container when reading battery — not by maintaining brand alias tables.
+            return HidDiagnosticsService.HasBluetoothInterface(vendorId, productId);
         }
 
+        /// <summary>
+        /// Yields the product ID itself. Kept for call sites that iterate "aliases"; behavior
+        /// is intentionally generic (no hardcoded sibling PID lists).
+        /// </summary>
         internal static IEnumerable<ushort> GetBluetoothAliasProductIds(ushort vendorId, ushort productId)
         {
             yield return productId;
-            if (vendorId != 0x2DC8)
-            {
-                yield break;
-            }
-
-            if (productId == 0x310A)
-            {
-                yield return 0x301B;
-            }
-            else if (productId == 0x301B)
-            {
-                yield return 0x310A;
-            }
         }
 
         public static bool ContainsWirelessHint(string deviceName)
