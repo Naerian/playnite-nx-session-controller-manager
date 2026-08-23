@@ -8,7 +8,7 @@ Packages:
       - Low-battery notifications for Fullscreen and Desktop, with latch and recover debounce so brief dips do not spam toasts.
       - Warning and low-battery badges on the controller connection icon when levels drop.
       - More reliable information when using a wireless receiver on certain devices.
-      - Theme API: compose controller icon and battery UI freely (PluginSettings + IconGeometryConverter), or drop in resizable ContentControls (ControllerIcon, ControllerBatteryDot, ControllerBatteryText, TopPanelIcon).
+      - "Theme API: compose controller icon and battery UI freely (PluginSettings + IconGeometryConverter), or drop in resizable ContentControls (ControllerIcon, ControllerBatteryDot, ControllerBatteryText, TopPanelIcon)."
       - Tester Desktop layout polish for high-DPI screens, clearer stick actions, and Guided test chip styling.
       - Expanded Tester and theme documentation in the wiki (Desktop workflow, guided checks, sticks/latency, Fullscreen blocks).
   - Version: 1.0.20
