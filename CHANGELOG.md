@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.21 — 2026-08-23
+- Low-battery notifications for Fullscreen and Desktop, with latch and recover debounce so brief dips do not spam toasts.
+- Warning and low-battery badges on the controller connection icon when levels drop.
+- More reliable information when using a wireless receiver on certain devices.
+- Theme API: compose controller icon and battery UI freely (PluginSettings + IconGeometryConverter), or drop in resizable ContentControls (ControllerIcon, ControllerBatteryDot, ControllerBatteryText, TopPanelIcon).
+- Tester Desktop layout polish for high-DPI screens, clearer stick actions, and Guided test chip styling.
+- Expanded Tester and theme documentation in the wiki (Desktop workflow, guided checks, sticks/latency, Fullscreen blocks).
+
 ## 1.0.20 — 2026-08-21
 - Added a Desktop setup wizard (first run + Advanced → Initial setup) with Narian chrome, step summary cards, and multi-monitor–aware centering on Playnite’s main window.
 - Optional Desktop setting: press Guide / PS / Home (~0.5 s hold then release) to open Playnite Fullscreen when no game is running; long holds (controller power-off) are ignored.

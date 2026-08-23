@@ -13,12 +13,21 @@ It supports Desktop and Fullscreen workflows, the built-in Tester, automatic con
 
 - [Installation & Quick Start](EN-Installation-and-Quick-Start)
 - [Instalación e inicio rápido](ES-Instalacion-e-Inicio-Rapido)
-- [Tester](EN-Tester)
-- [Tester](ES-Tester)
 - [Session Protection](EN-Session-Protection)
 - [Protección de sesiones](ES-Proteccion-de-Sesiones)
 - [Troubleshooting & FAQ](EN-Troubleshooting-and-FAQ)
 - [Solución de problemas y FAQ](ES-Solucion-de-Problemas-y-Preguntas-Frecuentes)
+
+## Tester
+
+- [Tester hub](EN-Tester) · [Hub del Tester](ES-Tester)
+- [Desktop tester](EN-Desktop-Tester) · [Tester de escritorio](ES-Tester-de-escritorio)
+- [Guided test](EN-Guided-Test) · [Prueba guiada](ES-Prueba-guiada)
+- [Fullscreen tester integration](EN-Fullscreen-Tester-Integration) · [Integración Tester Fullscreen](ES-Integracion-Tester-Fullscreen)
+
+## Themes
+
+- [Theme Integration](EN-Theme-Integration) · [Integración con temas](ES-Integracion-con-Temas)
 
 ## Links
 

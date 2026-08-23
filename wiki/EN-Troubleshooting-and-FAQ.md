@@ -44,6 +44,28 @@ Uninstall the standalone Gamepad Tester extension. Controller Manager now owns t
 
 Open **Settings > Tester** or a Fullscreen tester block so `ControllerSessionManager.TesterHost.exe` can start. SDL is loaded from Playnite's install folder, not inside the plugin process. If the host is missing from the extension folder, reinstall the `.pext`.
 
+## Buttons work in games but not in the Tester
+
+Games or remappers may use a raw HID or vendor API while the Tester uses SDL GameController. Check the mapping status in **Device info**, try another hardware mode, and include the raw name and VID/PID when reporting the problem.
+
+## The health score changes while moving a stick
+
+Current movement and session peaks are displayed, but health is based on stable resting drift. Release both sticks and allow the reading to settle. Reset diagnostics before a controlled test.
+
+## Rumble does not work in the Tester
+
+Confirm rumble is enabled under **Settings > Tester**. Support depends on the controller mode, driver, SDL mapping, and connection type. A device can provide input correctly without exposing rumble through the same API.
+
+## Latency values differ from another tester
+
+Controller Manager measures event timing observed inside Playnite through SDL. Browser WebHID tools, driver utilities, and hardware analyzers measure different layers. Compare modes within the same tool and environment.
+
+## Can it calibrate my controller?
+
+It measures the center and recommends a deadzone, but does not modify system or firmware calibration. Apply changes in the controller utility, Steam Input, driver, emulator, or game that owns the actual deadzone.
+
+More Tester detail: [Tester](EN-Tester).
+
 ## What should a useful bug report include?
 
 Export **Advanced > Support report** and include it with Playnite mode and theme, controller model, USB/Bluetooth/dongle mode, game, remapping tools, exact reproduction steps, and expected versus actual result. The report already includes the version, anonymized session state and recent incident timeline. Add a reviewed HID diagnostic only when detection or battery is involved.

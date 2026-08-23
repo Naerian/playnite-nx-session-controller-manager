@@ -35,4 +35,4 @@ If the older **Gamepad Tester** extension is still installed, uninstall it. Both
 
 Start with **Overlay only**. Enable a pause key only after confirming which key safely opens the game's pause menu. Force-pause is an advanced opt-in mode and should be tested per game.
 
-Next: [Controllers & Battery](EN-Controllers-and-Battery) or [Session Protection](EN-Session-Protection).
+Next: [Controllers & Battery](EN-Controllers-and-Battery), [Tester](EN-Tester) or [Session Protection](EN-Session-Protection).

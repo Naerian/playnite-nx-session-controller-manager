@@ -16,6 +16,12 @@ Use the attached host property for static or dynamically created views:
 <ContentControl gt:GamepadTesterThemeHost.Block="ButtonMap" />
 ```
 
+Namespace / assembly for the attached property:
+
+```xaml
+xmlns:gt="clr-namespace:ControllerSessionManager.Tester.Views.ThemeIntegration;assembly=ControllerSessionManager"
+```
+
 The plugin initializes marked hosts on `Loaded`. A theme helper can force another scan with the compatibility settings root (this command lived on `GamepadTester` in 1.1 and still does):
 
 ```xaml

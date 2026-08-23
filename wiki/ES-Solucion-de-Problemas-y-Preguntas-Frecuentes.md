@@ -44,6 +44,28 @@ Desinstala el complemento independiente Gamepad Tester. Controller Manager ya in
 
 Abre **Ajustes > Tester** o un bloque Fullscreen del tester para que arranque `ControllerSessionManager.TesterHost.exe`. SDL se carga desde la carpeta de Playnite, no dentro del proceso del complemento. Si el host no está en la carpeta de la extensión, reinstala el `.pext`.
 
+## Los botones funcionan en juegos, pero no en el Tester
+
+Un juego o remapeador puede usar HID sin procesar o una API propietaria mientras el Tester utiliza SDL GameController. Comprueba el mapeo en **Info. dispositivo**, prueba otro modo e incluye el nombre original y VID/PID al informar del problema.
+
+## La salud cambia al mover un stick
+
+El movimiento actual y los picos de sesión se muestran, pero la salud se basa en drift estable en reposo. Suelta ambos sticks y espera a que la lectura se estabilice. Reinicia los diagnósticos antes de una prueba controlada.
+
+## La vibración no funciona en el Tester
+
+Comprueba que esté activada en **Ajustes > Tester**. Depende del modo del mando, el controlador, el mapeo SDL y el tipo de conexión. Un dispositivo puede enviar inputs correctamente sin exponer vibración por la misma API.
+
+## La latencia es distinta a la de otro tester
+
+Controller Manager mide tiempos de eventos observados dentro de Playnite mediante SDL. Las herramientas WebHID, utilidades de controladores y analizadores de hardware miden capas diferentes. Compara modos dentro de la misma herramienta y entorno.
+
+## ¿Puede calibrar el mando?
+
+Mide el centro y recomienda una zona muerta, pero no modifica la calibración del sistema o firmware. Aplica los cambios en la utilidad del mando, Steam Input, el controlador, emulador o juego que gestione realmente la zona muerta.
+
+Más detalle del Tester: [Tester](ES-Tester).
+
 ## ¿Qué debe incluir una incidencia útil?
 
 Exporta **Avanzado > Informe de soporte** y adjúntalo junto con modo y tema de Playnite, modelo del mando, USB/Bluetooth/dongle, juego, herramientas de remapeo, pasos exactos y resultado esperado frente al real. El informe ya incluye versión, estado anónimo de la sesión y cronología reciente. Añade un diagnóstico HID revisado solo si el problema afecta a detección o batería.

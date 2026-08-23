@@ -35,4 +35,4 @@ Si el complemento antiguo **Gamepad Tester** sigue instalado, desinstálalo. Las
 
 Empieza con **Solo overlay**. Activa una tecla de pausa únicamente tras confirmar qué tecla abre de forma segura el menú del juego. La pausa forzada es una opción avanzada que debe probarse por juego.
 
-Siguiente: [Mandos y batería](ES-Mandos-y-Bateria) o [Protección de sesiones](ES-Proteccion-de-Sesiones).
+Siguiente: [Mandos y batería](ES-Mandos-y-Bateria), [Tester](ES-Tester) o [Protección de sesiones](ES-Proteccion-de-Sesiones).

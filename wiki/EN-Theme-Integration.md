@@ -108,11 +108,19 @@ One `x:Name` per element per view (WPF names must be unique). Size with `Width`/
 | `ControllerBatteryDot` | Level-colored dot (collapsed without battery) |
 | `TesterLauncher`, `TesterStatusBadge`, … | Tester blocks |
 
-## 3. Tester (Gamepad Tester compatibility)
+## 3. Tester (Fullscreen blocks)
 
-`SourceName = GamepadTester` aliases and 1.1 names remain. If a theme only checks `GamepadTester_518dc982-…`, also add:
+Canonical ContentControls under `SourceName = ControllerSessionManager`:
+
+`TesterLauncher`, `TesterStatusBadge`, `TesterButtonMap`, `TesterStickCheck`, `TesterTriggerCheck`, `TesterRumblePad`, `TesterLatencyMini`.
+
+Compatibility aliases keep `SourceName = GamepadTester` and the original 1.1 names (`StatusBadge`, `ButtonMap`, …). Theme commands (`OpenTesterCommand`, `RefreshThemeBlocksCommand`, …) still use `Plugin=GamepadTester`.
+
+If a theme only checks `GamepadTester_518dc982-…`, also add:
 
 `ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc`.
+
+Full contract (focus, `CanNavigateBack`, resources, attached `Block` host): [Fullscreen tester integration](EN-Fullscreen-Tester-Integration) and [`docs/theme-integration/CONTRACT.md`](https://github.com/Naerian/playnite-nx-session-controller-manager/blob/main/docs/theme-integration/CONTRACT.md).
 
 ## 4. Technical detail
 
