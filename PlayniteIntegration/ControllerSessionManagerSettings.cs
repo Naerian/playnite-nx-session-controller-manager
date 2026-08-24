@@ -14,6 +14,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private ControllerSessionManagerSettings editingClone;
         private bool enableMonitoring = true;
         private bool enableDebugLogging;
+        private bool autoUpdateControllerDatabase = true;
         private bool showPrimaryControllerInTopPanel;
         private string topPanelControllerMode = TopPanelControllerModeHidden;
         private bool colorTopPanelIndicatorByBattery = true;
@@ -298,6 +299,12 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             get { return enableDebugLogging; }
             set { SetValue(ref enableDebugLogging, value); }
+        }
+
+        public bool AutoUpdateControllerDatabase
+        {
+            get { return autoUpdateControllerDatabase; }
+            set { SetValue(ref autoUpdateControllerDatabase, value); }
         }
 
         public string TopPanelControllerMode
@@ -1212,6 +1219,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 PlaySoundOnWarning = PlaySoundOnWarning,
                 NotificationSoundVolume = NotificationSoundVolume,
                 EnableDebugLogging = EnableDebugLogging,
+                AutoUpdateControllerDatabase = AutoUpdateControllerDatabase,
                 ShowPrimaryControllerInTopPanel = ShowPrimaryControllerInTopPanel,
                 TopPanelControllerMode = TopPanelControllerMode,
                 ColorTopPanelIndicatorByBattery = ColorTopPanelIndicatorByBattery,
@@ -1389,6 +1397,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             PlaySoundOnWarning = source.PlaySoundOnWarning;
             NotificationSoundVolume = source.NotificationSoundVolume;
             EnableDebugLogging = source.EnableDebugLogging;
+            AutoUpdateControllerDatabase = source.AutoUpdateControllerDatabase;
             showPrimaryControllerInTopPanel = source.showPrimaryControllerInTopPanel;
             topPanelControllerMode = source.topPanelControllerMode;
             ColorTopPanelIndicatorByBattery = source.ColorTopPanelIndicatorByBattery;

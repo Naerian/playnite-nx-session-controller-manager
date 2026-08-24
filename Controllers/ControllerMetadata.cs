@@ -8,6 +8,7 @@ namespace ControllerSessionManager.Controllers
         public int InstanceId { get; set; }
         public int PlayerIndex { get; set; }
         public string RawName { get; set; }
+        public string SdlGuid { get; set; }
         public string DevicePath { get; set; }
         public string DisplayName { get; set; }
         public ushort VendorId { get; set; }

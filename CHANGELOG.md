@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.23 — 2026-08-24
+- Added a bundled SDL_GameControllerDB snapshot as an offline-safe fallback for controller names and Tester button/axis mappings.
+- Added opt-out background updates for the controller database at Playnite startup, with a 24-hour check interval, ETag/hash comparison, validation, atomic replacement and a manual check action under Advanced.
+- Kept community mappings isolated from Playnite's process-wide SDL state: the main plugin only resolves fallback names, while TesterHost loads mappings inside its existing helper process.
+- Recognized the classic Bluetooth HID service (`0x1124`) used by Xbox-compatible controllers, including devices such as the GuliKit KK3 Max operating in XInput mode.
+- Kept confirmed stable XInput controllers visible and editable even when their driver temporarily hides the physical transport, while passive Unknown HID/dock rows remain filtered.
+- Added anonymized per-device HID identity keys and cleared stale XInput slot identity/input state after disconnects so a replacement controller cannot inherit another pad's profile.
+- Fixed notification sound-pack persistence when saving and reopening settings.
+- Added an immediate silent connected-controller preview when switching notification appearance presets, using the Desktop or Fullscreen style for the active Playnite mode.
+- Added SDL_GameControllerDB attribution and its zlib license to the README and extension package.
+
 ## 1.0.22 — 2026-08-24
 - Added independent PNG/JPEG backgrounds for fullscreen and desktop notifications, with cover/contain/stretch, alignment, image opacity and color-tint controls; visual-profile exports embed the selected images for portable import.
 - Added the Cinematic notification preset with a bundled technological background and tuned high-contrast typography, tint and semantic accents.

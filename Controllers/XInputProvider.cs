@@ -98,6 +98,7 @@ namespace ControllerSessionManager.Controllers
                     {
                         slots[index].WasConnected = false;
                         slots[index].HasGamepadState = false;
+                        ClearSlotIdentity(slots[index]);
                         continue;
                     }
 
@@ -258,6 +259,23 @@ namespace ControllerSessionManager.Controllers
                 slot.ConnectionType = ControllerDeviceIdentity.ContainsWirelessHint(metadata.DisplayName)
                     ? "Wireless" : "Unknown";
             }
+        }
+
+        private static void ClearSlotIdentity(SlotState slot)
+        {
+            if (slot == null)
+            {
+                return;
+            }
+            slot.HardwareId = null;
+            slot.VendorId = 0;
+            slot.ProductId = 0;
+            slot.DevicePath = null;
+            slot.DisplayName = null;
+            slot.ConnectionType = null;
+            slot.LastInputUtc = null;
+            slot.LastInputKind = null;
+            slot.InputNeutralSinceUtc = null;
         }
 
         private static bool IsReusableXInputTransport(ushort vendorId, string path, string connectionType)

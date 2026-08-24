@@ -1467,8 +1467,7 @@
                                         <TextBlock Text="{DynamicResource LOCCSM_NotificationSoundPackHelp}" Style="{StaticResource FieldHintText}" Margin="0,0,0,8"/>
                                         <ComboBox x:Name="NotificationSoundPackSelector"
                                                   Width="320" Height="36" HorizontalAlignment="Left" Margin="0,0,0,16"
-                                                  DisplayMemberPath="DisplayName" SelectedValuePath="Key"
-                                                  SelectedValue="{Binding NotificationSoundPack, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                                  DisplayMemberPath="DisplayName" SelectedValuePath="Key"/>
                                         <DockPanel LastChildFill="True" Margin="0,0,0,8">
                                             <TextBlock Text="{DynamicResource LOCCSM_NotificationSoundVolume}" VerticalAlignment="Center" Margin="0,0,12,0"/>
                                             <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center" Margin="12,0,0,0"
@@ -1789,6 +1788,18 @@
                             <TextBlock Text="{DynamicResource LOCCSM_AdvancedHelp}" Style="{StaticResource SectionSubtitleText}" />
                         </StackPanel>
                         <CheckBox Content="{DynamicResource LOCCSM_EnableDebugLogging}" IsChecked="{Binding EnableDebugLogging}" Margin="0,0,0,24" />
+                        <StackPanel Style="{StaticResource PageSection}">
+                            <Border Style="{StaticResource PageHeader}">
+                                <TextBlock Text="{DynamicResource LOCCSM_ControllerDatabaseTitle}" Style="{StaticResource SectionHeaderText}" />
+                            </Border>
+                            <TextBlock Text="{DynamicResource LOCCSM_ControllerDatabaseHelp}" Style="{StaticResource SectionSubtitleText}" />
+                        </StackPanel>
+                        <CheckBox Content="{DynamicResource LOCCSM_ControllerDatabaseAutoUpdate}"
+                                  IsChecked="{Binding AutoUpdateControllerDatabase}" Margin="0,0,0,12" />
+                        <Button Content="{DynamicResource LOCCSM_ControllerDatabaseCheckNow}"
+                                HorizontalAlignment="Left" MinWidth="180"
+                                Style="{StaticResource {x:Type Button}}"
+                                Click="CheckControllerDatabaseUpdatesClick" Margin="0,0,0,24" />
                         <StackPanel Style="{StaticResource PageSection}">
                             <Border Style="{StaticResource PageHeader}">
                                 <TextBlock Text="{DynamicResource LOCCSM_SupportReport}" Style="{StaticResource SectionHeaderText}" />

@@ -42,6 +42,7 @@ internal static class SessionManagerTests
             UnknownPlayStationReportIsRejected();
             LowBatteryNotificationTrackerLatchesAndRecovers();
             BluetoothTransportOverridesEightBitDoReceiverHint();
+            ClassicBluetoothHidServiceIsRecognized();
             EightBitDoXInputWrapperIsNotBluetooth();
             HidPathMetadataRestoresConnectionWithoutSdl();
             BluetoothLeHidPathExposesVidPid();
@@ -66,6 +67,9 @@ internal static class SessionManagerTests
             DisconnectEventMatchesStableXInputSlot();
             HidVidPidRestoresSupplementalCapabilities();
             HidVidPidParserRejectsInvalidPaths();
+            ControllerMappingDatabaseProvidesWindowsFallback();
+            ControllerMappingDatabaseFallsBackOffline();
+            AnonymizedHardwareIdentityIsStableAndPrivate();
             RecentPrelaunchInputSeedsSession();
             StalePrelaunchInputDoesNotSeedSession();
             SessionStartFallbackArmsOnlyOneConnectedController();
@@ -97,7 +101,7 @@ internal static class SessionManagerTests
             BluetoothDisconnectHonoredWhileXInputStillPresent();
             GenericIconIsKeptWhenChosen();
             OverlayIpcAcceptsGamepadSilhouettes();
-            Console.WriteLine("Session manager tests passed: 77 scenarios.");
+            Console.WriteLine("Session manager tests passed: 81 scenarios.");
             return 0;
         }
         catch (Exception error)
@@ -1287,6 +1291,95 @@ internal static class SessionManagerTests
         dock.ConnectionType = "Unknown";
         Equal(true, ControllerDeviceIdentity.IsUnknownConnection(dock),
             "An 8BitDo charging-dock leftover with Unknown connection must be filterable.");
+        Equal(false, ControllerDeviceIdentity.ShouldDisplayController(dock),
+            "A passive Playnite/HID charging-dock row must stay out of Mandos.");
+
+        var activeXInput = Snapshot("hardware:045E:02E0:1", "XInput", 0, "GuliKit KK3 Max",
+            string.Empty, true);
+        activeXInput.VendorId = 0x045E;
+        activeXInput.ProductId = 0x02E0;
+        activeXInput.ConnectionType = "Unknown";
+        Equal(true, ControllerDeviceIdentity.IsConfirmedXInputController(activeXInput),
+            "A connected XInput slot with a settled identity is an actionable controller.");
+        Equal(true, ControllerDeviceIdentity.ShouldDisplayController(activeXInput),
+            "An active XInput controller must remain visible and editable when transport is Unknown.");
+
+        activeXInput.HardwareId = "xinput:slot:0";
+        Equal(false, ControllerDeviceIdentity.ShouldDisplayController(activeXInput),
+            "A volatile XInput-only ghost must not create a generic editable profile.");
+    }
+
+    private static void ClassicBluetoothHidServiceIsRecognized()
+    {
+        const string path =
+            @"\\?\hid#{00001124-0000-1000-8000-00805f9b34fb}&vid_045e&pid_02e0&ig_00";
+        Equal("Bluetooth", ControllerDeviceIdentity.GetConnectionType(
+            "Xbox Bluetooth Gamepad", 0x045E, 0x02E0, path),
+            "The classic Bluetooth HID service must identify the real transport.");
+        Equal(true, WindowsBluetoothBatteryProvider.IsBluetoothPath(path),
+            "Classic Bluetooth HID paths must be eligible for Bluetooth metadata.");
+    }
+
+    private static void ControllerMappingDatabaseProvidesWindowsFallback()
+    {
+        var root = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", ".."));
+        var database = Path.Combine(root, "gamecontrollerdb.txt");
+        Equal(true, ControllerMappingDatabase.Configure(database),
+            "The bundled SDL controller database must be valid.");
+        Equal("Xbox One Controller", ControllerMappingDatabase.ResolveName(
+            "030000005e040000e002000000000000", "Generic controller"),
+            "Known Windows SDL GUIDs should receive the community database name.");
+        Equal("Generic controller", ControllerMappingDatabase.ResolveName(
+            "ffffffffffffffffffffffffffffffff", "Generic controller"),
+            "Unknown GUIDs must preserve the provider name.");
+    }
+
+    private static void AnonymizedHardwareIdentityIsStableAndPrivate()
+    {
+        const string serial = "private-controller-serial";
+        var first = HidDiagnosticsService.CreateAnonymizedHardwareId(0x045E, 0x02E0, serial);
+        var second = HidDiagnosticsService.CreateAnonymizedHardwareId(0x045E, 0x02E0, serial);
+        var other = HidDiagnosticsService.CreateAnonymizedHardwareId(0x045E, 0x02E0, "other");
+        Equal(first, second, "The same physical identity should produce a stable local profile key.");
+        Equal(false, string.Equals(first, other, StringComparison.Ordinal),
+            "Different serials must not collapse into the same controller profile.");
+        Equal(false, first.IndexOf(serial, StringComparison.OrdinalIgnoreCase) >= 0,
+            "Raw hardware serials must never be stored in profile keys.");
+        ushort vendorId;
+        ushort productId;
+        Equal(true, ControllerBridgeIdentity.TryParseHardwareVidPid(first, out vendorId, out productId),
+            "An anonymized key must retain non-sensitive VID/PID matching data.");
+        Equal((ushort)0x045E, vendorId, "The anonymized key should preserve VID.");
+        Equal((ushort)0x02E0, productId, "The anonymized key should preserve PID.");
+    }
+
+    private static void ControllerMappingDatabaseFallsBackOffline()
+    {
+        var root = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", ".."));
+        var bundled = Path.Combine(root, "gamecontrollerdb.txt");
+        var userData = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
+            "ControllerDatabaseTest-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            var updater = new ControllerMappingDatabaseUpdater(bundled, userData);
+            Equal(bundled, updater.ActivePath,
+                "Without internet or a cache, the shipped mapping database must remain active.");
+            var cacheDirectory = Path.Combine(userData, "ControllerDatabase");
+            Directory.CreateDirectory(cacheDirectory);
+            File.WriteAllText(Path.Combine(cacheDirectory, "gamecontrollerdb.txt"), "invalid");
+            Equal(bundled, updater.ActivePath,
+                "A corrupt cached download must never replace the bundled fallback.");
+            File.Copy(bundled, Path.Combine(cacheDirectory, "gamecontrollerdb.txt"), true);
+            Equal(Path.Combine(cacheDirectory, "gamecontrollerdb.txt"), updater.ActivePath,
+                "A valid cached community database should become active.");
+        }
+        finally
+        {
+            if (Directory.Exists(userData))
+            {
+                Directory.Delete(userData, true);
+            }
+        }
     }
 
     private static void SameModelHidIsNotListedBesideXInput()

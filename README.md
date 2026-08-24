@@ -42,6 +42,7 @@ Controller Manager includes the former Gamepad Tester. Uninstall the standalone 
 - Store session-protection and pause policies independently for each game.
 - Customize notification and overlay colors, bundled fonts, size, typography, icons, semantic accents, motion and layout, with on-screen notification tests and an overlay preview in settings.
 - Export a privacy-conscious support report and read-only HID diagnostics for unsupported controllers.
+- Use a bundled, automatically updated SDL controller mapping database as an offline-safe fallback for controller names and Tester button mappings.
 - Integrate status, controller information, player slots and Tester blocks into compatible Playnite themes.
 - Use Playnite localization dictionaries in 12 languages with English fallback.
 
@@ -131,6 +132,8 @@ Community translation contributions are welcome.
 ## Acknowledgements
 
 Thanks to [Controllercons](https://controllercons.github.io/) for its free solid, outline and duotone video game controller icon collection, which helped provide a consistent visual language for Controller Manager's controller artwork.
+
+Thanks to the contributors of [SDL_GameControllerDB](https://github.com/mdqinc/SDL_GameControllerDB) for its community-maintained controller names and SDL button/axis mappings. Controller Manager includes an offline copy under the zlib license and can update it in the background without blocking Playnite startup.
 
 ## Support
 

@@ -737,4 +737,11 @@
     <sys:String x:Key="LOCCSM_VerticalAlignment">Alineación vertical</sys:String>
     <sys:String x:Key="LOCCSM_ImageOpacity">Opacidad de imagen</sys:String>
     <sys:String x:Key="LOCCSM_ImageTintOpacity">Intensidad del tinte</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerDatabaseTitle">Base de mapeos de mandos</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerDatabaseHelp">Usa SDL_GameControllerDB como fallback para nombres y mapeos de botones. La copia incluida permanece siempre disponible sin conexión.</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerDatabaseAutoUpdate">Actualizar automáticamente la base de mandos</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerDatabaseCheckNow">Buscar actualizaciones</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerDatabaseUpdated">La base de mandos se ha actualizado.</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerDatabaseCurrent">La base de mandos ya está actualizada.</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerDatabaseUpdateFailed">No se ha podido actualizar la base. Se seguirá usando la última copia local válida.</sys:String>
 </ResourceDictionary>

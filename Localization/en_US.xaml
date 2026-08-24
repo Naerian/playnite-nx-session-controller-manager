@@ -739,4 +739,11 @@
     <sys:String x:Key="LOCCSM_VerticalAlignment">Vertical alignment</sys:String>
     <sys:String x:Key="LOCCSM_ImageOpacity">Image opacity</sys:String>
     <sys:String x:Key="LOCCSM_ImageTintOpacity">Tint strength</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerDatabaseTitle">Controller mapping database</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerDatabaseHelp">Uses SDL_GameControllerDB as a fallback for controller names and button mappings. The bundled copy always remains available offline.</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerDatabaseAutoUpdate">Update the controller database automatically</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerDatabaseCheckNow">Check for updates</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerDatabaseUpdated">The controller database was updated.</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerDatabaseCurrent">The controller database is already up to date.</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerDatabaseUpdateFailed">The database could not be updated. The last valid local copy will continue to be used.</sys:String>
 </ResourceDictionary>

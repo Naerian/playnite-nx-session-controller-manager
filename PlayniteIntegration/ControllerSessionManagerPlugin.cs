@@ -44,6 +44,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private readonly OverlayClient overlayClient;
         private readonly NotificationAudioService notificationAudio;
         private readonly DiagnosticEventBuffer diagnosticEvents;
+        private readonly ControllerMappingDatabaseUpdater controllerDatabaseUpdater;
         private ResourceDictionary englishFallbackResources;
         private ControllerSessionManagerSettings settings;
         private bool disposed;
@@ -104,6 +105,14 @@ namespace ControllerSessionManager.PlayniteIntegration
         public ControllerSessionManagerPlugin(IPlayniteAPI playniteApi) : base(playniteApi)
         {
             logger = LogManager.GetLogger();
+            var pluginDirectory = Path.GetDirectoryName(GetType().Assembly.Location);
+            controllerDatabaseUpdater = new ControllerMappingDatabaseUpdater(
+                Path.Combine(pluginDirectory, "gamecontrollerdb.txt"), GetPluginUserDataPath());
+            if (!controllerDatabaseUpdater.ConfigureActiveDatabase())
+            {
+                logger.Warn("Controller mapping database was unavailable; SDL built-in mappings will be used.");
+            }
+            TesterHostClient.ConfigureMappingDatabase(controllerDatabaseUpdater.ActivePath);
             controllerManager = new ControllerManager();
             controllerManager.SnapshotChanged += OnManagerSnapshotChanged;
             xInputProvider = new XInputProvider();
@@ -227,11 +236,11 @@ namespace ControllerSessionManager.PlayniteIntegration
         private static IReadOnlyList<ControllerDeviceSnapshot> FilterUnknownConnections(
             IEnumerable<ControllerDeviceSnapshot> source)
         {
-            // Charging docks often stay enumerated as Unknown while the pad is off; keep them
-            // out of Mandos, TopBar and connect/disconnect toasts.
+            // Charging docks often stay enumerated as Unknown while the pad is off; keep those
+            // passive HID rows out of Mandos, TopBar and connect/disconnect toasts. A confirmed
+            // XInput slot remains actionable even when its driver hides the physical transport.
             return (source ?? Enumerable.Empty<ControllerDeviceSnapshot>())
-                .Where(a => a != null && a.IsConnected &&
-                    !ControllerDeviceIdentity.IsUnknownConnection(a))
+                .Where(ControllerDeviceIdentity.ShouldDisplayController)
                 .ToList();
         }
 
@@ -427,7 +436,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             PlayniteApi.Dialogs.ShowMessage(Loc("LOCCSM_VibrationUnavailable"), Loc("LOCCSM_TestVibration"));
         }
 
-        public void ShowNotificationPreview(string kind)
+        public void ShowNotificationPreview(string kind, bool playSound = true)
         {
             var isLowBattery = string.Equals(kind, "lowbattery", StringComparison.OrdinalIgnoreCase);
             var previewKind = string.Equals(kind, "disconnected", StringComparison.OrdinalIgnoreCase)
@@ -455,7 +464,22 @@ namespace ControllerSessionManager.PlayniteIntegration
                 SvgIconGeometryLoader.GetPathData(iconFile),
                 settings.NotificationDurationMilliseconds, GetToastStylePayload(),
                 GetToastBadgeIconGeometry(previewKind, "Wireless"));
-            PlayNotificationSound(SoundKindFromToast(previewKind), preview: true);
+            if (playSound)
+            {
+                PlayNotificationSound(SoundKindFromToast(previewKind), preview: true);
+            }
+        }
+
+        public void ShowNotificationPresetPreview()
+        {
+            if (PlayniteApi.ApplicationInfo.Mode == ApplicationMode.Fullscreen)
+            {
+                ShowNotificationPreview("connected", false);
+            }
+            else
+            {
+                ShowDesktopNotificationPreview("connected", false);
+            }
         }
 
         public void PlayNotificationSoundPreview(string kind)
@@ -1054,7 +1078,60 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             diagnosticEvents.Add("lifecycle", "Playnite application started");
             RefreshControllers();
+            BeginControllerDatabaseUpdate(false, false);
             TryOfferFirstRunSetupWizard();
+        }
+
+        public void CheckControllerDatabaseUpdates()
+        {
+            BeginControllerDatabaseUpdate(true, true);
+        }
+
+        private void BeginControllerDatabaseUpdate(bool force, bool showResult)
+        {
+            if (controllerDatabaseUpdater == null || settings == null ||
+                (!force && !settings.AutoUpdateControllerDatabase))
+            {
+                return;
+            }
+
+            var dispatcher = Application.Current == null
+                ? Dispatcher.CurrentDispatcher : Application.Current.Dispatcher;
+            controllerDatabaseUpdater.CheckForUpdateAsync(force).ContinueWith(task =>
+            {
+                var result = task.Status == TaskStatus.RanToCompletion ? task.Result : null;
+                dispatcher.BeginInvoke(new Action(() =>
+                {
+                    if (result == null || !result.Succeeded)
+                    {
+                        var error = result == null ? "Update task failed." : result.Error;
+                        logger.Warn("Controller mapping database update failed: " + error);
+                        diagnosticEvents.Add("controller-db", "Update failed; using last known good database");
+                        if (showResult)
+                        {
+                            PlayniteApi.Dialogs.ShowMessage(Loc("LOCCSM_ControllerDatabaseUpdateFailed"),
+                                Loc("LOCCSM_ControllerDatabaseTitle"));
+                        }
+                        return;
+                    }
+
+                    TesterHostClient.ConfigureMappingDatabase(result.ActivePath);
+                    diagnosticEvents.Add("controller-db", result.Updated
+                        ? "Controller mapping database updated"
+                        : "Controller mapping database is current");
+                    if (result.Updated)
+                    {
+                        RefreshControllers();
+                    }
+                    if (showResult)
+                    {
+                        PlayniteApi.Dialogs.ShowMessage(
+                            Loc(result.Updated ? "LOCCSM_ControllerDatabaseUpdated" :
+                                "LOCCSM_ControllerDatabaseCurrent"),
+                            Loc("LOCCSM_ControllerDatabaseTitle"));
+                    }
+                }), DispatcherPriority.Background);
+            });
         }
 
         public void OpenSetupWizard()
@@ -2601,7 +2678,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             return Path.Combine(GetPluginUserDataPath(), "NotificationBackgrounds");
         }
 
-        public void ShowDesktopNotificationPreview(string kind)
+        public void ShowDesktopNotificationPreview(string kind, bool playSound = true)
         {
             var isLowBattery = string.Equals(kind, "lowbattery", StringComparison.OrdinalIgnoreCase);
             var previewKind = string.Equals(kind, "disconnected", StringComparison.OrdinalIgnoreCase)
@@ -2629,7 +2706,10 @@ namespace ControllerSessionManager.PlayniteIntegration
                 SvgIconGeometryLoader.GetPathData(iconFile),
                 settings.DesktopNotificationDurationMilliseconds, GetDesktopToastStylePayload(),
                 GetToastBadgeIconGeometry(previewKind, "Bluetooth"));
-            PlayNotificationSound(SoundKindFromToast(previewKind), preview: true);
+            if (playSound)
+            {
+                PlayNotificationSound(SoundKindFromToast(previewKind), preview: true);
+            }
         }
 
         private static string GetToastBadgeIconGeometry(string kind, string connectionType = null)

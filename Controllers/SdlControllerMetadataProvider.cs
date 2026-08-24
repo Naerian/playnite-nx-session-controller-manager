@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace ControllerSessionManager.Controllers
 {
@@ -65,6 +66,13 @@ namespace ControllerSessionManager.Controllers
                         var rawName = isGameController
                             ? Marshal.PtrToStringAnsi(NativeMethods.SDL_GameControllerNameForIndex(index))
                             : Marshal.PtrToStringAnsi(NativeMethods.SDL_JoystickNameForIndex(index));
+                        var sdlGuid = GetDeviceGuidString(index);
+                        var databaseName = ControllerMappingDatabase.ResolveName(sdlGuid, null);
+                        if (!string.IsNullOrWhiteSpace(databaseName) &&
+                            (!isGameController || ControllerDeviceIdentity.IsGenericDisplayName(rawName)))
+                        {
+                            rawName = databaseName;
+                        }
                         var devicePath = GetDevicePath(index);
                         var vendorId = NativeMethods.SDL_JoystickGetDeviceVendor(index);
                         var productId = NativeMethods.SDL_JoystickGetDeviceProduct(index);
@@ -104,6 +112,7 @@ namespace ControllerSessionManager.Controllers
                             InstanceId = instanceId,
                             PlayerIndex = playerIndex,
                             RawName = rawName,
+                            SdlGuid = sdlGuid,
                             DevicePath = devicePath,
                             DisplayName = displayName,
                             VendorId = vendorId,
@@ -316,6 +325,25 @@ namespace ControllerSessionManager.Controllers
             }
         }
 
+        private static string GetDeviceGuidString(int index)
+        {
+            try
+            {
+                var guid = NativeMethods.SDL_JoystickGetDeviceGUID(index);
+                var text = new StringBuilder(33);
+                NativeMethods.SDL_JoystickGetGUIDString(guid, text, text.Capacity);
+                return text.ToString();
+            }
+            catch (EntryPointNotFoundException)
+            {
+                return string.Empty;
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
         private IntPtr GetOrOpenGameController(int index, int instanceId)
         {
             IntPtr controller;
@@ -507,6 +535,13 @@ namespace ControllerSessionManager.Controllers
             public static extern int SDL_JoystickGetDevicePlayerIndex(int joystickIndex);
 
             [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
+            public static extern SdlJoystickGuid SDL_JoystickGetDeviceGUID(int joystickIndex);
+
+            [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
+            public static extern void SDL_JoystickGetGUIDString(SdlJoystickGuid guid,
+                StringBuilder text, int textSize);
+
+            [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
             public static extern void SDL_GameControllerUpdate();
 
             [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -538,6 +573,13 @@ namespace ControllerSessionManager.Controllers
 
             [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
             public static extern byte SDL_JoystickGetHat(IntPtr joystick, int hat);
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct SdlJoystickGuid
+        {
+            public ulong First;
+            public ulong Second;
         }
     }
 }

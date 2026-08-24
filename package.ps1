@@ -45,6 +45,8 @@ $required = @(
     (Join-Path $build "ControllerSessionManager.OverlayHost.exe"),
     (Join-Path $build "ControllerSessionManager.TesterHost.exe"),
     (Join-Path $build "extension.yaml"),
+    (Join-Path $build "gamecontrollerdb.txt"),
+    (Join-Path $build "docs\SDL_GameControllerDB.LICENSE"),
     (Join-Path $build "Localization"),
     (Join-Path $build "Icons"),
     (Join-Path $build "Gamepads"),
@@ -82,6 +84,8 @@ Copy-Item -LiteralPath (Join-Path $build "ControllerSessionManager.dll") -Destin
 Copy-Item -LiteralPath (Join-Path $build "ControllerSessionManager.OverlayHost.exe") -Destination $stage
 Copy-Item -LiteralPath (Join-Path $build "ControllerSessionManager.TesterHost.exe") -Destination $stage
 Copy-Item -LiteralPath (Join-Path $build "extension.yaml") -Destination $stage
+Copy-Item -LiteralPath (Join-Path $build "gamecontrollerdb.txt") -Destination $stage
+Copy-Item -LiteralPath (Join-Path $build "docs\SDL_GameControllerDB.LICENSE") -Destination $stage
 Copy-Item -LiteralPath (Join-Path $build "Localization") -Destination $stage -Recurse
 Copy-Item -LiteralPath (Join-Path $build "Icons") -Destination $stage -Recurse
 Copy-Item -LiteralPath (Join-Path $build "Gamepads") -Destination $stage -Recurse

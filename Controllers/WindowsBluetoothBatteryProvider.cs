@@ -113,6 +113,8 @@ namespace ControllerSessionManager.Controllers
             return path.IndexOf("BTHENUM", StringComparison.OrdinalIgnoreCase) >= 0 ||
                 path.IndexOf("BTHLE", StringComparison.OrdinalIgnoreCase) >= 0 ||
                 path.IndexOf("BLUETOOTH", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                path.IndexOf("00001124-0000-1000-8000-00805F9B34FB",
+                    StringComparison.OrdinalIgnoreCase) >= 0 ||
                 path.IndexOf("00001812-0000-1000-8000-00805F9B34FB",
                     StringComparison.OrdinalIgnoreCase) >= 0;
         }

@@ -21,6 +21,8 @@ $testExecutable = Join-Path $output "SessionManagerTests.exe"
     (Join-Path $root "Controllers\ControllerDeviceSnapshot.cs") `
     (Join-Path $root "Controllers\ControllerSnapshotMerger.cs") `
     (Join-Path $root "Controllers\ControllerMetadata.cs") `
+    (Join-Path $root "Controllers\ControllerMappingDatabase.cs") `
+    (Join-Path $root "Controllers\ControllerMappingDatabaseUpdater.cs") `
     (Join-Path $root "Controllers\IControllerBatteryProvider.cs") `
     (Join-Path $root "Controllers\HidDiagnosticsService.cs") `
     (Join-Path $root "Controllers\PlayStationHidBatteryProvider.cs") `

@@ -63,6 +63,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 OverlayPreviewConnectionIcon.Data = null;
                 OverlayPreviewBatteryIcon.Data = null;
             }
+            NotificationSoundPackSelector.SelectionChanged += NotificationSoundPackSelector_OnSelectionChanged;
             AboutVersionText.Text = plugin == null
                 ? GetInstalledVersion()
                 : string.Format(plugin.Loc("LOCCSM_VersionAuthorFormat"), GetInstalledVersion());
@@ -110,6 +111,11 @@ namespace ControllerSessionManager.PlayniteIntegration
             if (args != null && args.PropertyName == "OverlayStylePreset")
             {
                 RefreshOverlayStylePresetChips();
+            }
+
+            if (args != null && args.PropertyName == "NotificationSoundPack")
+            {
+                RefreshNotificationSoundPackChips();
             }
 
             if (!suppressingStylePresetMark &&
@@ -278,6 +284,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         }
 
         private bool suppressingStylePresetMark;
+        private bool refreshingNotificationSoundPackSelection;
         private ScrollViewer hostScrollViewer;
         private Window hostWindow;
         private GamepadTesterViewModel testerViewModel;
@@ -656,6 +663,9 @@ namespace ControllerSessionManager.PlayniteIntegration
                 return;
             }
 
+            var previousPreset = NotificationStylePresets.Normalize(settings.NotificationStylePreset);
+            var selectedPreset = NotificationStylePresets.Normalize(preset);
+
             suppressingStylePresetMark = true;
             try
             {
@@ -667,6 +677,11 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
 
             RefreshNotificationStylePresetChips();
+            if (plugin != null && selectedPreset != NotificationStylePresets.Custom &&
+                !string.Equals(previousPreset, selectedPreset, StringComparison.OrdinalIgnoreCase))
+            {
+                plugin.ShowNotificationPresetPreview();
+            }
         }
 
         private void OverlayStylePresetChip_OnClick(object sender, RoutedEventArgs e)
@@ -693,10 +708,15 @@ namespace ControllerSessionManager.PlayniteIntegration
             RefreshOverlayPreviewControllerLayout();
         }
 
-        private void NotificationSoundPackChip_OnClick(object sender, RoutedEventArgs e)
+        private void NotificationSoundPackSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var button = sender as Button;
-            var pack = button == null ? null : button.Tag as string;
+            if (refreshingNotificationSoundPackSelection)
+            {
+                return;
+            }
+
+            var selector = sender as ComboBox;
+            var pack = selector == null ? null : selector.SelectedValue as string;
             var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
             if (settings == null || string.IsNullOrWhiteSpace(pack))
             {
@@ -704,7 +724,6 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
 
             settings.NotificationSoundPack = pack;
-            RefreshNotificationSoundPackChips();
         }
 
         private void RefreshNotificationStylePresetChips()
@@ -729,9 +748,17 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             if (NotificationSoundPackSelector != null)
             {
-                NotificationSoundPackSelector.SelectedValue = boundSettings == null
-                    ? NotificationSoundCatalog.ModernCrystal
-                    : NotificationSoundCatalog.Normalize(boundSettings.NotificationSoundPack);
+                refreshingNotificationSoundPackSelection = true;
+                try
+                {
+                    NotificationSoundPackSelector.SelectedValue = boundSettings == null
+                        ? NotificationSoundCatalog.ModernCrystal
+                        : NotificationSoundCatalog.Normalize(boundSettings.NotificationSoundPack);
+                }
+                finally
+                {
+                    refreshingNotificationSoundPackSelection = false;
+                }
             }
         }
 
@@ -1095,6 +1122,11 @@ namespace ControllerSessionManager.PlayniteIntegration
             plugin.ExportSupportReport();
         }
 
+        private void CheckControllerDatabaseUpdatesClick(object sender, RoutedEventArgs args)
+        {
+            plugin.CheckControllerDatabaseUpdates();
+        }
+
         private void ExportVisualProfileClick(object sender, RoutedEventArgs args)
         {
             var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
@@ -1346,7 +1378,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 ConnectionFallback = string.Equals(controller.ConnectionType, "Unknown", StringComparison.OrdinalIgnoreCase)
                     ? "?" : string.Empty,
                 ConnectionBrush = GetConnectionBrush(controller.ConnectionType),
-                InteractionsEnabled = !IsUnknownConnection(controller.ConnectionType),
+                InteractionsEnabled = ControllerDeviceIdentity.ShouldDisplayController(controller),
                 Battery = battery,
                 BatteryTooltip = LabeledTooltip("LOCCSM_Battery", battery),
                 BatteryBrush = GetBatteryBrush(controller.BatteryLevel),

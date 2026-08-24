@@ -59,6 +59,8 @@
     <Compile Include="Controllers\IntentionalInputDetector.cs" />
     <Compile Include="Controllers\ControllerMetadata.cs" />
     <Compile Include="Controllers\ControllerDeviceIdentity.cs" />
+    <Compile Include="Controllers\ControllerMappingDatabase.cs" />
+    <Compile Include="Controllers\ControllerMappingDatabaseUpdater.cs" />
     <Compile Include="Controllers\ControllerIconCatalog.cs" />
     <Compile Include="Controllers\ControllerDisplayHold.cs" />
     <Compile Include="Controllers\ControllerTransportPolicy.cs" />
@@ -415,6 +417,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="CHANGELOG.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="gamecontrollerdb.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="docs\SDL_GameControllerDB.LICENSE">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="media\icon.png">

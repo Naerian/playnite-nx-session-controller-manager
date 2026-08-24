@@ -22,6 +22,7 @@ namespace ControllerSessionManager.TesterHost
             var pipeName = ReadArgument(args, "--pipe");
             var token = ReadArgument(args, "--token");
             var sdlDir = ReadArgument(args, "--sdl-dir");
+            var mappingDatabase = ReadArgument(args, "--mapping-db");
             int parentProcessId;
             if (string.IsNullOrWhiteSpace(pipeName) || string.IsNullOrWhiteSpace(token) ||
                 !int.TryParse(ReadArgument(args, "--parent"), out parentProcessId))
@@ -44,7 +45,7 @@ namespace ControllerSessionManager.TesterHost
             SdlGamepadProvider provider = null;
             try
             {
-                provider = new SdlGamepadProvider();
+                provider = new SdlGamepadProvider(mappingDatabase);
                 RunServer(pipeName, token, parentProcessId, provider);
                 return 0;
             }

@@ -162,6 +162,26 @@ namespace ControllerSessionManager.Controllers
             return controller == null || IsUnknownConnection(controller.ConnectionType);
         }
 
+        /// <summary>
+        /// XInput only reports slots, not their physical transport. A connected slot with a
+        /// settled hardware identity is still a real, actionable controller even when the HID
+        /// bridge cannot determine whether it uses USB, Bluetooth or a proprietary receiver.
+        /// </summary>
+        public static bool IsConfirmedXInputController(ControllerDeviceSnapshot controller)
+        {
+            return controller != null && controller.IsConnected &&
+                string.Equals(controller.ProviderId, "XInput", StringComparison.OrdinalIgnoreCase) &&
+                controller.ProviderInstanceId >= 0 && controller.ProviderInstanceId <= 3 &&
+                controller.VendorId != 0 &&
+                !ControllerBridgeIdentity.IsVolatileHardwareId(controller.HardwareId);
+        }
+
+        public static bool ShouldDisplayController(ControllerDeviceSnapshot controller)
+        {
+            return controller != null && controller.IsConnected &&
+                (!IsUnknownConnection(controller) || IsConfirmedXInputController(controller));
+        }
+
         public static string GetModelKey(ControllerDeviceSnapshot controller)
         {
             if (controller == null)
@@ -225,6 +245,7 @@ namespace ControllerSessionManager.Controllers
 
             if (Contains(devicePath, "bthenum") || Contains(devicePath, "bthle") ||
                 Contains(devicePath, "bluetooth") ||
+                Contains(devicePath, "00001124-0000-1000-8000-00805f9b34fb") ||
                 Contains(devicePath, "00001812-0000-1000-8000-00805f9b34fb"))
             {
                 return "Bluetooth";

@@ -21,9 +21,11 @@ namespace ControllerSessionManager.Tester.Services
         private int cachedAxisCount;
         private int cachedButtonCount;
         private int cachedHatCount;
+        private readonly string mappingDatabasePath;
 
-        public SdlGamepadProvider()
+        public SdlGamepadProvider(string controllerMappingDatabasePath = null)
         {
+            mappingDatabasePath = controllerMappingDatabasePath;
             Sdl2Native.SDL_Init(initFlags);
             LoadControllerMappings();
             OpenSelectedOrFirstController();
@@ -170,13 +172,14 @@ namespace ControllerSessionManager.Tester.Services
         {
             var candidates = new[]
             {
+                mappingDatabasePath,
                 Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "gamecontrollerdb.txt"),
                 Path.Combine(Environment.CurrentDirectory, "gamecontrollerdb.txt")
             };
 
             foreach (var candidate in candidates)
             {
-                if (File.Exists(candidate))
+                if (!string.IsNullOrWhiteSpace(candidate) && File.Exists(candidate))
                 {
                     var rw = Sdl2Native.SDL_RWFromFile(candidate, "rb");
                     if (rw != IntPtr.Zero)

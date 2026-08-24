@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Win32;
 using Microsoft.Win32.SafeHandles;
@@ -182,7 +183,8 @@ namespace ControllerSessionManager.Controllers
                         foreach (var deviceName in btRoot.GetSubKeyNames())
                         {
                             if (string.Equals(root, "HID", StringComparison.OrdinalIgnoreCase) &&
-                                deviceName.IndexOf("00001812-", StringComparison.OrdinalIgnoreCase) < 0)
+                                deviceName.IndexOf("00001812-", StringComparison.OrdinalIgnoreCase) < 0 &&
+                                deviceName.IndexOf("00001124-", StringComparison.OrdinalIgnoreCase) < 0)
                             {
                                 continue;
                             }
@@ -313,7 +315,8 @@ namespace ControllerSessionManager.Controllers
                 return -1;
             }
 
-            if (ContainsPath(path, "00001812-0000-1000-8000-00805f9b34fb"))
+            if (ContainsPath(path, "00001812-0000-1000-8000-00805f9b34fb") ||
+                ContainsPath(path, "00001124-0000-1000-8000-00805f9b34fb"))
             {
                 return 100;
             }
@@ -407,7 +410,25 @@ namespace ControllerSessionManager.Controllers
                             continue;
                         }
 
-                        var key = string.Format("{0:X4}:{1:X4}", metadata.VendorId, metadata.ProductId);
+                        using (var handle = OpenHidDevice(path))
+                        {
+                            if (handle != null && !handle.IsInvalid)
+                            {
+                                var serial = GetHidString(handle,
+                                    NativeMethods.HidD_GetSerialNumberString);
+                                var stableId = CreateAnonymizedHardwareId(metadata.VendorId,
+                                    metadata.ProductId, serial);
+                                if (!string.IsNullOrWhiteSpace(stableId))
+                                {
+                                    metadata.HardwareId = stableId;
+                                }
+                            }
+                        }
+
+                        var key = metadata.HardwareId != null &&
+                            metadata.HardwareId.IndexOf(":id-", StringComparison.OrdinalIgnoreCase) >= 0
+                            ? metadata.HardwareId
+                            : string.Format("{0:X4}:{1:X4}", metadata.VendorId, metadata.ProductId);
                         var score = ScoreHidPath(path);
                         int previousScore;
                         if (!bestByHardware.ContainsKey(key) ||
@@ -429,6 +450,26 @@ namespace ControllerSessionManager.Controllers
             }
 
             return bestByHardware.Values.ToList();
+        }
+
+        internal static string CreateAnonymizedHardwareId(ushort vendorId, ushort productId,
+            string serial)
+        {
+            if (vendorId == 0 || productId == 0 || string.IsNullOrWhiteSpace(serial) ||
+                string.Equals(serial, "unavailable", StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+
+            using (var sha = SHA256.Create())
+            {
+                var source = Encoding.UTF8.GetBytes(string.Format("{0:X4}:{1:X4}:{2}",
+                    vendorId, productId, serial.Trim()));
+                var digest = sha.ComputeHash(source);
+                var token = BitConverter.ToString(digest, 0, 10).Replace("-", string.Empty);
+                return string.Format("hardware:{0:X4}:{1:X4}:id-{2}",
+                    vendorId, productId, token);
+            }
         }
 
         public static bool TryReadInputReport(ushort vendorId, ushort productId,

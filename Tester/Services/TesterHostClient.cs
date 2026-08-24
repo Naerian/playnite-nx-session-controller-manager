@@ -15,6 +15,7 @@ namespace ControllerSessionManager.Tester.Services
         private static readonly object sharedSync = new object();
         private static TesterHostClient shared;
         private static int sharedReferences;
+        private static string mappingDatabasePath;
 
         private readonly ILogger logger;
         private readonly string pipeName;
@@ -49,6 +50,14 @@ namespace ControllerSessionManager.Tester.Services
 
                 sharedReferences++;
                 return shared;
+            }
+        }
+
+        public static void ConfigureMappingDatabase(string path)
+        {
+            lock (sharedSync)
+            {
+                mappingDatabasePath = path;
             }
         }
 
@@ -220,8 +229,9 @@ namespace ControllerSessionManager.Tester.Services
             hostProcess = Process.Start(new ProcessStartInfo
             {
                 FileName = executable,
-                Arguments = string.Format("--pipe {0} --token {1} --parent {2} --sdl-dir \"{3}\"",
-                    pipeName, token, Process.GetCurrentProcess().Id, sdlDir),
+                Arguments = string.Format("--pipe {0} --token {1} --parent {2} --sdl-dir \"{3}\" --mapping-db \"{4}\"",
+                    pipeName, token, Process.GetCurrentProcess().Id, sdlDir,
+                    mappingDatabasePath ?? string.Empty),
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 WindowStyle = ProcessWindowStyle.Hidden
