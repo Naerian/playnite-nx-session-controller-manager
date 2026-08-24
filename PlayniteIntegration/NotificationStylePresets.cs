@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 
 namespace ControllerSessionManager.PlayniteIntegration
 {
@@ -11,7 +12,8 @@ namespace ControllerSessionManager.PlayniteIntegration
         public const string Bold = "Bold";
         public const string Arcade = "Arcade";
         public const string Minimal = "Minimal";
-        public static readonly string[] NamedPresets = { Soft, Compact, Bold, Arcade, Minimal };
+        public const string Cinematic = "Cinematic";
+        public static readonly string[] NamedPresets = { Soft, Compact, Bold, Arcade, Minimal, Cinematic };
 
         public static string Normalize(string value)
         {
@@ -33,6 +35,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 case Bold: return "LOCCSM_StylePresetBold";
                 case Arcade: return "LOCCSM_StylePresetArcade";
                 case Minimal: return "LOCCSM_StylePresetMinimal";
+                case Cinematic: return "LOCCSM_StylePresetCinematic";
                 case Custom: return "LOCCSM_StylePresetCustom";
                 default: return "LOCCSM_StylePresetSoft";
             }
@@ -43,15 +46,25 @@ namespace ControllerSessionManager.PlayniteIntegration
             if (settings == null) return;
             var preset = Normalize(presetId);
             if (preset == Custom) { settings.NotificationStylePreset = Custom; return; }
+            DisableBackgroundImages(settings);
             switch (preset)
             {
                 case Compact: ApplyCompact(settings); break;
                 case Bold: ApplyBold(settings); break;
                 case Arcade: ApplyArcade(settings); break;
                 case Minimal: ApplyMinimal(settings); break;
+                case Cinematic: ApplyCinematic(settings); break;
                 default: ApplySoft(settings); break;
             }
             settings.NotificationStylePreset = preset;
+        }
+
+        private static void DisableBackgroundImages(ControllerSessionManagerSettings s)
+        {
+            s.NotificationUseBackgroundImage = false;
+            s.NotificationBackgroundImagePath = string.Empty;
+            s.DesktopNotificationUseBackgroundImage = false;
+            s.DesktopNotificationBackgroundImagePath = string.Empty;
         }
 
         public static void ResetToDefault(ControllerSessionManagerSettings settings) { Apply(settings, Soft); }
@@ -114,6 +127,36 @@ namespace ControllerSessionManager.PlayniteIntegration
                 "#FF7FC79F", "#FF83A6C8", "#FFD0AD6A", "#FFC98181", 14, 11, 16, 15, 2, 0, 10);
             ApplyIdentity(s, NotificationFontCatalog.Poppins, "Regular", "Left", "IconOnly", "Fade",
                 true, true, NotificationFontCatalog.Poppins, "Regular", "Left", "IconOnly", "Fade", true, true);
+        }
+
+        // Dark cinematic artwork with restrained cyan and gold event accents.
+        private static void ApplyCinematic(ControllerSessionManagerSettings s)
+        {
+            ApplyPair(s, 560, 108, 5200, "TopRight", "#E4070B0D", "#FFFFFFFF", "#FFD6E9E9",
+                "#FF3DE0B5", "#FF57BFEF", "#FFFFC857", "#FFFF657A", 21, 15, 38, "Left",
+                20, 9, true, "Bottom", 2, 18, true, 26, true,
+                450, 100, 4200, "BottomRight", "#E4070B0D", "#FFFFFFFF", "#FFD6E9E9",
+                "#FF3DE0B5", "#FF57BFEF", "#FFFFC857", "#FFFF657A", 18, 14, 32, 16, 7, 16, 24);
+            ApplyIdentity(s, NotificationFontCatalog.Outfit, "SemiBold", "Left", "IconAndBorder", "Fade",
+                true, true, NotificationFontCatalog.Outfit, "SemiBold", "Left", "IconAndBorder", "Fade", true, true);
+
+            var imagePath = Path.Combine(
+                Path.GetDirectoryName(typeof(NotificationStylePresets).Assembly.Location) ?? string.Empty,
+                "Images", "NotifyBackgrounds", "bg1.jpg");
+            s.NotificationUseBackgroundImage = true;
+            s.NotificationBackgroundImagePath = imagePath;
+            s.NotificationBackgroundImageStretch = "UniformToFill";
+            s.NotificationBackgroundImageHorizontalAlignment = "Center";
+            s.NotificationBackgroundImageVerticalAlignment = "Center";
+            s.NotificationBackgroundImageOpacity = 82;
+            s.NotificationBackgroundImageTintOpacity = 48;
+            s.DesktopNotificationUseBackgroundImage = true;
+            s.DesktopNotificationBackgroundImagePath = imagePath;
+            s.DesktopNotificationBackgroundImageStretch = "UniformToFill";
+            s.DesktopNotificationBackgroundImageHorizontalAlignment = "Center";
+            s.DesktopNotificationBackgroundImageVerticalAlignment = "Center";
+            s.DesktopNotificationBackgroundImageOpacity = 82;
+            s.DesktopNotificationBackgroundImageTintOpacity = 48;
         }
 
         private static void ApplyIdentity(ControllerSessionManagerSettings s,

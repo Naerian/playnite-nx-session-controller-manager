@@ -63,8 +63,9 @@ namespace ControllerSessionManager.PlayniteIntegration
                 OverlayPreviewConnectionIcon.Data = null;
                 OverlayPreviewBatteryIcon.Data = null;
             }
-            AboutVersionText.Text = string.Format(
-                plugin.Loc("LOCCSM_VersionAuthorFormat"), GetInstalledVersion());
+            AboutVersionText.Text = plugin == null
+                ? GetInstalledVersion()
+                : string.Format(plugin.Loc("LOCCSM_VersionAuthorFormat"), GetInstalledVersion());
             Loaded += OnLoaded;
             Unloaded += OnUnloaded;
             DataContextChanged += OnSettingsDataContextChanged;
@@ -109,11 +110,6 @@ namespace ControllerSessionManager.PlayniteIntegration
             if (args != null && args.PropertyName == "OverlayStylePreset")
             {
                 RefreshOverlayStylePresetChips();
-            }
-
-            if (args != null && args.PropertyName == "NotificationSoundPack")
-            {
-                RefreshNotificationSoundPackChips();
             }
 
             if (!suppressingStylePresetMark &&
@@ -343,6 +339,11 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private void OnLoaded(object sender, RoutedEventArgs args)
         {
+            if (plugin == null)
+            {
+                return;
+            }
+
             plugin.ControllerSnapshotChanged += OnControllerSnapshotChanged;
             ApplyAppearancePreset();
             BuildAppearancePresetChips();
@@ -508,12 +509,12 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private void BuildNotificationSoundPackChips()
         {
-            if (NotificationSoundPackChips == null)
+            if (NotificationSoundPackSelector == null)
             {
                 return;
             }
 
-            NotificationSoundPackChips.Children.Clear();
+            var options = new System.Collections.Generic.List<NotificationSoundPackOption>();
             foreach (var pack in NotificationSoundCatalog.AllPacks)
             {
                 var label = plugin == null
@@ -524,11 +525,10 @@ namespace ControllerSessionManager.PlayniteIntegration
                     label = NotificationSoundCatalog.DisplayName(pack);
                 }
 
-                var button = CreatePresetChipButton(label, pack);
-                button.Click += NotificationSoundPackChip_OnClick;
-                NotificationSoundPackChips.Children.Add(button);
+                options.Add(new NotificationSoundPackOption { Key = pack, DisplayName = label });
             }
 
+            NotificationSoundPackSelector.ItemsSource = options;
             RefreshNotificationSoundPackChips();
         }
 
@@ -643,11 +643,6 @@ namespace ControllerSessionManager.PlayniteIntegration
                 return OverlayStylePresets.Normalize(settings.OverlayStylePreset);
             }
 
-            if (panel == NotificationSoundPackChips)
-            {
-                return NotificationSoundCatalog.Normalize(settings.NotificationSoundPack);
-            }
-
             return string.Empty;
         }
 
@@ -732,11 +727,12 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private void RefreshNotificationSoundPackChips()
         {
-            RefreshChipSelection(
-                NotificationSoundPackChips,
-                boundSettings == null
+            if (NotificationSoundPackSelector != null)
+            {
+                NotificationSoundPackSelector.SelectedValue = boundSettings == null
                     ? NotificationSoundCatalog.ModernCrystal
-                    : boundSettings.NotificationSoundPack);
+                    : NotificationSoundCatalog.Normalize(boundSettings.NotificationSoundPack);
+            }
         }
 
         private void RefreshChipSelection(WrapPanel panel, string selected)
@@ -937,7 +933,10 @@ namespace ControllerSessionManager.PlayniteIntegration
                 boundSettings = null;
             }
 
-            plugin.ControllerSnapshotChanged -= OnControllerSnapshotChanged;
+            if (plugin != null)
+            {
+                plugin.ControllerSnapshotChanged -= OnControllerSnapshotChanged;
+            }
             DetachFromHost();
             DisposeTesterView();
         }
@@ -1134,6 +1133,34 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             var button = sender as Button;
             plugin.ShowNotificationPreview(button == null ? null : button.Tag as string);
+        }
+
+        private void SelectNotificationBackgroundImageClick(object sender, RoutedEventArgs args)
+        {
+            var button = sender as Button;
+            var targetSettings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            if (plugin == null || targetSettings == null)
+            {
+                return;
+            }
+
+            plugin.SelectNotificationBackgroundImage(
+                targetSettings,
+                string.Equals(button == null ? null : button.Tag as string, "Desktop", StringComparison.OrdinalIgnoreCase));
+        }
+
+        private void ClearNotificationBackgroundImageClick(object sender, RoutedEventArgs args)
+        {
+            var button = sender as Button;
+            var targetSettings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            if (plugin == null || targetSettings == null)
+            {
+                return;
+            }
+
+            plugin.ClearNotificationBackgroundImage(
+                targetSettings,
+                string.Equals(button == null ? null : button.Tag as string, "Desktop", StringComparison.OrdinalIgnoreCase));
         }
 
         private void SelectColorClick(object sender, RoutedEventArgs args)
@@ -1638,6 +1665,11 @@ namespace ControllerSessionManager.PlayniteIntegration
                     handler(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
                 }
             }
+        }
+        private sealed class NotificationSoundPackOption
+        {
+            public string Key { get; set; }
+            public string DisplayName { get; set; }
         }
     }
 }

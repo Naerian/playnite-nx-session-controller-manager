@@ -141,6 +141,17 @@
         <Style x:Key="FieldHintText" TargetType="TextBlock" BasedOn="{StaticResource HintText}">
             <Setter Property="Margin" Value="0,8,0,16" />
         </Style>
+        <Style x:Key="ReadOnlyPathInput" TargetType="Border">
+            <Setter Property="Height" Value="36" />
+            <Setter Property="MinWidth" Value="220" />
+            <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Narian.Border}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="10,0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+        </Style>
         <Style x:Key="IconSquareButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="Width" Value="32" />
             <Setter Property="Height" Value="32" />
@@ -1262,15 +1273,40 @@
                                             </Expander>
                                         <Expander Style="{StaticResource AppearanceSectionExpander}" IsExpanded="False"
                                                   Header="{DynamicResource LOCCSM_AppearanceColors}">
-                                            <WrapPanel>
+                                            <StackPanel>
+                                                    <TextBlock Text="{DynamicResource LOCCSM_BackgroundImageSection}" Style="{StaticResource AppearanceGroupHeader}"/>
+                                                    <StackPanel Margin="0,0,0,20">
+                                                        <CheckBox Content="{DynamicResource LOCCSM_NotificationBackgroundImage}" IsChecked="{Binding DesktopNotificationUseBackgroundImage}" Margin="0,0,0,10"/>
+                                                        <DockPanel x:Name="DesktopBackgroundImagePickerRow" Margin="0,0,0,0" IsEnabled="{Binding DesktopNotificationUseBackgroundImage}">
+                                                            <Button DockPanel.Dock="Right" Content="{DynamicResource LOCCSM_Remove}" Tag="Desktop" Click="ClearNotificationBackgroundImageClick" Margin="8,0,0,0"/>
+                                                            <Button DockPanel.Dock="Right" Content="{DynamicResource LOCCSM_SelectImage}" Tag="Desktop" Click="SelectNotificationBackgroundImageClick" Margin="8,0,0,0"/>
+                                                            <Border Style="{StaticResource ReadOnlyPathInput}" ToolTip="{Binding DesktopNotificationBackgroundImagePath}">
+                                                                <TextBlock Text="{Binding DesktopNotificationBackgroundImagePath}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center"/>
+                                                            </Border>
+                                                        </DockPanel>
+                                                        <TextBlock Text="{DynamicResource LOCCSM_BackgroundImageOptimizationHint}" Style="{StaticResource FieldHintText}" Margin="0,6,0,14"/>
+                                                        <WrapPanel IsEnabled="{Binding DesktopNotificationUseBackgroundImage}">
+                                                            <StackPanel Style="{StaticResource CompactChoicePanel}"><TextBlock Text="{DynamicResource LOCCSM_ImageFit}"/><ComboBox SelectedValue="{Binding DesktopNotificationBackgroundImageStretch}" SelectedValuePath="Tag"><ComboBoxItem Tag="UniformToFill" Content="{DynamicResource LOCCSM_ImageFitCover}"/><ComboBoxItem Tag="Uniform" Content="{DynamicResource LOCCSM_ImageFitContain}"/><ComboBoxItem Tag="Fill" Content="{DynamicResource LOCCSM_ImageFitStretch}"/></ComboBox></StackPanel>
+                                                            <StackPanel Style="{StaticResource CompactChoicePanel}"><TextBlock Text="{DynamicResource LOCCSM_HorizontalAlignment}"/><ComboBox SelectedValue="{Binding DesktopNotificationBackgroundImageHorizontalAlignment}" SelectedValuePath="Tag"><ComboBoxItem Tag="Left" Content="{DynamicResource LOCCSM_BorderLeft}"/><ComboBoxItem Tag="Center" Content="{DynamicResource LOCCSM_IconPositionCenter}"/><ComboBoxItem Tag="Right" Content="{DynamicResource LOCCSM_BorderRight}"/></ComboBox></StackPanel>
+                                                            <StackPanel Style="{StaticResource CompactChoicePanel}"><TextBlock Text="{DynamicResource LOCCSM_VerticalAlignment}"/><ComboBox SelectedValue="{Binding DesktopNotificationBackgroundImageVerticalAlignment}" SelectedValuePath="Tag"><ComboBoxItem Tag="Top" Content="{DynamicResource LOCCSM_BorderTop}"/><ComboBoxItem Tag="Center" Content="{DynamicResource LOCCSM_IconPositionCenter}"/><ComboBoxItem Tag="Bottom" Content="{DynamicResource LOCCSM_BorderBottom}"/></ComboBox></StackPanel>
+                                                            <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_ImageOpacity}"/><TextBlock DockPanel.Dock="Right" Text="{Binding DesktopNotificationBackgroundImageOpacity}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="0" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="True" Value="{Binding DesktopNotificationBackgroundImageOpacity, UpdateSourceTrigger=PropertyChanged}"/></StackPanel>
+                                                            <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_ImageTintOpacity}"/><TextBlock DockPanel.Dock="Right" Text="{Binding DesktopNotificationBackgroundImageTintOpacity}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="0" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="True" Value="{Binding DesktopNotificationBackgroundImageTintOpacity, UpdateSourceTrigger=PropertyChanged}"/></StackPanel>
+                                                        </WrapPanel>
+                                                    </StackPanel>
+                                                    <TextBlock Text="{DynamicResource LOCCSM_BaseColors}" Style="{StaticResource AppearanceGroupHeader}"/>
+                                                    <WrapPanel Margin="0,0,0,4">
                                                     <StackPanel Style="{StaticResource StackedColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_BackgroundColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="DesktopNotificationBackgroundColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding DesktopNotificationBackgroundColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding DesktopNotificationBackgroundColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
                                                     <StackPanel Style="{StaticResource StackedColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_PrimaryTextColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="DesktopNotificationTextColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding DesktopNotificationTextColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding DesktopNotificationTextColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
                                                     <StackPanel Style="{StaticResource StackedColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_SecondaryTextColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="DesktopNotificationSecondaryTextColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding DesktopNotificationSecondaryTextColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding DesktopNotificationSecondaryTextColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
+                                                    </WrapPanel>
+                                                    <TextBlock Text="{DynamicResource LOCCSM_StateColors}" Style="{StaticResource AppearanceGroupHeader}"/>
+                                                    <WrapPanel>
                                                     <StackPanel Style="{StaticResource StackedColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_ConnectedColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="DesktopNotificationConnectedColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding DesktopNotificationConnectedColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding DesktopNotificationConnectedColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
                                                     <StackPanel Style="{StaticResource StackedColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_DisconnectedColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="DesktopNotificationDisconnectedColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding DesktopNotificationDisconnectedColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding DesktopNotificationDisconnectedColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
                                                     <StackPanel Style="{StaticResource StackedColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_WarningColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="DesktopNotificationWarningColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding DesktopNotificationWarningColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding DesktopNotificationWarningColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
                                                     <StackPanel Style="{StaticResource StackedColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_LowBatteryColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="DesktopNotificationLowBatteryColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding DesktopNotificationLowBatteryColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding DesktopNotificationLowBatteryColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
-                                            </WrapPanel>
+                                                    </WrapPanel>
+                                            </StackPanel>
                                         </Expander>
                                             <TextBlock Text="{DynamicResource LOCCSM_PreviewNotification}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,8,0,8"/>
                                             <WrapPanel>
@@ -1353,15 +1389,40 @@
                                             </Expander>
                                         <Expander Style="{StaticResource AppearanceSectionExpander}" IsExpanded="False"
                                                   Header="{DynamicResource LOCCSM_AppearanceColors}">
-                                            <WrapPanel>
+                                            <StackPanel>
+                                                    <TextBlock Text="{DynamicResource LOCCSM_BackgroundImageSection}" Style="{StaticResource AppearanceGroupHeader}"/>
+                                                    <StackPanel Margin="0,0,0,20">
+                                                        <CheckBox Content="{DynamicResource LOCCSM_NotificationBackgroundImage}" IsChecked="{Binding NotificationUseBackgroundImage}" Margin="0,0,0,10"/>
+                                                        <DockPanel x:Name="FullscreenBackgroundImagePickerRow" Margin="0,0,0,0" IsEnabled="{Binding NotificationUseBackgroundImage}">
+                                                            <Button DockPanel.Dock="Right" Content="{DynamicResource LOCCSM_Remove}" Tag="Fullscreen" Click="ClearNotificationBackgroundImageClick" Margin="8,0,0,0"/>
+                                                            <Button DockPanel.Dock="Right" Content="{DynamicResource LOCCSM_SelectImage}" Tag="Fullscreen" Click="SelectNotificationBackgroundImageClick" Margin="8,0,0,0"/>
+                                                            <Border Style="{StaticResource ReadOnlyPathInput}" ToolTip="{Binding NotificationBackgroundImagePath}">
+                                                                <TextBlock Text="{Binding NotificationBackgroundImagePath}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center"/>
+                                                            </Border>
+                                                        </DockPanel>
+                                                        <TextBlock Text="{DynamicResource LOCCSM_BackgroundImageOptimizationHint}" Style="{StaticResource FieldHintText}" Margin="0,6,0,14"/>
+                                                        <WrapPanel IsEnabled="{Binding NotificationUseBackgroundImage}">
+                                                            <StackPanel Style="{StaticResource CompactChoicePanel}"><TextBlock Text="{DynamicResource LOCCSM_ImageFit}"/><ComboBox SelectedValue="{Binding NotificationBackgroundImageStretch}" SelectedValuePath="Tag"><ComboBoxItem Tag="UniformToFill" Content="{DynamicResource LOCCSM_ImageFitCover}"/><ComboBoxItem Tag="Uniform" Content="{DynamicResource LOCCSM_ImageFitContain}"/><ComboBoxItem Tag="Fill" Content="{DynamicResource LOCCSM_ImageFitStretch}"/></ComboBox></StackPanel>
+                                                            <StackPanel Style="{StaticResource CompactChoicePanel}"><TextBlock Text="{DynamicResource LOCCSM_HorizontalAlignment}"/><ComboBox SelectedValue="{Binding NotificationBackgroundImageHorizontalAlignment}" SelectedValuePath="Tag"><ComboBoxItem Tag="Left" Content="{DynamicResource LOCCSM_BorderLeft}"/><ComboBoxItem Tag="Center" Content="{DynamicResource LOCCSM_IconPositionCenter}"/><ComboBoxItem Tag="Right" Content="{DynamicResource LOCCSM_BorderRight}"/></ComboBox></StackPanel>
+                                                            <StackPanel Style="{StaticResource CompactChoicePanel}"><TextBlock Text="{DynamicResource LOCCSM_VerticalAlignment}"/><ComboBox SelectedValue="{Binding NotificationBackgroundImageVerticalAlignment}" SelectedValuePath="Tag"><ComboBoxItem Tag="Top" Content="{DynamicResource LOCCSM_BorderTop}"/><ComboBoxItem Tag="Center" Content="{DynamicResource LOCCSM_IconPositionCenter}"/><ComboBoxItem Tag="Bottom" Content="{DynamicResource LOCCSM_BorderBottom}"/></ComboBox></StackPanel>
+                                                            <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_ImageOpacity}"/><TextBlock DockPanel.Dock="Right" Text="{Binding NotificationBackgroundImageOpacity}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="0" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="True" Value="{Binding NotificationBackgroundImageOpacity, UpdateSourceTrigger=PropertyChanged}"/></StackPanel>
+                                                            <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_ImageTintOpacity}"/><TextBlock DockPanel.Dock="Right" Text="{Binding NotificationBackgroundImageTintOpacity}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="0" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="True" Value="{Binding NotificationBackgroundImageTintOpacity, UpdateSourceTrigger=PropertyChanged}"/></StackPanel>
+                                                        </WrapPanel>
+                                                    </StackPanel>
+                                                    <TextBlock Text="{DynamicResource LOCCSM_BaseColors}" Style="{StaticResource AppearanceGroupHeader}"/>
+                                                    <WrapPanel Margin="0,0,0,4">
                                                     <StackPanel Style="{StaticResource StackedColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_BackgroundColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="NotificationBackgroundColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding NotificationBackgroundColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding NotificationBackgroundColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
                                                     <StackPanel Style="{StaticResource StackedColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_PrimaryTextColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="NotificationTextColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding NotificationTextColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding NotificationTextColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
                                                     <StackPanel Style="{StaticResource StackedColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_SecondaryTextColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="NotificationSecondaryTextColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding NotificationSecondaryTextColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding NotificationSecondaryTextColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
+                                                    </WrapPanel>
+                                                    <TextBlock Text="{DynamicResource LOCCSM_StateColors}" Style="{StaticResource AppearanceGroupHeader}"/>
+                                                    <WrapPanel>
                                                     <StackPanel Style="{StaticResource StackedColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_ConnectedColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="NotificationConnectedColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding NotificationConnectedColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding NotificationConnectedColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
                                                     <StackPanel Style="{StaticResource StackedColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_DisconnectedColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="NotificationDisconnectedColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding NotificationDisconnectedColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding NotificationDisconnectedColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
                                                     <StackPanel Style="{StaticResource StackedColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_WarningColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="NotificationWarningColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding NotificationWarningColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding NotificationWarningColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
                                                     <StackPanel Style="{StaticResource StackedColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_LowBatteryColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="NotificationLowBatteryColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding NotificationLowBatteryColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding NotificationLowBatteryColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
-                                            </WrapPanel>
+                                                    </WrapPanel>
+                                            </StackPanel>
                                         </Expander>
                                             <TextBlock Text="{DynamicResource LOCCSM_PreviewNotification}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,8,0,8"/>
                                             <WrapPanel>
@@ -1404,7 +1465,10 @@
                                     <StackPanel Margin="0,16,0,0" IsEnabled="{Binding EnableNotificationSounds}">
                                         <TextBlock Text="{DynamicResource LOCCSM_NotificationSoundPack}" Style="{StaticResource FieldLabel}" />
                                         <TextBlock Text="{DynamicResource LOCCSM_NotificationSoundPackHelp}" Style="{StaticResource FieldHintText}" Margin="0,0,0,8"/>
-                                        <WrapPanel x:Name="NotificationSoundPackChips" Orientation="Horizontal" Margin="0,0,0,16"/>
+                                        <ComboBox x:Name="NotificationSoundPackSelector"
+                                                  Width="320" Height="36" HorizontalAlignment="Left" Margin="0,0,0,16"
+                                                  DisplayMemberPath="DisplayName" SelectedValuePath="Key"
+                                                  SelectedValue="{Binding NotificationSoundPack, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                                         <DockPanel LastChildFill="True" Margin="0,0,0,8">
                                             <TextBlock Text="{DynamicResource LOCCSM_NotificationSoundVolume}" VerticalAlignment="Center" Margin="0,0,12,0"/>
                                             <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center" Margin="12,0,0,0"

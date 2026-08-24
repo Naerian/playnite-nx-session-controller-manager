@@ -1,3 +1,5 @@
+param([switch]$WithImage)
+
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 $assemblyPath = Join-Path $root "bin\Release\ControllerSessionManager.OverlayHost.exe"
@@ -10,11 +12,19 @@ $window = [Activator]::CreateInstance($type, $true)
 
 $svg = [xml](Get-Content -Raw -LiteralPath (Join-Path $root "Gamepads\default.svg"))
 $geometry = (@($svg.svg.path | ForEach-Object { $_.d }) -join " ")
+$backgroundImage = ""
+if ($WithImage) {
+    $backgroundImage = Join-Path $root "Images\NotifyBackgrounds\bg1.jpg"
+}
+$encodedBackgroundImage = if ($backgroundImage) {
+    [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($backgroundImage))
+} else { "" }
 $style = @(
     "520", "100", "TopRight", "#F4121418", "#FFFFFFFF", "#FFC6CBD4",
     "#FF4FC27E", "#FF50AAFF", "#FFF5B542", "19", "15", "38", "18",
     "True", "Full", "2", "24", "Left", "8", "#FFE05252", "False", "28",
-    "True", "Inter", "SemiBold", "Left", "IconAndBorder", "None", "True"
+    "True", "Inter", "SemiBold", "Left", "IconAndBorder", "None", "True",
+    $WithImage.ToString(), $encodedBackgroundImage, "UniformToFill", "Center", "Center", "65", "45"
 ) -join ";"
 
 $type.GetMethod("Enqueue").Invoke($window, @(

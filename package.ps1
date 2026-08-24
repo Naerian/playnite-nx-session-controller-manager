@@ -50,7 +50,8 @@ $required = @(
     (Join-Path $build "Gamepads"),
     (Join-Path $build "media"),
     (Join-Path $build "Audio"),
-    (Join-Path $build "Fonts")
+    (Join-Path $build "Fonts"),
+    (Join-Path $build "Images")
 )
 foreach ($path in $required) {
     if (-not (Test-Path -LiteralPath $path)) {
@@ -87,6 +88,7 @@ Copy-Item -LiteralPath (Join-Path $build "Gamepads") -Destination $stage -Recurs
 Copy-Item -LiteralPath (Join-Path $build "media") -Destination $stage -Recurse
 Copy-Item -LiteralPath (Join-Path $build "Audio") -Destination $stage -Recurse
 Copy-Item -LiteralPath (Join-Path $build "Fonts") -Destination $stage -Recurse
+Copy-Item -LiteralPath (Join-Path $build "Images") -Destination $stage -Recurse
 foreach ($doc in @("README.md", "CHANGELOG.md")) {
     $docPath = Join-Path $build $doc
     if (Test-Path -LiteralPath $docPath) {

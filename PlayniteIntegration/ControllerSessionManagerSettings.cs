@@ -32,6 +32,13 @@ namespace ControllerSessionManager.PlayniteIntegration
         private int notificationDurationMilliseconds = 5000;
         private string notificationPosition = "TopRight";
         private string notificationBackgroundColor = "#F4121418";
+        private bool notificationUseBackgroundImage;
+        private string notificationBackgroundImagePath = string.Empty;
+        private string notificationBackgroundImageStretch = "UniformToFill";
+        private string notificationBackgroundImageHorizontalAlignment = "Center";
+        private string notificationBackgroundImageVerticalAlignment = "Center";
+        private int notificationBackgroundImageOpacity = 45;
+        private int notificationBackgroundImageTintOpacity = 45;
         private string notificationTextColor = "#FFFFFFFF";
         private string notificationSecondaryTextColor = "#FFC6CBD4";
         private string notificationConnectedColor = "#FF4FC27E";
@@ -67,6 +74,13 @@ namespace ControllerSessionManager.PlayniteIntegration
         private int desktopNotificationDurationMilliseconds = 4000;
         private string desktopNotificationPosition = "BottomRight";
         private string desktopNotificationBackgroundColor = "#F4121418";
+        private bool desktopNotificationUseBackgroundImage;
+        private string desktopNotificationBackgroundImagePath = string.Empty;
+        private string desktopNotificationBackgroundImageStretch = "UniformToFill";
+        private string desktopNotificationBackgroundImageHorizontalAlignment = "Center";
+        private string desktopNotificationBackgroundImageVerticalAlignment = "Center";
+        private int desktopNotificationBackgroundImageOpacity = 45;
+        private int desktopNotificationBackgroundImageTintOpacity = 45;
         private string desktopNotificationTextColor = "#FFFFFFFF";
         private string desktopNotificationSecondaryTextColor = "#FFC6CBD4";
         private string desktopNotificationConnectedColor = "#FF4FC27E";
@@ -420,6 +434,13 @@ namespace ControllerSessionManager.PlayniteIntegration
         public int NotificationDurationMilliseconds { get { return notificationDurationMilliseconds; } set { SetValue(ref notificationDurationMilliseconds, value); } }
         public string NotificationPosition { get { return notificationPosition; } set { SetValue(ref notificationPosition, value); } }
         public string NotificationBackgroundColor { get { return notificationBackgroundColor; } set { SetValue(ref notificationBackgroundColor, value); } }
+        public bool NotificationUseBackgroundImage { get { return notificationUseBackgroundImage; } set { SetValue(ref notificationUseBackgroundImage, value); } }
+        public string NotificationBackgroundImagePath { get { return notificationBackgroundImagePath; } set { SetValue(ref notificationBackgroundImagePath, value ?? string.Empty); } }
+        public string NotificationBackgroundImageStretch { get { return notificationBackgroundImageStretch; } set { SetValue(ref notificationBackgroundImageStretch, value ?? "UniformToFill"); } }
+        public string NotificationBackgroundImageHorizontalAlignment { get { return notificationBackgroundImageHorizontalAlignment; } set { SetValue(ref notificationBackgroundImageHorizontalAlignment, value ?? "Center"); } }
+        public string NotificationBackgroundImageVerticalAlignment { get { return notificationBackgroundImageVerticalAlignment; } set { SetValue(ref notificationBackgroundImageVerticalAlignment, value ?? "Center"); } }
+        public int NotificationBackgroundImageOpacity { get { return notificationBackgroundImageOpacity; } set { SetValue(ref notificationBackgroundImageOpacity, ClampPercent(value)); } }
+        public int NotificationBackgroundImageTintOpacity { get { return notificationBackgroundImageTintOpacity; } set { SetValue(ref notificationBackgroundImageTintOpacity, ClampPercent(value)); } }
         public string NotificationTextColor { get { return notificationTextColor; } set { SetValue(ref notificationTextColor, value); } }
         public string NotificationSecondaryTextColor { get { return notificationSecondaryTextColor; } set { SetValue(ref notificationSecondaryTextColor, value); } }
         public string NotificationConnectedColor { get { return notificationConnectedColor; } set { SetValue(ref notificationConnectedColor, value); } }
@@ -455,6 +476,13 @@ namespace ControllerSessionManager.PlayniteIntegration
         public int DesktopNotificationDurationMilliseconds { get { return desktopNotificationDurationMilliseconds; } set { SetValue(ref desktopNotificationDurationMilliseconds, value); } }
         public string DesktopNotificationPosition { get { return desktopNotificationPosition; } set { SetValue(ref desktopNotificationPosition, value); } }
         public string DesktopNotificationBackgroundColor { get { return desktopNotificationBackgroundColor; } set { SetValue(ref desktopNotificationBackgroundColor, value); } }
+        public bool DesktopNotificationUseBackgroundImage { get { return desktopNotificationUseBackgroundImage; } set { SetValue(ref desktopNotificationUseBackgroundImage, value); } }
+        public string DesktopNotificationBackgroundImagePath { get { return desktopNotificationBackgroundImagePath; } set { SetValue(ref desktopNotificationBackgroundImagePath, value ?? string.Empty); } }
+        public string DesktopNotificationBackgroundImageStretch { get { return desktopNotificationBackgroundImageStretch; } set { SetValue(ref desktopNotificationBackgroundImageStretch, value ?? "UniformToFill"); } }
+        public string DesktopNotificationBackgroundImageHorizontalAlignment { get { return desktopNotificationBackgroundImageHorizontalAlignment; } set { SetValue(ref desktopNotificationBackgroundImageHorizontalAlignment, value ?? "Center"); } }
+        public string DesktopNotificationBackgroundImageVerticalAlignment { get { return desktopNotificationBackgroundImageVerticalAlignment; } set { SetValue(ref desktopNotificationBackgroundImageVerticalAlignment, value ?? "Center"); } }
+        public int DesktopNotificationBackgroundImageOpacity { get { return desktopNotificationBackgroundImageOpacity; } set { SetValue(ref desktopNotificationBackgroundImageOpacity, ClampPercent(value)); } }
+        public int DesktopNotificationBackgroundImageTintOpacity { get { return desktopNotificationBackgroundImageTintOpacity; } set { SetValue(ref desktopNotificationBackgroundImageTintOpacity, ClampPercent(value)); } }
         public string DesktopNotificationTextColor { get { return desktopNotificationTextColor; } set { SetValue(ref desktopNotificationTextColor, value); } }
         public string DesktopNotificationSecondaryTextColor { get { return desktopNotificationSecondaryTextColor; } set { SetValue(ref desktopNotificationSecondaryTextColor, value); } }
         public string DesktopNotificationConnectedColor { get { return desktopNotificationConnectedColor; } set { SetValue(ref desktopNotificationConnectedColor, value); } }
@@ -974,6 +1002,17 @@ namespace ControllerSessionManager.PlayniteIntegration
                 SettingsSchemaVersion = 12;
             }
 
+            if (SettingsSchemaVersion < 13)
+            {
+                notificationUseBackgroundImage = false;
+                desktopNotificationUseBackgroundImage = false;
+                notificationBackgroundImageOpacity = 45;
+                desktopNotificationBackgroundImageOpacity = 45;
+                notificationBackgroundImageTintOpacity = 45;
+                desktopNotificationBackgroundImageTintOpacity = 45;
+                SettingsSchemaVersion = 13;
+            }
+
             topPanelControllerMode = NormalizeTopPanelControllerMode(topPanelControllerMode);
             appearancePreset = SettingsAppearance.Normalize(appearancePreset);
             notificationStylePreset = NotificationStylePresets.Normalize(notificationStylePreset);
@@ -1015,6 +1054,11 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
 
             return TopPanelControllerModeHidden;
+        }
+
+        private static int ClampPercent(int value)
+        {
+            return value < 0 ? 0 : value > 100 ? 100 : value;
         }
 
         private static bool HasSessionOverride(GameSessionOverride value)
@@ -1185,6 +1229,13 @@ namespace ControllerSessionManager.PlayniteIntegration
                 NotificationDurationMilliseconds = NotificationDurationMilliseconds,
                 NotificationPosition = NotificationPosition,
                 NotificationBackgroundColor = NotificationBackgroundColor,
+                NotificationUseBackgroundImage = NotificationUseBackgroundImage,
+                NotificationBackgroundImagePath = NotificationBackgroundImagePath,
+                NotificationBackgroundImageStretch = NotificationBackgroundImageStretch,
+                NotificationBackgroundImageHorizontalAlignment = NotificationBackgroundImageHorizontalAlignment,
+                NotificationBackgroundImageVerticalAlignment = NotificationBackgroundImageVerticalAlignment,
+                NotificationBackgroundImageOpacity = NotificationBackgroundImageOpacity,
+                NotificationBackgroundImageTintOpacity = NotificationBackgroundImageTintOpacity,
                 NotificationTextColor = NotificationTextColor,
                 NotificationSecondaryTextColor = NotificationSecondaryTextColor,
                 NotificationConnectedColor = NotificationConnectedColor,
@@ -1218,6 +1269,13 @@ namespace ControllerSessionManager.PlayniteIntegration
                 DesktopNotificationDurationMilliseconds = DesktopNotificationDurationMilliseconds,
                 DesktopNotificationPosition = DesktopNotificationPosition,
                 DesktopNotificationBackgroundColor = DesktopNotificationBackgroundColor,
+                DesktopNotificationUseBackgroundImage = DesktopNotificationUseBackgroundImage,
+                DesktopNotificationBackgroundImagePath = DesktopNotificationBackgroundImagePath,
+                DesktopNotificationBackgroundImageStretch = DesktopNotificationBackgroundImageStretch,
+                DesktopNotificationBackgroundImageHorizontalAlignment = DesktopNotificationBackgroundImageHorizontalAlignment,
+                DesktopNotificationBackgroundImageVerticalAlignment = DesktopNotificationBackgroundImageVerticalAlignment,
+                DesktopNotificationBackgroundImageOpacity = DesktopNotificationBackgroundImageOpacity,
+                DesktopNotificationBackgroundImageTintOpacity = DesktopNotificationBackgroundImageTintOpacity,
                 DesktopNotificationTextColor = DesktopNotificationTextColor,
                 DesktopNotificationSecondaryTextColor = DesktopNotificationSecondaryTextColor,
                 DesktopNotificationConnectedColor = DesktopNotificationConnectedColor,
@@ -1349,6 +1407,13 @@ namespace ControllerSessionManager.PlayniteIntegration
             NotificationDurationMilliseconds = source.NotificationDurationMilliseconds;
             NotificationPosition = source.NotificationPosition;
             NotificationBackgroundColor = source.NotificationBackgroundColor;
+            NotificationUseBackgroundImage = source.NotificationUseBackgroundImage;
+            NotificationBackgroundImagePath = source.NotificationBackgroundImagePath;
+            NotificationBackgroundImageStretch = source.NotificationBackgroundImageStretch;
+            NotificationBackgroundImageHorizontalAlignment = source.NotificationBackgroundImageHorizontalAlignment;
+            NotificationBackgroundImageVerticalAlignment = source.NotificationBackgroundImageVerticalAlignment;
+            NotificationBackgroundImageOpacity = source.NotificationBackgroundImageOpacity;
+            NotificationBackgroundImageTintOpacity = source.NotificationBackgroundImageTintOpacity;
             NotificationTextColor = source.NotificationTextColor;
             NotificationSecondaryTextColor = source.NotificationSecondaryTextColor;
             NotificationConnectedColor = source.NotificationConnectedColor;
@@ -1381,6 +1446,13 @@ namespace ControllerSessionManager.PlayniteIntegration
             DesktopNotificationDurationMilliseconds = source.DesktopNotificationDurationMilliseconds;
             DesktopNotificationPosition = source.DesktopNotificationPosition;
             DesktopNotificationBackgroundColor = source.DesktopNotificationBackgroundColor;
+            DesktopNotificationUseBackgroundImage = source.DesktopNotificationUseBackgroundImage;
+            DesktopNotificationBackgroundImagePath = source.DesktopNotificationBackgroundImagePath;
+            DesktopNotificationBackgroundImageStretch = source.DesktopNotificationBackgroundImageStretch;
+            DesktopNotificationBackgroundImageHorizontalAlignment = source.DesktopNotificationBackgroundImageHorizontalAlignment;
+            DesktopNotificationBackgroundImageVerticalAlignment = source.DesktopNotificationBackgroundImageVerticalAlignment;
+            DesktopNotificationBackgroundImageOpacity = source.DesktopNotificationBackgroundImageOpacity;
+            DesktopNotificationBackgroundImageTintOpacity = source.DesktopNotificationBackgroundImageTintOpacity;
             DesktopNotificationTextColor = source.DesktopNotificationTextColor;
             DesktopNotificationSecondaryTextColor = source.DesktopNotificationSecondaryTextColor;
             DesktopNotificationConnectedColor = source.DesktopNotificationConnectedColor;

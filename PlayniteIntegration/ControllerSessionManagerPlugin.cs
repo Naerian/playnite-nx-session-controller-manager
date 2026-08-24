@@ -629,7 +629,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                     return;
                 }
 
-                snapshot.ApplyTo(targetSettings);
+                snapshot.ApplyTo(targetSettings, GetNotificationBackgroundDirectory());
                 if (onApplied != null)
                 {
                     onApplied();
@@ -2436,7 +2436,11 @@ namespace ControllerSessionManager.PlayniteIntegration
                 settings.NotificationShowShadow.ToString(),
                 settings.NotificationFontFamily, settings.NotificationFontWeight,
                 settings.NotificationTextAlignment, settings.NotificationAccentMode,
-                settings.NotificationAnimation, settings.NotificationShowTitle.ToString()
+                settings.NotificationAnimation, settings.NotificationShowTitle.ToString(),
+                settings.NotificationUseBackgroundImage.ToString(), EncodeStyleValue(settings.NotificationBackgroundImagePath),
+                settings.NotificationBackgroundImageStretch, settings.NotificationBackgroundImageHorizontalAlignment,
+                settings.NotificationBackgroundImageVerticalAlignment, settings.NotificationBackgroundImageOpacity.ToString(),
+                settings.NotificationBackgroundImageTintOpacity.ToString()
             });
         }
 
@@ -2461,8 +2465,140 @@ namespace ControllerSessionManager.PlayniteIntegration
                 settings.DesktopNotificationShowShadow.ToString(),
                 settings.DesktopNotificationFontFamily, settings.DesktopNotificationFontWeight,
                 settings.DesktopNotificationTextAlignment, settings.DesktopNotificationAccentMode,
-                settings.DesktopNotificationAnimation, settings.DesktopNotificationShowTitle.ToString()
+                settings.DesktopNotificationAnimation, settings.DesktopNotificationShowTitle.ToString(),
+                settings.DesktopNotificationUseBackgroundImage.ToString(), EncodeStyleValue(settings.DesktopNotificationBackgroundImagePath),
+                settings.DesktopNotificationBackgroundImageStretch, settings.DesktopNotificationBackgroundImageHorizontalAlignment,
+                settings.DesktopNotificationBackgroundImageVerticalAlignment, settings.DesktopNotificationBackgroundImageOpacity.ToString(),
+                settings.DesktopNotificationBackgroundImageTintOpacity.ToString()
             });
+        }
+
+        private static string EncodeStyleValue(string value)
+        {
+            return string.IsNullOrWhiteSpace(value)
+                ? string.Empty
+                : Convert.ToBase64String(Encoding.UTF8.GetBytes(value));
+        }
+
+        public void SelectNotificationBackgroundImage(ControllerSessionManagerSettings targetSettings, bool desktop)
+        {
+            if (targetSettings == null)
+            {
+                return;
+            }
+
+            var dialog = new OpenFileDialog
+            {
+                Title = Loc("LOCCSM_NotificationBackgroundImageSelect"),
+                Filter = "Images (*.png;*.jpg;*.jpeg)|*.png;*.jpg;*.jpeg"
+            };
+            if (dialog.ShowDialog() != true)
+            {
+                return;
+            }
+
+            try
+            {
+                var info = new FileInfo(dialog.FileName);
+                if (!info.Exists || info.Length <= 0 || info.Length > 10 * 1024 * 1024)
+                {
+                    throw new InvalidDataException(Loc("LOCCSM_NotificationBackgroundImageInvalid"));
+                }
+
+                System.Windows.Media.Imaging.BitmapSource image;
+                using (var stream = File.OpenRead(info.FullName))
+                {
+                    var decoder = System.Windows.Media.Imaging.BitmapDecoder.Create(
+                        stream,
+                        System.Windows.Media.Imaging.BitmapCreateOptions.PreservePixelFormat,
+                        System.Windows.Media.Imaging.BitmapCacheOption.OnLoad);
+                    if (decoder.Frames.Count == 0)
+                    {
+                        throw new InvalidDataException(Loc("LOCCSM_NotificationBackgroundImageInvalid"));
+                    }
+
+                    image = decoder.Frames[0];
+                }
+
+                var directory = GetNotificationBackgroundDirectory();
+                Directory.CreateDirectory(directory);
+                var extension = string.Equals(info.Extension, ".png", StringComparison.OrdinalIgnoreCase)
+                    ? ".png" : ".jpg";
+                var destination = Path.Combine(directory,
+                    (desktop ? "desktop-" : "fullscreen-") + Guid.NewGuid().ToString("N") + extension);
+                SaveOptimizedNotificationBackground(image, destination, extension);
+                if (desktop)
+                {
+                    targetSettings.DesktopNotificationBackgroundImagePath = destination;
+                    targetSettings.DesktopNotificationUseBackgroundImage = true;
+                }
+                else
+                {
+                    targetSettings.NotificationBackgroundImagePath = destination;
+                    targetSettings.NotificationUseBackgroundImage = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Failed to select notification background image.");
+                PlayniteApi.Dialogs.ShowErrorMessage(ex.Message, Loc("LOCCSM_NotificationBackgroundImage"));
+            }
+        }
+
+        private static void SaveOptimizedNotificationBackground(
+            System.Windows.Media.Imaging.BitmapSource source, string destination, string extension)
+        {
+            const double maxWidth = 1920.0;
+            const double maxHeight = 1080.0;
+            var scale = Math.Min(1.0,
+                Math.Min(maxWidth / Math.Max(1, source.PixelWidth),
+                    maxHeight / Math.Max(1, source.PixelHeight)));
+            System.Windows.Media.Imaging.BitmapSource output = source;
+            if (scale < 1.0)
+            {
+                output = new System.Windows.Media.Imaging.TransformedBitmap(
+                    source, new ScaleTransform(scale, scale));
+            }
+
+            System.Windows.Media.Imaging.BitmapEncoder encoder;
+            if (string.Equals(extension, ".png", StringComparison.OrdinalIgnoreCase))
+            {
+                encoder = new System.Windows.Media.Imaging.PngBitmapEncoder();
+            }
+            else
+            {
+                encoder = new System.Windows.Media.Imaging.JpegBitmapEncoder { QualityLevel = 88 };
+            }
+
+            encoder.Frames.Add(System.Windows.Media.Imaging.BitmapFrame.Create(output));
+            using (var stream = File.Create(destination))
+            {
+                encoder.Save(stream);
+            }
+        }
+
+        public void ClearNotificationBackgroundImage(ControllerSessionManagerSettings targetSettings, bool desktop)
+        {
+            if (targetSettings == null)
+            {
+                return;
+            }
+
+            if (desktop)
+            {
+                targetSettings.DesktopNotificationUseBackgroundImage = false;
+                targetSettings.DesktopNotificationBackgroundImagePath = string.Empty;
+            }
+            else
+            {
+                targetSettings.NotificationUseBackgroundImage = false;
+                targetSettings.NotificationBackgroundImagePath = string.Empty;
+            }
+        }
+
+        internal string GetNotificationBackgroundDirectory()
+        {
+            return Path.Combine(GetPluginUserDataPath(), "NotificationBackgrounds");
         }
 
         public void ShowDesktopNotificationPreview(string kind)

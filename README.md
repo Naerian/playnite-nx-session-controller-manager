@@ -128,6 +128,10 @@ To add or update a translation, copy an existing locale file, rename it to the t
 
 Community translation contributions are welcome.
 
+## Acknowledgements
+
+Thanks to [Controllercons](https://controllercons.github.io/) for its free solid, outline and duotone video game controller icon collection, which helped provide a consistent visual language for Controller Manager's controller artwork.
+
 ## Support
 
 Please use [GitHub Issues](https://github.com/Naerian/playnite-nx-session-controller-manager/issues) for reproducible bugs and include the Playnite mode, controller model, connection type, game and exact steps. **Export support report** from Advanced or the Playnite main menu is usually enough; use **Export HID diagnostics** only when device or battery detection needs a hardware-level report, and review that file before sharing it publicly.

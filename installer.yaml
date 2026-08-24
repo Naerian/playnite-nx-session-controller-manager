@@ -1,5 +1,21 @@
 AddonId: ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc
 Packages:
+  - Version: 1.0.22
+    RequiredApiVersion: 6.16.0
+    ReleaseDate: 2026-08-24
+    PackageUrl: https://github.com/Naerian/playnite-nx-session-controller-manager/releases/download/v1.0.22/ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc_1_0_22.pext
+    Changelog:
+      - Added independent PNG/JPEG backgrounds for fullscreen and desktop notifications, including cover, contain, stretch, alignment, opacity and tint controls.
+      - Added the Cinematic notification preset with bundled artwork; exported visual profiles now embed custom backgrounds for portable imports.
+      - Added seven notification sound packs with event-specific connected, disconnected, warning and low-battery cues plus volume and per-event controls.
+      - Reorganized notification appearance settings, rebuilt rounded notification shadows and replaced the sound-pack button row with a compact selector.
+      - Expanded overlay customization with independent typography, layout, borders, shadows, animation and fully styled connection and battery badges.
+      - Added bundled notification and overlay fonts with separate typeface and weight controls while preserving existing user appearance settings during upgrades.
+      - Refined notification and overlay presets into more distinctive compositions and corrected their default scale, alignment and border treatments.
+      - Added matching solid and duotone controller artwork across icon selectors and Tester schemes, with complete catalog coverage and balanced sizing.
+      - Improved Bluetooth, USB and wireless-receiver transport identification, including DualSense connection reporting.
+      - Scoped settings appearance presets to the plugin panel inside Playnite Add-ons while retaining full-window styling for standalone settings.
+      - Fixed a settings-panel stack overflow caused by the sound-pack selector feedback loop.
   - Version: 1.0.21
     RequiredApiVersion: 6.16.0
     ReleaseDate: 2026-08-23

@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 
 namespace ControllerSessionManager.PlayniteIntegration
 {
@@ -7,7 +8,7 @@ namespace ControllerSessionManager.PlayniteIntegration
     /// </summary>
     public sealed class VisualProfileSnapshot
     {
-        public const int CurrentVersion = 4;
+        public const int CurrentVersion = 5;
         public const string FileExtension = ".pcvisual";
 
         public int Version { get; set; }
@@ -30,6 +31,14 @@ namespace ControllerSessionManager.PlayniteIntegration
         public int NotificationDurationMilliseconds { get; set; }
         public string NotificationPosition { get; set; }
         public string NotificationBackgroundColor { get; set; }
+        public bool NotificationUseBackgroundImage { get; set; }
+        public string NotificationBackgroundImageStretch { get; set; }
+        public string NotificationBackgroundImageHorizontalAlignment { get; set; }
+        public string NotificationBackgroundImageVerticalAlignment { get; set; }
+        public int NotificationBackgroundImageOpacity { get; set; }
+        public int NotificationBackgroundImageTintOpacity { get; set; }
+        public string NotificationBackgroundImageData { get; set; }
+        public string NotificationBackgroundImageExtension { get; set; }
         public string NotificationTextColor { get; set; }
         public string NotificationSecondaryTextColor { get; set; }
         public string NotificationConnectedColor { get; set; }
@@ -61,6 +70,14 @@ namespace ControllerSessionManager.PlayniteIntegration
         public int DesktopNotificationDurationMilliseconds { get; set; }
         public string DesktopNotificationPosition { get; set; }
         public string DesktopNotificationBackgroundColor { get; set; }
+        public bool DesktopNotificationUseBackgroundImage { get; set; }
+        public string DesktopNotificationBackgroundImageStretch { get; set; }
+        public string DesktopNotificationBackgroundImageHorizontalAlignment { get; set; }
+        public string DesktopNotificationBackgroundImageVerticalAlignment { get; set; }
+        public int DesktopNotificationBackgroundImageOpacity { get; set; }
+        public int DesktopNotificationBackgroundImageTintOpacity { get; set; }
+        public string DesktopNotificationBackgroundImageData { get; set; }
+        public string DesktopNotificationBackgroundImageExtension { get; set; }
         public string DesktopNotificationTextColor { get; set; }
         public string DesktopNotificationSecondaryTextColor { get; set; }
         public string DesktopNotificationConnectedColor { get; set; }
@@ -176,6 +193,14 @@ namespace ControllerSessionManager.PlayniteIntegration
                 NotificationDurationMilliseconds = settings.NotificationDurationMilliseconds,
                 NotificationPosition = settings.NotificationPosition,
                 NotificationBackgroundColor = settings.NotificationBackgroundColor,
+                NotificationUseBackgroundImage = settings.NotificationUseBackgroundImage,
+                NotificationBackgroundImageStretch = settings.NotificationBackgroundImageStretch,
+                NotificationBackgroundImageHorizontalAlignment = settings.NotificationBackgroundImageHorizontalAlignment,
+                NotificationBackgroundImageVerticalAlignment = settings.NotificationBackgroundImageVerticalAlignment,
+                NotificationBackgroundImageOpacity = settings.NotificationBackgroundImageOpacity,
+                NotificationBackgroundImageTintOpacity = settings.NotificationBackgroundImageTintOpacity,
+                NotificationBackgroundImageData = ReadImageData(settings.NotificationBackgroundImagePath),
+                NotificationBackgroundImageExtension = ImageExtension(settings.NotificationBackgroundImagePath),
                 NotificationTextColor = settings.NotificationTextColor,
                 NotificationSecondaryTextColor = settings.NotificationSecondaryTextColor,
                 NotificationConnectedColor = settings.NotificationConnectedColor,
@@ -206,6 +231,14 @@ namespace ControllerSessionManager.PlayniteIntegration
                 DesktopNotificationDurationMilliseconds = settings.DesktopNotificationDurationMilliseconds,
                 DesktopNotificationPosition = settings.DesktopNotificationPosition,
                 DesktopNotificationBackgroundColor = settings.DesktopNotificationBackgroundColor,
+                DesktopNotificationUseBackgroundImage = settings.DesktopNotificationUseBackgroundImage,
+                DesktopNotificationBackgroundImageStretch = settings.DesktopNotificationBackgroundImageStretch,
+                DesktopNotificationBackgroundImageHorizontalAlignment = settings.DesktopNotificationBackgroundImageHorizontalAlignment,
+                DesktopNotificationBackgroundImageVerticalAlignment = settings.DesktopNotificationBackgroundImageVerticalAlignment,
+                DesktopNotificationBackgroundImageOpacity = settings.DesktopNotificationBackgroundImageOpacity,
+                DesktopNotificationBackgroundImageTintOpacity = settings.DesktopNotificationBackgroundImageTintOpacity,
+                DesktopNotificationBackgroundImageData = ReadImageData(settings.DesktopNotificationBackgroundImagePath),
+                DesktopNotificationBackgroundImageExtension = ImageExtension(settings.DesktopNotificationBackgroundImagePath),
                 DesktopNotificationTextColor = settings.DesktopNotificationTextColor,
                 DesktopNotificationSecondaryTextColor = settings.DesktopNotificationSecondaryTextColor,
                 DesktopNotificationConnectedColor = settings.DesktopNotificationConnectedColor,
@@ -298,6 +331,11 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         public void ApplyTo(ControllerSessionManagerSettings settings)
         {
+            ApplyTo(settings, null);
+        }
+
+        public void ApplyTo(ControllerSessionManagerSettings settings, string imageDirectory)
+        {
             if (settings == null)
             {
                 throw new ArgumentNullException("settings");
@@ -317,6 +355,18 @@ namespace ControllerSessionManager.PlayniteIntegration
             settings.NotificationDurationMilliseconds = NotificationDurationMilliseconds;
             settings.NotificationPosition = NotificationPosition;
             settings.NotificationBackgroundColor = NotificationBackgroundColor;
+            if (Version >= 5)
+            {
+                settings.NotificationUseBackgroundImage = NotificationUseBackgroundImage;
+                settings.NotificationBackgroundImageStretch = NotificationBackgroundImageStretch;
+                settings.NotificationBackgroundImageHorizontalAlignment = NotificationBackgroundImageHorizontalAlignment;
+                settings.NotificationBackgroundImageVerticalAlignment = NotificationBackgroundImageVerticalAlignment;
+                settings.NotificationBackgroundImageOpacity = NotificationBackgroundImageOpacity;
+                settings.NotificationBackgroundImageTintOpacity = NotificationBackgroundImageTintOpacity;
+                settings.NotificationBackgroundImagePath = RestoreImage(
+                    NotificationBackgroundImageData, NotificationBackgroundImageExtension,
+                    imageDirectory, "fullscreen", settings.NotificationBackgroundImagePath);
+            }
             settings.NotificationTextColor = NotificationTextColor;
             settings.NotificationSecondaryTextColor = NotificationSecondaryTextColor;
             settings.NotificationConnectedColor = NotificationConnectedColor;
@@ -347,6 +397,18 @@ namespace ControllerSessionManager.PlayniteIntegration
             settings.DesktopNotificationDurationMilliseconds = DesktopNotificationDurationMilliseconds;
             settings.DesktopNotificationPosition = DesktopNotificationPosition;
             settings.DesktopNotificationBackgroundColor = DesktopNotificationBackgroundColor;
+            if (Version >= 5)
+            {
+                settings.DesktopNotificationUseBackgroundImage = DesktopNotificationUseBackgroundImage;
+                settings.DesktopNotificationBackgroundImageStretch = DesktopNotificationBackgroundImageStretch;
+                settings.DesktopNotificationBackgroundImageHorizontalAlignment = DesktopNotificationBackgroundImageHorizontalAlignment;
+                settings.DesktopNotificationBackgroundImageVerticalAlignment = DesktopNotificationBackgroundImageVerticalAlignment;
+                settings.DesktopNotificationBackgroundImageOpacity = DesktopNotificationBackgroundImageOpacity;
+                settings.DesktopNotificationBackgroundImageTintOpacity = DesktopNotificationBackgroundImageTintOpacity;
+                settings.DesktopNotificationBackgroundImagePath = RestoreImage(
+                    DesktopNotificationBackgroundImageData, DesktopNotificationBackgroundImageExtension,
+                    imageDirectory, "desktop", settings.DesktopNotificationBackgroundImagePath);
+            }
             settings.DesktopNotificationTextColor = DesktopNotificationTextColor;
             settings.DesktopNotificationSecondaryTextColor = DesktopNotificationSecondaryTextColor;
             settings.DesktopNotificationConnectedColor = DesktopNotificationConnectedColor;
@@ -439,6 +501,49 @@ namespace ControllerSessionManager.PlayniteIntegration
                 settings.OverlayBatteryBadgeMediumColor = OverlayBatteryBadgeMediumColor;
                 settings.OverlayBatteryBadgeLowColor = OverlayBatteryBadgeLowColor;
                 settings.OverlayBatteryBadgeEmptyColor = OverlayBatteryBadgeEmptyColor;
+            }
+        }
+
+        private static string ReadImageData(string path)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return null;
+                var bytes = File.ReadAllBytes(path);
+                return bytes.Length == 0 || bytes.Length > 10 * 1024 * 1024
+                    ? null : Convert.ToBase64String(bytes);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private static string ImageExtension(string path)
+        {
+            return string.Equals(Path.GetExtension(path), ".png", StringComparison.OrdinalIgnoreCase)
+                ? ".png" : ".jpg";
+        }
+
+        private static string RestoreImage(string data, string extension, string directory,
+            string prefix, string fallback)
+        {
+            if (string.IsNullOrWhiteSpace(data)) return string.Empty;
+            if (string.IsNullOrWhiteSpace(directory)) return fallback ?? string.Empty;
+            try
+            {
+                var bytes = Convert.FromBase64String(data);
+                if (bytes.Length == 0 || bytes.Length > 10 * 1024 * 1024) return string.Empty;
+                Directory.CreateDirectory(directory);
+                var safeExtension = string.Equals(extension, ".png", StringComparison.OrdinalIgnoreCase)
+                    ? ".png" : ".jpg";
+                var path = Path.Combine(directory, prefix + "-" + Guid.NewGuid().ToString("N") + safeExtension);
+                File.WriteAllBytes(path, bytes);
+                return path;
+            }
+            catch
+            {
+                return string.Empty;
             }
         }
     }

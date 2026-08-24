@@ -1,6 +1,10 @@
 # Changelog
 
-## 1.0.21 — 2026-08-23
+## 1.0.22 — 2026-08-24
+- Added independent PNG/JPEG backgrounds for fullscreen and desktop notifications, with cover/contain/stretch, alignment, image opacity and color-tint controls; visual-profile exports embed the selected images for portable import.
+- Added the Cinematic notification preset with a bundled technological background and tuned high-contrast typography, tint and semantic accents.
+- Added seven notification sound packs with event-specific connected, disconnected, warning and low-battery cues plus configurable volume and per-event playback.
+- Changed the notification sound-pack chooser to a compact ComboBox while retaining visible buttons for notification and overlay visual presets.
 - Rebuilt notification shadows using PlayniteAchievements' layered approach: only the rounded surface casts a soft, unclipped shadow while text and icons stay crisp.
 - Simplified bundled font weights to Regular, SemiBold and Bold; legacy Medium values migrate to the visually equivalent SemiBold face, and “Default” is now labelled “Playnite interface”.
 - Updated overlay presets: Compact is centered with a top border, Bold uses 100% scale and Arcade uses 110%.

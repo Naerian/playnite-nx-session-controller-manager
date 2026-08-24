@@ -151,6 +151,7 @@
     <sys:String x:Key="LOCCSM_StylePresetBold">Bold</sys:String>
     <sys:String x:Key="LOCCSM_StylePresetArcade">Arcade</sys:String>
     <sys:String x:Key="LOCCSM_StylePresetMinimal">Minimal</sys:String>
+    <sys:String x:Key="LOCCSM_StylePresetCinematic">Cinematico</sys:String>
     <sys:String x:Key="LOCCSM_StylePresetCustom">Personalizzato</sys:String>
     <sys:String x:Key="LOCCSM_NotificationSoundsTitle">Suoni di notifica</sys:String>
     <sys:String x:Key="LOCCSM_NotificationScreenMargin">Screen margin</sys:String>
@@ -689,4 +690,21 @@
     <sys:String x:Key="LOCCSM_OverlayShowConnectionBadge">Mostra indicatore connessione</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowBatteryBadge">Mostra indicatore batteria</sys:String>
     <sys:String x:Key="LOCCSM_OverlayTypographyTitle">Tipografia del titolo</sys:String><sys:String x:Key="LOCCSM_OverlayTypographyController">Tipografia del controller</sys:String><sys:String x:Key="LOCCSM_OverlayTypographyInstruction">Tipografia delle istruzioni</sys:String><sys:String x:Key="LOCCSM_OverlayTypographyStatus">Tipografia di stato e badge</sys:String><sys:String x:Key="LOCCSM_OverlayBadges">Badge di connessione e batteria</sys:String><sys:String x:Key="LOCCSM_OverlayConnectionBadge">Badge di connessione</sys:String><sys:String x:Key="LOCCSM_OverlayBatteryBadge">Badge batteria</sys:String><sys:String x:Key="LOCCSM_BadgeTextColor">Colore testo</sys:String><sys:String x:Key="LOCCSM_BadgeIconColor">Colore icona</sys:String><sys:String x:Key="LOCCSM_BadgeBackgroundColor">Colore sfondo</sys:String><sys:String x:Key="LOCCSM_BadgeBorderColor">Colore bordo</sys:String><sys:String x:Key="LOCCSM_BatteryBadgeUseStateColors">Colora testo e icona in base alla batteria</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationBackgroundImage">Use background image</sys:String>
+    <sys:String x:Key="LOCCSM_BackgroundImageSection">Background image</sys:String>
+    <sys:String x:Key="LOCCSM_BackgroundImageOptimizationHint">When using Cover, the image will be cropped to fit and optimized when saved.</sys:String>
+    <sys:String x:Key="LOCCSM_BaseColors">Base colors</sys:String>
+    <sys:String x:Key="LOCCSM_StateColors">State colors</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationBackgroundImageSelect">Select notification background</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationBackgroundImageInvalid">The image is invalid or larger than 10 MB.</sys:String>
+    <sys:String x:Key="LOCCSM_SelectImage">Select image</sys:String>
+    <sys:String x:Key="LOCCSM_Remove">Remove</sys:String>
+    <sys:String x:Key="LOCCSM_ImageFit">Image fit</sys:String>
+    <sys:String x:Key="LOCCSM_ImageFitCover">Cover</sys:String>
+    <sys:String x:Key="LOCCSM_ImageFitContain">Contain</sys:String>
+    <sys:String x:Key="LOCCSM_ImageFitStretch">Stretch</sys:String>
+    <sys:String x:Key="LOCCSM_HorizontalAlignment">Horizontal alignment</sys:String>
+    <sys:String x:Key="LOCCSM_VerticalAlignment">Vertical alignment</sys:String>
+    <sys:String x:Key="LOCCSM_ImageOpacity">Image opacity</sys:String>
+    <sys:String x:Key="LOCCSM_ImageTintOpacity">Tint strength</sys:String>
 </ResourceDictionary>

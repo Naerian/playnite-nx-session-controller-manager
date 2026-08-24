@@ -35,6 +35,9 @@ namespace ControllerSessionManager.OverlayHost
         private readonly Grid cardShell;
         private readonly StackPanel textPanel;
         private readonly Border card;
+        private readonly Border imageLayer;
+        private readonly Border tintLayer;
+        private readonly Border borderOverlay;
         private readonly Border contentHost;
         private readonly DispatcherTimer holdTimer;
         private double currentShadowInset;
@@ -118,8 +121,14 @@ namespace ControllerSessionManager.OverlayHost
                 CornerRadius = new CornerRadius(10),
                 Padding = new Thickness(0)
             };
+            imageLayer = new Border { IsHitTestVisible = false };
+            tintLayer = new Border { IsHitTestVisible = false };
+            borderOverlay = new Border { Background = Brushes.Transparent, IsHitTestVisible = false };
             cardShell = new Grid();
             cardShell.Children.Add(card);
+            cardShell.Children.Add(imageLayer);
+            cardShell.Children.Add(tintLayer);
+            cardShell.Children.Add(borderOverlay);
             cardShell.Children.Add(contentHost);
             ConfigureContentLayout("Left", 14);
             Content = cardShell;
@@ -226,6 +235,9 @@ namespace ControllerSessionManager.OverlayHost
             ConfigureContentLayout(style.IconPosition, iconGap);
             contentHost.Padding = new Thickness(padding);
             card.CornerRadius = new CornerRadius(style.CornerRadius * scale);
+            imageLayer.CornerRadius = card.CornerRadius;
+            tintLayer.CornerRadius = card.CornerRadius;
+            borderOverlay.CornerRadius = card.CornerRadius;
             var primaryTextBrush = Brush(style.PrimaryText, Colors.White);
             titleText.Foreground = primaryTextBrush;
             messageText.Foreground = Brush(style.SecondaryText, Color.FromRgb(198, 203, 212));
@@ -258,8 +270,10 @@ namespace ControllerSessionManager.OverlayHost
                 background = Color.FromArgb(Math.Max((byte)220, background.A), accent.R, accent.G, accent.B);
             }
             card.Background = new SolidColorBrush(background);
-            card.BorderBrush = accentBrush;
-            card.BorderThickness = style.ShowBorder &&
+            ApplyBackgroundImage(style, background);
+            card.BorderThickness = new Thickness(0);
+            borderOverlay.BorderBrush = accentBrush;
+            borderOverlay.BorderThickness = style.ShowBorder &&
                 string.Equals(style.AccentMode, "IconAndBorder", StringComparison.OrdinalIgnoreCase)
                 ? CreateBorderThickness(style.BorderPosition, style.BorderThickness)
                 : new Thickness(0);
@@ -328,6 +342,64 @@ namespace ControllerSessionManager.OverlayHost
             }
 
             BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, duration));
+        }
+
+        private void ApplyBackgroundImage(ToastStyle style, Color background)
+        {
+            imageLayer.Background = Brushes.Transparent;
+            tintLayer.Background = Brushes.Transparent;
+            if (!style.UseBackgroundImage || string.IsNullOrWhiteSpace(style.BackgroundImagePath) ||
+                !System.IO.File.Exists(style.BackgroundImagePath))
+            {
+                return;
+            }
+
+            try
+            {
+                var bitmap = new System.Windows.Media.Imaging.BitmapImage();
+                bitmap.BeginInit();
+                bitmap.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
+                bitmap.UriSource = new Uri(style.BackgroundImagePath, UriKind.Absolute);
+                bitmap.EndInit();
+                bitmap.Freeze();
+                var brush = new ImageBrush(bitmap)
+                {
+                    Stretch = ParseImageStretch(style.BackgroundImageStretch),
+                    AlignmentX = ParseAlignmentX(style.BackgroundImageHorizontalAlignment),
+                    AlignmentY = ParseAlignmentY(style.BackgroundImageVerticalAlignment),
+                    Opacity = style.BackgroundImageOpacity / 100.0
+                };
+                imageLayer.Background = brush;
+                tintLayer.Background = new SolidColorBrush(Color.FromArgb(
+                    (byte)Math.Round(255 * style.BackgroundImageTintOpacity / 100.0),
+                    background.R, background.G, background.B));
+            }
+            catch
+            {
+                imageLayer.Background = Brushes.Transparent;
+                tintLayer.Background = Brushes.Transparent;
+            }
+        }
+
+        private static Stretch ParseImageStretch(string value)
+        {
+            if (string.Equals(value, "Uniform", StringComparison.OrdinalIgnoreCase)) return Stretch.Uniform;
+            if (string.Equals(value, "Fill", StringComparison.OrdinalIgnoreCase)) return Stretch.Fill;
+            return Stretch.UniformToFill;
+        }
+
+        private static AlignmentX ParseAlignmentX(string value)
+        {
+            if (string.Equals(value, "Left", StringComparison.OrdinalIgnoreCase)) return AlignmentX.Left;
+            if (string.Equals(value, "Right", StringComparison.OrdinalIgnoreCase)) return AlignmentX.Right;
+            return AlignmentX.Center;
+        }
+
+        private static AlignmentY ParseAlignmentY(string value)
+        {
+            if (string.Equals(value, "Top", StringComparison.OrdinalIgnoreCase)) return AlignmentY.Top;
+            if (string.Equals(value, "Bottom", StringComparison.OrdinalIgnoreCase)) return AlignmentY.Bottom;
+            return AlignmentY.Center;
         }
 
         private void ApplyConnectionIcon(string geometry, Brush stroke, double scale)
@@ -553,6 +625,13 @@ namespace ControllerSessionManager.OverlayHost
             public string AccentMode = "IconAndBorder";
             public string Animation = "Fade";
             public bool ShowTitle = true;
+            public bool UseBackgroundImage;
+            public string BackgroundImagePath = string.Empty;
+            public string BackgroundImageStretch = "UniformToFill";
+            public string BackgroundImageHorizontalAlignment = "Center";
+            public string BackgroundImageVerticalAlignment = "Center";
+            public int BackgroundImageOpacity = 45;
+            public int BackgroundImageTintOpacity = 45;
 
             public static ToastStyle Parse(string value)
             {
@@ -589,7 +668,28 @@ namespace ControllerSessionManager.OverlayHost
                 if (parts.Length > 26) style.AccentMode = NotificationFontCatalog.NormalizeAccentMode(parts[26]);
                 if (parts.Length > 27) style.Animation = NotificationFontCatalog.NormalizeAnimation(parts[27]);
                 if (parts.Length > 28 && bool.TryParse(parts[28], out parsedBool)) style.ShowTitle = parsedBool;
+                if (parts.Length > 29 && bool.TryParse(parts[29], out parsedBool)) style.UseBackgroundImage = parsedBool;
+                if (parts.Length > 30) style.BackgroundImagePath = DecodeStyleValue(parts[30]);
+                if (parts.Length > 31 && !string.IsNullOrWhiteSpace(parts[31])) style.BackgroundImageStretch = parts[31];
+                if (parts.Length > 32 && !string.IsNullOrWhiteSpace(parts[32])) style.BackgroundImageHorizontalAlignment = parts[32];
+                if (parts.Length > 33 && !string.IsNullOrWhiteSpace(parts[33])) style.BackgroundImageVerticalAlignment = parts[33];
+                if (parts.Length > 34 && int.TryParse(parts[34], out parsed)) style.BackgroundImageOpacity = Math.Max(0, Math.Min(100, parsed));
+                if (parts.Length > 35 && int.TryParse(parts[35], out parsed)) style.BackgroundImageTintOpacity = Math.Max(0, Math.Min(100, parsed));
                 return style;
+            }
+
+            private static string DecodeStyleValue(string value)
+            {
+                try
+                {
+                    return string.IsNullOrWhiteSpace(value)
+                        ? string.Empty
+                        : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(value));
+                }
+                catch
+                {
+                    return string.Empty;
+                }
             }
 
             private static bool IsIconPosition(string value)
