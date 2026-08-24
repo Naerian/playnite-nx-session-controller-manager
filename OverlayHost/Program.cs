@@ -106,7 +106,7 @@ namespace ControllerSessionManager.OverlayHost
             var command = parts[3];
             window.Dispatcher.BeginInvoke(new Action(delegate
             {
-                if (command == "SHOW" && parts.Length == 19)
+                if (command == "SHOW" && parts.Length >= 19)
                 {
                     int processId;
                     int.TryParse(parts[5], out processId);
@@ -117,7 +117,12 @@ namespace ControllerSessionManager.OverlayHost
                     window.ShowIncident(sessionId, parts[4], processId, Decode(parts[6]),
                         Decode(parts[7]), Decode(parts[8]), Decode(parts[9]), Decode(parts[10]),
                         Decode(parts[11]), Decode(parts[12]), forcePause, pauseProcessId,
-                        Decode(parts[15]), Decode(parts[16]), Decode(parts[17]), Decode(parts[18]));
+                        Decode(parts[15]), Decode(parts[16]), Decode(parts[17]), Decode(parts[18]),
+                        parts.Length > 19 ? Decode(parts[19]) : string.Empty,
+                        parts.Length > 20 ? Decode(parts[20]) : string.Empty,
+                        parts.Length > 21 ? Decode(parts[21]) : string.Empty,
+                        parts.Length > 22 ? Decode(parts[22]) : string.Empty,
+                        parts.Length > 23 ? Decode(parts[23]) : string.Empty);
                 }
                 else if ((command == "TOAST" || command == "TOASTPREVIEW") && parts.Length >= 12)
                 {

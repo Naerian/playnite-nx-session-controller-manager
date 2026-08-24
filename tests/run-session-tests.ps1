@@ -3,6 +3,13 @@ $root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 $output = Join-Path $root "obj\SessionTests"
 New-Item -ItemType Directory -Path $output -Force | Out-Null
 
+$appearanceSource = Get-Content -Raw (Join-Path $root "PlayniteIntegration\SettingsAppearance.cs")
+if ($appearanceSource -match 'ApplyHostChrome' -or
+    $appearanceSource -match 'Window\.GetWindow\s*\(' -or
+    $appearanceSource -match 'VisualTreeHelper\.GetParent\s*\(') {
+    throw "SettingsAppearance must remain scoped to plugin-owned controls and explicit Window arguments."
+}
+
 $compiler = "$env:WINDIR\Microsoft.NET\Framework64\v4.0.30319\csc.exe"
 if (-not (Test-Path -LiteralPath $compiler)) {
     $compiler = "$env:WINDIR\Microsoft.NET\Framework\v4.0.30319\csc.exe"
@@ -19,6 +26,7 @@ $testExecutable = Join-Path $output "SessionManagerTests.exe"
     (Join-Path $root "Controllers\PlayStationHidBatteryProvider.cs") `
     (Join-Path $root "Controllers\LowBatteryNotificationTracker.cs") `
     (Join-Path $root "Controllers\WindowsBluetoothBatteryProvider.cs") `
+    (Join-Path $root "Controllers\XInputBatteryResolver.cs") `
     (Join-Path $root "Controllers\ControllerDeviceIdentity.cs") `
     (Join-Path $root "Controllers\ControllerIconCatalog.cs") `
     (Join-Path $root "Controllers\ControllerDisplayHold.cs") `

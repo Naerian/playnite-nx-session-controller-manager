@@ -18,11 +18,19 @@ namespace ControllerSessionManager.PlayniteIntegration
     public partial class ControllerSessionManagerSettingsView : UserControl
     {
         private readonly ControllerSessionManagerPlugin plugin;
+        private readonly bool themeStandaloneWindow;
         private string lastControllerListSignature;
 
         public ControllerSessionManagerSettingsView(ControllerSessionManagerPlugin sourcePlugin)
+            : this(sourcePlugin, false)
+        {
+        }
+
+        public ControllerSessionManagerSettingsView(ControllerSessionManagerPlugin sourcePlugin,
+            bool sourceThemeStandaloneWindow)
         {
             plugin = sourcePlugin;
+            themeStandaloneWindow = sourceThemeStandaloneWindow;
             try
             {
                 InitializeComponent();
@@ -43,11 +51,17 @@ namespace ControllerSessionManager.PlayniteIntegration
                     SvgIconGeometryLoader.GetPathData(ControllerIconCatalog.DefaultFileName));
                 OverlayPreviewStatusIcon.Data = Geometry.Parse(
                     SvgIconGeometryLoader.GetPathData("player-pause.svg"));
+                OverlayPreviewConnectionIcon.Data = Geometry.Parse(
+                    SvgIconGeometryLoader.GetPathData("bluetooth.svg"));
+                OverlayPreviewBatteryIcon.Data = Geometry.Parse(
+                    SvgIconGeometryLoader.GetPathData("battery.svg"));
             }
             catch
             {
                 OverlayPreviewControllerIcon.Data = null;
                 OverlayPreviewStatusIcon.Data = null;
+                OverlayPreviewConnectionIcon.Data = null;
+                OverlayPreviewBatteryIcon.Data = null;
             }
             AboutVersionText.Text = string.Format(
                 plugin.Loc("LOCCSM_VersionAuthorFormat"), GetInstalledVersion());
@@ -73,6 +87,9 @@ namespace ControllerSessionManager.PlayniteIntegration
 
             ApplyAppearancePreset();
             BuildAppearancePresetChips();
+            BuildNotificationStylePresetChips();
+            BuildOverlayStylePresetChips();
+            BuildNotificationSoundPackChips();
             RefreshOverlayPreviewControllerLayout();
         }
 
@@ -82,6 +99,41 @@ namespace ControllerSessionManager.PlayniteIntegration
             if (args != null && args.PropertyName == "AppearancePreset")
             {
                 ApplyAppearancePreset();
+            }
+
+            if (args != null && args.PropertyName == "NotificationStylePreset")
+            {
+                RefreshNotificationStylePresetChips();
+            }
+
+            if (args != null && args.PropertyName == "OverlayStylePreset")
+            {
+                RefreshOverlayStylePresetChips();
+            }
+
+            if (args != null && args.PropertyName == "NotificationSoundPack")
+            {
+                RefreshNotificationSoundPackChips();
+            }
+
+            if (!suppressingStylePresetMark &&
+                args != null &&
+                !string.IsNullOrEmpty(args.PropertyName) &&
+                boundSettings != null)
+            {
+                if (NotificationStylePropertyNames.Contains(args.PropertyName) &&
+                    !string.Equals(boundSettings.NotificationStylePreset, NotificationStylePresets.Custom,
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    boundSettings.NotificationStylePreset = NotificationStylePresets.Custom;
+                }
+
+                if (OverlayStylePropertyNames.Contains(args.PropertyName) &&
+                    !string.Equals(boundSettings.OverlayStylePreset, OverlayStylePresets.Custom,
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    boundSettings.OverlayStylePreset = OverlayStylePresets.Custom;
+                }
             }
 
             if (args == null ||
@@ -229,15 +281,74 @@ namespace ControllerSessionManager.PlayniteIntegration
             OverlayPreviewControllerIcon.Stretch = Stretch.Fill;
         }
 
+        private bool suppressingStylePresetMark;
         private ScrollViewer hostScrollViewer;
         private Window hostWindow;
         private GamepadTesterViewModel testerViewModel;
+        private static readonly string[] NotificationStylePropertyNames =
+        {
+            "NotificationWidth", "NotificationScalePercent", "NotificationDurationMilliseconds",
+            "NotificationPosition", "NotificationBackgroundColor", "NotificationTextColor",
+            "NotificationSecondaryTextColor", "NotificationConnectedColor", "NotificationDisconnectedColor",
+            "NotificationWarningColor", "NotificationLowBatteryColor", "NotificationTitleFontSize",
+            "NotificationMessageFontSize", "NotificationIconSize", "NotificationIconPosition",
+            "NotificationPadding", "NotificationElementSpacing", "NotificationShowBorder",
+            "NotificationBorderPosition", "NotificationBorderThickness", "NotificationCornerRadius",
+            "NotificationShowConnectionBadge", "NotificationScreenMargin", "NotificationShowShadow",
+            "NotificationFontFamily", "NotificationFontWeight", "NotificationTextAlignment",
+            "NotificationAccentMode", "NotificationAnimation", "NotificationShowTitle",
+            "DesktopNotificationWidth", "DesktopNotificationScalePercent", "DesktopNotificationDurationMilliseconds",
+            "DesktopNotificationPosition", "DesktopNotificationBackgroundColor", "DesktopNotificationTextColor",
+            "DesktopNotificationSecondaryTextColor", "DesktopNotificationConnectedColor",
+            "DesktopNotificationDisconnectedColor", "DesktopNotificationWarningColor",
+            "DesktopNotificationLowBatteryColor", "DesktopNotificationTitleFontSize",
+            "DesktopNotificationMessageFontSize", "DesktopNotificationIconSize",
+            "DesktopNotificationIconPosition", "DesktopNotificationPadding",
+            "DesktopNotificationElementSpacing", "DesktopNotificationShowBorder",
+            "DesktopNotificationBorderPosition", "DesktopNotificationBorderThickness",
+            "DesktopNotificationCornerRadius",
+            "DesktopNotificationShowConnectionBadge", "DesktopNotificationScreenMargin",
+            "DesktopNotificationShowShadow", "DesktopNotificationFontFamily",
+            "DesktopNotificationFontWeight", "DesktopNotificationTextAlignment",
+            "DesktopNotificationAccentMode", "DesktopNotificationAnimation", "DesktopNotificationShowTitle",
+            "ShowControllerNameInNotifications", "ShowControllerNameInDesktopNotifications"
+        };
+
+        private static readonly string[] OverlayStylePropertyNames =
+        {
+            "OverlayScalePercent", "OverlayDimColor", "OverlayCardColor", "OverlayAccentColor",
+            "OverlayTextColor", "OverlayWarningColor", "OverlayTitleFontSize", "OverlayControllerFontSize",
+            "OverlayInstructionFontSize", "OverlayStatusFontSize", "OverlayControllerIconSize",
+            "OverlayStatusIconSize", "OverlayShowControllerIcon", "OverlayShowStatusIcon",
+            "OverlayShowControllerName", "OverlayShowConnectionBadge", "OverlayShowBatteryBadge",
+            "OverlayShowTitle", "OverlayShowInstruction", "OverlayShowPauseStatus",
+            "OverlayControllerIconPosition", "OverlayCardPosition", "OverlayAnimation",
+            "OverlayBorderPosition", "OverlayCardWidth", "OverlayPadding",
+            "OverlayElementSpacing", "OverlayShowBorder", "OverlayBorderThickness", "OverlayCornerRadius",
+            "OverlayShowShadow", "OverlayFontFamily", "OverlayFontWeight",
+            "OverlayTitleFontFamily", "OverlayTitleFontWeight", "OverlayControllerFontFamily",
+            "OverlayControllerFontWeight", "OverlayInstructionFontFamily", "OverlayInstructionFontWeight",
+            "OverlayStatusFontFamily", "OverlayStatusFontWeight", "OverlayConnectionBadgeTextColor",
+            "OverlayConnectionBadgeIconColor", "OverlayConnectionBadgeBackgroundColor",
+            "OverlayConnectionBadgeBorderColor", "OverlayConnectionBadgeBorderThickness",
+            "OverlayConnectionBadgeCornerRadius", "OverlayConnectionBadgeIconSize",
+            "OverlayConnectionBadgeTextSize", "OverlayBatteryBadgeTextColor",
+            "OverlayBatteryBadgeIconColor", "OverlayBatteryBadgeBackgroundColor",
+            "OverlayBatteryBadgeBorderColor", "OverlayBatteryBadgeBorderThickness",
+            "OverlayBatteryBadgeCornerRadius", "OverlayBatteryBadgeIconSize",
+            "OverlayBatteryBadgeTextSize", "OverlayBatteryBadgeUseStateColors",
+            "OverlayBatteryBadgeFullColor", "OverlayBatteryBadgeMediumColor",
+            "OverlayBatteryBadgeLowColor", "OverlayBatteryBadgeEmptyColor"
+        };
 
         private void OnLoaded(object sender, RoutedEventArgs args)
         {
             plugin.ControllerSnapshotChanged += OnControllerSnapshotChanged;
             ApplyAppearancePreset();
             BuildAppearancePresetChips();
+            BuildNotificationStylePresetChips();
+            BuildOverlayStylePresetChips();
+            BuildNotificationSoundPackChips();
             ApplyPreferredWindowSize();
             AttachToHost();
             ApplyLegacyTesterWarning();
@@ -258,17 +369,15 @@ namespace ControllerSessionManager.PlayniteIntegration
             var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
             var preset = settings != null ? settings.AppearancePreset : SettingsAppearance.Midnight;
             SettingsAppearance.Apply(this, preset);
+            if (themeStandaloneWindow)
+            {
+                SettingsAppearance.ApplyWindow(Window.GetWindow(this), preset);
+            }
+
             RefreshAppearancePresetChips();
-            Dispatcher.BeginInvoke(new Action(() =>
-            {
-                var palette = SettingsAppearance.GetPalette(preset);
-                SettingsAppearance.ApplyHostChrome(this, palette);
-            }), DispatcherPriority.Loaded);
-            Dispatcher.BeginInvoke(new Action(() =>
-            {
-                var palette = SettingsAppearance.GetPalette(preset);
-                SettingsAppearance.ApplyHostChrome(this, palette);
-            }), DispatcherPriority.ApplicationIdle);
+            RefreshNotificationStylePresetChips();
+            RefreshOverlayStylePresetChips();
+            RefreshNotificationSoundPackChips();
         }
 
         private void BuildAppearancePresetChips()
@@ -296,24 +405,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                     label = option.Item3;
                 }
 
-                var button = new Button
-                {
-                    Content = label,
-                    Tag = option.Item1,
-                    MinHeight = 36,
-                    Height = 36,
-                    MinWidth = 88,
-                    Padding = new Thickness(12, 0, 12, 0),
-                    Margin = new Thickness(0, 0, 8, 8),
-                    Cursor = Cursors.Hand,
-                    Focusable = true,
-                    BorderThickness = new Thickness(1),
-                    FontSize = 14,
-                    Template = CreateAppearanceChipTemplate()
-                };
+                var button = CreatePresetChipButton(label, option.Item1);
                 button.Click += AppearancePresetChip_OnClick;
-                button.MouseEnter += AppearancePresetChip_OnMouseEnter;
-                button.MouseLeave += AppearancePresetChip_OnMouseLeave;
                 AppearancePresetChips.Children.Add(button);
             }
 
@@ -352,40 +445,15 @@ namespace ControllerSessionManager.PlayniteIntegration
             });
             border.AppendChild(presenter);
             template.VisualTree = border;
+
+            var pressed = new Trigger
+            {
+                Property = Button.IsPressedProperty,
+                Value = true
+            };
+            pressed.Setters.Add(new Setter(UIElement.OpacityProperty, 0.88));
+            template.Triggers.Add(pressed);
             return template;
-        }
-
-        private void AppearancePresetChip_OnMouseEnter(object sender, MouseEventArgs e)
-        {
-            var button = sender as Button;
-            if (button == null || IsAppearanceChipSelected(button))
-            {
-                return;
-            }
-
-            var palette = GetCurrentAppearancePalette();
-            button.Background = new SolidColorBrush(palette.Hover);
-        }
-
-        private void AppearancePresetChip_OnMouseLeave(object sender, MouseEventArgs e)
-        {
-            var button = sender as Button;
-            if (button == null || IsAppearanceChipSelected(button))
-            {
-                return;
-            }
-
-            var palette = GetCurrentAppearancePalette();
-            button.Background = new SolidColorBrush(palette.BadgeBg);
-        }
-
-        private bool IsAppearanceChipSelected(Button button)
-        {
-            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
-            var selected = settings != null
-                ? SettingsAppearance.Normalize(settings.AppearancePreset)
-                : SettingsAppearance.Midnight;
-            return string.Equals(button.Tag as string, selected, StringComparison.OrdinalIgnoreCase);
         }
 
         private SettingsAppearance.Palette GetCurrentAppearancePalette()
@@ -411,16 +479,274 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private void RefreshAppearancePresetChips()
         {
-            if (AppearancePresetChips == null)
+            RefreshChipSelection(
+                AppearancePresetChips,
+                boundSettings == null
+                    ? SettingsAppearance.Midnight
+                    : SettingsAppearance.Normalize(boundSettings.AppearancePreset));
+        }
+
+        private void BuildNotificationStylePresetChips()
+        {
+            BuildNamedPresetChips(
+                NotificationStylePresetChips,
+                NotificationStylePresets.NamedPresets.Concat(new[] { NotificationStylePresets.Custom }),
+                NotificationStylePresets.LocKey,
+                NotificationStylePresetChip_OnClick);
+            RefreshNotificationStylePresetChips();
+        }
+
+        private void BuildOverlayStylePresetChips()
+        {
+            BuildNamedPresetChips(
+                OverlayStylePresetChips,
+                OverlayStylePresets.NamedPresets.Concat(new[] { OverlayStylePresets.Custom }),
+                OverlayStylePresets.LocKey,
+                OverlayStylePresetChip_OnClick);
+            RefreshOverlayStylePresetChips();
+        }
+
+        private void BuildNotificationSoundPackChips()
+        {
+            if (NotificationSoundPackChips == null)
             {
                 return;
             }
 
+            NotificationSoundPackChips.Children.Clear();
+            foreach (var pack in NotificationSoundCatalog.AllPacks)
+            {
+                var label = plugin == null
+                    ? NotificationSoundCatalog.DisplayName(pack)
+                    : plugin.Loc(NotificationSoundCatalog.LocKey(pack));
+                if (string.IsNullOrWhiteSpace(label) || label == NotificationSoundCatalog.LocKey(pack))
+                {
+                    label = NotificationSoundCatalog.DisplayName(pack);
+                }
+
+                var button = CreatePresetChipButton(label, pack);
+                button.Click += NotificationSoundPackChip_OnClick;
+                NotificationSoundPackChips.Children.Add(button);
+            }
+
+            RefreshNotificationSoundPackChips();
+        }
+
+        private void BuildNamedPresetChips(
+            WrapPanel panel,
+            System.Collections.Generic.IEnumerable<string> presets,
+            Func<string, string> locKey,
+            RoutedEventHandler onClick)
+        {
+            if (panel == null)
+            {
+                return;
+            }
+
+            panel.Children.Clear();
+            foreach (var preset in presets)
+            {
+                var key = locKey(preset);
+                var label = plugin == null ? preset : plugin.Loc(key);
+                if (string.IsNullOrWhiteSpace(label) || label == key)
+                {
+                    label = preset;
+                }
+
+                var button = CreatePresetChipButton(label, preset);
+                button.Click += onClick;
+                panel.Children.Add(button);
+            }
+        }
+
+        private Button CreatePresetChipButton(string label, string tag)
+        {
+            var button = new Button
+            {
+                Content = label,
+                Tag = tag,
+                MinHeight = 36,
+                Height = 36,
+                MinWidth = 88,
+                Padding = new Thickness(12, 0, 12, 0),
+                Margin = new Thickness(0, 0, 8, 8),
+                Cursor = Cursors.Hand,
+                Focusable = true,
+                FocusVisualStyle = null,
+                OverridesDefaultStyle = true,
+                BorderThickness = new Thickness(1),
+                FontSize = 14,
+                Template = CreateAppearanceChipTemplate()
+            };
+            button.MouseEnter += PresetChip_OnMouseEnter;
+            button.MouseLeave += PresetChip_OnMouseLeave;
+            return button;
+        }
+
+        private void PresetChip_OnMouseEnter(object sender, MouseEventArgs e)
+        {
+            var button = sender as Button;
+            if (button == null || IsPresetChipSelected(button))
+            {
+                return;
+            }
+
+            var palette = GetCurrentAppearancePalette();
+            button.Background = new SolidColorBrush(palette.Hover);
+            button.Opacity = 1;
+        }
+
+        private void PresetChip_OnMouseLeave(object sender, MouseEventArgs e)
+        {
+            var button = sender as Button;
+            if (button == null || IsPresetChipSelected(button))
+            {
+                return;
+            }
+
+            var palette = GetCurrentAppearancePalette();
+            button.Background = new SolidColorBrush(palette.BadgeBg);
+            button.Opacity = 1;
+        }
+
+        private bool IsPresetChipSelected(Button button)
+        {
+            if (button == null)
+            {
+                return false;
+            }
+
+            var selected = GetSelectedValueForChipPanel(button.Parent as WrapPanel);
+            return string.Equals(button.Tag as string, selected, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private string GetSelectedValueForChipPanel(WrapPanel panel)
+        {
             var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
-            var selected = settings != null
-                ? SettingsAppearance.Normalize(settings.AppearancePreset)
-                : SettingsAppearance.Midnight;
-            var palette = SettingsAppearance.GetPalette(selected);
+            if (panel == null || settings == null)
+            {
+                return string.Empty;
+            }
+
+            if (panel == AppearancePresetChips)
+            {
+                return SettingsAppearance.Normalize(settings.AppearancePreset);
+            }
+
+            if (panel == NotificationStylePresetChips)
+            {
+                return NotificationStylePresets.Normalize(settings.NotificationStylePreset);
+            }
+
+            if (panel == OverlayStylePresetChips)
+            {
+                return OverlayStylePresets.Normalize(settings.OverlayStylePreset);
+            }
+
+            if (panel == NotificationSoundPackChips)
+            {
+                return NotificationSoundCatalog.Normalize(settings.NotificationSoundPack);
+            }
+
+            return string.Empty;
+        }
+
+        private void NotificationStylePresetChip_OnClick(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var preset = button == null ? null : button.Tag as string;
+            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            if (settings == null || string.IsNullOrWhiteSpace(preset))
+            {
+                return;
+            }
+
+            suppressingStylePresetMark = true;
+            try
+            {
+                NotificationStylePresets.Apply(settings, preset);
+            }
+            finally
+            {
+                suppressingStylePresetMark = false;
+            }
+
+            RefreshNotificationStylePresetChips();
+        }
+
+        private void OverlayStylePresetChip_OnClick(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var preset = button == null ? null : button.Tag as string;
+            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            if (settings == null || string.IsNullOrWhiteSpace(preset))
+            {
+                return;
+            }
+
+            suppressingStylePresetMark = true;
+            try
+            {
+                OverlayStylePresets.Apply(settings, preset);
+            }
+            finally
+            {
+                suppressingStylePresetMark = false;
+            }
+
+            RefreshOverlayStylePresetChips();
+            RefreshOverlayPreviewControllerLayout();
+        }
+
+        private void NotificationSoundPackChip_OnClick(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var pack = button == null ? null : button.Tag as string;
+            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            if (settings == null || string.IsNullOrWhiteSpace(pack))
+            {
+                return;
+            }
+
+            settings.NotificationSoundPack = pack;
+            RefreshNotificationSoundPackChips();
+        }
+
+        private void RefreshNotificationStylePresetChips()
+        {
+            RefreshChipSelection(
+                NotificationStylePresetChips,
+                boundSettings == null
+                    ? NotificationStylePresets.Soft
+                    : boundSettings.NotificationStylePreset);
+        }
+
+        private void RefreshOverlayStylePresetChips()
+        {
+            RefreshChipSelection(
+                OverlayStylePresetChips,
+                boundSettings == null
+                    ? OverlayStylePresets.Soft
+                    : boundSettings.OverlayStylePreset);
+        }
+
+        private void RefreshNotificationSoundPackChips()
+        {
+            RefreshChipSelection(
+                NotificationSoundPackChips,
+                boundSettings == null
+                    ? NotificationSoundCatalog.ModernCrystal
+                    : boundSettings.NotificationSoundPack);
+        }
+
+        private void RefreshChipSelection(WrapPanel panel, string selected)
+        {
+            if (panel == null)
+            {
+                return;
+            }
+
+            var palette = GetCurrentAppearancePalette();
             var accent = new SolidColorBrush(palette.Accent);
             var accentOn = new SolidColorBrush(palette.AccentOn);
             var badgeBg = new SolidColorBrush(palette.BadgeBg);
@@ -430,7 +756,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             badgeBg.Freeze();
             text.Freeze();
 
-            foreach (var child in AppearancePresetChips.Children)
+            foreach (var child in panel.Children)
             {
                 var button = child as Button;
                 if (button == null)
@@ -444,7 +770,14 @@ namespace ControllerSessionManager.PlayniteIntegration
                 button.BorderBrush = isSelected ? accent : new SolidColorBrush(palette.Border);
                 button.BorderThickness = new Thickness(1);
                 button.FontWeight = isSelected ? FontWeights.SemiBold : FontWeights.Normal;
+                button.Opacity = 1;
             }
+        }
+
+        private void PreviewNotificationSoundClick(object sender, RoutedEventArgs args)
+        {
+            var button = sender as Button;
+            plugin.PlayNotificationSoundPreview(button == null ? null : button.Tag as string);
         }
 
         private void AttachToHost()
@@ -761,6 +1094,35 @@ namespace ControllerSessionManager.PlayniteIntegration
         private void ExportSupportReportClick(object sender, RoutedEventArgs args)
         {
             plugin.ExportSupportReport();
+        }
+
+        private void ExportVisualProfileClick(object sender, RoutedEventArgs args)
+        {
+            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            if (settings == null || plugin == null)
+            {
+                return;
+            }
+
+            plugin.ExportVisualProfile(settings);
+        }
+
+        private void ImportVisualProfileClick(object sender, RoutedEventArgs args)
+        {
+            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            if (settings == null || plugin == null)
+            {
+                return;
+            }
+
+            plugin.ImportVisualProfile(settings, RefreshVisualProfileUi);
+        }
+
+        private void RefreshVisualProfileUi()
+        {
+            RefreshNotificationStylePresetChips();
+            RefreshOverlayStylePresetChips();
+            RefreshNotificationSoundPackChips();
         }
 
         private void OpenSetupWizardClick(object sender, RoutedEventArgs args)

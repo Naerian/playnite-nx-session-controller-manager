@@ -36,7 +36,8 @@ namespace ControllerSessionManager.Overlay
             string message, string instruction, string pauseStatus, string pauseStatusKind,
             string pauseStatusIconGeometry, string iconGeometry, bool forcePause, int pauseProcessId,
             string pauseFailureStatus, string pauseFailureKind, string pauseFailureIconGeometry,
-            string presentationStyle)
+            string presentationStyle, string connectionLabel, string batteryLabel,
+            string connectionIconGeometry, string batteryIconGeometry, string batteryState)
         {
             EnsureHost();
             lastSessionId = sessionId;
@@ -48,7 +49,8 @@ namespace ControllerSessionManager.Overlay
                 Encode(pauseStatus), Encode(pauseStatusKind), Encode(pauseStatusIconGeometry),
                 Encode(iconGeometry), forcePause.ToString(), pauseProcessId.ToString(),
                 Encode(pauseFailureStatus), Encode(pauseFailureKind), Encode(pauseFailureIconGeometry),
-                Encode(presentationStyle)
+                Encode(presentationStyle), Encode(connectionLabel), Encode(batteryLabel),
+                Encode(connectionIconGeometry), Encode(batteryIconGeometry), Encode(batteryState)
             }));
         }
 

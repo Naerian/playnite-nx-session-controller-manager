@@ -173,8 +173,10 @@ namespace ControllerSessionManager.Controllers
                     var connection = detectedConnection != "Unknown"
                         ? detectedConnection
                         : wireless ? "Wireless" : wired ? "Wired" : "Unknown";
-                    var batteryLevel = GetBatteryLevel(deviceMetadata, batteryResult, battery,
-                        wired && detectedConnection == "Unknown", wireless);
+                    var batteryLevel = XInputBatteryResolver.Resolve(deviceMetadata, batteryResult,
+                        battery.BatteryType, battery.BatteryLevel,
+                        battery.BatteryType == BatteryTypeWired && detectedConnection == "Unknown",
+                        XInputBatteryResolver.IsWirelessBatteryType(battery.BatteryType));
                     // When XInput does not detect input (e.g. some BT stacks do not deliver XInput
                     // button events), use SDL raw-joystick data as a fallback LastInputUtc.
                     var lastInputUtc = slot.LastInputUtc;
@@ -465,56 +467,6 @@ namespace ControllerSessionManager.Controllers
 
             var stop = new XInputVibration();
             NativeMethods.XInputSetState((uint)providerInstanceId, ref stop);
-        }
-
-        private static string GetBatteryLevel(ControllerMetadata metadata, uint result,
-            XInputBatteryInformation battery, bool wired, bool wireless)
-        {
-            if (metadata != null &&
-                !string.IsNullOrWhiteSpace(metadata.BatteryLevel) &&
-                metadata.BatteryLevel != "Unknown" && metadata.BatteryLevel != "Unavailable" &&
-                (string.Equals(metadata.ConnectionType, "Bluetooth",
-                    StringComparison.OrdinalIgnoreCase) ||
-                 string.Equals(metadata.BatteryProviderId, "Windows.BluetoothPnP",
-                    StringComparison.OrdinalIgnoreCase) ||
-                 WindowsBluetoothBatteryProvider.IsBluetoothPath(metadata.DevicePath)))
-            {
-                return metadata.BatteryLevel;
-            }
-
-            if (result != ErrorSuccess)
-            {
-                return "Unknown";
-            }
-
-            if (wired)
-            {
-                return "Unavailable";
-            }
-
-            if (metadata != null && metadata.ConnectionType == "WirelessReceiver")
-            {
-                return "Unknown";
-            }
-
-            if (!wireless)
-            {
-                return "Unknown";
-            }
-
-            switch (battery.BatteryLevel)
-            {
-                case 0:
-                    return "Empty";
-                case 1:
-                    return "Low";
-                case 2:
-                    return "Medium";
-                case 3:
-                    return "Full";
-                default:
-                    return "Unknown";
-            }
         }
 
         private static InputEvidenceKind GetInputEvidence(XInputGamepad previous, XInputGamepad current)

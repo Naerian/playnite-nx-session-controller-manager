@@ -74,7 +74,10 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             if (string.Equals(element.Name.LocalName, "path", StringComparison.OrdinalIgnoreCase))
             {
-                return (string)element.Attribute("d");
+                var data = (string)element.Attribute("d");
+                return string.Equals((string)element.Attribute("fill-rule"), "evenodd", StringComparison.OrdinalIgnoreCase)
+                    ? "F0 " + data
+                    : data;
             }
 
             if (string.Equals(element.Name.LocalName, "line", StringComparison.OrdinalIgnoreCase))

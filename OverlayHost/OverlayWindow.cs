@@ -5,9 +5,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
+using System.Windows.Media.Effects;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using Forms = System.Windows.Forms;
+using ControllerSessionManager.PlayniteIntegration;
 
 namespace ControllerSessionManager.OverlayHost
 {
@@ -30,12 +33,22 @@ namespace ControllerSessionManager.OverlayHost
         private readonly Path controllerIcon;
         private readonly Path pauseStatusIcon;
         private readonly Border pauseStatusBadge;
+        private readonly StackPanel metadataBadges;
+        private readonly Border connectionBadge;
+        private readonly Border batteryBadge;
+        private readonly Path connectionIcon;
+        private readonly Path batteryIcon;
+        private readonly TextBlock connectionText;
+        private readonly TextBlock batteryText;
         private readonly Border incidentCard;
         private readonly StackPanel content;
         private readonly Grid controllerHost;
         private readonly DispatcherTimer watchdog;
         private DateTime lastHeartbeatUtc = DateTime.UtcNow;
         private string currentSessionId;
+        private string currentIncidentId;
+        private string currentAnimation = "FadeScale";
+        private string currentBatteryState;
         private Color presentationAccent = Color.FromRgb(91, 177, 255);
         private Color presentationWarning = Color.FromRgb(245, 181, 66);
 
@@ -57,9 +70,6 @@ namespace ControllerSessionManager.OverlayHost
                 Height = 30,
                 Stretch = Stretch.Uniform,
                 Fill = Brushes.White,
-                Stroke = Brushes.White,
-                StrokeThickness = 0.35,
-                StrokeLineJoin = PenLineJoin.Round,
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center
             };
@@ -101,6 +111,20 @@ namespace ControllerSessionManager.OverlayHost
                 Child = statusContent
             };
 
+            connectionIcon = CreateBadgeIcon();
+            batteryIcon = CreateBadgeIcon();
+            connectionText = CreateText(13, FontWeights.Medium, Brushes.White, new Thickness(0));
+            batteryText = CreateText(13, FontWeights.Medium, Brushes.White, new Thickness(0));
+            connectionBadge = CreateMetadataBadge(connectionIcon, connectionText);
+            batteryBadge = CreateMetadataBadge(batteryIcon, batteryText);
+            metadataBadges = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                HorizontalAlignment = HorizontalAlignment.Center
+            };
+            metadataBadges.Children.Add(connectionBadge);
+            metadataBadges.Children.Add(batteryBadge);
+
             controllerHost = new Grid
             {
                 HorizontalAlignment = HorizontalAlignment.Center
@@ -114,6 +138,7 @@ namespace ControllerSessionManager.OverlayHost
             };
             content.Children.Add(titleText);
             content.Children.Add(controllerHost);
+            content.Children.Add(metadataBadges);
             content.Children.Add(instructionText);
             content.Children.Add(pauseStatusBadge);
             incidentCard = new Border
@@ -139,13 +164,22 @@ namespace ControllerSessionManager.OverlayHost
             string message, string instruction, string pauseStatus, string pauseStatusKind,
             string pauseStatusIconGeometry, string iconGeometry, bool forcePause, int pauseProcessId,
             string pauseFailureStatus, string pauseFailureKind, string pauseFailureIconGeometry,
-            string presentationStyle)
+            string presentationStyle, string connectionLabel, string batteryLabel,
+            string connectionIconGeometry, string batteryIconGeometry, string batteryState)
         {
+            var animateEntry = !IsVisible ||
+                !string.Equals(currentIncidentId, incidentId, StringComparison.OrdinalIgnoreCase);
             currentSessionId = sessionId;
+            currentIncidentId = incidentId;
             lastHeartbeatUtc = DateTime.UtcNow;
             titleText.Text = title;
             messageText.Text = message;
             instructionText.Text = instruction;
+            connectionText.Text = connectionLabel;
+            batteryText.Text = batteryLabel;
+            currentBatteryState = batteryState;
+            SetPathData(connectionIcon, connectionIconGeometry);
+            SetPathData(batteryIcon, batteryIconGeometry);
             try
             {
                 controllerIcon.Data = string.IsNullOrWhiteSpace(iconGeometry) ? null : Geometry.Parse(iconGeometry);
@@ -175,6 +209,10 @@ namespace ControllerSessionManager.OverlayHost
                 Show();
             }
             ApplyWindowStylesAndBounds(screen);
+            if (animateEntry)
+            {
+                BeginEntryAnimation();
+            }
         }
 
         private void ApplyPauseStatusStyle(string kind)
@@ -231,20 +269,73 @@ namespace ControllerSessionManager.OverlayHost
             var elementSpacing = ParseInt(parts, 18, 14, 0, 48);
             var iconPosition = parts.Length > 19 && IsIconPosition(parts[19]) ? parts[19] : "Left";
             var showControllerName = ParseBool(parts, 20, true);
+            var showConnectionBadge = ParseBool(parts, 23, true);
+            var showBatteryBadge = ParseBool(parts, 24, true);
+            var showTitle = ParseBool(parts, 25, true);
+            var showInstruction = ParseBool(parts, 26, true);
+            var showPauseStatus = ParseBool(parts, 27, true);
+            var cardPosition = parts.Length > 28 ? parts[28] : "Center";
+            currentAnimation = parts.Length > 29 ? parts[29] : "FadeScale";
+            var borderPosition = parts.Length > 30 ? parts[30] : "Full";
+            var cardWidth = ParseInt(parts, 31, 620, 320, 1000);
+            var showShadow = ParseBool(parts, 32, true);
+            var titleFontFamily = parts.Length > 33 ? parts[33] : parts.Length > 21 ? parts[21] : null;
+            var titleFontWeight = parts.Length > 34 ? parts[34] : parts.Length > 22 ? parts[22] : null;
+            var controllerFontFamily = parts.Length > 35 ? parts[35] : titleFontFamily;
+            var controllerFontWeight = parts.Length > 36 ? parts[36] : titleFontWeight;
+            var instructionFontFamily = parts.Length > 37 ? parts[37] : titleFontFamily;
+            var instructionFontWeight = parts.Length > 38 ? parts[38] : titleFontWeight;
+            var statusFontFamily = parts.Length > 39 ? parts[39] : titleFontFamily;
+            var statusFontWeight = parts.Length > 40 ? parts[40] : titleFontWeight;
+            var connectionTextColor = ParseColor(parts.Length > 41 ? parts[41] : null, text);
+            var connectionIconColor = ParseColor(parts.Length > 42 ? parts[42] : null, text);
+            var connectionBackground = ParseColor(parts.Length > 43 ? parts[43] : null,
+                Color.FromArgb(30, presentationAccent.R, presentationAccent.G, presentationAccent.B));
+            var connectionBorder = ParseColor(parts.Length > 44 ? parts[44] : null, presentationAccent);
+            var connectionBorderThickness = ParseInt(parts, 45, 0, 0, 8);
+            var connectionCornerRadius = ParseInt(parts, 46, 5, 0, 24);
+            var connectionIconSize = ParseInt(parts, 47, 14, 10, 40);
+            var connectionTextSize = ParseInt(parts, 48, 13, 9, 30);
+            var batteryTextColor = ParseColor(parts.Length > 49 ? parts[49] : null, presentationWarning);
+            var batteryIconColor = ParseColor(parts.Length > 50 ? parts[50] : null, presentationWarning);
+            var batteryBackground = ParseColor(parts.Length > 51 ? parts[51] : null,
+                Color.FromArgb(30, presentationWarning.R, presentationWarning.G, presentationWarning.B));
+            var batteryBorder = ParseColor(parts.Length > 52 ? parts[52] : null, presentationWarning);
+            var batteryBorderThickness = ParseInt(parts, 53, 0, 0, 8);
+            var batteryCornerRadius = ParseInt(parts, 54, 5, 0, 24);
+            var batteryIconSize = ParseInt(parts, 55, 14, 10, 40);
+            var batteryTextSize = ParseInt(parts, 56, 13, 9, 30);
+            var useBatteryStateColors = ParseBool(parts, 57, true);
+            if (useBatteryStateColors)
+            {
+                var stateColor = GetBatteryStateColor(parts, currentBatteryState, batteryTextColor);
+                batteryTextColor = stateColor;
+                batteryIconColor = stateColor;
+            }
 
             Background = new SolidColorBrush(dim);
             incidentCard.Background = new SolidColorBrush(card);
             incidentCard.BorderBrush = new SolidColorBrush(presentationAccent);
-            incidentCard.BorderThickness = showBorder ? new Thickness(borderThickness) : new Thickness(0);
+            incidentCard.BorderThickness = showBorder
+                ? CreateBorderThickness(borderPosition, borderThickness)
+                : new Thickness(0);
             incidentCard.CornerRadius = new CornerRadius(cornerRadius);
             incidentCard.Padding = new Thickness(padding);
             incidentCard.ClearValue(FrameworkElement.MinWidthProperty);
-            incidentCard.ClearValue(FrameworkElement.MaxWidthProperty);
-            content.MaxWidth = 720 * scale;
+            incidentCard.MaxWidth = cardWidth;
+            content.MaxWidth = Math.Max(220, cardWidth - padding * 2);
             titleText.FontSize = titleSize;
             messageText.FontSize = controllerSize;
             instructionText.FontSize = instructionSize;
             pauseStatusText.FontSize = statusSize;
+            ApplyTypeface(titleText, titleFontFamily, titleFontWeight);
+            ApplyTypeface(messageText, controllerFontFamily, controllerFontWeight);
+            ApplyTypeface(instructionText, instructionFontFamily, instructionFontWeight);
+            ApplyTypeface(pauseStatusText, statusFontFamily, statusFontWeight);
+            ApplyTypeface(connectionText, statusFontFamily, statusFontWeight);
+            ApplyTypeface(batteryText, statusFontFamily, statusFontWeight);
+            connectionText.FontSize = connectionTextSize;
+            batteryText.FontSize = batteryTextSize;
             PathAspectSizer.FitToMaxSize(controllerIcon, controllerIconSize);
             controllerIcon.Visibility = showControllerIcon ? Visibility.Visible : Visibility.Collapsed;
             messageText.Visibility = showControllerName && !string.IsNullOrWhiteSpace(messageText.Text)
@@ -252,12 +343,38 @@ namespace ControllerSessionManager.OverlayHost
             pauseStatusIcon.Width = statusIconSize;
             pauseStatusIcon.Height = statusIconSize;
             pauseStatusIcon.Visibility = showStatusIcon ? Visibility.Visible : Visibility.Collapsed;
+            titleText.Visibility = showTitle && !string.IsNullOrWhiteSpace(titleText.Text)
+                ? Visibility.Visible : Visibility.Collapsed;
+            instructionText.Visibility = showInstruction && !string.IsNullOrWhiteSpace(instructionText.Text)
+                ? Visibility.Visible : Visibility.Collapsed;
+            pauseStatusBadge.Visibility = showPauseStatus ? Visibility.Visible : Visibility.Collapsed;
+            connectionBadge.Visibility = showConnectionBadge &&
+                !string.IsNullOrWhiteSpace(connectionText.Text) ? Visibility.Visible : Visibility.Collapsed;
+            batteryBadge.Visibility = showBatteryBadge &&
+                !string.IsNullOrWhiteSpace(batteryText.Text) ? Visibility.Visible : Visibility.Collapsed;
+            metadataBadges.Visibility = connectionBadge.Visibility == Visibility.Visible ||
+                batteryBadge.Visibility == Visibility.Visible ? Visibility.Visible : Visibility.Collapsed;
             titleText.Foreground = new SolidColorBrush(text);
             messageText.Foreground = new SolidColorBrush(text);
             var textBrush = new SolidColorBrush(text);
             controllerIcon.Fill = textBrush;
-            controllerIcon.Stroke = textBrush;
             instructionText.Foreground = new SolidColorBrush(presentationAccent);
+            connectionText.Foreground = new SolidColorBrush(connectionTextColor);
+            connectionIcon.Stroke = new SolidColorBrush(connectionIconColor);
+            connectionIcon.Width = connectionIconSize;
+            connectionIcon.Height = connectionIconSize;
+            connectionBadge.Background = new SolidColorBrush(connectionBackground);
+            connectionBadge.BorderBrush = new SolidColorBrush(connectionBorder);
+            connectionBadge.BorderThickness = new Thickness(connectionBorderThickness);
+            connectionBadge.CornerRadius = new CornerRadius(connectionCornerRadius);
+            batteryText.Foreground = new SolidColorBrush(batteryTextColor);
+            batteryIcon.Stroke = new SolidColorBrush(batteryIconColor);
+            batteryIcon.Width = batteryIconSize;
+            batteryIcon.Height = batteryIconSize;
+            batteryBadge.Background = new SolidColorBrush(batteryBackground);
+            batteryBadge.BorderBrush = new SolidColorBrush(batteryBorder);
+            batteryBadge.BorderThickness = new Thickness(batteryBorderThickness);
+            batteryBadge.CornerRadius = new CornerRadius(batteryCornerRadius);
 
             var gap = Math.Max(0, elementSpacing);
             ConfigureControllerLayout(iconPosition, gap, showControllerIcon, showControllerName);
@@ -265,16 +382,125 @@ namespace ControllerSessionManager.OverlayHost
             controllerHost.Margin = controllerHost.Visibility == Visibility.Visible
                 ? new Thickness(0, gap, 0, 0)
                 : new Thickness(0);
-            instructionText.Margin = new Thickness(0, gap, 0, 0);
-            pauseStatusBadge.Margin = new Thickness(0, gap, 0, 0);
+            metadataBadges.Margin = metadataBadges.Visibility == Visibility.Visible
+                ? new Thickness(0, gap, 0, 0) : new Thickness(0);
+            instructionText.Margin = instructionText.Visibility == Visibility.Visible
+                ? new Thickness(0, gap, 0, 0) : new Thickness(0);
+            pauseStatusBadge.Margin = pauseStatusBadge.Visibility == Visibility.Visible
+                ? new Thickness(0, gap, 0, 0) : new Thickness(0);
+            ApplyCardPosition(cardPosition);
+            incidentCard.Effect = showShadow ? new DropShadowEffect
+            {
+                BlurRadius = 24,
+                ShadowDepth = 3,
+                Direction = 270,
+                Opacity = 0.55,
+                Color = Colors.Black
+            } : null;
 
             // Grow the card around its content; padding must not shrink the interior.
-            content.Measure(new Size(720 * scale, double.PositiveInfinity));
+            content.Measure(new Size(Math.Max(220, cardWidth - padding * 2), double.PositiveInfinity));
             var contentWidth = Math.Ceiling(content.DesiredSize.Width);
             var contentHeight = Math.Ceiling(content.DesiredSize.Height);
-            incidentCard.MinWidth = contentWidth + padding * 2;
+            incidentCard.MinWidth = Math.Min(cardWidth, contentWidth + padding * 2);
             incidentCard.MinHeight = contentHeight + padding * 2;
             incidentCard.LayoutTransform = new ScaleTransform(scale, scale);
+        }
+
+        private void ApplyCardPosition(string position)
+        {
+            const double margin = 42;
+            incidentCard.Margin = new Thickness(margin);
+            incidentCard.HorizontalAlignment = position != null && position.EndsWith("Left",
+                StringComparison.OrdinalIgnoreCase) ? HorizontalAlignment.Left :
+                position != null && position.EndsWith("Right", StringComparison.OrdinalIgnoreCase)
+                    ? HorizontalAlignment.Right : HorizontalAlignment.Center;
+            incidentCard.VerticalAlignment = position != null && position.StartsWith("Top",
+                StringComparison.OrdinalIgnoreCase) ? VerticalAlignment.Top :
+                position != null && position.StartsWith("Bottom", StringComparison.OrdinalIgnoreCase)
+                    ? VerticalAlignment.Bottom : VerticalAlignment.Center;
+        }
+
+        private void BeginEntryAnimation()
+        {
+            BeginAnimation(OpacityProperty, null);
+            incidentCard.BeginAnimation(OpacityProperty, null);
+            incidentCard.RenderTransformOrigin = new Point(0.5, 0.5);
+            incidentCard.RenderTransform = Transform.Identity;
+            if (string.Equals(currentAnimation, "None", StringComparison.OrdinalIgnoreCase))
+            {
+                Opacity = 1;
+                return;
+            }
+
+            Opacity = 0;
+            BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1,
+                TimeSpan.FromMilliseconds(220)) { EasingFunction = new QuadraticEase() });
+            if (string.Equals(currentAnimation, "FadeScale", StringComparison.OrdinalIgnoreCase))
+            {
+                var transform = new ScaleTransform(0.94, 0.94);
+                incidentCard.RenderTransform = transform;
+                var animation = new DoubleAnimation(0.94, 1, TimeSpan.FromMilliseconds(240))
+                {
+                    EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+                };
+                transform.BeginAnimation(ScaleTransform.ScaleXProperty, animation);
+                transform.BeginAnimation(ScaleTransform.ScaleYProperty, animation);
+            }
+            else if (string.Equals(currentAnimation, "Slide", StringComparison.OrdinalIgnoreCase))
+            {
+                var transform = new TranslateTransform(0, 28);
+                incidentCard.RenderTransform = transform;
+                transform.BeginAnimation(TranslateTransform.YProperty,
+                    new DoubleAnimation(28, 0, TimeSpan.FromMilliseconds(240))
+                    { EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut } });
+            }
+        }
+
+        private static Thickness CreateBorderThickness(string position, double thickness)
+        {
+            if (string.Equals(position, "Left", StringComparison.OrdinalIgnoreCase)) return new Thickness(thickness, 0, 0, 0);
+            if (string.Equals(position, "Top", StringComparison.OrdinalIgnoreCase)) return new Thickness(0, thickness, 0, 0);
+            if (string.Equals(position, "Right", StringComparison.OrdinalIgnoreCase)) return new Thickness(0, 0, thickness, 0);
+            if (string.Equals(position, "Bottom", StringComparison.OrdinalIgnoreCase)) return new Thickness(0, 0, 0, thickness);
+            return new Thickness(thickness);
+        }
+
+        private static Path CreateBadgeIcon()
+        {
+            return new Path
+            {
+                Width = 14,
+                Height = 14,
+                Stretch = Stretch.Uniform,
+                StrokeThickness = 1.8,
+                StrokeStartLineCap = PenLineCap.Round,
+                StrokeEndLineCap = PenLineCap.Round,
+                StrokeLineJoin = PenLineJoin.Round,
+                Fill = Brushes.Transparent,
+                Margin = new Thickness(0, 0, 6, 0),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+        }
+
+        private static Border CreateMetadataBadge(Path icon, TextBlock text)
+        {
+            var row = new StackPanel { Orientation = Orientation.Horizontal };
+            row.Children.Add(icon);
+            row.Children.Add(text);
+            return new Border
+            {
+                CornerRadius = new CornerRadius(6),
+                Padding = new Thickness(9, 5, 9, 5),
+                Margin = new Thickness(4, 0, 4, 0),
+                Child = row
+            };
+        }
+
+        private static void SetPathData(Path path, string data)
+        {
+            try { path.Data = string.IsNullOrWhiteSpace(data) ? null : Geometry.Parse(data); }
+            catch { path.Data = null; }
         }
 
         private void ConfigureControllerLayout(string position, double gap, bool showIcon, bool showName)
@@ -354,6 +580,22 @@ namespace ControllerSessionManager.OverlayHost
         {
             bool value;
             return parts.Length > index && bool.TryParse(parts[index], out value) ? value : fallback;
+        }
+
+        private static void ApplyTypeface(TextBlock textBlock, string family, string weight)
+        {
+            textBlock.FontFamily = NotificationFontCatalog.Resolve(family, weight);
+            textBlock.FontWeight = NotificationFontCatalog.ResolveEffectiveWeight(family, weight);
+        }
+
+        private static Color GetBatteryStateColor(string[] parts, string state, Color fallback)
+        {
+            var index = string.Equals(state, "Full", StringComparison.OrdinalIgnoreCase) ? 58
+                : string.Equals(state, "Medium", StringComparison.OrdinalIgnoreCase) ? 59
+                : string.Equals(state, "Low", StringComparison.OrdinalIgnoreCase) ? 60
+                : string.Equals(state, "Empty", StringComparison.OrdinalIgnoreCase) ? 61
+                : -1;
+            return index < 0 || parts.Length <= index ? fallback : ParseColor(parts[index], fallback);
         }
 
         private static Color ParseColor(string value, Color fallback)

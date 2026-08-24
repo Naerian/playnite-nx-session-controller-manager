@@ -42,6 +42,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private readonly AdaptiveSessionScopeDetector adaptiveSessionScopeDetector;
         private readonly PauseAttemptGate pauseAttemptGate;
         private readonly OverlayClient overlayClient;
+        private readonly NotificationAudioService notificationAudio;
         private readonly DiagnosticEventBuffer diagnosticEvents;
         private ResourceDictionary englishFallbackResources;
         private ControllerSessionManagerSettings settings;
@@ -77,6 +78,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private SessionProtectionPolicy activeSessionPolicy;
         private TopPanelItem controllerTopPanelItem;
         private TesterIntegration testerIntegration;
+        private bool openingStandaloneSettings;
         private DateTime lastFullscreenLaunchUtc = DateTime.MinValue;
         private DateTime? guideButtonPressedUtc;
         private static readonly TimeSpan FullscreenLaunchCooldown = TimeSpan.FromSeconds(2);
@@ -121,6 +123,8 @@ namespace ControllerSessionManager.PlayniteIntegration
             adaptiveSessionScopeDetector = new AdaptiveSessionScopeDetector();
             pauseAttemptGate = new PauseAttemptGate();
             overlayClient = new OverlayClient(logger);
+            notificationAudio = new NotificationAudioService(
+                logger, Path.GetDirectoryName(GetType().Assembly.Location));
             diagnosticEvents = new DiagnosticEventBuffer(200);
             Theme = new ControllerThemeApi();
 
@@ -451,6 +455,48 @@ namespace ControllerSessionManager.PlayniteIntegration
                 SvgIconGeometryLoader.GetPathData(iconFile),
                 settings.NotificationDurationMilliseconds, GetToastStylePayload(),
                 GetToastBadgeIconGeometry(previewKind, "Wireless"));
+            PlayNotificationSound(SoundKindFromToast(previewKind), preview: true);
+        }
+
+        public void PlayNotificationSoundPreview(string kind)
+        {
+            PlayNotificationSound(SoundKindFromToast(kind), preview: true);
+        }
+
+        private void PlayNotificationSound(NotificationSoundKind kind, bool preview = false)
+        {
+            if (notificationAudio == null || settings == null)
+            {
+                return;
+            }
+
+            if (preview)
+            {
+                notificationAudio.PlayPreview(kind, settings);
+                return;
+            }
+
+            notificationAudio.Play(kind, settings);
+        }
+
+        private static NotificationSoundKind SoundKindFromToast(string kind)
+        {
+            if (string.Equals(kind, "disconnected", StringComparison.OrdinalIgnoreCase))
+            {
+                return NotificationSoundKind.Disconnected;
+            }
+
+            if (string.Equals(kind, "warning", StringComparison.OrdinalIgnoreCase))
+            {
+                return NotificationSoundKind.Warning;
+            }
+
+            if (string.Equals(kind, "lowbattery", StringComparison.OrdinalIgnoreCase))
+            {
+                return NotificationSoundKind.LowBattery;
+            }
+
+            return NotificationSoundKind.Connected;
         }
 
         public void ExportHidDiagnostics()
@@ -512,6 +558,91 @@ namespace ControllerSessionManager.PlayniteIntegration
             {
                 logger.Error(ex, "Failed to export the support report.");
                 PlayniteApi.Dialogs.ShowErrorMessage(ex.Message, Loc("LOCCSM_SupportReport"));
+            }
+        }
+
+        public void ExportVisualProfile(ControllerSessionManagerSettings targetSettings)
+        {
+            try
+            {
+                if (targetSettings == null)
+                {
+                    return;
+                }
+
+                var dialog = new SaveFileDialog
+                {
+                    Title = Loc("LOCCSM_ExportVisualProfile"),
+                    Filter = Loc("LOCCSM_VisualProfileFileFilter"),
+                    FileName = "ControllerManager_Visual_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") +
+                        VisualProfileSnapshot.FileExtension,
+                    DefaultExt = VisualProfileSnapshot.FileExtension.TrimStart('.')
+                };
+                if (dialog.ShowDialog() != true)
+                {
+                    return;
+                }
+
+                var snapshot = VisualProfileSnapshot.FromSettings(
+                    targetSettings, Path.GetFileNameWithoutExtension(dialog.FileName));
+                VisualProfilePortableStore.Export(snapshot, dialog.FileName);
+                PlayniteApi.Dialogs.ShowMessage(
+                    string.Format(Loc("LOCCSM_VisualProfileExported"), dialog.FileName),
+                    Loc("LOCCSM_VisualProfileTitle"));
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Failed to export visual profile.");
+                PlayniteApi.Dialogs.ShowErrorMessage(ex.Message, Loc("LOCCSM_VisualProfileTitle"));
+            }
+        }
+
+        public void ImportVisualProfile(ControllerSessionManagerSettings targetSettings, Action onApplied)
+        {
+            try
+            {
+                if (targetSettings == null)
+                {
+                    return;
+                }
+
+                var dialog = new OpenFileDialog
+                {
+                    Title = Loc("LOCCSM_ImportVisualProfile"),
+                    Filter = Loc("LOCCSM_VisualProfileFileFilter")
+                };
+                if (dialog.ShowDialog() != true)
+                {
+                    return;
+                }
+
+                var snapshot = VisualProfilePortableStore.Import(dialog.FileName);
+                var profileName = string.IsNullOrWhiteSpace(snapshot.Name)
+                    ? Path.GetFileNameWithoutExtension(dialog.FileName)
+                    : snapshot.Name;
+                if (PlayniteApi.Dialogs.ShowMessage(
+                        string.Format(Loc("LOCCSM_VisualProfileImportConfirm"), profileName),
+                        Loc("LOCCSM_ImportVisualProfile"),
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Question) != MessageBoxResult.Yes)
+                {
+                    return;
+                }
+
+                snapshot.ApplyTo(targetSettings);
+                if (onApplied != null)
+                {
+                    onApplied();
+                }
+
+                PlayniteApi.Dialogs.ShowMessage(
+                    string.Format(Loc("LOCCSM_VisualProfileImported"), profileName),
+                    Loc("LOCCSM_VisualProfileTitle"));
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Failed to import visual profile.");
+                PlayniteApi.Dialogs.ShowErrorMessage(ex.Message, Loc("LOCCSM_VisualProfileTitle"));
             }
         }
 
@@ -690,7 +821,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         public void OpenTesterSettings()
         {
             TesterIntegration.PendingOpenSettingsTab = true;
-            PlayniteApi.MainView.OpenPluginSettings(Id);
+            OpenStandaloneSettingsView();
         }
 
         public void OpenTesterForController(ushort vendorId, ushort productId, string name)
@@ -746,12 +877,25 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             try
             {
-                return new ControllerSessionManagerSettingsView(this);
+                return new ControllerSessionManagerSettingsView(this, openingStandaloneSettings);
             }
             catch (Exception ex)
             {
                 logger.Error(ex, "Failed to create the settings view.");
                 throw;
+            }
+        }
+
+        private bool OpenStandaloneSettingsView()
+        {
+            openingStandaloneSettings = true;
+            try
+            {
+                return OpenSettingsView();
+            }
+            finally
+            {
+                openingStandaloneSettings = false;
             }
         }
 
@@ -789,7 +933,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 controllerTopPanelItem = new TopPanelItem
                 {
                     Icon = new ControllerTopPanelControl(this),
-                    Activated = delegate { PlayniteApi.MainView.OpenPluginSettings(Id); }
+                    Activated = delegate { OpenStandaloneSettingsView(); }
                 };
             }
 
@@ -854,7 +998,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 {
                     MenuSection = "Controller Manager",
                     Description = Loc("LOCCSM_MenuSettings"),
-                    Action = delegate { PlayniteApi.MainView.OpenPluginSettings(Id); }
+                    Action = delegate { OpenStandaloneSettingsView(); }
                 };
             }
         }
@@ -1421,6 +1565,10 @@ namespace ControllerSessionManager.PlayniteIntegration
             controllerManager.SnapshotChanged -= OnManagerSnapshotChanged;
             xInputProvider.Dispose();
             overlayClient.Dispose();
+            if (notificationAudio != null)
+            {
+                notificationAudio.Dispose();
+            }
             if (testerIntegration != null)
             {
                 testerIntegration.Shutdown();
@@ -1882,6 +2030,18 @@ namespace ControllerSessionManager.PlayniteIntegration
                 VendorId = vendorId,
                 ProductId = productId
             });
+            var missingMetadata = missing.Count == 1
+                ? GetControllerSnapshot().FirstOrDefault(a =>
+                    SessionControllerIdentity.RefersTo(missing[0].ControllerKey, a))
+                : null;
+            var connectionType = missingMetadata == null ? string.Empty : missingMetadata.ConnectionType;
+            var batteryLevel = missingMetadata == null ? string.Empty : missingMetadata.BatteryLevel;
+            var connectionLabel = string.IsNullOrWhiteSpace(connectionType) ||
+                string.Equals(connectionType, "Unknown", StringComparison.OrdinalIgnoreCase)
+                ? string.Empty : Loc("LOCCSM_Value" + connectionType);
+            var batteryLabel = string.IsNullOrWhiteSpace(batteryLevel) ||
+                string.Equals(batteryLevel, "Unknown", StringComparison.OrdinalIgnoreCase)
+                ? string.Empty : Loc("LOCCSM_Value" + batteryLevel);
             overlayClient.Show(activeSessionId, activeDisconnectIncidentId.Value, activeGameProcessId,
                 missing.Count == 1 ? Loc("LOCCSM_OverlayDisconnectTitle") :
                     string.Format(Loc("LOCCSM_OverlayDisconnectTitlePlural"), missing.Count),
@@ -1890,7 +2050,12 @@ namespace ControllerSessionManager.PlayniteIntegration
                 SvgIconGeometryLoader.GetPathData(iconFile), activeForcePauseRequested,
                 activePauseReceipt == null ? 0 : activePauseReceipt.TargetProcessId,
                 Loc("LOCCSM_OverlayForcePauseFailed"), "warning",
-                SvgIconGeometryLoader.GetPathData("alert-triangle.svg"), GetOverlayStylePayload());
+                SvgIconGeometryLoader.GetPathData("alert-triangle.svg"), GetOverlayStylePayload(),
+                connectionLabel, batteryLabel,
+                string.IsNullOrWhiteSpace(connectionLabel) ? string.Empty :
+                    ControllerConnectionIcons.GetPathData(connectionType),
+                string.IsNullOrWhiteSpace(batteryLabel) ? string.Empty :
+                    SvgIconGeometryLoader.GetPathData("battery.svg"), batteryLevel);
         }
 
         private void EnsureDisconnectIncident()
@@ -1903,6 +2068,10 @@ namespace ControllerSessionManager.PlayniteIntegration
                 activeOnlineNotificationOnly = false;
                 activeNetworkSafetyDetected = false;
                 pauseAttemptGate.Reset();
+                if (settings != null && settings.ShowDisconnectOverlay)
+                {
+                    PlayNotificationSound(NotificationSoundKind.Warning);
+                }
             }
         }
 
@@ -1947,6 +2116,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                             SvgIconGeometryLoader.GetPathData(ControllerIconCatalog.DefaultFileName),
                             settings.NotificationDurationMilliseconds, GetToastStylePayload(),
                             GetToastBadgeIconGeometry("warning"));
+                        PlayNotificationSound(NotificationSoundKind.Warning);
                         diagnosticEvents.Add("pause", "Suspend skipped: strong online session detected");
                     }
                     else
@@ -2108,6 +2278,13 @@ namespace ControllerSessionManager.PlayniteIntegration
                         candidate.Identity.ConnectionIconGeometry);
                 }
 
+                if (show || showDesktop)
+                {
+                    PlayNotificationSound(isCurrentlyConnected
+                        ? NotificationSoundKind.Connected
+                        : NotificationSoundKind.Disconnected);
+                }
+
                 if (isCurrentlyConnected)
                 {
                     connectedToastControllers[key] = candidate.Identity;
@@ -2198,6 +2375,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                         GetDesktopToastStylePayload(),
                         badgeIcon);
                 }
+
+                PlayNotificationSound(NotificationSoundKind.LowBattery);
             }
         }
 
@@ -2251,7 +2430,13 @@ namespace ControllerSessionManager.PlayniteIntegration
                 settings.NotificationBorderThickness.ToString(), settings.NotificationCornerRadius.ToString(),
                 settings.NotificationIconPosition ?? "Left",
                 settings.NotificationElementSpacing.ToString(),
-                settings.NotificationLowBatteryColor
+                settings.NotificationLowBatteryColor,
+                settings.NotificationShowConnectionBadge.ToString(),
+                settings.NotificationScreenMargin.ToString(),
+                settings.NotificationShowShadow.ToString(),
+                settings.NotificationFontFamily, settings.NotificationFontWeight,
+                settings.NotificationTextAlignment, settings.NotificationAccentMode,
+                settings.NotificationAnimation, settings.NotificationShowTitle.ToString()
             });
         }
 
@@ -2270,7 +2455,13 @@ namespace ControllerSessionManager.PlayniteIntegration
                 settings.DesktopNotificationBorderThickness.ToString(), settings.DesktopNotificationCornerRadius.ToString(),
                 settings.DesktopNotificationIconPosition ?? "Left",
                 settings.DesktopNotificationElementSpacing.ToString(),
-                settings.DesktopNotificationLowBatteryColor
+                settings.DesktopNotificationLowBatteryColor,
+                settings.DesktopNotificationShowConnectionBadge.ToString(),
+                settings.DesktopNotificationScreenMargin.ToString(),
+                settings.DesktopNotificationShowShadow.ToString(),
+                settings.DesktopNotificationFontFamily, settings.DesktopNotificationFontWeight,
+                settings.DesktopNotificationTextAlignment, settings.DesktopNotificationAccentMode,
+                settings.DesktopNotificationAnimation, settings.DesktopNotificationShowTitle.ToString()
             });
         }
 
@@ -2302,6 +2493,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 SvgIconGeometryLoader.GetPathData(iconFile),
                 settings.DesktopNotificationDurationMilliseconds, GetDesktopToastStylePayload(),
                 GetToastBadgeIconGeometry(previewKind, "Bluetooth"));
+            PlayNotificationSound(SoundKindFromToast(previewKind), preview: true);
         }
 
         private static string GetToastBadgeIconGeometry(string kind, string connectionType = null)
@@ -2341,7 +2533,31 @@ namespace ControllerSessionManager.PlayniteIntegration
                 settings.OverlayShowControllerName
                     ? (settings.OverlayControllerIconPosition ?? "Left")
                     : "Center",
-                settings.OverlayShowControllerName.ToString()
+                settings.OverlayShowControllerName.ToString(),
+                settings.OverlayFontFamily, settings.OverlayFontWeight,
+                settings.OverlayShowConnectionBadge.ToString(),
+                settings.OverlayShowBatteryBadge.ToString(),
+                settings.OverlayShowTitle.ToString(), settings.OverlayShowInstruction.ToString(),
+                settings.OverlayShowPauseStatus.ToString(), settings.OverlayCardPosition,
+                settings.OverlayAnimation, settings.OverlayBorderPosition,
+                settings.OverlayCardWidth.ToString(), settings.OverlayShowShadow.ToString(),
+                settings.OverlayTitleFontFamily, settings.OverlayTitleFontWeight,
+                settings.OverlayControllerFontFamily, settings.OverlayControllerFontWeight,
+                settings.OverlayInstructionFontFamily, settings.OverlayInstructionFontWeight,
+                settings.OverlayStatusFontFamily, settings.OverlayStatusFontWeight,
+                settings.OverlayConnectionBadgeTextColor, settings.OverlayConnectionBadgeIconColor,
+                settings.OverlayConnectionBadgeBackgroundColor, settings.OverlayConnectionBadgeBorderColor,
+                settings.OverlayConnectionBadgeBorderThickness.ToString(),
+                settings.OverlayConnectionBadgeCornerRadius.ToString(),
+                settings.OverlayConnectionBadgeIconSize.ToString(), settings.OverlayConnectionBadgeTextSize.ToString(),
+                settings.OverlayBatteryBadgeTextColor, settings.OverlayBatteryBadgeIconColor,
+                settings.OverlayBatteryBadgeBackgroundColor, settings.OverlayBatteryBadgeBorderColor,
+                settings.OverlayBatteryBadgeBorderThickness.ToString(),
+                settings.OverlayBatteryBadgeCornerRadius.ToString(),
+                settings.OverlayBatteryBadgeIconSize.ToString(), settings.OverlayBatteryBadgeTextSize.ToString(),
+                settings.OverlayBatteryBadgeUseStateColors.ToString(), settings.OverlayBatteryBadgeFullColor,
+                settings.OverlayBatteryBadgeMediumColor, settings.OverlayBatteryBadgeLowColor,
+                settings.OverlayBatteryBadgeEmptyColor
             });
         }
 

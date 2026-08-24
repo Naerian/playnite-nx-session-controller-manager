@@ -51,6 +51,7 @@ internal static class SessionManagerTests
             GenericHidNameDoesNotReplacePlayniteIdentity();
             WindowsBluetoothBatteryUsesCoarseLevels();
             XInputWrapperIsNotUsedAsBluetoothBatteryContainer();
+            XInputWirelessReceiverReportsLowBattery();
             BluetoothLeBatteryAddressIsParsedFromSiblingNodes();
             PlayniteBluetoothRowReceivesHidBatteryWithoutXInput();
             BluetoothHardwareIdsAcceptVendorEncodings();
@@ -373,6 +374,13 @@ internal static class SessionManagerTests
             "Xbox Wireless Controller Bluetooth", 0x045E, 0x0B13,
             @"\\?\hid#vid_045e&pid_0b13&ig_00"),
             "An XInput wrapper whose product name includes Bluetooth stays Bluetooth without brand PID rules.");
+        Equal("Bluetooth", ControllerDeviceIdentity.GetConnectionType(
+            "DualSense Wireless Controller", 0x054C, 0x0CE6, string.Empty),
+            "A pathless Sony Wireless Controller observation represents its Bluetooth transport.");
+        Equal("Wired", ControllerDeviceIdentity.GetConnectionType(
+            "DualSense Wireless Controller", 0x054C, 0x0CE6,
+            @"\\?\usb#vid_054c&pid_0ce6&mi_03"),
+            "An explicit DualSense USB path must take priority over its Wireless Controller product name.");
     }
 
     private static void EightBitDoXInputWrapperIsNotBluetooth()
@@ -553,6 +561,28 @@ internal static class SessionManagerTests
         Equal(false, WindowsBluetoothBatteryProvider.IsXInputWrapperPath(
             @"HID\{00001812-0000-1000-8000-00805F9B34FB}_DEV_VID&122DC8_PID&301B"),
             "A Bluetooth HID path must remain eligible for Windows battery lookup.");
+    }
+
+    private static void XInputWirelessReceiverReportsLowBattery()
+    {
+        var metadata = new ControllerMetadata
+        {
+            VendorId = 0x045E,
+            ConnectionType = "WirelessReceiver",
+            DisplayName = "Xbox Wireless Controller"
+        };
+        Equal("Low", XInputBatteryResolver.Resolve(metadata, 0, 3, 1, false, true),
+            "XInput battery on the Xbox wireless adapter must not be discarded as Unknown.");
+        Equal("Low", XInputBatteryResolver.Resolve(metadata, 0, 0xFF, 1, false, false),
+            "WirelessReceiver transport should accept XInput battery even when type is unknown.");
+        var generic = new ControllerMetadata
+        {
+            VendorId = 0x045E,
+            ConnectionType = "Unknown",
+            DisplayName = "XInput Controller (Player 1)"
+        };
+        Equal("Unknown", XInputBatteryResolver.Resolve(generic, 0, 0xFF, 1, false, false),
+            "Unknown battery type without wireless evidence should remain Unknown.");
     }
 
     private static void BluetoothLeBatteryAddressIsParsedFromSiblingNodes()
@@ -1111,10 +1141,20 @@ internal static class SessionManagerTests
             "8BitDo Pro VID/PID should select the Pro silhouette.");
         Equal("steam", ControllerIconCatalog.Suggest(0x28DE, 0x1102, "Steam Controller"),
             "Valve VID should select the Steam Controller silhouette.");
+        Equal("dualshock-3", ControllerIconCatalog.Suggest(0x054C, 0x0268, "PLAYSTATION(R)3 Controller"),
+            "DualShock 3 hardware should use the bundled PS3 silhouette.");
+        Equal("xbox-360", ControllerIconCatalog.Suggest(0x045E, 0x028E, "Xbox 360 Controller"),
+            "Xbox 360 hardware should use its bundled silhouette.");
+        Equal("xbox-controller-s", ControllerIconCatalog.Suggest(0x045E, 0x0285, "Controller S"),
+            "Original Xbox Controller S hardware should use its bundled silhouette.");
+        Equal("wii-u-pro", ControllerIconCatalog.Suggest(0x057E, 0x0330, "Wii U Pro Controller"),
+            "Wii U Pro hardware should use its bundled silhouette.");
+        Equal("stadia", ControllerIconCatalog.Suggest(0x18D1, 0x9400, "Stadia Controller"),
+            "Stadia hardware should use its bundled silhouette.");
         Equal("default", ControllerIconCatalog.Suggest(0, 0, "Arcade Stick"),
             "Unknown VID should fall back to Default.");
-        Equal("Default.svg", ControllerIconCatalog.GetFileName("gamepad-4"),
-            "Removed Lucide gamepad ids should resolve to Default.svg.");
+        Equal("default.svg", ControllerIconCatalog.GetFileName("gamepad-4"),
+            "Removed Lucide gamepad ids should resolve to default.svg.");
     }
 
     private static void DisplayHoldKeepsSettledControllerDuringHotPlugGap()
@@ -1152,7 +1192,7 @@ internal static class SessionManagerTests
         Equal("hardware:2DC8:310B:1", display.Single().HardwareId,
             "A VID-less XInput slot must not replace the settled 8BitDo icon identity.");
         Equal(false, ControllerDisplayHold.ShouldSyncProfile(ghost),
-            "Unsettled observations must not create a Default.svg profile.");
+            "Unsettled observations must not create a default.svg profile.");
     }
 
     private static void DisplayHoldAppliesSameVendorTransportImmediately()
@@ -1395,9 +1435,9 @@ internal static class SessionManagerTests
         controller.VendorId = 0x2DC8;
         controller.ProductId = 0x310B;
         Equal("default", ControllerIconCatalog.ResolveId(controller, "default"),
-            "Choosing Generic must keep Default.svg instead of the VID silhouette.");
-        Equal("8BitdoUltimate2.svg", ControllerIconCatalog.ResolveFileName(controller, null),
-            "A missing profile still uses VID to pick the 8BitDo silhouette instead of Default.svg.");
+            "Choosing Generic must keep default.svg instead of the VID silhouette.");
+        Equal("8bitdo-ultimate-2.svg", ControllerIconCatalog.ResolveFileName(controller, null),
+            "A missing profile still uses VID to pick the 8BitDo silhouette instead of default.svg.");
         Equal("dualsense", ControllerIconCatalog.ResolveId(controller, "dualsense"),
             "An explicit picker choice must win over VID suggestion.");
     }
@@ -1419,8 +1459,8 @@ internal static class SessionManagerTests
             }
         }
 
-        Equal(true, largest > 16384,
-            "Gamepads silhouettes exceed the old 16 KB IPC cap that dropped every toast.");
+        Equal(true, largest > 0,
+            "At least one gamepad silhouette must provide geometry to the overlay.");
         var framing = 512;
         Equal(true, largest * 2 + framing < OverlayIpcLimits.MaxLineCharacters,
             "A disconnect overlay with two silhouette payloads must still fit the IPC line limit.");

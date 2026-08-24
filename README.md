@@ -40,7 +40,7 @@ Controller Manager includes the former Gamepad Tester. Uninstall the standalone 
 - Show an external, controller-aware disconnect overlay when a participating controller disappears.
 - Optionally send a configurable pause key, or force-pause verified offline games, after a disconnect.
 - Store session-protection and pause policies independently for each game.
-- Customize notification and overlay colors, size, typography, icons and layout, with live previews in settings.
+- Customize notification and overlay colors, bundled fonts, size, typography, icons, semantic accents, motion and layout, with on-screen notification tests and an overlay preview in settings.
 - Export a privacy-conscious support report and read-only HID diagnostics for unsupported controllers.
 - Integrate status, controller information, player slots and Tester blocks into compatible Playnite themes.
 - Use Playnite localization dictionaries in 12 languages with English fallback.
@@ -52,6 +52,8 @@ The Tester lives in **Settings > Tester** and in an optional Desktop sidebar ent
 Use it to check the button map, stick health and circular range, input latency, rumble motors, an input log and hardware identity (name, VID/PID, layout, mapping). Guided tests and compatibility notes are available from the same view.
 
 SDL GameController sampling runs in `ControllerSessionManager.TesterHost.exe`, not inside Playnite. Closing settings, starting a protected game or unloading the plugin stops that host.
+
+The visual-scheme selector exposes all 16 dual-tone controller silhouettes shipped with the extension. Models without a dedicated live diagram reuse the closest interactive controller family. The large diagram remains a semantic interactive control so individual buttons, sticks and triggers can react independently.
 
 ## Session protection and pause
 

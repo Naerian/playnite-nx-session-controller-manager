@@ -522,10 +522,25 @@
                                                 </ComboBox.ItemContainerStyle>
                                                 <ComboBox.ItemTemplate>
                                                     <DataTemplate>
-                                                        <TextBlock Text="{Binding DisplayName}"
-                                                                   Foreground="{StaticResource PillIdleTextBrush}"
-                                                                   Margin="4,1"
-                                                                   TextTrimming="CharacterEllipsis" />
+                                                        <StackPanel Orientation="Horizontal" Margin="4,1">
+                                                            <Viewbox Width="30" Height="20" Margin="0,0,8,0" Stretch="Uniform">
+                                                                <Grid RenderTransformOrigin="0.5,0.5">
+                                                                    <Grid.RenderTransform>
+                                                                        <ScaleTransform ScaleX="{Binding ThumbnailScale}"
+                                                                                        ScaleY="{Binding ThumbnailScale}" />
+                                                                    </Grid.RenderTransform>
+                                                                    <Path Data="{Binding PrimaryGeometry}"
+                                                                          Fill="{StaticResource PillIdleTextBrush}" />
+                                                                    <Path Data="{Binding SecondaryGeometry}"
+                                                                          Fill="{DynamicResource Narian.Accent}"
+                                                                          Opacity="0.72" />
+                                                                </Grid>
+                                                            </Viewbox>
+                                                            <TextBlock Text="{Binding DisplayName}"
+                                                                       Foreground="{StaticResource PillIdleTextBrush}"
+                                                                       VerticalAlignment="Center"
+                                                                       TextTrimming="CharacterEllipsis" />
+                                                        </StackPanel>
                                                     </DataTemplate>
                                                 </ComboBox.ItemTemplate>
                                             </ComboBox>

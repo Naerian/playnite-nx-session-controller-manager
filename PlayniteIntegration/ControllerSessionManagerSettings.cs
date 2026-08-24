@@ -50,6 +50,18 @@ namespace ControllerSessionManager.PlayniteIntegration
         private int notificationCornerRadius = 10;
         private bool showControllerNameInNotifications = true;
         private bool showControllerNameInDesktopNotifications = true;
+        private bool notificationShowConnectionBadge = true;
+        private bool desktopNotificationShowConnectionBadge = true;
+        private int notificationScreenMargin = 28;
+        private int desktopNotificationScreenMargin = 28;
+        private bool notificationShowShadow = true;
+        private bool desktopNotificationShowShadow = true;
+        private string notificationFontFamily = NotificationFontCatalog.SystemDefault;
+        private string notificationFontWeight = "SemiBold";
+        private string notificationTextAlignment = "Left";
+        private string notificationAccentMode = "IconAndBorder";
+        private string notificationAnimation = "Fade";
+        private bool notificationShowTitle = true;
         private int desktopNotificationWidth = 420;
         private int desktopNotificationScalePercent = 100;
         private int desktopNotificationDurationMilliseconds = 4000;
@@ -71,6 +83,12 @@ namespace ControllerSessionManager.PlayniteIntegration
         private string desktopNotificationBorderPosition = "Bottom";
         private int desktopNotificationBorderThickness = 3;
         private int desktopNotificationCornerRadius = 8;
+        private string desktopNotificationFontFamily = NotificationFontCatalog.SystemDefault;
+        private string desktopNotificationFontWeight = "SemiBold";
+        private string desktopNotificationTextAlignment = "Left";
+        private string desktopNotificationAccentMode = "IconAndBorder";
+        private string desktopNotificationAnimation = "Fade";
+        private bool desktopNotificationShowTitle = true;
         private int overlayScalePercent = 100;
         private string overlayDimColor = "#96000000";
         private string overlayCardColor = "#EB121418";
@@ -86,16 +104,66 @@ namespace ControllerSessionManager.PlayniteIntegration
         private bool overlayShowControllerIcon = true;
         private bool overlayShowStatusIcon = true;
         private bool overlayShowControllerName = true;
+        private bool overlayShowConnectionBadge = true;
+        private bool overlayShowBatteryBadge = true;
+        private bool overlayShowTitle = true;
+        private bool overlayShowInstruction = true;
+        private bool overlayShowPauseStatus = true;
         private string overlayControllerIconPosition = "Left";
+        private string overlayCardPosition = "Center";
+        private string overlayAnimation = "FadeScale";
+        private string overlayBorderPosition = "Full";
+        private int overlayCardWidth = 620;
         private int overlayPadding = 34;
         private int overlayElementSpacing = 14;
         private bool overlayShowBorder = true;
+        private bool overlayShowShadow = true;
         private int overlayBorderThickness = 3;
         private int overlayCornerRadius = 13;
+        private string overlayFontFamily = NotificationFontCatalog.SystemDefault;
+        private string overlayFontWeight = "SemiBold";
+        private string overlayTitleFontFamily = NotificationFontCatalog.SystemDefault;
+        private string overlayTitleFontWeight = "SemiBold";
+        private string overlayControllerFontFamily = NotificationFontCatalog.SystemDefault;
+        private string overlayControllerFontWeight = "SemiBold";
+        private string overlayInstructionFontFamily = NotificationFontCatalog.SystemDefault;
+        private string overlayInstructionFontWeight = "SemiBold";
+        private string overlayStatusFontFamily = NotificationFontCatalog.SystemDefault;
+        private string overlayStatusFontWeight = "SemiBold";
+        private string overlayConnectionBadgeTextColor = "#FFFFFFFF";
+        private string overlayConnectionBadgeIconColor = "#FFFFFFFF";
+        private string overlayConnectionBadgeBackgroundColor = "#302391FF";
+        private string overlayConnectionBadgeBorderColor = "#602391FF";
+        private int overlayConnectionBadgeBorderThickness;
+        private int overlayConnectionBadgeCornerRadius = 5;
+        private int overlayConnectionBadgeIconSize = 14;
+        private int overlayConnectionBadgeTextSize = 13;
+        private string overlayBatteryBadgeTextColor = "#FFF5B542";
+        private string overlayBatteryBadgeIconColor = "#FFF5B542";
+        private string overlayBatteryBadgeBackgroundColor = "#30F5B542";
+        private string overlayBatteryBadgeBorderColor = "#60F5B542";
+        private int overlayBatteryBadgeBorderThickness;
+        private int overlayBatteryBadgeCornerRadius = 5;
+        private int overlayBatteryBadgeIconSize = 14;
+        private int overlayBatteryBadgeTextSize = 13;
+        private bool overlayBatteryBadgeUseStateColors = true;
+        private string overlayBatteryBadgeFullColor = "#FF4FC27E";
+        private string overlayBatteryBadgeMediumColor = "#FFF5B542";
+        private string overlayBatteryBadgeLowColor = "#FFE05252";
+        private string overlayBatteryBadgeEmptyColor = "#FFC92D45";
         private bool allowControllerTakeover = true;
         private bool protectAllActiveControllers;
         private int settingsSchemaVersion;
         private string appearancePreset = SettingsAppearance.Midnight;
+        private string notificationStylePreset = NotificationStylePresets.Soft;
+        private string overlayStylePreset = OverlayStylePresets.Soft;
+        private bool enableNotificationSounds = true;
+        private string notificationSoundPack = NotificationSoundCatalog.ModernCrystal;
+        private bool playSoundOnConnected;
+        private bool playSoundOnDisconnected;
+        private bool playSoundOnLowBattery = true;
+        private bool playSoundOnWarning = true;
+        private double notificationSoundVolume = 0.7;
         private bool pauseGameOnDisconnect;
         private int disconnectGracePeriodMilliseconds = 1500;
         private int reconciliationIntervalSeconds = 5;
@@ -139,6 +207,77 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             get { return SettingsAppearance.Normalize(appearancePreset); }
             set { SetValue(ref appearancePreset, SettingsAppearance.Normalize(value)); }
+        }
+
+        public string NotificationStylePreset
+        {
+            get { return NotificationStylePresets.Normalize(notificationStylePreset); }
+            set { SetValue(ref notificationStylePreset, NotificationStylePresets.Normalize(value)); }
+        }
+
+        public string OverlayStylePreset
+        {
+            get { return OverlayStylePresets.Normalize(overlayStylePreset); }
+            set { SetValue(ref overlayStylePreset, OverlayStylePresets.Normalize(value)); }
+        }
+
+        public bool EnableNotificationSounds
+        {
+            get { return enableNotificationSounds; }
+            set { SetValue(ref enableNotificationSounds, value); }
+        }
+
+        public string NotificationSoundPack
+        {
+            get { return NotificationSoundCatalog.Normalize(notificationSoundPack); }
+            set { SetValue(ref notificationSoundPack, NotificationSoundCatalog.Normalize(value)); }
+        }
+
+        public bool PlaySoundOnConnected
+        {
+            get { return playSoundOnConnected; }
+            set { SetValue(ref playSoundOnConnected, value); }
+        }
+
+        public bool PlaySoundOnDisconnected
+        {
+            get { return playSoundOnDisconnected; }
+            set { SetValue(ref playSoundOnDisconnected, value); }
+        }
+
+        public bool PlaySoundOnLowBattery
+        {
+            get { return playSoundOnLowBattery; }
+            set { SetValue(ref playSoundOnLowBattery, value); }
+        }
+
+        public bool PlaySoundOnWarning
+        {
+            get { return playSoundOnWarning; }
+            set { SetValue(ref playSoundOnWarning, value); }
+        }
+
+        public double NotificationSoundVolume
+        {
+            get { return notificationSoundVolume; }
+            set
+            {
+                var volume = value;
+                if (double.IsNaN(volume) || double.IsInfinity(volume))
+                {
+                    volume = 0.7;
+                }
+                else if (volume < 0)
+                {
+                    volume = 0;
+                }
+                else if (volume > 1)
+                {
+                    volume = 1;
+                }
+
+                SetValue(ref notificationSoundVolume, volume);
+            }
         }
 
         public bool EnableDebugLogging
@@ -299,6 +438,18 @@ namespace ControllerSessionManager.PlayniteIntegration
         public int NotificationCornerRadius { get { return notificationCornerRadius; } set { SetValue(ref notificationCornerRadius, value); } }
         public bool ShowControllerNameInNotifications { get { return showControllerNameInNotifications; } set { SetValue(ref showControllerNameInNotifications, value); } }
         public bool ShowControllerNameInDesktopNotifications { get { return showControllerNameInDesktopNotifications; } set { SetValue(ref showControllerNameInDesktopNotifications, value); } }
+        public bool NotificationShowConnectionBadge { get { return notificationShowConnectionBadge; } set { SetValue(ref notificationShowConnectionBadge, value); } }
+        public bool DesktopNotificationShowConnectionBadge { get { return desktopNotificationShowConnectionBadge; } set { SetValue(ref desktopNotificationShowConnectionBadge, value); } }
+        public int NotificationScreenMargin { get { return notificationScreenMargin; } set { SetValue(ref notificationScreenMargin, value); } }
+        public int DesktopNotificationScreenMargin { get { return desktopNotificationScreenMargin; } set { SetValue(ref desktopNotificationScreenMargin, value); } }
+        public bool NotificationShowShadow { get { return notificationShowShadow; } set { SetValue(ref notificationShowShadow, value); } }
+        public bool DesktopNotificationShowShadow { get { return desktopNotificationShowShadow; } set { SetValue(ref desktopNotificationShowShadow, value); } }
+        public string NotificationFontFamily { get { return NotificationFontCatalog.Normalize(notificationFontFamily); } set { SetValue(ref notificationFontFamily, NotificationFontCatalog.Normalize(value)); } }
+        public string NotificationFontWeight { get { return NotificationFontCatalog.NormalizeWeight(notificationFontWeight); } set { SetValue(ref notificationFontWeight, NotificationFontCatalog.NormalizeWeight(value)); } }
+        public string NotificationTextAlignment { get { return NotificationFontCatalog.NormalizeAlignment(notificationTextAlignment); } set { SetValue(ref notificationTextAlignment, NotificationFontCatalog.NormalizeAlignment(value)); } }
+        public string NotificationAccentMode { get { return NotificationFontCatalog.NormalizeAccentMode(notificationAccentMode); } set { SetValue(ref notificationAccentMode, NotificationFontCatalog.NormalizeAccentMode(value)); } }
+        public string NotificationAnimation { get { return NotificationFontCatalog.NormalizeAnimation(notificationAnimation); } set { SetValue(ref notificationAnimation, NotificationFontCatalog.NormalizeAnimation(value)); } }
+        public bool NotificationShowTitle { get { return notificationShowTitle; } set { SetValue(ref notificationShowTitle, value); } }
         public int DesktopNotificationWidth { get { return desktopNotificationWidth; } set { SetValue(ref desktopNotificationWidth, value); } }
         public int DesktopNotificationScalePercent { get { return desktopNotificationScalePercent; } set { SetValue(ref desktopNotificationScalePercent, value); } }
         public int DesktopNotificationDurationMilliseconds { get { return desktopNotificationDurationMilliseconds; } set { SetValue(ref desktopNotificationDurationMilliseconds, value); } }
@@ -320,6 +471,12 @@ namespace ControllerSessionManager.PlayniteIntegration
         public string DesktopNotificationBorderPosition { get { return desktopNotificationBorderPosition; } set { SetValue(ref desktopNotificationBorderPosition, value); } }
         public int DesktopNotificationBorderThickness { get { return desktopNotificationBorderThickness; } set { SetValue(ref desktopNotificationBorderThickness, value); } }
         public int DesktopNotificationCornerRadius { get { return desktopNotificationCornerRadius; } set { SetValue(ref desktopNotificationCornerRadius, value); } }
+        public string DesktopNotificationFontFamily { get { return NotificationFontCatalog.Normalize(desktopNotificationFontFamily); } set { SetValue(ref desktopNotificationFontFamily, NotificationFontCatalog.Normalize(value)); } }
+        public string DesktopNotificationFontWeight { get { return NotificationFontCatalog.NormalizeWeight(desktopNotificationFontWeight); } set { SetValue(ref desktopNotificationFontWeight, NotificationFontCatalog.NormalizeWeight(value)); } }
+        public string DesktopNotificationTextAlignment { get { return NotificationFontCatalog.NormalizeAlignment(desktopNotificationTextAlignment); } set { SetValue(ref desktopNotificationTextAlignment, NotificationFontCatalog.NormalizeAlignment(value)); } }
+        public string DesktopNotificationAccentMode { get { return NotificationFontCatalog.NormalizeAccentMode(desktopNotificationAccentMode); } set { SetValue(ref desktopNotificationAccentMode, NotificationFontCatalog.NormalizeAccentMode(value)); } }
+        public string DesktopNotificationAnimation { get { return NotificationFontCatalog.NormalizeAnimation(desktopNotificationAnimation); } set { SetValue(ref desktopNotificationAnimation, NotificationFontCatalog.NormalizeAnimation(value)); } }
+        public bool DesktopNotificationShowTitle { get { return desktopNotificationShowTitle; } set { SetValue(ref desktopNotificationShowTitle, value); } }
         public int OverlayScalePercent { get { return overlayScalePercent; } set { SetValue(ref overlayScalePercent, value); } }
         public string OverlayDimColor { get { return overlayDimColor; } set { SetValue(ref overlayDimColor, value); } }
         public string OverlayCardColor { get { return overlayCardColor; } set { SetValue(ref overlayCardColor, value); } }
@@ -335,12 +492,53 @@ namespace ControllerSessionManager.PlayniteIntegration
         public bool OverlayShowControllerIcon { get { return overlayShowControllerIcon; } set { SetValue(ref overlayShowControllerIcon, value); } }
         public bool OverlayShowStatusIcon { get { return overlayShowStatusIcon; } set { SetValue(ref overlayShowStatusIcon, value); } }
         public bool OverlayShowControllerName { get { return overlayShowControllerName; } set { SetValue(ref overlayShowControllerName, value); } }
+        public bool OverlayShowConnectionBadge { get { return overlayShowConnectionBadge; } set { SetValue(ref overlayShowConnectionBadge, value); } }
+        public bool OverlayShowBatteryBadge { get { return overlayShowBatteryBadge; } set { SetValue(ref overlayShowBatteryBadge, value); } }
+        public bool OverlayShowTitle { get { return overlayShowTitle; } set { SetValue(ref overlayShowTitle, value); } }
+        public bool OverlayShowInstruction { get { return overlayShowInstruction; } set { SetValue(ref overlayShowInstruction, value); } }
+        public bool OverlayShowPauseStatus { get { return overlayShowPauseStatus; } set { SetValue(ref overlayShowPauseStatus, value); } }
         public string OverlayControllerIconPosition { get { return overlayControllerIconPosition; } set { SetValue(ref overlayControllerIconPosition, value); } }
+        public string OverlayCardPosition { get { return overlayCardPosition; } set { SetValue(ref overlayCardPosition, value); } }
+        public string OverlayAnimation { get { return overlayAnimation; } set { SetValue(ref overlayAnimation, value); } }
+        public string OverlayBorderPosition { get { return overlayBorderPosition; } set { SetValue(ref overlayBorderPosition, value); } }
+        public int OverlayCardWidth { get { return overlayCardWidth; } set { SetValue(ref overlayCardWidth, value); } }
         public int OverlayPadding { get { return overlayPadding; } set { SetValue(ref overlayPadding, value); } }
         public int OverlayElementSpacing { get { return overlayElementSpacing; } set { SetValue(ref overlayElementSpacing, value); } }
         public bool OverlayShowBorder { get { return overlayShowBorder; } set { SetValue(ref overlayShowBorder, value); } }
+        public bool OverlayShowShadow { get { return overlayShowShadow; } set { SetValue(ref overlayShowShadow, value); } }
         public int OverlayBorderThickness { get { return overlayBorderThickness; } set { SetValue(ref overlayBorderThickness, value); } }
         public int OverlayCornerRadius { get { return overlayCornerRadius; } set { SetValue(ref overlayCornerRadius, value); } }
+        public string OverlayFontFamily { get { return NotificationFontCatalog.Normalize(overlayFontFamily); } set { SetValue(ref overlayFontFamily, NotificationFontCatalog.Normalize(value)); } }
+        public string OverlayFontWeight { get { return NotificationFontCatalog.NormalizeWeight(overlayFontWeight); } set { SetValue(ref overlayFontWeight, NotificationFontCatalog.NormalizeWeight(value)); } }
+        public string OverlayTitleFontFamily { get { return NotificationFontCatalog.Normalize(overlayTitleFontFamily); } set { SetValue(ref overlayTitleFontFamily, NotificationFontCatalog.Normalize(value)); } }
+        public string OverlayTitleFontWeight { get { return NotificationFontCatalog.NormalizeWeight(overlayTitleFontWeight); } set { SetValue(ref overlayTitleFontWeight, NotificationFontCatalog.NormalizeWeight(value)); } }
+        public string OverlayControllerFontFamily { get { return NotificationFontCatalog.Normalize(overlayControllerFontFamily); } set { SetValue(ref overlayControllerFontFamily, NotificationFontCatalog.Normalize(value)); } }
+        public string OverlayControllerFontWeight { get { return NotificationFontCatalog.NormalizeWeight(overlayControllerFontWeight); } set { SetValue(ref overlayControllerFontWeight, NotificationFontCatalog.NormalizeWeight(value)); } }
+        public string OverlayInstructionFontFamily { get { return NotificationFontCatalog.Normalize(overlayInstructionFontFamily); } set { SetValue(ref overlayInstructionFontFamily, NotificationFontCatalog.Normalize(value)); } }
+        public string OverlayInstructionFontWeight { get { return NotificationFontCatalog.NormalizeWeight(overlayInstructionFontWeight); } set { SetValue(ref overlayInstructionFontWeight, NotificationFontCatalog.NormalizeWeight(value)); } }
+        public string OverlayStatusFontFamily { get { return NotificationFontCatalog.Normalize(overlayStatusFontFamily); } set { SetValue(ref overlayStatusFontFamily, NotificationFontCatalog.Normalize(value)); } }
+        public string OverlayStatusFontWeight { get { return NotificationFontCatalog.NormalizeWeight(overlayStatusFontWeight); } set { SetValue(ref overlayStatusFontWeight, NotificationFontCatalog.NormalizeWeight(value)); } }
+        public string OverlayConnectionBadgeTextColor { get { return overlayConnectionBadgeTextColor; } set { SetValue(ref overlayConnectionBadgeTextColor, value); } }
+        public string OverlayConnectionBadgeIconColor { get { return overlayConnectionBadgeIconColor; } set { SetValue(ref overlayConnectionBadgeIconColor, value); } }
+        public string OverlayConnectionBadgeBackgroundColor { get { return overlayConnectionBadgeBackgroundColor; } set { SetValue(ref overlayConnectionBadgeBackgroundColor, value); } }
+        public string OverlayConnectionBadgeBorderColor { get { return overlayConnectionBadgeBorderColor; } set { SetValue(ref overlayConnectionBadgeBorderColor, value); } }
+        public int OverlayConnectionBadgeBorderThickness { get { return overlayConnectionBadgeBorderThickness; } set { SetValue(ref overlayConnectionBadgeBorderThickness, value); } }
+        public int OverlayConnectionBadgeCornerRadius { get { return overlayConnectionBadgeCornerRadius; } set { SetValue(ref overlayConnectionBadgeCornerRadius, value); } }
+        public int OverlayConnectionBadgeIconSize { get { return overlayConnectionBadgeIconSize; } set { SetValue(ref overlayConnectionBadgeIconSize, value); } }
+        public int OverlayConnectionBadgeTextSize { get { return overlayConnectionBadgeTextSize; } set { SetValue(ref overlayConnectionBadgeTextSize, value); } }
+        public string OverlayBatteryBadgeTextColor { get { return overlayBatteryBadgeTextColor; } set { SetValue(ref overlayBatteryBadgeTextColor, value); } }
+        public string OverlayBatteryBadgeIconColor { get { return overlayBatteryBadgeIconColor; } set { SetValue(ref overlayBatteryBadgeIconColor, value); } }
+        public string OverlayBatteryBadgeBackgroundColor { get { return overlayBatteryBadgeBackgroundColor; } set { SetValue(ref overlayBatteryBadgeBackgroundColor, value); } }
+        public string OverlayBatteryBadgeBorderColor { get { return overlayBatteryBadgeBorderColor; } set { SetValue(ref overlayBatteryBadgeBorderColor, value); } }
+        public int OverlayBatteryBadgeBorderThickness { get { return overlayBatteryBadgeBorderThickness; } set { SetValue(ref overlayBatteryBadgeBorderThickness, value); } }
+        public int OverlayBatteryBadgeCornerRadius { get { return overlayBatteryBadgeCornerRadius; } set { SetValue(ref overlayBatteryBadgeCornerRadius, value); } }
+        public int OverlayBatteryBadgeIconSize { get { return overlayBatteryBadgeIconSize; } set { SetValue(ref overlayBatteryBadgeIconSize, value); } }
+        public int OverlayBatteryBadgeTextSize { get { return overlayBatteryBadgeTextSize; } set { SetValue(ref overlayBatteryBadgeTextSize, value); } }
+        public bool OverlayBatteryBadgeUseStateColors { get { return overlayBatteryBadgeUseStateColors; } set { SetValue(ref overlayBatteryBadgeUseStateColors, value); } }
+        public string OverlayBatteryBadgeFullColor { get { return overlayBatteryBadgeFullColor; } set { SetValue(ref overlayBatteryBadgeFullColor, value); } }
+        public string OverlayBatteryBadgeMediumColor { get { return overlayBatteryBadgeMediumColor; } set { SetValue(ref overlayBatteryBadgeMediumColor, value); } }
+        public string OverlayBatteryBadgeLowColor { get { return overlayBatteryBadgeLowColor; } set { SetValue(ref overlayBatteryBadgeLowColor, value); } }
+        public string OverlayBatteryBadgeEmptyColor { get { return overlayBatteryBadgeEmptyColor; } set { SetValue(ref overlayBatteryBadgeEmptyColor, value); } }
 
         public bool ProtectAllActiveControllers
         {
@@ -421,11 +619,16 @@ namespace ControllerSessionManager.PlayniteIntegration
                 return new List<ControllerIconOption>
                 {
                     Icon(ControllerIconCatalog.DefaultId, "Generic", ControllerIconCatalog.DefaultFileName),
+                    Icon(ControllerIconCatalog.XboxControllerSId, "Xbox Controller S", ControllerIconCatalog.GetFileName(ControllerIconCatalog.XboxControllerSId)),
+                    Icon(ControllerIconCatalog.Xbox360Id, "Xbox 360", ControllerIconCatalog.GetFileName(ControllerIconCatalog.Xbox360Id)),
                     Icon(ControllerIconCatalog.XboxOneId, "Xbox One", ControllerIconCatalog.GetFileName(ControllerIconCatalog.XboxOneId)),
                     Icon(ControllerIconCatalog.XboxSeriesId, "Xbox Series", ControllerIconCatalog.GetFileName(ControllerIconCatalog.XboxSeriesId)),
+                    Icon(ControllerIconCatalog.DualShock3Id, "DualShock 3", ControllerIconCatalog.GetFileName(ControllerIconCatalog.DualShock3Id)),
                     Icon(ControllerIconCatalog.DualShockId, "DualShock", ControllerIconCatalog.GetFileName(ControllerIconCatalog.DualShockId)),
                     Icon(ControllerIconCatalog.DualSenseId, "DualSense", ControllerIconCatalog.GetFileName(ControllerIconCatalog.DualSenseId)),
                     Icon(ControllerIconCatalog.SwitchProId, "Switch Pro", ControllerIconCatalog.GetFileName(ControllerIconCatalog.SwitchProId)),
+                    Icon(ControllerIconCatalog.WiiUProId, "Wii U Pro", ControllerIconCatalog.GetFileName(ControllerIconCatalog.WiiUProId)),
+                    Icon(ControllerIconCatalog.StadiaId, "Stadia", ControllerIconCatalog.GetFileName(ControllerIconCatalog.StadiaId)),
                     Icon(ControllerIconCatalog.EightBitDoProId, "8BitDo Pro", ControllerIconCatalog.GetFileName(ControllerIconCatalog.EightBitDoProId)),
                     Icon(ControllerIconCatalog.EightBitDoUltimateId, "8BitDo Ultimate 2", ControllerIconCatalog.GetFileName(ControllerIconCatalog.EightBitDoUltimateId)),
                     Icon(ControllerIconCatalog.EightBitDoUltimate3Id, "8BitDo Ultimate 3", ControllerIconCatalog.GetFileName(ControllerIconCatalog.EightBitDoUltimate3Id)),
@@ -710,8 +913,93 @@ namespace ControllerSessionManager.PlayniteIntegration
                 SettingsSchemaVersion = 8;
             }
 
+            if (SettingsSchemaVersion < 9)
+            {
+                enableNotificationSounds = true;
+                notificationSoundPack = NotificationSoundCatalog.ModernCrystal;
+                playSoundOnConnected = false;
+                playSoundOnDisconnected = false;
+                playSoundOnLowBattery = true;
+                playSoundOnWarning = true;
+                notificationSoundVolume = 0.7;
+                // Existing installs keep current toast/overlay styling as Custom.
+                if (originalSchema > 0)
+                {
+                    notificationStylePreset = NotificationStylePresets.Custom;
+                    overlayStylePreset = OverlayStylePresets.Custom;
+                }
+
+                SettingsSchemaVersion = 9;
+            }
+
+            if (SettingsSchemaVersion < 10)
+            {
+                SettingsSchemaVersion = 10;
+            }
+
+            if (SettingsSchemaVersion < 11)
+            {
+                notificationFontFamily = NotificationFontCatalog.SystemDefault;
+                desktopNotificationFontFamily = NotificationFontCatalog.SystemDefault;
+                overlayFontFamily = NotificationFontCatalog.SystemDefault;
+                notificationFontWeight = "SemiBold";
+                desktopNotificationFontWeight = "SemiBold";
+                overlayFontWeight = "SemiBold";
+                notificationTextAlignment = "Left";
+                desktopNotificationTextAlignment = "Left";
+                notificationAccentMode = "IconAndBorder";
+                desktopNotificationAccentMode = "IconAndBorder";
+                notificationAnimation = "Fade";
+                desktopNotificationAnimation = "Fade";
+                notificationShowTitle = true;
+                desktopNotificationShowTitle = true;
+                if (originalSchema == 0)
+                {
+                    NotificationStylePresets.Apply(this, NotificationStylePresets.Soft);
+                    OverlayStylePresets.Apply(this, OverlayStylePresets.Soft);
+                }
+                SettingsSchemaVersion = 11;
+            }
+
+            if (SettingsSchemaVersion < 12)
+            {
+                overlayTitleFontFamily = overlayFontFamily;
+                overlayTitleFontWeight = overlayFontWeight;
+                overlayControllerFontFamily = overlayFontFamily;
+                overlayControllerFontWeight = overlayFontWeight;
+                overlayInstructionFontFamily = overlayFontFamily;
+                overlayInstructionFontWeight = overlayFontWeight;
+                overlayStatusFontFamily = overlayFontFamily;
+                overlayStatusFontWeight = overlayFontWeight;
+                SettingsSchemaVersion = 12;
+            }
+
             topPanelControllerMode = NormalizeTopPanelControllerMode(topPanelControllerMode);
             appearancePreset = SettingsAppearance.Normalize(appearancePreset);
+            notificationStylePreset = NotificationStylePresets.Normalize(notificationStylePreset);
+            overlayStylePreset = OverlayStylePresets.Normalize(overlayStylePreset);
+            notificationSoundPack = NotificationSoundCatalog.Normalize(notificationSoundPack);
+            notificationFontFamily = NotificationFontCatalog.Normalize(notificationFontFamily);
+            desktopNotificationFontFamily = NotificationFontCatalog.Normalize(desktopNotificationFontFamily);
+            overlayFontFamily = NotificationFontCatalog.Normalize(overlayFontFamily);
+            notificationFontWeight = NotificationFontCatalog.NormalizeWeight(notificationFontWeight);
+            desktopNotificationFontWeight = NotificationFontCatalog.NormalizeWeight(desktopNotificationFontWeight);
+            overlayFontWeight = NotificationFontCatalog.NormalizeWeight(overlayFontWeight);
+            overlayTitleFontFamily = NotificationFontCatalog.Normalize(overlayTitleFontFamily);
+            overlayTitleFontWeight = NotificationFontCatalog.NormalizeWeight(overlayTitleFontWeight);
+            overlayControllerFontFamily = NotificationFontCatalog.Normalize(overlayControllerFontFamily);
+            overlayControllerFontWeight = NotificationFontCatalog.NormalizeWeight(overlayControllerFontWeight);
+            overlayInstructionFontFamily = NotificationFontCatalog.Normalize(overlayInstructionFontFamily);
+            overlayInstructionFontWeight = NotificationFontCatalog.NormalizeWeight(overlayInstructionFontWeight);
+            overlayStatusFontFamily = NotificationFontCatalog.Normalize(overlayStatusFontFamily);
+            overlayStatusFontWeight = NotificationFontCatalog.NormalizeWeight(overlayStatusFontWeight);
+            notificationTextAlignment = NotificationFontCatalog.NormalizeAlignment(notificationTextAlignment);
+            desktopNotificationTextAlignment = NotificationFontCatalog.NormalizeAlignment(desktopNotificationTextAlignment);
+            notificationAccentMode = NotificationFontCatalog.NormalizeAccentMode(notificationAccentMode);
+            desktopNotificationAccentMode = NotificationFontCatalog.NormalizeAccentMode(desktopNotificationAccentMode);
+            notificationAnimation = NotificationFontCatalog.NormalizeAnimation(notificationAnimation);
+            desktopNotificationAnimation = NotificationFontCatalog.NormalizeAnimation(desktopNotificationAnimation);
+            NotificationSoundVolume = notificationSoundVolume;
         }
 
         private static string NormalizeTopPanelControllerMode(string value)
@@ -802,12 +1090,15 @@ namespace ControllerSessionManager.PlayniteIntegration
                 NotificationTitleFontSize < 12 || NotificationTitleFontSize > 36 ||
                 NotificationMessageFontSize < 10 || NotificationMessageFontSize > 30 ||
                 NotificationIconSize < 16 || NotificationIconSize > 128 ||
-                NotificationPadding < 6 || NotificationPadding > 40 ||
+                NotificationPadding < 0 || NotificationPadding > 40 ||
                 NotificationElementSpacing < 0 || NotificationElementSpacing > 40 ||
                 NotificationBorderThickness < 0 || NotificationBorderThickness > 10 ||
                 NotificationCornerRadius < 0 || NotificationCornerRadius > 40 ||
+                NotificationScreenMargin < 8 || NotificationScreenMargin > 64 ||
                 DesktopNotificationIconSize < 16 || DesktopNotificationIconSize > 128 ||
+                DesktopNotificationPadding < 0 || DesktopNotificationPadding > 40 ||
                 DesktopNotificationElementSpacing < 0 || DesktopNotificationElementSpacing > 40 ||
+                DesktopNotificationScreenMargin < 8 || DesktopNotificationScreenMargin > 64 ||
                 OverlayScalePercent < 80 || OverlayScalePercent > 140 ||
                 OverlayTitleFontSize < 18 || OverlayTitleFontSize > 64 ||
                 OverlayControllerFontSize < 12 || OverlayControllerFontSize > 48 ||
@@ -815,10 +1106,19 @@ namespace ControllerSessionManager.PlayniteIntegration
                 OverlayStatusFontSize < 10 || OverlayStatusFontSize > 30 ||
                 OverlayControllerIconSize < 16 || OverlayControllerIconSize > 128 ||
                 OverlayStatusIconSize < 12 || OverlayStatusIconSize > 48 ||
+                OverlayCardWidth < 320 || OverlayCardWidth > 1000 ||
                 OverlayPadding < 12 || OverlayPadding > 80 ||
                 OverlayElementSpacing < 0 || OverlayElementSpacing > 48 ||
                 OverlayBorderThickness < 0 || OverlayBorderThickness > 10 ||
-                OverlayCornerRadius < 0 || OverlayCornerRadius > 40)
+                OverlayCornerRadius < 0 || OverlayCornerRadius > 40 ||
+                OverlayConnectionBadgeBorderThickness < 0 || OverlayConnectionBadgeBorderThickness > 8 ||
+                OverlayConnectionBadgeCornerRadius < 0 || OverlayConnectionBadgeCornerRadius > 24 ||
+                OverlayConnectionBadgeIconSize < 10 || OverlayConnectionBadgeIconSize > 40 ||
+                OverlayConnectionBadgeTextSize < 9 || OverlayConnectionBadgeTextSize > 30 ||
+                OverlayBatteryBadgeBorderThickness < 0 || OverlayBatteryBadgeBorderThickness > 8 ||
+                OverlayBatteryBadgeCornerRadius < 0 || OverlayBatteryBadgeCornerRadius > 24 ||
+                OverlayBatteryBadgeIconSize < 10 || OverlayBatteryBadgeIconSize > 40 ||
+                OverlayBatteryBadgeTextSize < 9 || OverlayBatteryBadgeTextSize > 30)
             {
                 errors.Add(plugin == null ? "Notification or overlay dimensions are outside the supported range."
                     : plugin.Loc("LOCCSM_ValidationAppearance"));
@@ -826,6 +1126,9 @@ namespace ControllerSessionManager.PlayniteIntegration
             if (!IsSupportedPosition(NotificationPosition) || !IsSupportedBorderPosition(NotificationBorderPosition) ||
                 !IsSupportedIconPosition(NotificationIconPosition) ||
                 !IsSupportedOverlayIconPosition(OverlayControllerIconPosition) ||
+                !IsSupportedOverlayCardPosition(OverlayCardPosition) ||
+                !IsSupportedOverlayAnimation(OverlayAnimation) ||
+                !IsSupportedBorderPosition(OverlayBorderPosition) ||
                 !AppearanceColors().All(IsHexColor))
             {
                 errors.Add(plugin == null ? "An appearance color or notification position is invalid."
@@ -855,6 +1158,15 @@ namespace ControllerSessionManager.PlayniteIntegration
                 EnableMonitoring = EnableMonitoring,
                 SettingsSchemaVersion = SettingsSchemaVersion,
                 AppearancePreset = AppearancePreset,
+                NotificationStylePreset = NotificationStylePreset,
+                OverlayStylePreset = OverlayStylePreset,
+                EnableNotificationSounds = EnableNotificationSounds,
+                NotificationSoundPack = NotificationSoundPack,
+                PlaySoundOnConnected = PlaySoundOnConnected,
+                PlaySoundOnDisconnected = PlaySoundOnDisconnected,
+                PlaySoundOnLowBattery = PlaySoundOnLowBattery,
+                PlaySoundOnWarning = PlaySoundOnWarning,
+                NotificationSoundVolume = NotificationSoundVolume,
                 EnableDebugLogging = EnableDebugLogging,
                 ShowPrimaryControllerInTopPanel = ShowPrimaryControllerInTopPanel,
                 TopPanelControllerMode = TopPanelControllerMode,
@@ -890,6 +1202,15 @@ namespace ControllerSessionManager.PlayniteIntegration
                 NotificationBorderThickness = NotificationBorderThickness,
                 NotificationCornerRadius = NotificationCornerRadius,
                 ShowControllerNameInNotifications = ShowControllerNameInNotifications,
+                NotificationShowConnectionBadge = NotificationShowConnectionBadge,
+                NotificationScreenMargin = NotificationScreenMargin,
+                NotificationShowShadow = NotificationShowShadow,
+                NotificationFontFamily = NotificationFontFamily,
+                NotificationFontWeight = NotificationFontWeight,
+                NotificationTextAlignment = NotificationTextAlignment,
+                NotificationAccentMode = NotificationAccentMode,
+                NotificationAnimation = NotificationAnimation,
+                NotificationShowTitle = NotificationShowTitle,
                 ShowControllerNameInDesktopNotifications = ShowControllerNameInDesktopNotifications,
                 ShowDesktopControllerNotifications = ShowDesktopControllerNotifications,
                 DesktopNotificationWidth = DesktopNotificationWidth,
@@ -913,6 +1234,15 @@ namespace ControllerSessionManager.PlayniteIntegration
                 DesktopNotificationBorderPosition = DesktopNotificationBorderPosition,
                 DesktopNotificationBorderThickness = DesktopNotificationBorderThickness,
                 DesktopNotificationCornerRadius = DesktopNotificationCornerRadius,
+                DesktopNotificationShowConnectionBadge = DesktopNotificationShowConnectionBadge,
+                DesktopNotificationScreenMargin = DesktopNotificationScreenMargin,
+                DesktopNotificationShowShadow = DesktopNotificationShowShadow,
+                DesktopNotificationFontFamily = DesktopNotificationFontFamily,
+                DesktopNotificationFontWeight = DesktopNotificationFontWeight,
+                DesktopNotificationTextAlignment = DesktopNotificationTextAlignment,
+                DesktopNotificationAccentMode = DesktopNotificationAccentMode,
+                DesktopNotificationAnimation = DesktopNotificationAnimation,
+                DesktopNotificationShowTitle = DesktopNotificationShowTitle,
                 OverlayScalePercent = OverlayScalePercent,
                 OverlayDimColor = OverlayDimColor,
                 OverlayCardColor = OverlayCardColor,
@@ -928,12 +1258,53 @@ namespace ControllerSessionManager.PlayniteIntegration
                 OverlayShowControllerIcon = OverlayShowControllerIcon,
                 OverlayShowStatusIcon = OverlayShowStatusIcon,
                 OverlayShowControllerName = OverlayShowControllerName,
+                OverlayShowConnectionBadge = OverlayShowConnectionBadge,
+                OverlayShowBatteryBadge = OverlayShowBatteryBadge,
+                OverlayShowTitle = OverlayShowTitle,
+                OverlayShowInstruction = OverlayShowInstruction,
+                OverlayShowPauseStatus = OverlayShowPauseStatus,
                 OverlayControllerIconPosition = OverlayControllerIconPosition,
+                OverlayCardPosition = OverlayCardPosition,
+                OverlayAnimation = OverlayAnimation,
+                OverlayBorderPosition = OverlayBorderPosition,
+                OverlayCardWidth = OverlayCardWidth,
                 OverlayPadding = OverlayPadding,
                 OverlayElementSpacing = OverlayElementSpacing,
                 OverlayShowBorder = OverlayShowBorder,
+                OverlayShowShadow = OverlayShowShadow,
                 OverlayBorderThickness = OverlayBorderThickness,
                 OverlayCornerRadius = OverlayCornerRadius,
+                OverlayFontFamily = OverlayFontFamily,
+                OverlayFontWeight = OverlayFontWeight,
+                OverlayTitleFontFamily = OverlayTitleFontFamily,
+                OverlayTitleFontWeight = OverlayTitleFontWeight,
+                OverlayControllerFontFamily = OverlayControllerFontFamily,
+                OverlayControllerFontWeight = OverlayControllerFontWeight,
+                OverlayInstructionFontFamily = OverlayInstructionFontFamily,
+                OverlayInstructionFontWeight = OverlayInstructionFontWeight,
+                OverlayStatusFontFamily = OverlayStatusFontFamily,
+                OverlayStatusFontWeight = OverlayStatusFontWeight,
+                OverlayConnectionBadgeTextColor = OverlayConnectionBadgeTextColor,
+                OverlayConnectionBadgeIconColor = OverlayConnectionBadgeIconColor,
+                OverlayConnectionBadgeBackgroundColor = OverlayConnectionBadgeBackgroundColor,
+                OverlayConnectionBadgeBorderColor = OverlayConnectionBadgeBorderColor,
+                OverlayConnectionBadgeBorderThickness = OverlayConnectionBadgeBorderThickness,
+                OverlayConnectionBadgeCornerRadius = OverlayConnectionBadgeCornerRadius,
+                OverlayConnectionBadgeIconSize = OverlayConnectionBadgeIconSize,
+                OverlayConnectionBadgeTextSize = OverlayConnectionBadgeTextSize,
+                OverlayBatteryBadgeTextColor = OverlayBatteryBadgeTextColor,
+                OverlayBatteryBadgeIconColor = OverlayBatteryBadgeIconColor,
+                OverlayBatteryBadgeBackgroundColor = OverlayBatteryBadgeBackgroundColor,
+                OverlayBatteryBadgeBorderColor = OverlayBatteryBadgeBorderColor,
+                OverlayBatteryBadgeBorderThickness = OverlayBatteryBadgeBorderThickness,
+                OverlayBatteryBadgeCornerRadius = OverlayBatteryBadgeCornerRadius,
+                OverlayBatteryBadgeIconSize = OverlayBatteryBadgeIconSize,
+                OverlayBatteryBadgeTextSize = OverlayBatteryBadgeTextSize,
+                OverlayBatteryBadgeUseStateColors = OverlayBatteryBadgeUseStateColors,
+                OverlayBatteryBadgeFullColor = OverlayBatteryBadgeFullColor,
+                OverlayBatteryBadgeMediumColor = OverlayBatteryBadgeMediumColor,
+                OverlayBatteryBadgeLowColor = OverlayBatteryBadgeLowColor,
+                OverlayBatteryBadgeEmptyColor = OverlayBatteryBadgeEmptyColor,
                 AllowControllerTakeover = AllowControllerTakeover,
                 ProtectAllActiveControllers = ProtectAllActiveControllers,
                 PauseGameOnDisconnect = PauseGameOnDisconnect,
@@ -950,6 +1321,15 @@ namespace ControllerSessionManager.PlayniteIntegration
             EnableMonitoring = source.EnableMonitoring;
             SettingsSchemaVersion = source.SettingsSchemaVersion;
             AppearancePreset = source.AppearancePreset;
+            NotificationStylePreset = source.NotificationStylePreset;
+            OverlayStylePreset = source.OverlayStylePreset;
+            EnableNotificationSounds = source.EnableNotificationSounds;
+            NotificationSoundPack = source.NotificationSoundPack;
+            PlaySoundOnConnected = source.PlaySoundOnConnected;
+            PlaySoundOnDisconnected = source.PlaySoundOnDisconnected;
+            PlaySoundOnLowBattery = source.PlaySoundOnLowBattery;
+            PlaySoundOnWarning = source.PlaySoundOnWarning;
+            NotificationSoundVolume = source.NotificationSoundVolume;
             EnableDebugLogging = source.EnableDebugLogging;
             showPrimaryControllerInTopPanel = source.showPrimaryControllerInTopPanel;
             topPanelControllerMode = source.topPanelControllerMode;
@@ -986,6 +1366,15 @@ namespace ControllerSessionManager.PlayniteIntegration
             NotificationBorderThickness = source.NotificationBorderThickness;
             NotificationCornerRadius = source.NotificationCornerRadius;
             ShowControllerNameInNotifications = source.ShowControllerNameInNotifications;
+            NotificationShowConnectionBadge = source.NotificationShowConnectionBadge;
+            NotificationScreenMargin = source.NotificationScreenMargin;
+            NotificationShowShadow = source.NotificationShowShadow;
+            NotificationFontFamily = source.NotificationFontFamily;
+            NotificationFontWeight = source.NotificationFontWeight;
+            NotificationTextAlignment = source.NotificationTextAlignment;
+            NotificationAccentMode = source.NotificationAccentMode;
+            NotificationAnimation = source.NotificationAnimation;
+            NotificationShowTitle = source.NotificationShowTitle;
             ShowControllerNameInDesktopNotifications = source.ShowControllerNameInDesktopNotifications;
             DesktopNotificationWidth = source.DesktopNotificationWidth;
             DesktopNotificationScalePercent = source.DesktopNotificationScalePercent;
@@ -1008,6 +1397,15 @@ namespace ControllerSessionManager.PlayniteIntegration
             DesktopNotificationBorderPosition = source.DesktopNotificationBorderPosition;
             DesktopNotificationBorderThickness = source.DesktopNotificationBorderThickness;
             DesktopNotificationCornerRadius = source.DesktopNotificationCornerRadius;
+            DesktopNotificationShowConnectionBadge = source.DesktopNotificationShowConnectionBadge;
+            DesktopNotificationScreenMargin = source.DesktopNotificationScreenMargin;
+            DesktopNotificationShowShadow = source.DesktopNotificationShowShadow;
+            DesktopNotificationFontFamily = source.DesktopNotificationFontFamily;
+            DesktopNotificationFontWeight = source.DesktopNotificationFontWeight;
+            DesktopNotificationTextAlignment = source.DesktopNotificationTextAlignment;
+            DesktopNotificationAccentMode = source.DesktopNotificationAccentMode;
+            DesktopNotificationAnimation = source.DesktopNotificationAnimation;
+            DesktopNotificationShowTitle = source.DesktopNotificationShowTitle;
             OverlayScalePercent = source.OverlayScalePercent;
             OverlayDimColor = source.OverlayDimColor;
             OverlayCardColor = source.OverlayCardColor;
@@ -1023,12 +1421,53 @@ namespace ControllerSessionManager.PlayniteIntegration
             OverlayShowControllerIcon = source.OverlayShowControllerIcon;
             OverlayShowStatusIcon = source.OverlayShowStatusIcon;
             OverlayShowControllerName = source.OverlayShowControllerName;
+            OverlayShowConnectionBadge = source.OverlayShowConnectionBadge;
+            OverlayShowBatteryBadge = source.OverlayShowBatteryBadge;
+            OverlayShowTitle = source.OverlayShowTitle;
+            OverlayShowInstruction = source.OverlayShowInstruction;
+            OverlayShowPauseStatus = source.OverlayShowPauseStatus;
             OverlayControllerIconPosition = source.OverlayControllerIconPosition;
+            OverlayCardPosition = source.OverlayCardPosition;
+            OverlayAnimation = source.OverlayAnimation;
+            OverlayBorderPosition = source.OverlayBorderPosition;
+            OverlayCardWidth = source.OverlayCardWidth;
             OverlayPadding = source.OverlayPadding;
             OverlayElementSpacing = source.OverlayElementSpacing;
             OverlayShowBorder = source.OverlayShowBorder;
+            OverlayShowShadow = source.OverlayShowShadow;
             OverlayBorderThickness = source.OverlayBorderThickness;
             OverlayCornerRadius = source.OverlayCornerRadius;
+            OverlayFontFamily = source.OverlayFontFamily;
+            OverlayFontWeight = source.OverlayFontWeight;
+            OverlayTitleFontFamily = source.OverlayTitleFontFamily;
+            OverlayTitleFontWeight = source.OverlayTitleFontWeight;
+            OverlayControllerFontFamily = source.OverlayControllerFontFamily;
+            OverlayControllerFontWeight = source.OverlayControllerFontWeight;
+            OverlayInstructionFontFamily = source.OverlayInstructionFontFamily;
+            OverlayInstructionFontWeight = source.OverlayInstructionFontWeight;
+            OverlayStatusFontFamily = source.OverlayStatusFontFamily;
+            OverlayStatusFontWeight = source.OverlayStatusFontWeight;
+            OverlayConnectionBadgeTextColor = source.OverlayConnectionBadgeTextColor;
+            OverlayConnectionBadgeIconColor = source.OverlayConnectionBadgeIconColor;
+            OverlayConnectionBadgeBackgroundColor = source.OverlayConnectionBadgeBackgroundColor;
+            OverlayConnectionBadgeBorderColor = source.OverlayConnectionBadgeBorderColor;
+            OverlayConnectionBadgeBorderThickness = source.OverlayConnectionBadgeBorderThickness;
+            OverlayConnectionBadgeCornerRadius = source.OverlayConnectionBadgeCornerRadius;
+            OverlayConnectionBadgeIconSize = source.OverlayConnectionBadgeIconSize;
+            OverlayConnectionBadgeTextSize = source.OverlayConnectionBadgeTextSize;
+            OverlayBatteryBadgeTextColor = source.OverlayBatteryBadgeTextColor;
+            OverlayBatteryBadgeIconColor = source.OverlayBatteryBadgeIconColor;
+            OverlayBatteryBadgeBackgroundColor = source.OverlayBatteryBadgeBackgroundColor;
+            OverlayBatteryBadgeBorderColor = source.OverlayBatteryBadgeBorderColor;
+            OverlayBatteryBadgeBorderThickness = source.OverlayBatteryBadgeBorderThickness;
+            OverlayBatteryBadgeCornerRadius = source.OverlayBatteryBadgeCornerRadius;
+            OverlayBatteryBadgeIconSize = source.OverlayBatteryBadgeIconSize;
+            OverlayBatteryBadgeTextSize = source.OverlayBatteryBadgeTextSize;
+            OverlayBatteryBadgeUseStateColors = source.OverlayBatteryBadgeUseStateColors;
+            OverlayBatteryBadgeFullColor = source.OverlayBatteryBadgeFullColor;
+            OverlayBatteryBadgeMediumColor = source.OverlayBatteryBadgeMediumColor;
+            OverlayBatteryBadgeLowColor = source.OverlayBatteryBadgeLowColor;
+            OverlayBatteryBadgeEmptyColor = source.OverlayBatteryBadgeEmptyColor;
             AllowControllerTakeover = source.AllowControllerTakeover;
             ProtectAllActiveControllers = source.ProtectAllActiveControllers;
             PauseGameOnDisconnect = source.PauseGameOnDisconnect;
@@ -1096,6 +1535,18 @@ namespace ControllerSessionManager.PlayniteIntegration
             yield return OverlayAccentColor;
             yield return OverlayTextColor;
             yield return OverlayWarningColor;
+            yield return OverlayConnectionBadgeTextColor;
+            yield return OverlayConnectionBadgeIconColor;
+            yield return OverlayConnectionBadgeBackgroundColor;
+            yield return OverlayConnectionBadgeBorderColor;
+            yield return OverlayBatteryBadgeTextColor;
+            yield return OverlayBatteryBadgeIconColor;
+            yield return OverlayBatteryBadgeBackgroundColor;
+            yield return OverlayBatteryBadgeBorderColor;
+            yield return OverlayBatteryBadgeFullColor;
+            yield return OverlayBatteryBadgeMediumColor;
+            yield return OverlayBatteryBadgeLowColor;
+            yield return OverlayBatteryBadgeEmptyColor;
         }
 
         private static bool IsSupportedPosition(string value)
@@ -1118,6 +1569,19 @@ namespace ControllerSessionManager.PlayniteIntegration
         private static bool IsSupportedOverlayIconPosition(string value)
         {
             return value == "Left" || value == "Right" || value == "Top" || value == "Bottom";
+        }
+
+        private static bool IsSupportedOverlayCardPosition(string value)
+        {
+            return value == "Center" || value == "Top" || value == "Bottom" ||
+                value == "TopLeft" || value == "TopRight" ||
+                value == "BottomLeft" || value == "BottomRight";
+        }
+
+        private static bool IsSupportedOverlayAnimation(string value)
+        {
+            return value == "None" || value == "Fade" || value == "FadeScale" ||
+                value == "Slide";
         }
 
         private static bool IsHexColor(string value)

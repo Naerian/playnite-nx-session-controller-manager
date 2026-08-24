@@ -210,6 +210,11 @@ namespace ControllerSessionManager.Controllers
                     return "Bluetooth";
                 }
 
+                if (IsSonyWirelessController(deviceName, vendorId))
+                {
+                    return "Bluetooth";
+                }
+
                 if (Contains(deviceName, "wireless"))
                 {
                     return "Wireless";
@@ -240,6 +245,11 @@ namespace ControllerSessionManager.Controllers
                     return "Bluetooth";
                 }
 
+                if (IsSonyWirelessController(deviceName, vendorId))
+                {
+                    return "Bluetooth";
+                }
+
                 if (Contains(deviceName, "wireless"))
                 {
                     return "Wireless";
@@ -265,6 +275,11 @@ namespace ControllerSessionManager.Controllers
             }
 
             if (Contains(deviceName, "bluetooth"))
+            {
+                return "Bluetooth";
+            }
+
+            if (IsSonyWirelessController(deviceName, vendorId))
             {
                 return "Bluetooth";
             }
@@ -301,6 +316,13 @@ namespace ControllerSessionManager.Controllers
         public static bool ContainsWirelessHint(string deviceName)
         {
             return Contains(deviceName, "wireless");
+        }
+
+        private static bool IsSonyWirelessController(string deviceName, ushort vendorId)
+        {
+            return vendorId == 0x054C && ContainsWirelessHint(deviceName) &&
+                (Contains(deviceName, "controller") || Contains(deviceName, "dualsense") ||
+                 Contains(deviceName, "dualshock"));
         }
 
         private static bool LooksLikePointerOrKeyboard(string value)

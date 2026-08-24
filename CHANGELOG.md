@@ -1,6 +1,18 @@
 # Changelog
 
 ## 1.0.21 — 2026-08-23
+- Rebuilt notification shadows using PlayniteAchievements' layered approach: only the rounded surface casts a soft, unclipped shadow while text and icons stay crisp.
+- Simplified bundled font weights to Regular, SemiBold and Bold; legacy Medium values migrate to the visually equivalent SemiBold face, and “Default” is now labelled “Playnite interface”.
+- Updated overlay presets: Compact is centered with a top border, Bold uses 100% scale and Arcade uses 110%.
+- Added a migration regression test proving existing custom notification and overlay appearance values survive an update.
+- Added independent connection and battery badge styling for text, icon, background, border, radius, border thickness, icon size and text size, plus configurable full/medium/low/empty battery colors.
+- Reorganized overlay appearance into layout, typography, controller/status, badges and colors; removed the redundant notification-style reset action (the Soft preset already provides that baseline).
+- Scoped appearance presets to the plugin settings panel inside Playnite Add-ons; TopBar and plugin-menu openings explicitly theme their standalone window without inspecting Playnite's visual tree.
+- Expanded overlay customization with card position and width, entry motion, shadow, accented border edge, independently visible text sections, and connection/battery badges.
+- Refined overlay presets into distinct compact, bold, arcade, minimal and soft compositions.
+- Added matching dual-tone SVG thumbnails to the Tester visual-scheme selector while retaining the fully interactive live diagrams.
+- Exposed all 16 bundled controller SVGs in both icon and Tester scheme selectors; legacy models reuse the closest interactive layout, and the Universal thumbnail has balanced optical sizing.
+- Converted the missing Default, 8BitDo and Steam Controller Tester silhouettes to the shared dual-tone treatment.
 - Low-battery notifications for Fullscreen and Desktop, with latch and recover debounce so brief dips do not spam toasts.
 - Warning and low-battery badges on the controller connection icon when levels drop.
 - More reliable information when using a wireless receiver on certain devices.
@@ -77,7 +89,7 @@
 - Controllers > Test controller now switches to the Tester tab and keeps that pad selected.
 - Removed the redundant General test details card so health, sticks, current inputs and rumble have more room.
 - Guided test results now list each control with a green check or a red cross, plus a status badge.
-- Replaced Lucide gamepad/Nintendo picker icons with Gamepads silhouettes chosen by VID, falling back to Default.svg.
+- Replaced Lucide gamepad/Nintendo picker icons with Gamepads silhouettes chosen by VID, falling back to default.svg.
 - Matched picker icon color to the item text and added a hairline silhouette stroke so small top-bar and combo icons stay readable without filling in the details.
 - Ignored Playnite disconnect callbacks while XInput still sees the same dongle slot, and stopped labelling an empty XInput path as Bluetooth from leftover BLE nodes.
 - Stopped the Controllers vibration test with an explicit rumble-off so 8BitDo pads cannot keep buzzing after TesterHost is released.

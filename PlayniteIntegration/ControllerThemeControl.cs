@@ -100,8 +100,6 @@ namespace ControllerSessionManager.PlayniteIntegration
             var icon = new Path
             {
                 Stretch = Stretch.Uniform,
-                StrokeThickness = 0.45,
-                StrokeLineJoin = PenLineJoin.Round,
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center
             };
@@ -113,7 +111,6 @@ namespace ControllerSessionManager.PlayniteIntegration
 
             var brushBinding = CreateBrushBinding(preferBatteryAlways: false);
             icon.SetBinding(Shape.FillProperty, brushBinding);
-            icon.SetBinding(Shape.StrokeProperty, brushBinding);
 
             var viewbox = new Viewbox
             {

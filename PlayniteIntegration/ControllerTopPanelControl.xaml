@@ -12,17 +12,13 @@
     <Viewbox Width="24" Height="24" Margin="2,0"
              VerticalAlignment="Center" HorizontalAlignment="Center"
              ToolTip="{Binding PrimaryControllerTooltip}">
-        <Path Data="{Binding TopPanelIconGeometry, Converter={StaticResource IconGeometryConverter}}" Stretch="Uniform"
-              StrokeThickness="0.45"
-              StrokeLineJoin="Round">
+        <Path Data="{Binding TopPanelIconGeometry, Converter={StaticResource IconGeometryConverter}}" Stretch="Uniform">
             <Path.Style>
                 <Style TargetType="Path">
                     <Setter Property="Fill" Value="{Binding Foreground, ElementName=Root}" />
-                    <Setter Property="Stroke" Value="{Binding Foreground, ElementName=Root}" />
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding UsePrimaryControllerBatteryColor}" Value="True">
                             <Setter Property="Fill" Value="{Binding PrimaryControllerBatteryBrush}" />
-                            <Setter Property="Stroke" Value="{Binding PrimaryControllerBatteryBrush}" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>

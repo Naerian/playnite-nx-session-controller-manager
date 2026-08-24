@@ -7,14 +7,17 @@ Add-Type -AssemblyName PresentationCore, PresentationFramework, WindowsBase
 $assembly = [Reflection.Assembly]::LoadFrom($assemblyPath)
 $type = $assembly.GetType("ControllerSessionManager.OverlayHost.OverlayWindow", $true)
 $flags = [Reflection.BindingFlags]::Instance -bor [Reflection.BindingFlags]::Public -bor [Reflection.BindingFlags]::NonPublic
-$window = [Activator]::CreateInstance($type, $flags, $null, @([Diagnostics.Process]::GetCurrentProcess().Id), $null)
+$constructor = $type.GetConstructors($flags) |
+    Where-Object { $_.GetParameters().Count -eq 2 } |
+    Select-Object -First 1
+$window = $constructor.Invoke(@([Diagnostics.Process]::GetCurrentProcess().Id, $null))
 
 function Get-Field([string]$name) {
     return $type.GetField($name, $flags).GetValue($window)
 }
 
 function Get-SvgGeometry([string]$name) {
-    $document = [xml](Get-Content -Raw -LiteralPath (Join-Path $root "Icons\$name"))
+    $document = [xml](Get-Content -Raw -LiteralPath (Join-Path $root $name))
     $paths = @($document.svg.path | Where-Object { $_.stroke -ne "none" } | ForEach-Object { $_.d })
     return [Windows.Media.Geometry]::Parse(($paths -join " "))
 }
@@ -23,8 +26,24 @@ function Get-SvgGeometry([string]$name) {
 (Get-Field "messageText").Text = "8BitDo Ultimate 2 Wireless"
 (Get-Field "instructionText").Text = "Vuelve a conectarlo para continuar."
 (Get-Field "pauseStatusText").Text = "Pausa solicitada autom$([char]0x00E1)ticamente"
-(Get-Field "controllerIcon").Data = Get-SvgGeometry "device-gamepad.svg"
-(Get-Field "pauseStatusIcon").Data = Get-SvgGeometry "player-pause.svg"
+(Get-Field "connectionText").Text = "Bluetooth"
+(Get-Field "batteryText").Text = "Bater$([char]0x00ED)a baja"
+(Get-Field "controllerIcon").Data = Get-SvgGeometry "Gamepads\default.svg"
+(Get-Field "pauseStatusIcon").Data = Get-SvgGeometry "Icons\player-pause.svg"
+(Get-Field "connectionIcon").Data = Get-SvgGeometry "Icons\bluetooth.svg"
+(Get-Field "batteryIcon").Data = Get-SvgGeometry "Icons\battery.svg"
+$type.GetField("currentBatteryState", $flags).SetValue($window, "Medium")
+$style = @(
+    "100", "#96000000", "#EB121418", "#238FFF", "#FFFFFFFF", "#F5B542",
+    "30", "22", "19", "15", "64", "18", "34", "True", "3", "13", "True", "True",
+    "14", "Left", "True", "Default", "SemiBold", "True", "True", "True", "True", "True",
+    "Center", "FadeScale", "Full", "620", "True",
+    "Montserrat", "SemiBold", "Outfit", "SemiBold", "Inter", "Regular", "Rajdhani", "SemiBold",
+    "#FFFFFFFF", "#FFFFFFFF", "#302391FF", "#602391FF", "1", "7", "14", "13",
+    "#FFF5B542", "#FFF5B542", "#30F5B542", "#60F5B542", "1", "7", "14", "13",
+    "True", "#FF4FC27E", "#FFF5B542", "#FFE05252", "#FFC92D45"
+) -join ";"
+$type.GetMethod("ApplyPresentationStyle", $flags).Invoke($window, @($style)) | Out-Null
 $type.GetMethod("ApplyPauseStatusStyle", $flags).Invoke($window, @("pause")) | Out-Null
 
 $content = [Windows.FrameworkElement]$window.Content

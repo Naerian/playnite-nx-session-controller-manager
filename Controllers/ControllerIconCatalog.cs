@@ -3,13 +3,18 @@ namespace ControllerSessionManager.Controllers
     public static class ControllerIconCatalog
     {
         public const string DefaultId = "default";
-        public const string DefaultFileName = "Default.svg";
+        public const string DefaultFileName = "default.svg";
 
         public const string XboxOneId = "xbox-one";
         public const string XboxSeriesId = "xbox-series";
+        public const string Xbox360Id = "xbox-360";
+        public const string XboxControllerSId = "xbox-controller-s";
+        public const string DualShock3Id = "dualshock-3";
         public const string DualShockId = "dualshock";
         public const string DualSenseId = "dualsense";
         public const string SwitchProId = "switch-pro";
+        public const string WiiUProId = "wii-u-pro";
+        public const string StadiaId = "stadia";
         public const string EightBitDoProId = "8bitdo-pro";
         public const string EightBitDoUltimateId = "8bitdo-ultimate";
         public const string EightBitDoUltimate3Id = "8bitdo-ultimate-3";
@@ -20,16 +25,21 @@ namespace ControllerSessionManager.Controllers
         {
             switch (IsKnown(iconId) ? iconId : DefaultId)
             {
-                case XboxOneId: return "XboxOne.svg";
-                case XboxSeriesId: return "XboxSeries.svg";
-                case DualShockId: return "DualShock.svg";
-                case DualSenseId: return "DualSense.svg";
-                case SwitchProId: return "SwitchPro.svg";
-                case EightBitDoProId: return "8BitdoPro.svg";
-                case EightBitDoUltimateId: return "8BitdoUltimate2.svg";
-                case EightBitDoUltimate3Id: return "8BitdoUltimate3.svg";
-                case SteamId: return "SteamController.svg";
-                case SteamV2Id: return "SteamControllerV2.svg";
+                case XboxOneId: return "xbox-one.svg";
+                case XboxSeriesId: return "xbox-series-x.svg";
+                case Xbox360Id: return "xbox-360.svg";
+                case XboxControllerSId: return "xbox-controller-s.svg";
+                case DualShock3Id: return "ps3.svg";
+                case DualShockId: return "ps4.svg";
+                case DualSenseId: return "ps5.svg";
+                case SwitchProId: return "switch-pro.svg";
+                case WiiUProId: return "wii-u-pro.svg";
+                case StadiaId: return "stadia.svg";
+                case EightBitDoProId: return "8bitdo-pro.svg";
+                case EightBitDoUltimateId: return "8bitdo-ultimate-2.svg";
+                case EightBitDoUltimate3Id: return "8bitdo-ultimate-3.svg";
+                case SteamId: return "steam-controller.svg";
+                case SteamV2Id: return "steam-controller-v2.svg";
                 default: return DefaultFileName;
             }
         }
@@ -75,13 +85,15 @@ namespace ControllerSessionManager.Controllers
 
             if (vendorId == 0x057E)
             {
-                return SwitchProId;
+                return productId == 0x0330 ? WiiUProId : SwitchProId;
             }
 
             if (vendorId == 0x054C)
             {
                 switch (productId)
                 {
+                    case 0x0268:
+                        return DualShock3Id;
                     case 0x05C4:
                     case 0x09CC:
                         return DualShockId;
@@ -101,6 +113,12 @@ namespace ControllerSessionManager.Controllers
             {
                 switch (productId)
                 {
+                    case 0x0285:
+                        return XboxControllerSId;
+                    case 0x028E:
+                    case 0x028F:
+                    case 0x0719:
+                        return Xbox360Id;
                     case 0x02D1:
                     case 0x02DD:
                     case 0x02E0:
@@ -110,6 +128,11 @@ namespace ControllerSessionManager.Controllers
                     default:
                         return XboxSeriesId;
                 }
+            }
+
+            if (vendorId == 0x18D1 || normalizedName.Contains("stadia"))
+            {
+                return StadiaId;
             }
 
             return DefaultId;
@@ -147,9 +170,14 @@ namespace ControllerSessionManager.Controllers
                 case DefaultId:
                 case XboxOneId:
                 case XboxSeriesId:
+                case Xbox360Id:
+                case XboxControllerSId:
+                case DualShock3Id:
                 case DualShockId:
                 case DualSenseId:
                 case SwitchProId:
+                case WiiUProId:
+                case StadiaId:
                 case EightBitDoProId:
                 case EightBitDoUltimateId:
                 case EightBitDoUltimate3Id:

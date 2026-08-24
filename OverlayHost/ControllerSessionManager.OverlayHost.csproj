@@ -48,7 +48,16 @@
     <Compile Include="..\Overlay\OverlayIpcLimits.cs">
       <Link>OverlayIpcLimits.cs</Link>
     </Compile>
+    <Compile Include="..\PlayniteIntegration\NotificationFontCatalog.cs">
+      <Link>NotificationFontCatalog.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Fonts\**\*">
+      <Link>Fonts\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

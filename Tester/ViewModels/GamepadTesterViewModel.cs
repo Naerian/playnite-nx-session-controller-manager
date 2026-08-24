@@ -2332,7 +2332,7 @@ namespace ControllerSessionManager.Tester.ViewModels
 
         public bool IsDualSenseLayout
         {
-            get { return EffectiveVisualSchemeKey == ControllerVisualSchemeCatalog.DualSense; }
+            get { return EffectiveInteractiveLayoutKey == ControllerVisualSchemeCatalog.DualSense; }
         }
 
         public bool IsXboxVisualScheme
@@ -2342,32 +2342,32 @@ namespace ControllerSessionManager.Tester.ViewModels
 
         public bool IsXboxOneVisualScheme
         {
-            get { return EffectiveVisualSchemeKey == ControllerVisualSchemeCatalog.XboxOne; }
+            get { return EffectiveInteractiveLayoutKey == ControllerVisualSchemeCatalog.XboxOne; }
         }
 
         public bool IsXboxSeriesVisualScheme
         {
-            get { return EffectiveVisualSchemeKey == ControllerVisualSchemeCatalog.XboxSeries; }
+            get { return EffectiveInteractiveLayoutKey == ControllerVisualSchemeCatalog.XboxSeries; }
         }
 
         public bool IsSteamControllerVisualScheme
         {
-            get { return EffectiveVisualSchemeKey == ControllerVisualSchemeCatalog.SteamController; }
+            get { return EffectiveInteractiveLayoutKey == ControllerVisualSchemeCatalog.SteamController; }
         }
 
         public bool IsPlayStationVisualScheme
         {
-            get { return EffectiveVisualSchemeKey == ControllerVisualSchemeCatalog.PlayStation; }
+            get { return EffectiveInteractiveLayoutKey == ControllerVisualSchemeCatalog.PlayStation; }
         }
 
         public bool IsSwitchProVisualScheme
         {
-            get { return EffectiveVisualSchemeKey == ControllerVisualSchemeCatalog.SwitchPro; }
+            get { return EffectiveInteractiveLayoutKey == ControllerVisualSchemeCatalog.SwitchPro; }
         }
 
         public bool IsEightBitDoUltimateVisualScheme
         {
-            get { return EffectiveVisualSchemeKey == ControllerVisualSchemeCatalog.EightBitDoUltimate; }
+            get { return EffectiveInteractiveLayoutKey == ControllerVisualSchemeCatalog.EightBitDoUltimate; }
         }
 
         public bool IsEightBitDoUltimate2VisualScheme
@@ -2377,12 +2377,12 @@ namespace ControllerSessionManager.Tester.ViewModels
 
         public bool IsEightBitDoProVisualScheme
         {
-            get { return EffectiveVisualSchemeKey == ControllerVisualSchemeCatalog.EightBitDoPro; }
+            get { return EffectiveInteractiveLayoutKey == ControllerVisualSchemeCatalog.EightBitDoPro; }
         }
 
         public bool IsUniversalControllerArtwork
         {
-            get { return EffectiveVisualSchemeKey == ControllerVisualSchemeCatalog.Universal; }
+            get { return EffectiveInteractiveLayoutKey == ControllerVisualSchemeCatalog.Universal; }
         }
 
         public bool IsGenericLayout
@@ -2448,6 +2448,11 @@ namespace ControllerSessionManager.Tester.ViewModels
         private ControllerVisualSchemeDefinition EffectiveVisualSchemeDefinition
         {
             get { return ControllerVisualSchemeCatalog.GetDefinition(EffectiveVisualSchemeKey, L); }
+        }
+
+        private string EffectiveInteractiveLayoutKey
+        {
+            get { return EffectiveVisualSchemeDefinition.InteractiveLayoutKey; }
         }
 
         private void InitializeVisualSchemeOptions()

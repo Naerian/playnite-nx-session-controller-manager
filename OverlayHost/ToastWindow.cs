@@ -7,9 +7,11 @@ using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Effects;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using Forms = System.Windows.Forms;
+using ControllerSessionManager.PlayniteIntegration;
 
 namespace ControllerSessionManager.OverlayHost
 {
@@ -30,10 +32,14 @@ namespace ControllerSessionManager.OverlayHost
         private readonly Path connectionIcon;
         private readonly Grid rootLayout;
         private readonly Grid contentLayout;
+        private readonly Grid cardShell;
         private readonly StackPanel textPanel;
         private readonly Border card;
+        private readonly Border contentHost;
         private readonly DispatcherTimer holdTimer;
+        private double currentShadowInset;
         private ToastRequest current;
+        private ToastStyle currentStyle;
 
         public ToastWindow()
         {
@@ -99,16 +105,24 @@ namespace ControllerSessionManager.OverlayHost
             rootLayout = new Grid();
             rootLayout.Children.Add(contentLayout);
             rootLayout.Children.Add(connectionIcon);
+            var paddedContent = new Border
+            {
+                Padding = new Thickness(18, 14, 18, 14),
+                Child = rootLayout
+            };
+            contentHost = paddedContent;
             card = new Border
             {
                 Background = new SolidColorBrush(Color.FromArgb(244, 18, 20, 24)),
                 BorderThickness = new Thickness(0, 0, 0, 3),
                 CornerRadius = new CornerRadius(10),
-                Padding = new Thickness(18, 14, 18, 14),
-                Child = rootLayout
+                Padding = new Thickness(0)
             };
+            cardShell = new Grid();
+            cardShell.Children.Add(card);
+            cardShell.Children.Add(contentHost);
             ConfigureContentLayout("Left", 14);
-            Content = card;
+            Content = cardShell;
             SourceInitialized += OnSourceInitialized;
             holdTimer = new DispatcherTimer();
             holdTimer.Tick += OnHoldElapsed;
@@ -143,7 +157,9 @@ namespace ControllerSessionManager.OverlayHost
             pending.Clear();
             holdTimer.Stop();
             current = null;
+            currentStyle = null;
             BeginAnimation(OpacityProperty, null);
+            cardShell.RenderTransform = Transform.Identity;
             Opacity = 0;
             Enqueue(id, processId, durationMilliseconds, kind, title, message, iconGeometry,
                 presentationStyle, connectionIconGeometry);
@@ -163,16 +179,31 @@ namespace ControllerSessionManager.OverlayHost
             messageText.Text = current.Message;
             messageText.Visibility = string.IsNullOrWhiteSpace(current.Message) ? Visibility.Collapsed : Visibility.Visible;
             var style = ToastStyle.Parse(current.PresentationStyle);
+            currentStyle = style;
             var scale = style.ScalePercent / 100.0;
             var iconSize = Math.Max(16, style.IconSize * scale);
             var titleSize = Math.Max(10, style.TitleFontSize * scale);
             var messageSize = Math.Max(9, style.MessageFontSize * scale);
-            var padding = Math.Max(4, style.Padding * scale);
+            var padding = Math.Max(0, style.Padding * scale);
             var elementSpacing = Math.Max(0, style.ElementSpacing * scale);
-            Width = Math.Max(280, style.Width * scale);
+            var cardWidth = Math.Max(280, style.Width * scale);
+            currentShadowInset = style.ShowShadow ? Math.Ceiling(18 * scale) : 0;
+            cardShell.Margin = new Thickness(currentShadowInset);
+            Width = cardWidth + currentShadowInset * 2;
             titleText.FontSize = titleSize;
             messageText.FontSize = messageSize;
-            messageText.Margin = new Thickness(0, elementSpacing, 0, 0);
+            titleText.FontFamily = NotificationFontCatalog.Resolve(style.FontFamily, style.FontWeight);
+            messageText.FontFamily = titleText.FontFamily;
+            titleText.FontWeight = NotificationFontCatalog.ResolveEffectiveWeight(style.FontFamily, style.FontWeight);
+            messageText.FontWeight = titleText.FontWeight;
+            titleText.TextAlignment = NotificationFontCatalog.ResolveAlignment(style.TextAlignment);
+            messageText.TextAlignment = titleText.TextAlignment;
+            titleText.Visibility = style.ShowTitle && !string.IsNullOrWhiteSpace(current.Title)
+                ? Visibility.Visible : Visibility.Collapsed;
+            messageText.Margin = titleText.Visibility == Visibility.Visible &&
+                messageText.Visibility == Visibility.Visible
+                ? new Thickness(0, elementSpacing, 0, 0)
+                : new Thickness(0);
             icon.Width = iconSize;
             icon.Height = iconSize;
             try { icon.Data = Geometry.Parse(current.IconGeometry ?? string.Empty); }
@@ -182,19 +213,21 @@ namespace ControllerSessionManager.OverlayHost
             var verticalIcon = string.Equals(style.IconPosition, "Top", StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(style.IconPosition, "Bottom", StringComparison.OrdinalIgnoreCase);
             var hiddenIcon = string.Equals(style.IconPosition, "Hidden", StringComparison.OrdinalIgnoreCase);
-            var textHeight = titleSize + (messageText.Visibility == Visibility.Visible
-                ? messageSize * 2 + elementSpacing : 0);
+            var textHeight = (titleText.Visibility == Visibility.Visible ? titleSize : 0) +
+                (messageText.Visibility == Visibility.Visible
+                    ? messageSize * 2 + (titleText.Visibility == Visibility.Visible ? elementSpacing : 0)
+                    : 0);
             var contentHeight = hiddenIcon
                 ? textHeight
                 : verticalIcon
                     ? icon.Height + iconGap + textHeight
                     : Math.Max(icon.Height, textHeight);
-            Height = Math.Max(82, contentHeight + padding * 2);
+            Height = Math.Max(1, contentHeight + padding * 2);
             ConfigureContentLayout(style.IconPosition, iconGap);
-            card.Padding = new Thickness(padding);
+            contentHost.Padding = new Thickness(padding);
             card.CornerRadius = new CornerRadius(style.CornerRadius * scale);
-            card.Background = Brush(style.Background, Color.FromArgb(244, 18, 20, 24));
-            titleText.Foreground = Brush(style.PrimaryText, Colors.White);
+            var primaryTextBrush = Brush(style.PrimaryText, Colors.White);
+            titleText.Foreground = primaryTextBrush;
             messageText.Foreground = Brush(style.SecondaryText, Color.FromRgb(198, 203, 212));
             var secondaryBrush = Brush(style.SecondaryText, Color.FromRgb(198, 203, 212));
             var isWarning = string.Equals(current.Kind, "warning", StringComparison.OrdinalIgnoreCase);
@@ -215,25 +248,86 @@ namespace ControllerSessionManager.OverlayHost
                             ? Color.FromRgb(79, 194, 126)
                             : Color.FromRgb(80, 170, 255));
             var accentBrush = new SolidColorBrush(accent);
+            var background = ParseColor(style.Background, Color.FromArgb(244, 18, 20, 24));
+            if (string.Equals(style.AccentMode, "TintedBackground", StringComparison.OrdinalIgnoreCase))
+            {
+                background = Blend(background, accent, 0.12);
+            }
+            else if (string.Equals(style.AccentMode, "SolidBackground", StringComparison.OrdinalIgnoreCase))
+            {
+                background = Color.FromArgb(Math.Max((byte)220, background.A), accent.R, accent.G, accent.B);
+            }
+            card.Background = new SolidColorBrush(background);
             card.BorderBrush = accentBrush;
-            card.BorderThickness = style.ShowBorder
+            card.BorderThickness = style.ShowBorder &&
+                string.Equals(style.AccentMode, "IconAndBorder", StringComparison.OrdinalIgnoreCase)
                 ? CreateBorderThickness(style.BorderPosition, style.BorderThickness)
                 : new Thickness(0);
-            icon.Fill = accentBrush;
+            icon.Fill = string.Equals(style.AccentMode, "SolidBackground", StringComparison.OrdinalIgnoreCase)
+                ? primaryTextBrush
+                : accentBrush;
             icon.Stroke = Brushes.Transparent;
             icon.StrokeThickness = 0;
 
-            ApplyConnectionIcon(current.ConnectionIconGeometry, secondaryBrush, scale);
-            card.Measure(new Size(Width, double.PositiveInfinity));
-            Height = Math.Max(82, Math.Ceiling(card.DesiredSize.Height));
+            ApplyConnectionIcon(
+                style.ShowConnectionBadge ? current.ConnectionIconGeometry : null,
+                secondaryBrush,
+                scale);
+            // Match PlayniteAchievements' layer model: only the rounded surface casts the shadow;
+            // text and icons live in the separate crisp layer above. The outer inset prevents the
+            // transparent topmost window from clipping the blur into a displaced hard edge.
+            card.Effect = style.ShowShadow
+                ? new DropShadowEffect
+                {
+                    BlurRadius = Math.Max(8, 12 * scale),
+                    ShadowDepth = Math.Max(1, 3 * scale),
+                    Opacity = 0.5,
+                    Color = Colors.Black,
+                    Direction = 300
+                }
+                : null;
+            cardShell.Measure(new Size(Width, double.PositiveInfinity));
+            Height = Math.Max(1, Math.Ceiling(cardShell.DesiredSize.Height));
             if (!IsVisible)
             {
                 Show();
             }
-            ApplyBounds(GetTargetScreen(current.ProcessId), style.Position);
-            BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(180)));
+            ApplyBounds(GetTargetScreen(current.ProcessId), style.Position, style.ScreenMargin);
+            BeginEntryAnimation(style);
             holdTimer.Interval = TimeSpan.FromMilliseconds(current.DurationMilliseconds);
             holdTimer.Start();
+        }
+
+        private void BeginEntryAnimation(ToastStyle style)
+        {
+            BeginAnimation(OpacityProperty, null);
+            cardShell.RenderTransformOrigin = new Point(0.5, 0.5);
+            cardShell.RenderTransform = Transform.Identity;
+            var duration = TimeSpan.FromMilliseconds(190);
+            if (string.Equals(style.Animation, "None", StringComparison.OrdinalIgnoreCase))
+            {
+                Opacity = 1;
+                return;
+            }
+
+            if (string.Equals(style.Animation, "Slide", StringComparison.OrdinalIgnoreCase))
+            {
+                var from = style.Position.IndexOf("Left", StringComparison.OrdinalIgnoreCase) >= 0 ? -42 : 42;
+                var transform = new TranslateTransform(from, 0);
+                cardShell.RenderTransform = transform;
+                transform.BeginAnimation(TranslateTransform.XProperty,
+                    new DoubleAnimation(from, 0, duration) { EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut } });
+            }
+            else if (string.Equals(style.Animation, "Scale", StringComparison.OrdinalIgnoreCase))
+            {
+                var transform = new ScaleTransform(0.86, 0.86);
+                cardShell.RenderTransform = transform;
+                var easing = new BackEase { Amplitude = 0.25, EasingMode = EasingMode.EaseOut };
+                transform.BeginAnimation(ScaleTransform.ScaleXProperty, new DoubleAnimation(0.86, 1, duration) { EasingFunction = easing });
+                transform.BeginAnimation(ScaleTransform.ScaleYProperty, new DoubleAnimation(0.86, 1, duration) { EasingFunction = easing });
+            }
+
+            BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, duration));
         }
 
         private void ApplyConnectionIcon(string geometry, Brush stroke, double scale)
@@ -327,9 +421,38 @@ namespace ControllerSessionManager.OverlayHost
         private void OnHoldElapsed(object sender, EventArgs args)
         {
             holdTimer.Stop();
-            var animation = new DoubleAnimation(Opacity, 0, TimeSpan.FromMilliseconds(220));
-            animation.Completed += delegate { ShowNext(); };
-            BeginAnimation(OpacityProperty, animation);
+            BeginExitAnimation();
+        }
+
+        private void BeginExitAnimation()
+        {
+            var style = currentStyle ?? new ToastStyle();
+            if (string.Equals(style.Animation, "None", StringComparison.OrdinalIgnoreCase))
+            {
+                ShowNext();
+                return;
+            }
+
+            var duration = TimeSpan.FromMilliseconds(180);
+            if (string.Equals(style.Animation, "Slide", StringComparison.OrdinalIgnoreCase))
+            {
+                var to = style.Position.IndexOf("Left", StringComparison.OrdinalIgnoreCase) >= 0 ? -34 : 34;
+                var transform = new TranslateTransform(0, 0);
+                cardShell.RenderTransform = transform;
+                transform.BeginAnimation(TranslateTransform.XProperty,
+                    new DoubleAnimation(0, to, duration) { EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseIn } });
+            }
+            else if (string.Equals(style.Animation, "Scale", StringComparison.OrdinalIgnoreCase))
+            {
+                var transform = new ScaleTransform(1, 1);
+                cardShell.RenderTransform = transform;
+                transform.BeginAnimation(ScaleTransform.ScaleXProperty, new DoubleAnimation(1, 0.90, duration));
+                transform.BeginAnimation(ScaleTransform.ScaleYProperty, new DoubleAnimation(1, 0.90, duration));
+            }
+
+            var fade = new DoubleAnimation(Opacity, 0, duration);
+            fade.Completed += delegate { ShowNext(); };
+            BeginAnimation(OpacityProperty, fade);
         }
 
         private void OnSourceInitialized(object sender, EventArgs args)
@@ -339,7 +462,7 @@ namespace ControllerSessionManager.OverlayHost
             SetWindowLong(handle, GwlExStyle, style | WsExTransparent | WsExToolWindow | WsExNoActivate);
         }
 
-        private void ApplyBounds(Forms.Screen screen, string position)
+        private void ApplyBounds(Forms.Screen screen, string position, int screenMargin)
         {
             var bounds = (screen ?? Forms.Screen.PrimaryScreen).WorkingArea;
             var dpiScaleX = 1.0;
@@ -352,14 +475,17 @@ namespace ControllerSessionManager.OverlayHost
             }
             var pixelWidth = (int)Math.Ceiling(Width * dpiScaleX);
             var pixelHeight = (int)Math.Ceiling(Height * dpiScaleY);
+            var shadowInsetX = (int)Math.Ceiling(currentShadowInset * dpiScaleX);
+            var shadowInsetY = (int)Math.Ceiling(currentShadowInset * dpiScaleY);
+            var margin = Math.Max(8, Math.Min(64, screenMargin));
             var left = string.Equals(position, "TopLeft", StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(position, "BottomLeft", StringComparison.OrdinalIgnoreCase)
-                ? bounds.Left + 28
-                : bounds.Right - pixelWidth - 28;
+                ? bounds.Left + margin - shadowInsetX
+                : bounds.Right - pixelWidth - margin + shadowInsetX;
             var top = string.Equals(position, "BottomLeft", StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(position, "BottomRight", StringComparison.OrdinalIgnoreCase)
-                ? bounds.Bottom - pixelHeight - 28
-                : bounds.Top + 28;
+                ? bounds.Bottom - pixelHeight - margin + shadowInsetY
+                : bounds.Top + margin - shadowInsetY;
             SetWindowPos(new WindowInteropHelper(this).Handle, HwndTopmost, left, top,
                 pixelWidth, pixelHeight, SwpNoActivate | SwpShowWindow);
         }
@@ -418,6 +544,15 @@ namespace ControllerSessionManager.OverlayHost
             public int CornerRadius = 10;
             public string IconPosition = "Left";
             public int ElementSpacing = 8;
+            public bool ShowConnectionBadge = true;
+            public int ScreenMargin = 28;
+            public bool ShowShadow = true;
+            public string FontFamily = NotificationFontCatalog.SystemDefault;
+            public string FontWeight = "SemiBold";
+            public string TextAlignment = "Left";
+            public string AccentMode = "IconAndBorder";
+            public string Animation = "Fade";
+            public bool ShowTitle = true;
 
             public static ToastStyle Parse(string value)
             {
@@ -436,7 +571,7 @@ namespace ControllerSessionManager.OverlayHost
                 if (parts.Length > 9 && int.TryParse(parts[9], out parsed)) style.TitleFontSize = Math.Max(12, Math.Min(36, parsed));
                 if (parts.Length > 10 && int.TryParse(parts[10], out parsed)) style.MessageFontSize = Math.Max(10, Math.Min(30, parsed));
                 if (parts.Length > 11 && int.TryParse(parts[11], out parsed)) style.IconSize = Math.Max(16, Math.Min(128, parsed));
-                if (parts.Length > 12 && int.TryParse(parts[12], out parsed)) style.Padding = Math.Max(6, Math.Min(40, parsed));
+                if (parts.Length > 12 && int.TryParse(parts[12], out parsed)) style.Padding = Math.Max(0, Math.Min(40, parsed));
                 bool parsedBool;
                 if (parts.Length > 13 && bool.TryParse(parts[13], out parsedBool)) style.ShowBorder = parsedBool;
                 if (parts.Length > 14 && !string.IsNullOrWhiteSpace(parts[14])) style.BorderPosition = parts[14];
@@ -445,6 +580,15 @@ namespace ControllerSessionManager.OverlayHost
                 if (parts.Length > 17 && IsIconPosition(parts[17])) style.IconPosition = parts[17];
                 if (parts.Length > 18 && int.TryParse(parts[18], out parsed)) style.ElementSpacing = Math.Max(0, Math.Min(40, parsed));
                 if (parts.Length > 19 && !string.IsNullOrWhiteSpace(parts[19])) style.LowBatteryAccent = parts[19];
+                if (parts.Length > 20 && bool.TryParse(parts[20], out parsedBool)) style.ShowConnectionBadge = parsedBool;
+                if (parts.Length > 21 && int.TryParse(parts[21], out parsed)) style.ScreenMargin = Math.Max(8, Math.Min(64, parsed));
+                if (parts.Length > 22 && bool.TryParse(parts[22], out parsedBool)) style.ShowShadow = parsedBool;
+                if (parts.Length > 23) style.FontFamily = NotificationFontCatalog.Normalize(parts[23]);
+                if (parts.Length > 24) style.FontWeight = NotificationFontCatalog.NormalizeWeight(parts[24]);
+                if (parts.Length > 25) style.TextAlignment = NotificationFontCatalog.NormalizeAlignment(parts[25]);
+                if (parts.Length > 26) style.AccentMode = NotificationFontCatalog.NormalizeAccentMode(parts[26]);
+                if (parts.Length > 27) style.Animation = NotificationFontCatalog.NormalizeAnimation(parts[27]);
+                if (parts.Length > 28 && bool.TryParse(parts[28], out parsedBool)) style.ShowTitle = parsedBool;
                 return style;
             }
 
@@ -467,6 +611,16 @@ namespace ControllerSessionManager.OverlayHost
         private static Brush Brush(string value, Color fallback)
         {
             return new SolidColorBrush(ParseColor(value, fallback));
+        }
+
+        private static Color Blend(Color background, Color accent, double amount)
+        {
+            amount = Math.Max(0, Math.Min(1, amount));
+            return Color.FromArgb(
+                background.A,
+                (byte)Math.Round(background.R * (1 - amount) + accent.R * amount),
+                (byte)Math.Round(background.G * (1 - amount) + accent.G * amount),
+                (byte)Math.Round(background.B * (1 - amount) + accent.B * amount));
         }
 
         private static Color ParseColor(string value, Color fallback)
