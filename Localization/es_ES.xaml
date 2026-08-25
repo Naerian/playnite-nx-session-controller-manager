@@ -744,4 +744,21 @@
     <sys:String x:Key="LOCCSM_ControllerDatabaseUpdated">La base de mandos se ha actualizado.</sys:String>
     <sys:String x:Key="LOCCSM_ControllerDatabaseCurrent">La base de mandos ya está actualizada.</sys:String>
     <sys:String x:Key="LOCCSM_ControllerDatabaseUpdateFailed">No se ha podido actualizar la base. Se seguirá usando la última copia local válida.</sys:String>
+    <sys:String x:Key="LOCCSM_PreviewWithSound">Reproducir sonido en la previsualización</sys:String>
+    <sys:String x:Key="LOCCSM_CopyDesktopStyleToFullscreen">Copiar estilo de escritorio a pantalla completa</sys:String>
+    <sys:String x:Key="LOCCSM_CopyFullscreenStyleToDesktop">Copiar estilo de pantalla completa a escritorio</sys:String>
+    <sys:String x:Key="LOCCSM_CopyNotificationStyleTitle">Copiar estilo de notificación</sys:String>
+    <sys:String x:Key="LOCCSM_CopyDesktopStyleConfirm">¿Reemplazar el estilo de notificación de pantalla completa por el de escritorio?</sys:String>
+    <sys:String x:Key="LOCCSM_CopyFullscreenStyleConfirm">¿Reemplazar el estilo de notificación de escritorio por el de pantalla completa?</sys:String>
+    <sys:String x:Key="LOCCSM_UnsavedNotificationStyleTitle">Estilo de notificación sin guardar</sys:String>
+    <sys:String x:Key="LOCCSM_UnsavedNotificationStyleMessage">El estilo personalizado tiene cambios sin guardar. Pulsa Sí para guardarlos, No para descartar los cambios actuales o Cancelar para seguir editando.</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationIconSpacing">Separación del icono</sys:String>
+    <sys:String x:Key="LOCCSM_EnableDesktopNotificationSounds">Activar sonidos en las notificaciones de escritorio</sys:String>
+    <sys:String x:Key="LOCCSM_EnableFullscreenNotificationSounds">Activar sonidos en las notificaciones de pantalla completa</sys:String>
+    <sys:String x:Key="LOCCSM_CustomSoundsTitle">Sonidos personalizados</sys:String>
+    <sys:String x:Key="LOCCSM_CustomSoundsHelp">Puedes sustituir cada sonido del pack seleccionado. Si el campo está vacío se usará el sonido del pack.</sys:String>
+    <sys:String x:Key="LOCCSM_SelectCustomSound">Seleccionar sonido</sys:String>
+    <sys:String x:Key="LOCCSM_CustomSoundFileFilter">Archivos de audio|*.wav;*.mp3;*.wma|Archivos WAV|*.wav|Archivos MP3|*.mp3|Archivos WMA|*.wma</sys:String>
+    <sys:String x:Key="LOCCSM_CustomSoundInvalid">Selecciona un archivo WAV, MP3 o WMA válido de hasta 5 MB.</sys:String>
+    <sys:String x:Key="LOCCSM_CustomSoundProcessing">Procesando el sonido personalizado…</sys:String>
 </ResourceDictionary>

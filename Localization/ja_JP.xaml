@@ -83,7 +83,7 @@
     <sys:String x:Key="LOCCSM_TabAbout">情報</sys:String>
     <sys:String x:Key="LOCCSM_Version017">バージョン 0.1.7</sys:String>
     <sys:String x:Key="LOCCSM_AboutPurpose">Playnite 向けのコンソール風コントローラー管理とテスト。</sys:String>
-    <sys:String x:Key="LOCCSM_AboutDescription">Controller Session Manager identifies and tracks controllers actively used during a game session. It provides five core features: adaptive controller switching for local and multiplayer games, gamepad tester, connection notifications, disconnection notifications, and automatic game pausing when a controller disconnects. It is highly customizable, adapting to both desktop and fullscreen modes while supporting battery state displays, custom names, and icons.</sys:String>
+    <sys:String x:Key="LOCCSM_AboutDescription">Controller Manager identifies and tracks controllers actively used during a game session. It provides five core features: adaptive controller switching for local and multiplayer games, gamepad tester, connection notifications, disconnection notifications, and automatic game pausing when a controller disconnects. It is highly customizable, adapting to both desktop and fullscreen modes while supporting battery state displays, custom names, and icons.</sys:String>
     <sys:String x:Key="LOCCSM_AboutWhatItDoesTitle">Controller Manager の機能</sys:String>
     <sys:String x:Key="LOCCSM_Unknown">不明</sys:String>
     <sys:String x:Key="LOCCSM_ValueWired">有線</sys:String>
@@ -714,4 +714,21 @@
     <sys:String x:Key="LOCCSM_ControllerDatabaseUpdated">The controller database was updated.</sys:String>
     <sys:String x:Key="LOCCSM_ControllerDatabaseCurrent">The controller database is already up to date.</sys:String>
     <sys:String x:Key="LOCCSM_ControllerDatabaseUpdateFailed">The database could not be updated. The last valid local copy will continue to be used.</sys:String>
+    <sys:String x:Key="LOCCSM_PreviewWithSound">Play preview sound</sys:String>
+    <sys:String x:Key="LOCCSM_CopyDesktopStyleToFullscreen">Copy desktop style to fullscreen</sys:String>
+    <sys:String x:Key="LOCCSM_CopyFullscreenStyleToDesktop">Copy fullscreen style to desktop</sys:String>
+    <sys:String x:Key="LOCCSM_CopyNotificationStyleTitle">Copy notification style</sys:String>
+    <sys:String x:Key="LOCCSM_CopyDesktopStyleConfirm">Replace the fullscreen notification style with the desktop style?</sys:String>
+    <sys:String x:Key="LOCCSM_CopyFullscreenStyleConfirm">Replace the desktop notification style with the fullscreen style?</sys:String>
+    <sys:String x:Key="LOCCSM_UnsavedNotificationStyleTitle">Unsaved notification style</sys:String>
+    <sys:String x:Key="LOCCSM_UnsavedNotificationStyleMessage">The custom notification style has unsaved changes. Choose Yes to save them, No to discard the current changes, or Cancel to keep editing.</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationIconSpacing">アイコンの間隔</sys:String>
+    <sys:String x:Key="LOCCSM_EnableDesktopNotificationSounds">Enable sounds for desktop notifications</sys:String>
+    <sys:String x:Key="LOCCSM_EnableFullscreenNotificationSounds">Enable sounds for fullscreen notifications</sys:String>
+    <sys:String x:Key="LOCCSM_CustomSoundsTitle">Custom sounds</sys:String>
+    <sys:String x:Key="LOCCSM_CustomSoundsHelp">Optionally replace each sound from the selected pack. Empty fields use the pack sound.</sys:String>
+    <sys:String x:Key="LOCCSM_SelectCustomSound">Select sound</sys:String>
+    <sys:String x:Key="LOCCSM_CustomSoundFileFilter">Audio files|*.wav;*.mp3;*.wma|WAV files|*.wav|MP3 files|*.mp3|WMA files|*.wma</sys:String>
+    <sys:String x:Key="LOCCSM_CustomSoundInvalid">Choose a valid WAV, MP3, or WMA file no larger than 5 MB.</sys:String>
+    <sys:String x:Key="LOCCSM_CustomSoundProcessing">カスタムサウンドを処理しています…</sys:String>
 </ResourceDictionary>

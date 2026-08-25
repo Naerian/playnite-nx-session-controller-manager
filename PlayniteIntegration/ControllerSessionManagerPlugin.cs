@@ -11,6 +11,7 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Threading;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Microsoft.Win32;
@@ -43,6 +44,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private readonly PauseAttemptGate pauseAttemptGate;
         private readonly OverlayClient overlayClient;
         private readonly NotificationAudioService notificationAudio;
+        private int notificationSoundCleanupGeneration;
         private readonly DiagnosticEventBuffer diagnosticEvents;
         private readonly ControllerMappingDatabaseUpdater controllerDatabaseUpdater;
         private ResourceDictionary englishFallbackResources;
@@ -239,8 +241,10 @@ namespace ControllerSessionManager.PlayniteIntegration
             // Charging docks often stay enumerated as Unknown while the pad is off; keep those
             // passive HID rows out of Mandos, TopBar and connect/disconnect toasts. A confirmed
             // XInput slot remains actionable even when its driver hides the physical transport.
-            return (source ?? Enumerable.Empty<ControllerDeviceSnapshot>())
+            var candidates = (source ?? Enumerable.Empty<ControllerDeviceSnapshot>()).ToList();
+            return candidates
                 .Where(ControllerDeviceIdentity.ShouldDisplayController)
+                .Where(a => !ControllerDeviceIdentity.IsLikelyPassiveChargingDock(a, candidates))
                 .ToList();
         }
 
@@ -470,6 +474,24 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
         }
 
+        public MessageBoxResult ConfirmReplaceUnsavedNotificationStyle()
+        {
+            return PlayniteApi.Dialogs.ShowMessage(
+                Loc("LOCCSM_UnsavedNotificationStyleMessage"),
+                Loc("LOCCSM_UnsavedNotificationStyleTitle"),
+                MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
+        }
+
+        public bool ConfirmCopyNotificationStyle(bool desktopToFullscreen)
+        {
+            return PlayniteApi.Dialogs.ShowMessage(
+                Loc(desktopToFullscreen
+                    ? "LOCCSM_CopyDesktopStyleConfirm"
+                    : "LOCCSM_CopyFullscreenStyleConfirm"),
+                Loc("LOCCSM_CopyNotificationStyleTitle"),
+                MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
+        }
+
         public void ShowNotificationPresetPreview()
         {
             if (PlayniteApi.ApplicationInfo.Mode == ApplicationMode.Fullscreen)
@@ -487,7 +509,8 @@ namespace ControllerSessionManager.PlayniteIntegration
             PlayNotificationSound(SoundKindFromToast(kind), preview: true);
         }
 
-        private void PlayNotificationSound(NotificationSoundKind kind, bool preview = false)
+        private void PlayNotificationSound(NotificationSoundKind kind, bool preview = false,
+            NotificationSoundScope scope = NotificationSoundScope.Fullscreen)
         {
             if (notificationAudio == null || settings == null)
             {
@@ -500,7 +523,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 return;
             }
 
-            notificationAudio.Play(kind, settings);
+            notificationAudio.Play(kind, settings, scope);
         }
 
         private static NotificationSoundKind SoundKindFromToast(string kind)
@@ -653,7 +676,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                     return;
                 }
 
-                snapshot.ApplyTo(targetSettings, GetNotificationBackgroundDirectory());
+                snapshot.ApplyTo(targetSettings, GetNotificationBackgroundDirectory(),
+                    GetNotificationSoundDirectory());
                 if (onApplied != null)
                 {
                     onApplied();
@@ -2359,7 +2383,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 {
                     PlayNotificationSound(isCurrentlyConnected
                         ? NotificationSoundKind.Connected
-                        : NotificationSoundKind.Disconnected);
+                        : NotificationSoundKind.Disconnected, false,
+                        showDesktop ? NotificationSoundScope.Desktop : NotificationSoundScope.Fullscreen);
                 }
 
                 if (isCurrentlyConnected)
@@ -2453,7 +2478,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                         badgeIcon);
                 }
 
-                PlayNotificationSound(NotificationSoundKind.LowBattery);
+                PlayNotificationSound(NotificationSoundKind.LowBattery, false,
+                    showDesktop ? NotificationSoundScope.Desktop : NotificationSoundScope.Fullscreen);
             }
         }
 
@@ -2517,7 +2543,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 settings.NotificationUseBackgroundImage.ToString(), EncodeStyleValue(settings.NotificationBackgroundImagePath),
                 settings.NotificationBackgroundImageStretch, settings.NotificationBackgroundImageHorizontalAlignment,
                 settings.NotificationBackgroundImageVerticalAlignment, settings.NotificationBackgroundImageOpacity.ToString(),
-                settings.NotificationBackgroundImageTintOpacity.ToString()
+                settings.NotificationBackgroundImageTintOpacity.ToString(),
+                settings.NotificationIconSpacing.ToString()
             });
         }
 
@@ -2546,7 +2573,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 settings.DesktopNotificationUseBackgroundImage.ToString(), EncodeStyleValue(settings.DesktopNotificationBackgroundImagePath),
                 settings.DesktopNotificationBackgroundImageStretch, settings.DesktopNotificationBackgroundImageHorizontalAlignment,
                 settings.DesktopNotificationBackgroundImageVerticalAlignment, settings.DesktopNotificationBackgroundImageOpacity.ToString(),
-                settings.DesktopNotificationBackgroundImageTintOpacity.ToString()
+                settings.DesktopNotificationBackgroundImageTintOpacity.ToString(),
+                settings.DesktopNotificationIconSpacing.ToString()
             });
         }
 
@@ -2676,6 +2704,282 @@ namespace ControllerSessionManager.PlayniteIntegration
         internal string GetNotificationBackgroundDirectory()
         {
             return Path.Combine(GetPluginUserDataPath(), "NotificationBackgrounds");
+        }
+
+        internal string GetNotificationSoundDirectory()
+        {
+            return Path.Combine(GetPluginUserDataPath(), "NotificationSounds");
+        }
+
+        public async Task SelectCustomNotificationSoundAsync(
+            ControllerSessionManagerSettings targetSettings, string kind,
+            CancellationToken cancellationToken,
+            Action processingStarted = null)
+        {
+            if (targetSettings == null)
+            {
+                return;
+            }
+
+            string destination = null;
+            var committed = false;
+            try
+            {
+                var dialog = new OpenFileDialog
+                {
+                    Title = Loc("LOCCSM_SelectCustomSound"),
+                    Filter = Loc("LOCCSM_CustomSoundFileFilter")
+                };
+                if (dialog.ShowDialog() != true)
+                {
+                    return;
+                }
+
+                var source = new FileInfo(dialog.FileName);
+                var extension = source.Extension.ToLowerInvariant();
+                if (source.Length <= 0 || source.Length > 5 * 1024 * 1024 ||
+                    (extension != ".wav" && extension != ".mp3" && extension != ".wma"))
+                {
+                    throw new InvalidDataException(Loc("LOCCSM_CustomSoundInvalid"));
+                }
+
+                var normalizedKind = NormalizeNotificationSoundKind(kind);
+                var directory = GetNotificationSoundDirectory();
+                destination = Path.Combine(directory, normalizedKind + "-" +
+                    Guid.NewGuid().ToString("N") + extension);
+                if (processingStarted != null)
+                {
+                    processingStarted();
+                }
+
+                // Close any preview first, then perform disk work away from Playnite's UI thread.
+                Interlocked.Increment(ref notificationSoundCleanupGeneration);
+                if (notificationAudio != null)
+                {
+                    notificationAudio.Stop();
+                }
+                await Task.WhenAll(
+                    Task.Run(() => CopyFileWithCancellation(
+                        source.FullName, destination, cancellationToken), cancellationToken),
+                    Task.Delay(600, cancellationToken));
+                cancellationToken.ThrowIfCancellationRequested();
+                SetCustomNotificationSoundPath(targetSettings, normalizedKind, destination);
+                committed = true;
+                QueueCustomNotificationSoundCleanup(targetSettings);
+            }
+            catch (OperationCanceledException)
+            {
+                // The staged copy is discarded below; the configured sound remains unchanged.
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Failed to select a custom notification sound.");
+                PlayniteApi.Dialogs.ShowErrorMessage(ex.Message, Loc("LOCCSM_CustomSoundsTitle"));
+            }
+            finally
+            {
+                if (!committed && !string.IsNullOrWhiteSpace(destination))
+                {
+                    TryDeleteFile(destination);
+                }
+            }
+        }
+
+        public async Task ClearCustomNotificationSoundAsync(
+            ControllerSessionManagerSettings targetSettings, string kind,
+            CancellationToken cancellationToken,
+            Action processingStarted = null)
+        {
+            if (targetSettings == null)
+            {
+                return;
+            }
+
+            var normalizedKind = NormalizeNotificationSoundKind(kind);
+            if (string.IsNullOrWhiteSpace(
+                GetCustomNotificationSoundPath(targetSettings, normalizedKind)))
+            {
+                return;
+            }
+            if (processingStarted != null)
+            {
+                processingStarted();
+            }
+            try
+            {
+                await Task.Delay(600, cancellationToken);
+                cancellationToken.ThrowIfCancellationRequested();
+                SetCustomNotificationSoundPath(targetSettings, normalizedKind, string.Empty);
+                QueueCustomNotificationSoundCleanup(targetSettings);
+            }
+            catch (OperationCanceledException)
+            {
+                // Keep the selected sound when the user cancels the removal.
+            }
+        }
+
+        private static void CopyFileWithCancellation(string sourcePath, string destinationPath,
+            CancellationToken cancellationToken)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));
+            var buffer = new byte[64 * 1024];
+            using (var source = new FileStream(sourcePath, FileMode.Open, FileAccess.Read,
+                FileShare.Read, buffer.Length, FileOptions.SequentialScan))
+            using (var destination = new FileStream(destinationPath, FileMode.CreateNew,
+                FileAccess.Write, FileShare.None, buffer.Length, FileOptions.SequentialScan))
+            {
+                int count;
+                while ((count = source.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    destination.Write(buffer, 0, count);
+                }
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+        }
+
+        private static void TryDeleteFile(string path)
+        {
+            try
+            {
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                }
+            }
+            catch (IOException) { }
+            catch (UnauthorizedAccessException) { }
+        }
+
+        /// <summary>
+        /// Removes imported sounds that are no longer referenced after settings are saved or
+        /// cancelled. Cleanup is asynchronous so closing the settings view never blocks Playnite.
+        /// </summary>
+        internal void QueueCustomNotificationSoundCleanup(
+            ControllerSessionManagerSettings targetSettings)
+        {
+            CleanupCustomNotificationSoundsAsync(targetSettings);
+        }
+
+        private Task CleanupCustomNotificationSoundsAsync(
+            ControllerSessionManagerSettings targetSettings)
+        {
+            if (targetSettings == null)
+            {
+                return Task.FromResult(true);
+            }
+
+            var retainedPaths = new[]
+            {
+                targetSettings.CustomConnectedSoundPath,
+                targetSettings.CustomDisconnectedSoundPath,
+                targetSettings.CustomLowBatterySoundPath,
+                targetSettings.CustomWarningSoundPath
+            }
+            .Where(path => !string.IsNullOrWhiteSpace(path))
+            .Select(TryGetFullPath)
+            .Where(path => !string.IsNullOrWhiteSpace(path))
+            .ToArray();
+            var directory = GetNotificationSoundDirectory();
+            var cleanupToken = Interlocked.Increment(ref notificationSoundCleanupGeneration);
+
+            if (notificationAudio != null)
+            {
+                notificationAudio.Stop();
+            }
+            return Task.Run(async () =>
+            {
+                // Media Foundation and antivirus scanners can retain a handle briefly. Retry
+                // without ever making Playnite's settings window wait for the cleanup.
+                for (var attempt = 0; attempt < 4; attempt++)
+                {
+                    if (CleanupObsoleteCustomSounds(directory, retainedPaths,
+                        () => cleanupToken == Volatile.Read(
+                            ref notificationSoundCleanupGeneration)))
+                    {
+                        return;
+                    }
+                    await Task.Delay(250 * (attempt + 1));
+                }
+            });
+        }
+
+        private static string NormalizeNotificationSoundKind(string kind)
+        {
+            if (string.Equals(kind, "disconnected", StringComparison.OrdinalIgnoreCase))
+                return "disconnected";
+            if (string.Equals(kind, "lowbattery", StringComparison.OrdinalIgnoreCase))
+                return "lowbattery";
+            if (string.Equals(kind, "warning", StringComparison.OrdinalIgnoreCase))
+                return "warning";
+            return "connected";
+        }
+
+        private static void SetCustomNotificationSoundPath(
+            ControllerSessionManagerSettings targetSettings, string kind, string path)
+        {
+            if (kind == "disconnected") targetSettings.CustomDisconnectedSoundPath = path;
+            else if (kind == "lowbattery") targetSettings.CustomLowBatterySoundPath = path;
+            else if (kind == "warning") targetSettings.CustomWarningSoundPath = path;
+            else targetSettings.CustomConnectedSoundPath = path;
+        }
+
+        private static string GetCustomNotificationSoundPath(
+            ControllerSessionManagerSettings targetSettings, string kind)
+        {
+            if (kind == "disconnected") return targetSettings.CustomDisconnectedSoundPath;
+            if (kind == "lowbattery") return targetSettings.CustomLowBatterySoundPath;
+            if (kind == "warning") return targetSettings.CustomWarningSoundPath;
+            return targetSettings.CustomConnectedSoundPath;
+        }
+
+        private static string TryGetFullPath(string path)
+        {
+            try { return Path.GetFullPath(path); }
+            catch (ArgumentException) { return string.Empty; }
+            catch (NotSupportedException) { return string.Empty; }
+            catch (PathTooLongException) { return string.Empty; }
+        }
+
+        private static bool CleanupObsoleteCustomSounds(string directory,
+            IEnumerable<string> retainedPaths, Func<bool> isCurrentCleanup)
+        {
+            var complete = true;
+            try
+            {
+                if (isCurrentCleanup != null && !isCurrentCleanup())
+                {
+                    return true;
+                }
+                if (!Directory.Exists(directory))
+                {
+                    return true;
+                }
+                var retained = new HashSet<string>(retainedPaths ?? Enumerable.Empty<string>(),
+                    StringComparer.OrdinalIgnoreCase);
+                foreach (var path in Directory.GetFiles(directory, "*.*"))
+                {
+                    if (isCurrentCleanup != null && !isCurrentCleanup())
+                    {
+                        return true;
+                    }
+                    if (retained.Contains(Path.GetFullPath(path)))
+                    {
+                        continue;
+                    }
+                    var extension = Path.GetExtension(path).ToLowerInvariant();
+                    if (extension != ".wav" && extension != ".mp3" && extension != ".wma")
+                    {
+                        continue;
+                    }
+                    try { File.Delete(path); }
+                    catch (IOException) { complete = false; }
+                    catch (UnauthorizedAccessException) { complete = false; }
+                }
+            }
+            catch (IOException) { complete = false; }
+            catch (UnauthorizedAccessException) { complete = false; }
+            return complete;
         }
 
         public void ShowDesktopNotificationPreview(string kind, bool playSound = true)

@@ -1201,6 +1201,12 @@
                                         <TextBlock Text="{DynamicResource LOCCSM_NotificationStylePreset}" Style="{StaticResource FieldLabel}" />
                                         <TextBlock Text="{DynamicResource LOCCSM_NotificationStylePresetHelp}" Style="{StaticResource FieldHintText}" Margin="0,0,0,8"/>
                                         <WrapPanel x:Name="NotificationStylePresetChips" Orientation="Horizontal"/>
+                                        <WrapPanel Margin="0,12,0,0">
+                                            <Button Content="{DynamicResource LOCCSM_CopyDesktopStyleToFullscreen}" Tag="DesktopToFullscreen"
+                                                    Margin="0,0,8,8" Click="CopyNotificationStyleClick"/>
+                                            <Button Content="{DynamicResource LOCCSM_CopyFullscreenStyleToDesktop}" Tag="FullscreenToDesktop"
+                                                    Margin="0,0,8,8" Click="CopyNotificationStyleClick"/>
+                                        </WrapPanel>
                                         <TextBlock Text="{DynamicResource LOCCSM_VisualProfileHelp}" Style="{StaticResource FieldHintText}" Margin="0,12,0,8"/>
                                         <WrapPanel Margin="0,0,0,4">
                                             <Button Content="{DynamicResource LOCCSM_ExportVisualProfile}" MinWidth="180" Margin="0,0,8,8"
@@ -1255,6 +1261,7 @@
                                                     <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationIconSize}"/><TextBlock DockPanel.Dock="Right" Text="{Binding DesktopNotificationIconSize}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="16" Maximum="128" TickFrequency="2" IsSnapToTickEnabled="True" Value="{Binding DesktopNotificationIconSize, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="16–128" Style="{StaticResource SliderRangeText}"/></StackPanel>
                                                     <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationPadding}"/><TextBlock DockPanel.Dock="Right" Text="{Binding DesktopNotificationPadding}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="0" Maximum="40" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding DesktopNotificationPadding, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="0–40" Style="{StaticResource SliderRangeText}"/></StackPanel>
                                                     <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_ElementSpacing}"/><TextBlock DockPanel.Dock="Right" Text="{Binding DesktopNotificationElementSpacing}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="0" Maximum="40" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding DesktopNotificationElementSpacing, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="0–40" Style="{StaticResource SliderRangeText}"/></StackPanel>
+                                                    <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationIconSpacing}"/><TextBlock DockPanel.Dock="Right" Text="{Binding DesktopNotificationIconSpacing}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="0" Maximum="40" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding DesktopNotificationIconSpacing, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="0–40" Style="{StaticResource SliderRangeText}"/></StackPanel>
                                                 </WrapPanel>
                                                 <CheckBox Content="{DynamicResource LOCCSM_NotificationShowTitle}" IsChecked="{Binding DesktopNotificationShowTitle}" Margin="0,8,0,0"/>
                                                 </StackPanel>
@@ -1309,6 +1316,7 @@
                                             </StackPanel>
                                         </Expander>
                                             <TextBlock Text="{DynamicResource LOCCSM_PreviewNotification}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,8,0,8"/>
+                                            <CheckBox Content="{DynamicResource LOCCSM_PreviewWithSound}" IsChecked="{Binding NotificationPreviewWithSound}" Margin="0,0,0,8"/>
                                             <WrapPanel>
                                                 <Button Content="{DynamicResource LOCCSM_ControllerConnectedToast}" Tag="connected"
                                                         Style="{StaticResource {x:Type Button}}" Margin="0,0,8,8"
@@ -1371,6 +1379,7 @@
                                                     <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationIconSize}"/><TextBlock DockPanel.Dock="Right" Text="{Binding NotificationIconSize}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="16" Maximum="128" TickFrequency="2" IsSnapToTickEnabled="True" Value="{Binding NotificationIconSize, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="16–128" Style="{StaticResource SliderRangeText}"/></StackPanel>
                                                     <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationPadding}"/><TextBlock DockPanel.Dock="Right" Text="{Binding NotificationPadding}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="0" Maximum="40" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding NotificationPadding, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="0–40" Style="{StaticResource SliderRangeText}"/></StackPanel>
                                                     <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_ElementSpacing}"/><TextBlock DockPanel.Dock="Right" Text="{Binding NotificationElementSpacing}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="0" Maximum="40" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding NotificationElementSpacing, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="0–40" Style="{StaticResource SliderRangeText}"/></StackPanel>
+                                                    <StackPanel Style="{StaticResource CompactSliderPanel}"><DockPanel><TextBlock Text="{DynamicResource LOCCSM_NotificationIconSpacing}"/><TextBlock DockPanel.Dock="Right" Text="{Binding NotificationIconSpacing}" Style="{StaticResource SliderValueText}"/></DockPanel><Slider Minimum="0" Maximum="40" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding NotificationIconSpacing, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="0–40" Style="{StaticResource SliderRangeText}"/></StackPanel>
                                                 </WrapPanel>
                                                 <CheckBox Content="{DynamicResource LOCCSM_NotificationShowTitle}" IsChecked="{Binding NotificationShowTitle}" Margin="0,8,0,0"/>
                                                 </StackPanel>
@@ -1425,6 +1434,7 @@
                                             </StackPanel>
                                         </Expander>
                                             <TextBlock Text="{DynamicResource LOCCSM_PreviewNotification}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,8,0,8"/>
+                                            <CheckBox Content="{DynamicResource LOCCSM_PreviewWithSound}" IsChecked="{Binding NotificationPreviewWithSound}" Margin="0,0,0,8"/>
                                             <WrapPanel>
                                                 <Button Content="{DynamicResource LOCCSM_ControllerConnectedToast}" Tag="connected"
                                                         Style="{StaticResource {x:Type Button}}" Margin="0,0,8,8"
@@ -1461,8 +1471,9 @@
                                     <TextBlock Text="{DynamicResource LOCCSM_NotificationSoundsHelp}" Style="{StaticResource SectionSubtitleText}" />
                                 </StackPanel>
                                 <StackPanel Style="{StaticResource FieldGroup}">
-                                    <CheckBox Content="{DynamicResource LOCCSM_EnableNotificationSounds}" IsChecked="{Binding EnableNotificationSounds}" />
-                                    <StackPanel Margin="0,16,0,0" IsEnabled="{Binding EnableNotificationSounds}">
+                                    <StackPanel>
+                                        <CheckBox Content="{DynamicResource LOCCSM_EnableDesktopNotificationSounds}" IsChecked="{Binding EnableDesktopNotificationSounds}"/>
+                                        <CheckBox Content="{DynamicResource LOCCSM_EnableFullscreenNotificationSounds}" IsChecked="{Binding EnableFullscreenNotificationSounds}" Margin="0,8,0,16"/>
                                         <TextBlock Text="{DynamicResource LOCCSM_NotificationSoundPack}" Style="{StaticResource FieldLabel}" />
                                         <TextBlock Text="{DynamicResource LOCCSM_NotificationSoundPackHelp}" Style="{StaticResource FieldHintText}" Margin="0,0,0,8"/>
                                         <ComboBox x:Name="NotificationSoundPackSelector"
@@ -1479,6 +1490,34 @@
                                         <CheckBox Content="{DynamicResource LOCCSM_PlaySoundOnDisconnected}" IsChecked="{Binding PlaySoundOnDisconnected}" Margin="0,8,0,0"/>
                                         <CheckBox Content="{DynamicResource LOCCSM_PlaySoundOnLowBattery}" IsChecked="{Binding PlaySoundOnLowBattery}" Margin="0,8,0,0"/>
                                         <CheckBox Content="{DynamicResource LOCCSM_PlaySoundOnWarning}" IsChecked="{Binding PlaySoundOnWarning}" Margin="0,8,0,0"/>
+                                        <TextBlock Text="{DynamicResource LOCCSM_CustomSoundsTitle}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,18,0,4"/>
+                                        <TextBlock Text="{DynamicResource LOCCSM_CustomSoundsHelp}" Style="{StaticResource FieldHintText}" Margin="0,0,0,10"/>
+                                        <StackPanel x:Name="CustomSoundEditorPanel">
+                                        <TextBlock Text="{DynamicResource LOCCSM_ControllerConnectedToast}" Style="{StaticResource FieldLabel}"/>
+                                        <DockPanel Margin="0,4,0,10">
+                                            <Button DockPanel.Dock="Right" Content="{DynamicResource LOCCSM_Remove}" Tag="connected" Click="ClearCustomNotificationSoundClick" Margin="8,0,0,0"/>
+                                            <Button DockPanel.Dock="Right" Content="{DynamicResource LOCCSM_SelectCustomSound}" Tag="connected" Click="SelectCustomNotificationSoundClick" Margin="8,0,0,0"/>
+                                            <Border Style="{StaticResource ReadOnlyPathInput}" ToolTip="{Binding CustomConnectedSoundPath}"><TextBlock Text="{Binding CustomConnectedSoundPath}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center"/></Border>
+                                        </DockPanel>
+                                        <TextBlock Text="{DynamicResource LOCCSM_ControllerDisconnectedToast}" Style="{StaticResource FieldLabel}"/>
+                                        <DockPanel Margin="0,4,0,10">
+                                            <Button DockPanel.Dock="Right" Content="{DynamicResource LOCCSM_Remove}" Tag="disconnected" Click="ClearCustomNotificationSoundClick" Margin="8,0,0,0"/>
+                                            <Button DockPanel.Dock="Right" Content="{DynamicResource LOCCSM_SelectCustomSound}" Tag="disconnected" Click="SelectCustomNotificationSoundClick" Margin="8,0,0,0"/>
+                                            <Border Style="{StaticResource ReadOnlyPathInput}" ToolTip="{Binding CustomDisconnectedSoundPath}"><TextBlock Text="{Binding CustomDisconnectedSoundPath}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center"/></Border>
+                                        </DockPanel>
+                                        <TextBlock Text="{DynamicResource LOCCSM_ControllerLowBatteryToast}" Style="{StaticResource FieldLabel}"/>
+                                        <DockPanel Margin="0,4,0,10">
+                                            <Button DockPanel.Dock="Right" Content="{DynamicResource LOCCSM_Remove}" Tag="lowbattery" Click="ClearCustomNotificationSoundClick" Margin="8,0,0,0"/>
+                                            <Button DockPanel.Dock="Right" Content="{DynamicResource LOCCSM_SelectCustomSound}" Tag="lowbattery" Click="SelectCustomNotificationSoundClick" Margin="8,0,0,0"/>
+                                            <Border Style="{StaticResource ReadOnlyPathInput}" ToolTip="{Binding CustomLowBatterySoundPath}"><TextBlock Text="{Binding CustomLowBatterySoundPath}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center"/></Border>
+                                        </DockPanel>
+                                        <TextBlock Text="{DynamicResource LOCCSM_NotificationWarningPreview}" Style="{StaticResource FieldLabel}"/>
+                                        <DockPanel Margin="0,4,0,10">
+                                            <Button DockPanel.Dock="Right" Content="{DynamicResource LOCCSM_Remove}" Tag="warning" Click="ClearCustomNotificationSoundClick" Margin="8,0,0,0"/>
+                                            <Button DockPanel.Dock="Right" Content="{DynamicResource LOCCSM_SelectCustomSound}" Tag="warning" Click="SelectCustomNotificationSoundClick" Margin="8,0,0,0"/>
+                                            <Border Style="{StaticResource ReadOnlyPathInput}" ToolTip="{Binding CustomWarningSoundPath}"><TextBlock Text="{Binding CustomWarningSoundPath}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center"/></Border>
+                                        </DockPanel>
+                                        </StackPanel>
                                         <Border Style="{StaticResource InfoCallout}" Margin="0,16,0,0">
                                             <DockPanel LastChildFill="True">
                                                 <Border DockPanel.Dock="Left" Style="{StaticResource InfoCalloutAccentBar}" />

@@ -1,5 +1,19 @@
 AddonId: ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc
 Packages:
+  - Version: 1.0.24
+    RequiredApiVersion: 6.16.0
+    ReleaseDate: 2026-08-25
+    PackageUrl: https://github.com/Naerian/playnite-nx-session-controller-manager/releases/download/v1.0.24/ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc_1_0_24.pext
+    Changelog:
+      - '**Sound Preview Toggle:** Added a checkbox to preview notifications with or without sound.'
+      - '**Independent Audio Controls:** Separate sound toggles for Desktop and Fullscreen modes, allowing audio to be enabled or disabled for either or both.'
+      - '**Custom Notification Sounds:** Full support for custom audio files on connect, disconnect, low battery, and warning events. Supports `.wav`, `.mp3`, and `.wma` (up to 5 MB) with fallback to the active sound pack.'
+      - '**Sound Profile Exporting:** Custom audio files are now automatically bundled when exporting visual profiles.'
+      - '**Cross-Mode Style Copying:** Added buttons to copy styling between Desktop and Fullscreen views, complete with confirmation dialogs.'
+      - '**Icon Spacing Slider:** Added an independent slider to adjust the gap between notification icons and content.'
+      - '**Unsaved Style Guard:** Added a warning prompt when overriding unsaved notification styling. The saved custom preset is restored upon switching back to *Custom*.'
+      - '**Inactive XInput Filtering:** Implemented a conservative filter that hides inactive XInput interfaces only when the physical controller is simultaneously connected (useful when charging docks are plugged in).'
+      - '**Charging Dock Ghost Controllers:** Prevented charging docks (such as 8BitDo Ultimate series) from being falsely detected as active, usable gamepads.'
   - Version: 1.0.23
     RequiredApiVersion: 6.16.0
     ReleaseDate: 2026-08-24

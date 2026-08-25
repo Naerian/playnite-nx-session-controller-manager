@@ -1304,9 +1304,40 @@ internal static class SessionManagerTests
         Equal(true, ControllerDeviceIdentity.ShouldDisplayController(activeXInput),
             "An active XInput controller must remain visible and editable when transport is Unknown.");
 
+        var actualEightBitDo = Snapshot("hardware:2DC8:310B:pad", "Playnite", 4,
+            "8BitDo Ultimate 2 Wireless", @"\\?\hid#vid_2dc8&pid_310b&ig_00", true);
+        actualEightBitDo.VendorId = 0x2DC8;
+        actualEightBitDo.ProductId = 0x310B;
+        actualEightBitDo.ConnectionType = "Wireless";
+        var idleDockSlot = Snapshot("hardware:2DC8:310B:dock-xinput", "XInput", 2,
+            "8BitDo Ultimate 2 Wireless", string.Empty, true);
+        idleDockSlot.VendorId = 0x2DC8;
+        idleDockSlot.ProductId = 0x310B;
+        idleDockSlot.ConnectionType = "Unknown";
+        idleDockSlot.BatteryLevel = "Unknown";
+        Equal(true, ControllerDeviceIdentity.IsLikelyPassiveChargingDock(idleDockSlot,
+            new[] { actualEightBitDo, idleDockSlot }),
+            "An idle ambiguous 8BitDo XInput alias must be recognized as the charging base.");
+        idleDockSlot.LastInputUtc = DateTime.UtcNow;
+        Equal(false, ControllerDeviceIdentity.IsLikelyPassiveChargingDock(idleDockSlot,
+            new[] { actualEightBitDo, idleDockSlot }),
+            "An 8BitDo interface that has produced input must never be hidden as a charging base.");
+        Equal(false, ControllerDeviceIdentity.IsLikelyPassiveChargingDock(activeXInput,
+            new[] { actualEightBitDo, activeXInput }),
+            "The GuliKit Microsoft-compatible XInput identity must not match the 8BitDo dock filter.");
+
         activeXInput.HardwareId = "xinput:slot:0";
         Equal(false, ControllerDeviceIdentity.ShouldDisplayController(activeXInput),
             "A volatile XInput-only ghost must not create a generic editable profile.");
+
+        Equal(true, HidDiagnosticsService.IsClearlyNonGameplayCapabilities(0xFFA0, 1, 0),
+            "The empty 8BitDo base capability fingerprint must be rejected as non-gameplay HID.");
+        Equal(false, HidDiagnosticsService.IsClearlyNonGameplayCapabilities(0x0001, 1, 0),
+            "A Generic Desktop HID collection must not be rejected by the dock filter.");
+        Equal(false, HidDiagnosticsService.IsClearlyNonGameplayCapabilities(0xFF00, 2, 0),
+            "A richer vendor-defined input collection must remain eligible.");
+        Equal(false, HidDiagnosticsService.IsClearlyNonGameplayCapabilities(0xFF00, 1, 1),
+            "A vendor-defined collection exposing buttons must remain eligible.");
     }
 
     private static void ClassicBluetoothHidServiceIsRecognized()

@@ -190,6 +190,8 @@ namespace ControllerSessionManager.PlayniteIntegration
             s.NotificationLowBatteryColor = lowBattery; s.NotificationTitleFontSize = titleSize;
             s.NotificationMessageFontSize = messageSize; s.NotificationIconSize = iconSize;
             s.NotificationIconPosition = iconPos; s.NotificationPadding = padding; s.NotificationElementSpacing = spacing;
+            s.NotificationIconSpacing = Math.Max(0, Math.Max(spacing,
+                (int)Math.Round(padding * 0.75)));
             s.NotificationShowBorder = showBorder; s.NotificationBorderPosition = borderPos;
             s.NotificationBorderThickness = borderThickness; s.NotificationCornerRadius = corner;
             s.NotificationShowConnectionBadge = showBadge; s.NotificationScreenMargin = margin; s.NotificationShowShadow = showShadow;
@@ -202,6 +204,8 @@ namespace ControllerSessionManager.PlayniteIntegration
             s.DesktopNotificationMessageFontSize = deskMessage; s.DesktopNotificationIconSize = deskIcon;
             s.DesktopNotificationIconPosition = iconPos; s.DesktopNotificationPadding = deskPadding;
             s.DesktopNotificationElementSpacing = deskSpacing; s.DesktopNotificationShowBorder = showBorder;
+            s.DesktopNotificationIconSpacing = Math.Max(0, Math.Max(deskSpacing,
+                (int)Math.Round(deskPadding * 0.75)));
             s.DesktopNotificationBorderPosition = borderPos; s.DesktopNotificationBorderThickness = borderThickness;
             s.DesktopNotificationCornerRadius = deskCorner; s.DesktopNotificationShowConnectionBadge = showBadge;
             s.DesktopNotificationScreenMargin = deskMargin; s.DesktopNotificationShowShadow = showShadow;

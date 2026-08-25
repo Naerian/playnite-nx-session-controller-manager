@@ -52,6 +52,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private string notificationIconPosition = "Left";
         private int notificationPadding = 18;
         private int notificationElementSpacing = 8;
+        private int notificationIconSpacing = 14;
         private bool notificationShowBorder = true;
         private string notificationBorderPosition = "Bottom";
         private int notificationBorderThickness = 3;
@@ -94,6 +95,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private string desktopNotificationIconPosition = "Left";
         private int desktopNotificationPadding = 14;
         private int desktopNotificationElementSpacing = 6;
+        private int desktopNotificationIconSpacing = 11;
         private bool desktopNotificationShowBorder = true;
         private string desktopNotificationBorderPosition = "Bottom";
         private int desktopNotificationBorderThickness = 3;
@@ -173,12 +175,21 @@ namespace ControllerSessionManager.PlayniteIntegration
         private string notificationStylePreset = NotificationStylePresets.Soft;
         private string overlayStylePreset = OverlayStylePresets.Soft;
         private bool enableNotificationSounds = true;
+        private bool enableDesktopNotificationSounds = true;
+        private bool enableFullscreenNotificationSounds = true;
+        private bool notificationPreviewWithSound;
         private string notificationSoundPack = NotificationSoundCatalog.ModernCrystal;
         private bool playSoundOnConnected;
         private bool playSoundOnDisconnected;
         private bool playSoundOnLowBattery = true;
         private bool playSoundOnWarning = true;
+        private string customConnectedSoundPath = string.Empty;
+        private string customDisconnectedSoundPath = string.Empty;
+        private string customLowBatterySoundPath = string.Empty;
+        private string customWarningSoundPath = string.Empty;
         private double notificationSoundVolume = 0.7;
+        private Dictionary<string, string> savedCustomNotificationStyle =
+            new Dictionary<string, string>();
         private bool pauseGameOnDisconnect;
         private int disconnectGracePeriodMilliseconds = 1500;
         private int reconciliationIntervalSeconds = 5;
@@ -242,6 +253,24 @@ namespace ControllerSessionManager.PlayniteIntegration
             set { SetValue(ref enableNotificationSounds, value); }
         }
 
+        public bool EnableDesktopNotificationSounds
+        {
+            get { return enableDesktopNotificationSounds; }
+            set { SetValue(ref enableDesktopNotificationSounds, value); }
+        }
+
+        public bool EnableFullscreenNotificationSounds
+        {
+            get { return enableFullscreenNotificationSounds; }
+            set { SetValue(ref enableFullscreenNotificationSounds, value); }
+        }
+
+        public bool NotificationPreviewWithSound
+        {
+            get { return notificationPreviewWithSound; }
+            set { SetValue(ref notificationPreviewWithSound, value); }
+        }
+
         public string NotificationSoundPack
         {
             get { return NotificationSoundCatalog.Normalize(notificationSoundPack); }
@@ -270,6 +299,36 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             get { return playSoundOnWarning; }
             set { SetValue(ref playSoundOnWarning, value); }
+        }
+
+        public string CustomConnectedSoundPath
+        {
+            get { return customConnectedSoundPath ?? string.Empty; }
+            set { SetValue(ref customConnectedSoundPath, value ?? string.Empty); }
+        }
+
+        public string CustomDisconnectedSoundPath
+        {
+            get { return customDisconnectedSoundPath ?? string.Empty; }
+            set { SetValue(ref customDisconnectedSoundPath, value ?? string.Empty); }
+        }
+
+        public string CustomLowBatterySoundPath
+        {
+            get { return customLowBatterySoundPath ?? string.Empty; }
+            set { SetValue(ref customLowBatterySoundPath, value ?? string.Empty); }
+        }
+
+        public string CustomWarningSoundPath
+        {
+            get { return customWarningSoundPath ?? string.Empty; }
+            set { SetValue(ref customWarningSoundPath, value ?? string.Empty); }
+        }
+
+        public Dictionary<string, string> SavedCustomNotificationStyle
+        {
+            get { return savedCustomNotificationStyle; }
+            set { savedCustomNotificationStyle = NotificationStyleState.Clone(value); }
         }
 
         public double NotificationSoundVolume
@@ -460,6 +519,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         public string NotificationIconPosition { get { return notificationIconPosition; } set { SetValue(ref notificationIconPosition, value); } }
         public int NotificationPadding { get { return notificationPadding; } set { SetValue(ref notificationPadding, value); } }
         public int NotificationElementSpacing { get { return notificationElementSpacing; } set { SetValue(ref notificationElementSpacing, value); } }
+        public int NotificationIconSpacing { get { return notificationIconSpacing; } set { SetValue(ref notificationIconSpacing, value); } }
         public bool NotificationShowBorder { get { return notificationShowBorder; } set { SetValue(ref notificationShowBorder, value); } }
         public string NotificationBorderPosition { get { return notificationBorderPosition; } set { SetValue(ref notificationBorderPosition, value); } }
         public int NotificationBorderThickness { get { return notificationBorderThickness; } set { SetValue(ref notificationBorderThickness, value); } }
@@ -502,6 +562,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         public string DesktopNotificationIconPosition { get { return desktopNotificationIconPosition; } set { SetValue(ref desktopNotificationIconPosition, value); } }
         public int DesktopNotificationPadding { get { return desktopNotificationPadding; } set { SetValue(ref desktopNotificationPadding, value); } }
         public int DesktopNotificationElementSpacing { get { return desktopNotificationElementSpacing; } set { SetValue(ref desktopNotificationElementSpacing, value); } }
+        public int DesktopNotificationIconSpacing { get { return desktopNotificationIconSpacing; } set { SetValue(ref desktopNotificationIconSpacing, value); } }
         public bool DesktopNotificationShowBorder { get { return desktopNotificationShowBorder; } set { SetValue(ref desktopNotificationShowBorder, value); } }
         public string DesktopNotificationBorderPosition { get { return desktopNotificationBorderPosition; } set { SetValue(ref desktopNotificationBorderPosition, value); } }
         public int DesktopNotificationBorderThickness { get { return desktopNotificationBorderThickness; } set { SetValue(ref desktopNotificationBorderThickness, value); } }
@@ -1020,11 +1081,39 @@ namespace ControllerSessionManager.PlayniteIntegration
                 SettingsSchemaVersion = 13;
             }
 
+            if (SettingsSchemaVersion < 14)
+            {
+                // Preserve the old visual gap while separating icon-to-content spacing from
+                // title/message spacing. Existing sound behavior remains enabled in both modes.
+                notificationIconSpacing = System.Math.Max(8,
+                    System.Math.Max(notificationElementSpacing,
+                        (int)System.Math.Round(notificationPadding * 0.75)));
+                desktopNotificationIconSpacing = System.Math.Max(8,
+                    System.Math.Max(desktopNotificationElementSpacing,
+                        (int)System.Math.Round(desktopNotificationPadding * 0.75)));
+                // The former master switch is represented by both explicit destinations now.
+                // Keep the old property enabled internally for profile/settings compatibility.
+                enableDesktopNotificationSounds = enableNotificationSounds;
+                enableFullscreenNotificationSounds = enableNotificationSounds;
+                enableNotificationSounds = true;
+                notificationPreviewWithSound = false;
+                SettingsSchemaVersion = 14;
+            }
+
             topPanelControllerMode = NormalizeTopPanelControllerMode(topPanelControllerMode);
             appearancePreset = SettingsAppearance.Normalize(appearancePreset);
             notificationStylePreset = NotificationStylePresets.Normalize(notificationStylePreset);
             overlayStylePreset = OverlayStylePresets.Normalize(overlayStylePreset);
             notificationSoundPack = NotificationSoundCatalog.Normalize(notificationSoundPack);
+            if (savedCustomNotificationStyle == null)
+            {
+                savedCustomNotificationStyle = new Dictionary<string, string>();
+            }
+            if (notificationStylePreset == NotificationStylePresets.Custom &&
+                savedCustomNotificationStyle.Count == 0)
+            {
+                savedCustomNotificationStyle = NotificationStyleState.Capture(this);
+            }
             notificationFontFamily = NotificationFontCatalog.Normalize(notificationFontFamily);
             desktopNotificationFontFamily = NotificationFontCatalog.Normalize(desktopNotificationFontFamily);
             overlayFontFamily = NotificationFontCatalog.Normalize(overlayFontFamily);
@@ -1083,6 +1172,37 @@ namespace ControllerSessionManager.PlayniteIntegration
             plugin = sourcePlugin;
         }
 
+        public bool HasSavedCustomNotificationStyle
+        {
+            get { return savedCustomNotificationStyle != null && savedCustomNotificationStyle.Count > 0; }
+        }
+
+        public bool HasUnsavedCustomNotificationStyle
+        {
+            get
+            {
+                return NotificationStylePreset == NotificationStylePresets.Custom &&
+                    !NotificationStyleState.Matches(this, savedCustomNotificationStyle);
+            }
+        }
+
+        public void SaveCurrentNotificationStyleAsCustom()
+        {
+            savedCustomNotificationStyle = NotificationStyleState.Capture(this);
+            NotificationStylePreset = NotificationStylePresets.Custom;
+        }
+
+        public bool RestoreSavedCustomNotificationStyle()
+        {
+            if (!HasSavedCustomNotificationStyle)
+            {
+                return false;
+            }
+            NotificationStyleState.Apply(this, savedCustomNotificationStyle);
+            NotificationStylePreset = NotificationStylePresets.Custom;
+            return true;
+        }
+
         public void BeginEdit()
         {
             editingClone = Clone();
@@ -1098,6 +1218,10 @@ namespace ControllerSessionManager.PlayniteIntegration
             {
                 CopyFrom(editingClone);
             }
+            if (plugin != null)
+            {
+                plugin.QueueCustomNotificationSoundCleanup(this);
+            }
         }
 
         public void EndEdit()
@@ -1108,8 +1232,13 @@ namespace ControllerSessionManager.PlayniteIntegration
                     && editingClone.Tester != null
                     && Tester != null
                     && Tester.ShowSidebarItem != editingClone.Tester.ShowSidebarItem;
+                if (NotificationStylePreset == NotificationStylePresets.Custom)
+                {
+                    SaveCurrentNotificationStyleAsCustom();
+                }
                 Tester.Normalize();
                 plugin.SavePluginSettings(this);
+                plugin.QueueCustomNotificationSoundCleanup(this);
                 plugin.ApplySettings();
                 if (sidebarChanged)
                 {
@@ -1143,12 +1272,14 @@ namespace ControllerSessionManager.PlayniteIntegration
                 NotificationIconSize < 16 || NotificationIconSize > 128 ||
                 NotificationPadding < 0 || NotificationPadding > 40 ||
                 NotificationElementSpacing < 0 || NotificationElementSpacing > 40 ||
+                NotificationIconSpacing < 0 || NotificationIconSpacing > 40 ||
                 NotificationBorderThickness < 0 || NotificationBorderThickness > 10 ||
                 NotificationCornerRadius < 0 || NotificationCornerRadius > 40 ||
                 NotificationScreenMargin < 8 || NotificationScreenMargin > 64 ||
                 DesktopNotificationIconSize < 16 || DesktopNotificationIconSize > 128 ||
                 DesktopNotificationPadding < 0 || DesktopNotificationPadding > 40 ||
                 DesktopNotificationElementSpacing < 0 || DesktopNotificationElementSpacing > 40 ||
+                DesktopNotificationIconSpacing < 0 || DesktopNotificationIconSpacing > 40 ||
                 DesktopNotificationScreenMargin < 8 || DesktopNotificationScreenMargin > 64 ||
                 OverlayScalePercent < 80 || OverlayScalePercent > 140 ||
                 OverlayTitleFontSize < 18 || OverlayTitleFontSize > 64 ||
@@ -1212,11 +1343,19 @@ namespace ControllerSessionManager.PlayniteIntegration
                 NotificationStylePreset = NotificationStylePreset,
                 OverlayStylePreset = OverlayStylePreset,
                 EnableNotificationSounds = EnableNotificationSounds,
+                EnableDesktopNotificationSounds = EnableDesktopNotificationSounds,
+                EnableFullscreenNotificationSounds = EnableFullscreenNotificationSounds,
+                NotificationPreviewWithSound = NotificationPreviewWithSound,
                 NotificationSoundPack = NotificationSoundPack,
                 PlaySoundOnConnected = PlaySoundOnConnected,
                 PlaySoundOnDisconnected = PlaySoundOnDisconnected,
                 PlaySoundOnLowBattery = PlaySoundOnLowBattery,
                 PlaySoundOnWarning = PlaySoundOnWarning,
+                CustomConnectedSoundPath = CustomConnectedSoundPath,
+                CustomDisconnectedSoundPath = CustomDisconnectedSoundPath,
+                CustomLowBatterySoundPath = CustomLowBatterySoundPath,
+                CustomWarningSoundPath = CustomWarningSoundPath,
+                SavedCustomNotificationStyle = NotificationStyleState.Clone(SavedCustomNotificationStyle),
                 NotificationSoundVolume = NotificationSoundVolume,
                 EnableDebugLogging = EnableDebugLogging,
                 AutoUpdateControllerDatabase = AutoUpdateControllerDatabase,
@@ -1256,6 +1395,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 NotificationIconPosition = NotificationIconPosition,
                 NotificationPadding = NotificationPadding,
                 NotificationElementSpacing = NotificationElementSpacing,
+                NotificationIconSpacing = NotificationIconSpacing,
                 NotificationShowBorder = NotificationShowBorder,
                 NotificationBorderPosition = NotificationBorderPosition,
                 NotificationBorderThickness = NotificationBorderThickness,
@@ -1296,6 +1436,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 DesktopNotificationIconPosition = DesktopNotificationIconPosition,
                 DesktopNotificationPadding = DesktopNotificationPadding,
                 DesktopNotificationElementSpacing = DesktopNotificationElementSpacing,
+                DesktopNotificationIconSpacing = DesktopNotificationIconSpacing,
                 DesktopNotificationShowBorder = DesktopNotificationShowBorder,
                 DesktopNotificationBorderPosition = DesktopNotificationBorderPosition,
                 DesktopNotificationBorderThickness = DesktopNotificationBorderThickness,
@@ -1390,11 +1531,19 @@ namespace ControllerSessionManager.PlayniteIntegration
             NotificationStylePreset = source.NotificationStylePreset;
             OverlayStylePreset = source.OverlayStylePreset;
             EnableNotificationSounds = source.EnableNotificationSounds;
+            EnableDesktopNotificationSounds = source.EnableDesktopNotificationSounds;
+            EnableFullscreenNotificationSounds = source.EnableFullscreenNotificationSounds;
+            NotificationPreviewWithSound = source.NotificationPreviewWithSound;
             NotificationSoundPack = source.NotificationSoundPack;
             PlaySoundOnConnected = source.PlaySoundOnConnected;
             PlaySoundOnDisconnected = source.PlaySoundOnDisconnected;
             PlaySoundOnLowBattery = source.PlaySoundOnLowBattery;
             PlaySoundOnWarning = source.PlaySoundOnWarning;
+            CustomConnectedSoundPath = source.CustomConnectedSoundPath;
+            CustomDisconnectedSoundPath = source.CustomDisconnectedSoundPath;
+            CustomLowBatterySoundPath = source.CustomLowBatterySoundPath;
+            CustomWarningSoundPath = source.CustomWarningSoundPath;
+            SavedCustomNotificationStyle = NotificationStyleState.Clone(source.SavedCustomNotificationStyle);
             NotificationSoundVolume = source.NotificationSoundVolume;
             EnableDebugLogging = source.EnableDebugLogging;
             AutoUpdateControllerDatabase = source.AutoUpdateControllerDatabase;
@@ -1435,6 +1584,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             NotificationIconPosition = source.NotificationIconPosition;
             NotificationPadding = source.NotificationPadding;
             NotificationElementSpacing = source.NotificationElementSpacing;
+            NotificationIconSpacing = source.NotificationIconSpacing;
             NotificationShowBorder = source.NotificationShowBorder;
             NotificationBorderPosition = source.NotificationBorderPosition;
             NotificationBorderThickness = source.NotificationBorderThickness;
@@ -1474,6 +1624,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             DesktopNotificationIconPosition = source.DesktopNotificationIconPosition;
             DesktopNotificationPadding = source.DesktopNotificationPadding;
             DesktopNotificationElementSpacing = source.DesktopNotificationElementSpacing;
+            DesktopNotificationIconSpacing = source.DesktopNotificationIconSpacing;
             DesktopNotificationShowBorder = source.DesktopNotificationShowBorder;
             DesktopNotificationBorderPosition = source.DesktopNotificationBorderPosition;
             DesktopNotificationBorderThickness = source.DesktopNotificationBorderThickness;

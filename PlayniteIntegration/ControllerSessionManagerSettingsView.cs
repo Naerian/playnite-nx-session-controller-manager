@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -20,6 +21,9 @@ namespace ControllerSessionManager.PlayniteIntegration
         private readonly ControllerSessionManagerPlugin plugin;
         private readonly bool themeStandaloneWindow;
         private string lastControllerListSignature;
+        private CustomSoundProgressWindow customSoundProgressWindow;
+        private Window customSoundProgressOwner;
+        private bool customSoundProgressOwnerHitTestVisible;
 
         public ControllerSessionManagerSettingsView(ControllerSessionManagerPlugin sourcePlugin)
             : this(sourcePlugin, false)
@@ -295,7 +299,11 @@ namespace ControllerSessionManager.PlayniteIntegration
             "NotificationSecondaryTextColor", "NotificationConnectedColor", "NotificationDisconnectedColor",
             "NotificationWarningColor", "NotificationLowBatteryColor", "NotificationTitleFontSize",
             "NotificationMessageFontSize", "NotificationIconSize", "NotificationIconPosition",
-            "NotificationPadding", "NotificationElementSpacing", "NotificationShowBorder",
+            "NotificationPadding", "NotificationElementSpacing", "NotificationIconSpacing",
+            "NotificationUseBackgroundImage", "NotificationBackgroundImagePath",
+            "NotificationBackgroundImageStretch", "NotificationBackgroundImageHorizontalAlignment",
+            "NotificationBackgroundImageVerticalAlignment", "NotificationBackgroundImageOpacity",
+            "NotificationBackgroundImageTintOpacity", "NotificationShowBorder",
             "NotificationBorderPosition", "NotificationBorderThickness", "NotificationCornerRadius",
             "NotificationShowConnectionBadge", "NotificationScreenMargin", "NotificationShowShadow",
             "NotificationFontFamily", "NotificationFontWeight", "NotificationTextAlignment",
@@ -307,7 +315,13 @@ namespace ControllerSessionManager.PlayniteIntegration
             "DesktopNotificationLowBatteryColor", "DesktopNotificationTitleFontSize",
             "DesktopNotificationMessageFontSize", "DesktopNotificationIconSize",
             "DesktopNotificationIconPosition", "DesktopNotificationPadding",
-            "DesktopNotificationElementSpacing", "DesktopNotificationShowBorder",
+            "DesktopNotificationElementSpacing", "DesktopNotificationIconSpacing",
+            "DesktopNotificationUseBackgroundImage", "DesktopNotificationBackgroundImagePath",
+            "DesktopNotificationBackgroundImageStretch",
+            "DesktopNotificationBackgroundImageHorizontalAlignment",
+            "DesktopNotificationBackgroundImageVerticalAlignment",
+            "DesktopNotificationBackgroundImageOpacity",
+            "DesktopNotificationBackgroundImageTintOpacity", "DesktopNotificationShowBorder",
             "DesktopNotificationBorderPosition", "DesktopNotificationBorderThickness",
             "DesktopNotificationCornerRadius",
             "DesktopNotificationShowConnectionBadge", "DesktopNotificationScreenMargin",
@@ -665,6 +679,39 @@ namespace ControllerSessionManager.PlayniteIntegration
 
             var previousPreset = NotificationStylePresets.Normalize(settings.NotificationStylePreset);
             var selectedPreset = NotificationStylePresets.Normalize(preset);
+
+            if (selectedPreset == NotificationStylePresets.Custom)
+            {
+                if (previousPreset == NotificationStylePresets.Custom)
+                {
+                    return;
+                }
+                suppressingStylePresetMark = true;
+                try
+                {
+                    settings.RestoreSavedCustomNotificationStyle();
+                }
+                finally
+                {
+                    suppressingStylePresetMark = false;
+                }
+                RefreshNotificationStylePresetChips();
+                return;
+            }
+
+            if (previousPreset == NotificationStylePresets.Custom &&
+                settings.HasUnsavedCustomNotificationStyle && plugin != null)
+            {
+                var choice = plugin.ConfirmReplaceUnsavedNotificationStyle();
+                if (choice == MessageBoxResult.Cancel)
+                {
+                    return;
+                }
+                if (choice == MessageBoxResult.Yes)
+                {
+                    settings.SaveCurrentNotificationStyleAsCustom();
+                }
+            }
 
             suppressingStylePresetMark = true;
             try
@@ -1164,7 +1211,152 @@ namespace ControllerSessionManager.PlayniteIntegration
         private void PreviewNotificationClick(object sender, RoutedEventArgs args)
         {
             var button = sender as Button;
-            plugin.ShowNotificationPreview(button == null ? null : button.Tag as string);
+            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            plugin.ShowNotificationPreview(button == null ? null : button.Tag as string,
+                settings != null && settings.NotificationPreviewWithSound);
+        }
+
+        private void CopyNotificationStyleClick(object sender, RoutedEventArgs args)
+        {
+            var button = sender as Button;
+            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            var desktopToFullscreen = string.Equals(button == null ? null : button.Tag as string,
+                "DesktopToFullscreen", StringComparison.OrdinalIgnoreCase);
+            if (settings == null || plugin == null ||
+                !plugin.ConfirmCopyNotificationStyle(desktopToFullscreen))
+            {
+                return;
+            }
+
+            suppressingStylePresetMark = true;
+            try
+            {
+                if (desktopToFullscreen)
+                    NotificationStyleState.CopyDesktopToFullscreen(settings);
+                else
+                    NotificationStyleState.CopyFullscreenToDesktop(settings);
+                settings.NotificationStylePreset = NotificationStylePresets.Custom;
+            }
+            finally
+            {
+                suppressingStylePresetMark = false;
+            }
+            RefreshNotificationStylePresetChips();
+        }
+
+        private async void SelectCustomNotificationSoundClick(object sender, RoutedEventArgs args)
+        {
+            var button = sender as Button;
+            if (plugin == null)
+            {
+                return;
+            }
+            var processing = false;
+            var cancellation = new CancellationTokenSource();
+            await plugin.SelectCustomNotificationSoundAsync(
+                boundSettings ?? DataContext as ControllerSessionManagerSettings,
+                button == null ? null : button.Tag as string,
+                cancellation.Token,
+                () =>
+                {
+                    processing = true;
+                    SetCustomSoundProcessing(true, cancellation);
+                });
+            if (processing)
+            {
+                SetCustomSoundProcessing(false, null);
+            }
+            cancellation.Dispose();
+        }
+
+        private void SetCustomSoundProcessing(bool processing,
+            CancellationTokenSource cancellation)
+        {
+            CustomSoundEditorPanel.IsEnabled = !processing;
+            if (!processing)
+            {
+                CloseCustomSoundProgressWindow();
+                return;
+            }
+
+            if (customSoundProgressWindow != null)
+            {
+                return;
+            }
+
+            var progressWindow = new CustomSoundProgressWindow();
+            var appearanceSettings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            SettingsAppearance.ApplyWindow(progressWindow,
+                appearanceSettings == null
+                    ? SettingsAppearance.Midnight
+                    : appearanceSettings.AppearancePreset);
+
+            customSoundProgressOwner = Window.GetWindow(this);
+            if (customSoundProgressOwner != null)
+            {
+                progressWindow.Owner = customSoundProgressOwner;
+            }
+            if (customSoundProgressOwner != null && customSoundProgressOwner.IsVisible)
+            {
+                customSoundProgressOwnerHitTestVisible = customSoundProgressOwner.IsHitTestVisible;
+                customSoundProgressOwner.IsHitTestVisible = false;
+            }
+            customSoundProgressWindow = progressWindow;
+            progressWindow.CancelRequested += (sender, args) =>
+            {
+                if (cancellation != null)
+                {
+                    cancellation.Cancel();
+                }
+            };
+            progressWindow.Closed += (sender, args) => RestoreCustomSoundProgressOwner();
+            progressWindow.Show();
+        }
+
+        private void CloseCustomSoundProgressWindow()
+        {
+            var progressWindow = customSoundProgressWindow;
+            customSoundProgressWindow = null;
+            if (progressWindow != null && progressWindow.IsVisible)
+            {
+                progressWindow.CompleteAndClose();
+            }
+            RestoreCustomSoundProgressOwner();
+        }
+
+        private void RestoreCustomSoundProgressOwner()
+        {
+            var owner = customSoundProgressOwner;
+            customSoundProgressOwner = null;
+            if (owner != null && owner.IsVisible)
+            {
+                owner.IsHitTestVisible = customSoundProgressOwnerHitTestVisible;
+            }
+        }
+
+        private async void ClearCustomNotificationSoundClick(object sender, RoutedEventArgs args)
+        {
+            var button = sender as Button;
+            if (plugin == null)
+            {
+                return;
+            }
+            var processing = false;
+            var cancellation = new CancellationTokenSource();
+            await plugin.ClearCustomNotificationSoundAsync(
+                boundSettings ?? DataContext as ControllerSessionManagerSettings,
+                button == null ? null : button.Tag as string,
+                cancellation.Token,
+                () =>
+                {
+                    processing = true;
+                    SetCustomSoundProcessing(true, cancellation);
+                });
+            if (processing)
+            {
+                SetCustomSoundProcessing(false, null);
+            }
+            cancellation.Dispose();
         }
 
         private void SelectNotificationBackgroundImageClick(object sender, RoutedEventArgs args)
@@ -1492,7 +1684,9 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             var button = sender as Button;
             var kind = button == null ? "connected" : button.Tag as string ?? "connected";
-            plugin.ShowDesktopNotificationPreview(kind);
+            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            plugin.ShowDesktopNotificationPreview(kind,
+                settings != null && settings.NotificationPreviewWithSound);
         }
 
         private void OpenExternalButton(object sender, RoutedEventArgs args)

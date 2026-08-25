@@ -625,7 +625,7 @@ Archivo obligatorio: `extension.yaml` en el directorio raíz de la extensión.
 
 ```yaml
 Id: ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc
-Name: Controller Session Manager
+Name: Controller Manager
 Author: Narian
 Version: 1.0.6
 Module: ControllerSessionManager.dll

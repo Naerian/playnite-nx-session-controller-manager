@@ -10,6 +10,12 @@ namespace ControllerSessionManager.PlayniteIntegration
         Warning
     }
 
+    public enum NotificationSoundScope
+    {
+        Desktop,
+        Fullscreen
+    }
+
     /// <summary>
     /// Built-in WAV packs under Audio/{packId}/ (connected, disconnected, low_battery, error).
     /// </summary>

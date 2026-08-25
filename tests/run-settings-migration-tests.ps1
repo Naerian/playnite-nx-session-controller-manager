@@ -42,6 +42,52 @@ foreach ($entry in $preserved.GetEnumerator()) {
 if ($settings.NotificationStylePreset -ne "Custom" -or $settings.OverlayStylePreset -ne "Custom") {
     throw "An existing installation must retain its custom notification and overlay appearance."
 }
+if ($settings.SettingsSchemaVersion -ne 14) {
+    throw "Settings were not migrated to schema 14."
+}
+if ($settings.NotificationIconSpacing -ne 8 -or
+    $settings.DesktopNotificationIconSpacing -ne 8) {
+    throw "Migration did not preserve the legacy icon-to-content gap."
+}
+if (-not $settings.EnableDesktopNotificationSounds -or
+    -not $settings.EnableFullscreenNotificationSounds -or
+    $settings.NotificationPreviewWithSound) {
+    throw "Notification sound scope migration has unsafe defaults."
+}
+$legacyMuted = [Activator]::CreateInstance($type)
+$legacyMuted.SettingsSchemaVersion = 13
+$legacyMuted.EnableNotificationSounds = $false
+$method.Invoke($legacyMuted, $null) | Out-Null
+if ($legacyMuted.EnableDesktopNotificationSounds -or
+    $legacyMuted.EnableFullscreenNotificationSounds -or
+    -not $legacyMuted.EnableNotificationSounds) {
+    throw "The removed master sound switch was not migrated to both destinations."
+}
+if (-not $settings.HasSavedCustomNotificationStyle) {
+    throw "The existing custom notification style was not preserved for later restoration."
+}
+
+# A saved Custom style survives named presets, and copy operations include the new icon gap.
+$settings.NotificationWidth = 701
+$settings.NotificationIconSpacing = 23
+$settings.SaveCurrentNotificationStyleAsCustom()
+$settings.NotificationWidth = 401
+$settings.NotificationIconSpacing = 4
+if (-not $settings.HasUnsavedCustomNotificationStyle) {
+    throw "Unsaved custom notification changes were not detected."
+}
+$settings.RestoreSavedCustomNotificationStyle() | Out-Null
+if ($settings.NotificationWidth -ne 701 -or $settings.NotificationIconSpacing -ne 23) {
+    throw "The saved Custom notification style was not restored."
+}
+$settings.DesktopNotificationIconSpacing = 31
+$styleStateType = $assembly.GetType(
+    "ControllerSessionManager.PlayniteIntegration.NotificationStyleState", $true)
+$copyDesktop = $styleStateType.GetMethod("CopyDesktopToFullscreen", [Reflection.BindingFlags]"Static,Public")
+$copyDesktop.Invoke($null, @($settings)) | Out-Null
+if ($settings.NotificationIconSpacing -ne 31) {
+    throw "Copying the desktop notification style omitted icon-to-content spacing."
+}
 
 # The removed Medium selector remains import-compatible and maps to the visually equivalent face.
 $settings.NotificationFontWeight = "Medium"
@@ -104,6 +150,66 @@ if ((Get-FileHash -LiteralPath $imagePath).Hash -ne
     (Get-FileHash -LiteralPath $restoredSettings.NotificationBackgroundImagePath).Hash) {
     throw "Restored notification background image differs from the exported image."
 }
+
+# Visual profiles also carry custom audio and the independent sound-scope settings.
+$customSoundPath = Join-Path $root "Audio\1_Modern_Crystal\connected.wav"
+$settings.CustomConnectedSoundPath = $customSoundPath
+$settings.EnableDesktopNotificationSounds = $false
+$settings.EnableFullscreenNotificationSounds = $true
+$soundSnapshot = $fromSettings.Invoke($null, @($settings, "Portable sound test"))
+if ([string]::IsNullOrWhiteSpace($soundSnapshot.CustomConnectedSoundData)) {
+    throw "Visual profile did not embed the custom connected sound."
+}
+$soundRestoredSettings = [Activator]::CreateInstance($type)
+$soundRestoreDirectory = Join-Path $root "obj\ProfileSoundRestore"
+New-Item -ItemType Directory -Path $soundRestoreDirectory -Force | Out-Null
+$applyToPortable = $snapshotType.GetMethods() | Where-Object {
+    $_.Name -eq "ApplyTo" -and $_.GetParameters().Count -eq 3
+} | Select-Object -First 1
+$soundArguments = [object[]]::new(3)
+$soundArguments[0] = $soundRestoredSettings
+$soundArguments[1] = [string]$restoreDirectory
+$soundArguments[2] = [string]$soundRestoreDirectory
+$applyToPortable.Invoke($soundSnapshot, $soundArguments) | Out-Null
+if ($soundRestoredSettings.EnableDesktopNotificationSounds -or
+    -not $soundRestoredSettings.EnableFullscreenNotificationSounds -or
+    -not (Test-Path -LiteralPath $soundRestoredSettings.CustomConnectedSoundPath)) {
+    throw "Visual profile did not restore custom audio and notification sound scopes."
+}
+if ((Get-FileHash -LiteralPath $customSoundPath).Hash -ne
+    (Get-FileHash -LiteralPath $soundRestoredSettings.CustomConnectedSoundPath).Hash) {
+    throw "Restored custom notification sound differs from the exported sound."
+}
+
+$audioServiceType = $assembly.GetType(
+    "ControllerSessionManager.PlayniteIntegration.NotificationAudioService", $true)
+$soundKindType = $assembly.GetType(
+    "ControllerSessionManager.PlayniteIntegration.NotificationSoundKind", $true)
+$soundScopeType = $assembly.GetType(
+    "ControllerSessionManager.PlayniteIntegration.NotificationSoundScope", $true)
+$connectedKind = [Enum]::Parse($soundKindType, "Connected")
+$desktopScope = [Enum]::Parse($soundScopeType, "Desktop")
+$fullscreenScope = [Enum]::Parse($soundScopeType, "Fullscreen")
+$loggerType = [Playnite.SDK.ILogger]
+$audioConstructor = $audioServiceType.GetConstructor(@($loggerType, [string]))
+$audioConstructorArguments = [object[]]::new(2)
+$audioConstructorArguments[0] = $null
+$audioConstructorArguments[1] = [string]$root
+$audioService = $audioConstructor.Invoke($audioConstructorArguments)
+$resolveCustom = $audioServiceType.GetMethods() | Where-Object {
+    $_.Name -eq "ResolvePath" -and $_.GetParameters().Count -eq 2 -and
+    $_.GetParameters()[1].ParameterType -eq $type
+} | Select-Object -First 1
+if ($resolveCustom.Invoke($audioService, @($connectedKind, $settings)) -ne $customSoundPath) {
+    throw "Notification playback did not prefer the selected custom sound."
+}
+$isScopeEnabled = $audioServiceType.GetMethod(
+    "IsScopeEnabled", [Reflection.BindingFlags]"Static,Public")
+if ($isScopeEnabled.Invoke($null, @($desktopScope, $settings)) -or
+    -not $isScopeEnabled.Invoke($null, @($fullscreenScope, $settings))) {
+    throw "Desktop and fullscreen notification sound switches are not independent."
+}
+$audioService.Dispose()
 
 # Imported notification backgrounds are bounded and re-encoded before being stored.
 Add-Type -AssemblyName PresentationCore

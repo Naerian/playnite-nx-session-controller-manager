@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ControllerSessionManager.Controllers
 {
@@ -106,6 +107,11 @@ namespace ControllerSessionManager.Controllers
                 return false;
             }
 
+            if (HidDiagnosticsService.IsClearlyNonGameplayInterface(devicePath))
+            {
+                return false;
+            }
+
             if (WindowsBluetoothBatteryProvider.IsBluetoothPath(devicePath))
             {
                 return true;
@@ -134,6 +140,11 @@ namespace ControllerSessionManager.Controllers
             ushort vendorId, ushort productId)
         {
             if (IsLikelyNonController(rawName, path))
+            {
+                return false;
+            }
+
+            if (HidDiagnosticsService.IsClearlyNonGameplayInterface(path))
             {
                 return false;
             }
@@ -180,6 +191,35 @@ namespace ControllerSessionManager.Controllers
         {
             return controller != null && controller.IsConnected &&
                 (!IsUnknownConnection(controller) || IsConfirmedXInputController(controller));
+        }
+
+        /// <summary>
+        /// Some 8BitDo charging bases expose an idle XInput interface next to the actual pad.
+        /// Only suppress that ambiguous interface when a matching, transport-confirmed 8BitDo
+        /// controller is present. This deliberately does not affect Microsoft-compatible devices
+        /// such as the GuliKit KK3 Max, whose stable XInput identity must remain actionable.
+        /// </summary>
+        public static bool IsLikelyPassiveChargingDock(ControllerDeviceSnapshot controller,
+            IEnumerable<ControllerDeviceSnapshot> peers)
+        {
+            if (controller == null || controller.VendorId != 0x2DC8 ||
+                !IsUnknownConnection(controller) || !IsConfirmedXInputController(controller) ||
+                controller.LastInputUtc.HasValue || IsKnownBattery(controller.BatteryLevel))
+            {
+                return false;
+            }
+
+            return (peers ?? Enumerable.Empty<ControllerDeviceSnapshot>()).Any(peer =>
+                peer != null && !ReferenceEquals(peer, controller) && peer.IsConnected &&
+                !IsUnknownConnection(peer) && peer.VendorId == 0x2DC8 &&
+                AreTransportAliases(controller, peer));
+        }
+
+        private static bool IsKnownBattery(string batteryLevel)
+        {
+            return !string.IsNullOrWhiteSpace(batteryLevel) &&
+                !string.Equals(batteryLevel, "Unknown", StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(batteryLevel, "Unavailable", StringComparison.OrdinalIgnoreCase);
         }
 
         public static string GetModelKey(ControllerDeviceSnapshot controller)

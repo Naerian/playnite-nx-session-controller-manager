@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -14,6 +15,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private readonly object gate = new object();
         private MediaPlayer player;
         private bool disposed;
+        private int playbackGeneration;
 
         public NotificationAudioService(ILogger sourceLogger, string pluginDirectory)
         {
@@ -23,20 +25,29 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         public void Play(NotificationSoundKind kind, ControllerSessionManagerSettings settings)
         {
-            Play(kind, settings, ignoreKindToggle: false);
+            Play(kind, settings, NotificationSoundScope.Fullscreen);
+        }
+
+        public void Play(NotificationSoundKind kind, ControllerSessionManagerSettings settings,
+            NotificationSoundScope scope)
+        {
+            Play(kind, settings, scope, ignoreKindToggle: false, ignoreScopeToggle: false);
         }
 
         /// <summary>
-        /// Preview playback: respects master switch, pack and volume, but ignores per-event toggles.
+        /// Preview playback respects the selected sound and volume, but ignores destination and
+        /// per-event toggles so the explicit preview checkbox remains useful.
         /// </summary>
         public void PlayPreview(NotificationSoundKind kind, ControllerSessionManagerSettings settings)
         {
-            Play(kind, settings, ignoreKindToggle: true);
+            Play(kind, settings, NotificationSoundScope.Fullscreen,
+                ignoreKindToggle: true, ignoreScopeToggle: true);
         }
 
-        private void Play(NotificationSoundKind kind, ControllerSessionManagerSettings settings, bool ignoreKindToggle)
+        private void Play(NotificationSoundKind kind, ControllerSessionManagerSettings settings,
+            NotificationSoundScope scope, bool ignoreKindToggle, bool ignoreScopeToggle)
         {
-            if (disposed || settings == null || !settings.EnableNotificationSounds)
+            if (disposed || settings == null)
             {
                 return;
             }
@@ -46,7 +57,12 @@ namespace ControllerSessionManager.PlayniteIntegration
                 return;
             }
 
-            var path = ResolvePath(kind, settings.NotificationSoundPack);
+            if (!ignoreScopeToggle && !IsScopeEnabled(scope, settings))
+            {
+                return;
+            }
+
+            var path = ResolvePath(kind, settings);
             if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
             {
                 if (logger != null)
@@ -65,7 +81,14 @@ namespace ControllerSessionManager.PlayniteIntegration
                 return;
             }
 
-            Action play = () => PlayCore(path, volume);
+            var playbackToken = Interlocked.Increment(ref playbackGeneration);
+            Action play = () =>
+            {
+                if (playbackToken == Volatile.Read(ref playbackGeneration))
+                {
+                    PlayCore(path, volume);
+                }
+            };
             if (delayMs > 0)
             {
                 var timer = new DispatcherTimer
@@ -140,11 +163,49 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
         }
 
+        public static bool IsScopeEnabled(NotificationSoundScope scope,
+            ControllerSessionManagerSettings settings)
+        {
+            return settings != null && (scope == NotificationSoundScope.Desktop
+                ? settings.EnableDesktopNotificationSounds
+                : settings.EnableFullscreenNotificationSounds);
+        }
+
+        public string ResolvePath(NotificationSoundKind kind,
+            ControllerSessionManagerSettings settings)
+        {
+            var custom = CustomPath(kind, settings);
+            if (!string.IsNullOrWhiteSpace(custom) && File.Exists(custom))
+            {
+                return custom;
+            }
+            return ResolvePath(kind, settings == null ? null : settings.NotificationSoundPack);
+        }
+
         public string ResolvePath(NotificationSoundKind kind, string packId)
         {
             var pack = NotificationSoundCatalog.Normalize(packId);
             var file = NotificationSoundCatalog.FileName(kind);
             return Path.Combine(pluginDirectory, "Audio", pack, file);
+        }
+
+        private static string CustomPath(NotificationSoundKind kind,
+            ControllerSessionManagerSettings settings)
+        {
+            if (settings == null) return string.Empty;
+            switch (kind)
+            {
+                case NotificationSoundKind.Connected:
+                    return settings.CustomConnectedSoundPath;
+                case NotificationSoundKind.Disconnected:
+                    return settings.CustomDisconnectedSoundPath;
+                case NotificationSoundKind.LowBattery:
+                    return settings.CustomLowBatterySoundPath;
+                case NotificationSoundKind.Warning:
+                    return settings.CustomWarningSoundPath;
+                default:
+                    return string.Empty;
+            }
         }
 
         private void PlayCore(string path, double volume)
@@ -185,6 +246,39 @@ namespace ControllerSessionManager.PlayniteIntegration
             if (logger != null)
             {
                 logger.Warn(e != null ? e.ErrorException : null, "MediaPlayer failed for notification sound.");
+            }
+        }
+
+        /// <summary>
+        /// Releases the current media file immediately so it can be replaced or removed.
+        /// </summary>
+        public void Stop()
+        {
+            Interlocked.Increment(ref playbackGeneration);
+            if (disposed)
+            {
+                return;
+            }
+
+            lock (gate)
+            {
+                if (player == null)
+                {
+                    return;
+                }
+
+                try
+                {
+                    player.Stop();
+                    player.Close();
+                }
+                catch (Exception ex)
+                {
+                    if (logger != null)
+                    {
+                        logger.Warn(ex, "Failed to release the notification sound player.");
+                    }
+                }
             }
         }
 

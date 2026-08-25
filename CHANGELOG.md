@@ -1,5 +1,17 @@
 # Changelog
 
+
+## 1.0.24 — 2026-08-25
+- **Sound Preview Toggle:** Added a checkbox to preview notifications with or without sound.
+- **Independent Audio Controls:** Separate sound toggles for Desktop and Fullscreen modes, allowing audio to be enabled or disabled for either or both.
+- **Custom Notification Sounds:** Full support for custom audio files on connect, disconnect, low battery, and warning events. Supports `.wav`, `.mp3`, and `.wma` (up to 5 MB) with fallback to the active sound pack.
+- **Sound Profile Exporting:** Custom audio files are now automatically bundled when exporting visual profiles.
+- **Cross-Mode Style Copying:** Added buttons to copy styling between Desktop and Fullscreen views, complete with confirmation dialogs.
+- **Icon Spacing Slider:** Added an independent slider to adjust the gap between notification icons and content.
+- **Unsaved Style Guard:** Added a warning prompt when overriding unsaved notification styling. The saved custom preset is restored upon switching back to *Custom*.
+- **Inactive XInput Filtering:** Implemented a conservative filter that hides inactive XInput interfaces only when the physical controller is simultaneously connected (useful when charging docks are plugged in).
+- **Charging Dock Ghost Controllers:** Prevented charging docks (such as 8BitDo Ultimate series) from being falsely detected as active, usable gamepads.
+
 ## 1.0.23 — 2026-08-24
 - Added a bundled SDL_GameControllerDB snapshot as an offline-safe fallback for controller names and Tester button/axis mappings.
 - Added opt-out background updates for the controller database at Playnite startup, with a 24-hour check interval, ETag/hash comparison, validation, atomic replacement and a manual check action under Advanced.

@@ -1,0 +1,42 @@
+<Window x:Class="ControllerSessionManager.PlayniteIntegration.CustomSoundProgressWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Width="480" SizeToContent="Height" MinHeight="180"
+        WindowStyle="None" ResizeMode="NoResize" ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource Narian.Bg}"
+        Foreground="{DynamicResource TextBrush}"
+        TextElement.Foreground="{DynamicResource TextBrush}"
+        TextElement.FontSize="14"
+        SnapsToDevicePixels="True"
+        PreviewKeyDown="OnPreviewKeyDown"
+        Closing="OnClosing">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="SettingsChrome.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Border BorderBrush="{DynamicResource Narian.Border}" BorderThickness="1"
+            CornerRadius="4" Background="{DynamicResource Narian.Bg}">
+        <Grid Margin="24,20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="{DynamicResource LOCCSM_CustomSoundsTitle}"
+                       Foreground="{DynamicResource Narian.Accent}"
+                       FontSize="20" FontWeight="SemiBold" Margin="0,0,0,10"/>
+            <TextBlock Grid.Row="1" Text="{DynamicResource LOCCSM_CustomSoundProcessing}"
+                       TextWrapping="Wrap" Margin="0,0,0,16"/>
+            <ProgressBar Grid.Row="2" IsIndeterminate="True" Height="8" Margin="0,0,0,22"/>
+            <Button x:Name="CancelButton" Grid.Row="3"
+                    Content="{DynamicResource LOCCSM_Cancel}"
+                    MinWidth="110" HorizontalAlignment="Right"
+                    Click="CancelClick"/>
+        </Grid>
+    </Border>
+</Window>

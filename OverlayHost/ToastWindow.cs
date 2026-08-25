@@ -218,7 +218,7 @@ namespace ControllerSessionManager.OverlayHost
             try { icon.Data = Geometry.Parse(current.IconGeometry ?? string.Empty); }
             catch { icon.Data = null; }
             PathAspectSizer.FitToMaxSize(icon, iconSize);
-            var iconGap = Math.Max(8, Math.Max(elementSpacing, padding * 0.75));
+            var iconGap = Math.Max(0, style.IconSpacing * scale);
             var verticalIcon = string.Equals(style.IconPosition, "Top", StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(style.IconPosition, "Bottom", StringComparison.OrdinalIgnoreCase);
             var hiddenIcon = string.Equals(style.IconPosition, "Hidden", StringComparison.OrdinalIgnoreCase);
@@ -616,6 +616,7 @@ namespace ControllerSessionManager.OverlayHost
             public int CornerRadius = 10;
             public string IconPosition = "Left";
             public int ElementSpacing = 8;
+            public int IconSpacing = 14;
             public bool ShowConnectionBadge = true;
             public int ScreenMargin = 28;
             public bool ShowShadow = true;
@@ -675,6 +676,7 @@ namespace ControllerSessionManager.OverlayHost
                 if (parts.Length > 33 && !string.IsNullOrWhiteSpace(parts[33])) style.BackgroundImageVerticalAlignment = parts[33];
                 if (parts.Length > 34 && int.TryParse(parts[34], out parsed)) style.BackgroundImageOpacity = Math.Max(0, Math.Min(100, parsed));
                 if (parts.Length > 35 && int.TryParse(parts[35], out parsed)) style.BackgroundImageTintOpacity = Math.Max(0, Math.Min(100, parsed));
+                if (parts.Length > 36 && int.TryParse(parts[36], out parsed)) style.IconSpacing = Math.Max(0, Math.Min(40, parsed));
                 return style;
             }
 

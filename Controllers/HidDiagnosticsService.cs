@@ -31,6 +31,95 @@ namespace ControllerSessionManager.Controllers
 
         private static readonly object btCacheLock = new object();
         private static readonly Dictionary<uint, BtCacheEntry> btCache = new Dictionary<uint, BtCacheEntry>();
+        private static readonly object gameplayCacheLock = new object();
+        private static readonly Dictionary<string, BtCacheEntry> gameplayCache =
+            new Dictionary<string, BtCacheEntry>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Detects vendor/configuration HID collections that Playnite may publish as controllers
+        /// even though they expose no usable game input. Charging bases are a common example.
+        /// Unknown or unusual interfaces remain accepted unless their capability fingerprint is
+        /// unambiguously non-gameplay.
+        /// </summary>
+        public static bool IsClearlyNonGameplayInterface(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path) ||
+                WindowsBluetoothBatteryProvider.IsBluetoothPath(path) ||
+                ControllerBridgeIdentity.IsXInputWrapperPath(path))
+            {
+                return false;
+            }
+
+            lock (gameplayCacheLock)
+            {
+                BtCacheEntry cached;
+                if (gameplayCache.TryGetValue(path, out cached) &&
+                    DateTime.UtcNow < cached.Expiry)
+                {
+                    return cached.Result;
+                }
+            }
+
+            var result = ProbeClearlyNonGameplayInterface(path);
+            lock (gameplayCacheLock)
+            {
+                gameplayCache[path] = new BtCacheEntry
+                {
+                    Result = result,
+                    Expiry = DateTime.UtcNow.AddSeconds(30)
+                };
+            }
+            return result;
+        }
+
+        internal static bool IsClearlyNonGameplayCapabilities(ushort usagePage,
+            ushort inputValues, ushort inputButtons)
+        {
+            // A vendor-defined top-level collection with no buttons and at most one input value
+            // is a status/configuration endpoint, not a joystick/gamepad collection. Requiring
+            // all three signals avoids rejecting raw-protocol controllers that expose richer data.
+            return usagePage >= 0xFF00 && inputButtons == 0 && inputValues <= 1;
+        }
+
+        private static bool ProbeClearlyNonGameplayInterface(string path)
+        {
+            try
+            {
+                using (var handle = OpenHidDevice(path))
+                {
+                    if (handle == null || handle.IsInvalid)
+                    {
+                        return false;
+                    }
+                    return IsClearlyNonGameplayHandle(handle);
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        private static bool IsClearlyNonGameplayHandle(SafeFileHandle handle)
+        {
+            IntPtr preparsedData;
+            if (handle == null || handle.IsInvalid ||
+                !NativeMethods.HidD_GetPreparsedData(handle, out preparsedData))
+            {
+                return false;
+            }
+            try
+            {
+                HidpCaps caps;
+                return NativeMethods.HidP_GetCaps(preparsedData, out caps) >= 0 &&
+                    IsClearlyNonGameplayCapabilities(caps.UsagePage,
+                        caps.NumberInputValueCaps, caps.NumberInputButtonCaps);
+            }
+            finally
+            {
+                NativeMethods.HidD_FreePreparsedData(preparsedData);
+            }
+        }
 
         public static string CreateReport(IEnumerable<ControllerDeviceSnapshot> controllers)
         {
@@ -234,6 +323,10 @@ namespace ControllerSessionManager.Controllers
                 hidMetaCache = null;
                 hidMetaExpiry = DateTime.MinValue;
             }
+            lock (gameplayCacheLock)
+            {
+                gameplayCache.Clear();
+            }
         }
 
         public static IReadOnlyList<ControllerMetadata> GetPresentControllerMetadata()
@@ -414,6 +507,10 @@ namespace ControllerSessionManager.Controllers
                         {
                             if (handle != null && !handle.IsInvalid)
                             {
+                                if (IsClearlyNonGameplayHandle(handle))
+                                {
+                                    continue;
+                                }
                                 var serial = GetHidString(handle,
                                     NativeMethods.HidD_GetSerialNumberString);
                                 var stableId = CreateAnonymizedHardwareId(metadata.VendorId,

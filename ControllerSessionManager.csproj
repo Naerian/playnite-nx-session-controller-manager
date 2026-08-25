@@ -92,6 +92,7 @@
     <Compile Include="PlayniteIntegration\NotificationAudioService.cs" />
     <Compile Include="PlayniteIntegration\NotificationFontCatalog.cs" />
     <Compile Include="PlayniteIntegration\NotificationStylePresets.cs" />
+    <Compile Include="PlayniteIntegration\NotificationStyleState.cs" />
     <Compile Include="PlayniteIntegration\OverlayStylePresets.cs" />
     <Compile Include="PlayniteIntegration\VisualProfileSnapshot.cs" />
     <Compile Include="PlayniteIntegration\VisualProfilePortableStore.cs" />
@@ -101,6 +102,9 @@
     </Compile>
     <Compile Include="PlayniteIntegration\SetupWizardWindow.xaml.cs">
       <DependentUpon>SetupWizardWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PlayniteIntegration\CustomSoundProgressWindow.xaml.cs">
+      <DependentUpon>CustomSoundProgressWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="PlayniteIntegration\ControllerSessionManagerSettingsView.cs">
       <DependentUpon>ControllerSessionManagerSettingsView.xaml</DependentUpon>
@@ -311,6 +315,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="PlayniteIntegration\SetupWizardWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="PlayniteIntegration\CustomSoundProgressWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

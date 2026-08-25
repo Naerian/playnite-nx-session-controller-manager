@@ -6,4 +6,5 @@ packages/
 *.user
 *.suo
 *.pext
+.release-notes.md
 
