@@ -122,6 +122,10 @@
     <sys:String x:Key="LOCCSM_ResetNotificationStyleConfirm">Restore notification layout and colors to the Soft preset? Sound and overlay settings are not changed.</sys:String>
     <sys:String x:Key="LOCCSM_VisualProfileTitle">Visual profile</sys:String>
     <sys:String x:Key="LOCCSM_VisualProfileHelp">Export or import notification, overlay and sound appearance as a shareable profile.</sys:String>
+    <sys:String x:Key="LOCCSM_VisualProfileNamePrompt">为此视觉配置命名。导入同名配置时将覆盖原配置。</sys:String>
+    <sys:String x:Key="LOCCSM_FilterCreatorDesignsByCurrentTheme">在创作者设计中仅显示适用于当前主题的设计</sys:String>
+    <sys:String x:Key="LOCCSM_Alerts">提醒</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeLockedTitle">创作者设计已启用</sys:String>
     <sys:String x:Key="LOCCSM_ExportVisualProfile">Export visual profile</sys:String>
     <sys:String x:Key="LOCCSM_ImportVisualProfile">Import visual profile</sys:String>
     <sys:String x:Key="LOCCSM_VisualProfileFileFilter">Controller Manager visual profile (*.pcvisual)|*.pcvisual</sys:String>
@@ -296,7 +300,7 @@
     <sys:String x:Key="LOCCSM_NotificationTitleSize">标题文字 (px)</sys:String><sys:String x:Key="LOCCSM_NotificationTextSize">消息文字 (px)</sys:String><sys:String x:Key="LOCCSM_NotificationIconSize">图标大小 (px)</sys:String><sys:String x:Key="LOCCSM_NotificationPadding">内边距 (px)</sys:String>
     <sys:String x:Key="LOCCSM_ElementSpacing">Spacing between elements (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationShowBorder">显示状态颜色边框</sys:String><sys:String x:Key="LOCCSM_NotificationBorderPosition">边框位置</sys:String><sys:String x:Key="LOCCSM_NotificationBorderThickness">边框宽度 (px)</sys:String>
-    <sys:String x:Key="LOCCSM_BorderLeft">左</sys:String><sys:String x:Key="LOCCSM_BorderTop">上</sys:String><sys:String x:Key="LOCCSM_BorderRight">右</sys:String><sys:String x:Key="LOCCSM_BorderBottom">下</sys:String>
+<sys:String x:Key="LOCCSM_BorderLeft">左</sys:String><sys:String x:Key="LOCCSM_BorderTop">上</sys:String><sys:String x:Key="LOCCSM_BorderRight">右</sys:String><sys:String x:Key="LOCCSM_BorderBottom">下</sys:String><sys:String x:Key="LOCCSM_BorderSideLeft">左边框</sys:String><sys:String x:Key="LOCCSM_BorderSideTop">上边框</sys:String><sys:String x:Key="LOCCSM_BorderSideRight">右边框</sys:String><sys:String x:Key="LOCCSM_BorderSideBottom">下边框</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPreview">实时预览</sys:String><sys:String x:Key="LOCCSM_PreviewControllerName">示例控制器</sys:String><sys:String x:Key="LOCCSM_OverlayPreviewHelp">编辑时颜色和缩放会实时更新。实际游戏浮层会适应当前屏幕。</sys:String>
     <sys:String x:Key="LOCCSM_SelectColor">选择颜色</sys:String>
     <sys:String x:Key="LOCCSM_ColorPreview">预览</sys:String>
@@ -715,8 +719,8 @@
     <sys:String x:Key="LOCCSM_ControllerDatabaseCurrent">The controller database is already up to date.</sys:String>
     <sys:String x:Key="LOCCSM_ControllerDatabaseUpdateFailed">The database could not be updated. The last valid local copy will continue to be used.</sys:String>
     <sys:String x:Key="LOCCSM_PreviewWithSound">Play preview sound</sys:String>
-    <sys:String x:Key="LOCCSM_CopyDesktopStyleToFullscreen">Copy desktop style to fullscreen</sys:String>
-    <sys:String x:Key="LOCCSM_CopyFullscreenStyleToDesktop">Copy fullscreen style to desktop</sys:String>
+    <sys:String x:Key="LOCCSM_CopyDesktopStyleToFullscreen">复制桌面设计</sys:String>
+    <sys:String x:Key="LOCCSM_CopyFullscreenStyleToDesktop">复制全屏设计</sys:String>
     <sys:String x:Key="LOCCSM_CopyNotificationStyleTitle">Copy notification style</sys:String>
     <sys:String x:Key="LOCCSM_CopyDesktopStyleConfirm">Replace the fullscreen notification style with the desktop style?</sys:String>
     <sys:String x:Key="LOCCSM_CopyFullscreenStyleConfirm">Replace the desktop notification style with the fullscreen style?</sys:String>
@@ -731,4 +735,65 @@
     <sys:String x:Key="LOCCSM_CustomSoundFileFilter">Audio files|*.wav;*.mp3;*.wma|WAV files|*.wav|MP3 files|*.mp3|WMA files|*.wma</sys:String>
     <sys:String x:Key="LOCCSM_CustomSoundInvalid">Choose a valid WAV, MP3, or WMA file no larger than 5 MB.</sys:String>
     <sys:String x:Key="LOCCSM_CustomSoundProcessing">正在处理自定义声音…</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationTitleFont">标题字体</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationMessageFont">消息字体</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationMessageMaxLines">消息最大行数</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationBadgePosition">连接徽章位置</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayContentAlignment">内容对齐</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayScreenMargin">屏幕边距</sys:String>
+    <sys:String x:Key="LOCCSM_StylePresetAniki">Aniki ReMake</sys:String>
+    <sys:String x:Key="LOCCSM_StylePresetHelium">Helium</sys:String>
+    <sys:String x:Key="LOCCSM_PresetGroupPlugin">插件预设</sys:String>
+    <sys:String x:Key="LOCCSM_PresetGroupCreators">创作者设计</sys:String>
+    <sys:String x:Key="LOCCSM_ImportedDesigns">导入的设计</sys:String>
+    <sys:String x:Key="LOCCSM_DeleteImportedDesign">删除导入的设计</sys:String>
+    <sys:String x:Key="LOCCSM_DeleteImportedDesignConfirm">要删除导入的设计“{0}”吗？</sys:String>
+    <sys:String x:Key="LOCCSM_ImportedDesignDeleted">已删除导入的设计“{0}”。</sys:String>
+    <sys:String x:Key="LOCCSM_UseGradient">使用渐变</sys:String>
+    <sys:String x:Key="LOCCSM_GradientAngle">渐变角度</sys:String>
+    <sys:String x:Key="LOCCSM_UppercaseTitle">标题大写</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayLayoutMode">布局</sys:String>
+    <sys:String x:Key="LOCCSM_LayoutStandard">标准</sys:String>
+    <sys:String x:Key="LOCCSM_LayoutSplit">分栏</sys:String>
+    <sys:String x:Key="LOCCSM_LayoutHero">主视觉</sys:String>
+    <sys:String x:Key="LOCCSM_ShowIconContainer">显示图标容器</sys:String>
+    <sys:String x:Key="LOCCSM_ShowElementContainer">显示控制器容器</sys:String>
+    <sys:String x:Key="LOCCSM_ContainerPadding">容器内边距</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayBackgroundImage">覆盖层背景图像</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayBackgroundImageSelect">选择覆盖层背景图像</sys:String>
+    <sys:String x:Key="LOCCSM_Design">设计</sys:String>
+    <sys:String x:Key="LOCCSM_AdvancedDesign">高级设计</sys:String>
+    <sys:String x:Key="LOCCSM_AdvancedDesignHint">面向创作者的控件。现有预设和简单设置保持完全兼容。</sys:String>
+    <sys:String x:Key="LOCCSM_TextBlockOrder">文本顺序</sys:String>
+    <sys:String x:Key="LOCCSM_TitleFirst">标题优先</sys:String>
+    <sys:String x:Key="LOCCSM_MessageFirst">消息优先</sys:String>
+    <sys:String x:Key="LOCCSM_IndependentBorders">分别自定义每条边框</sys:String>
+    <sys:String x:Key="LOCCSM_StateBackgrounds">为每种状态使用不同背景</sys:String>
+    <sys:String x:Key="LOCCSM_StateConnected">已连接</sys:String>
+    <sys:String x:Key="LOCCSM_StateDisconnected">已断开</sys:String>
+    <sys:String x:Key="LOCCSM_StateWarning">警告</sys:String>
+    <sys:String x:Key="LOCCSM_StateLowBattery">电量低</sys:String>
+    <sys:String x:Key="LOCCSM_BlockOrder">区块顺序</sys:String>
+    <sys:String x:Key="LOCCSM_OrderClassic">经典</sys:String>
+    <sys:String x:Key="LOCCSM_OrderControllerFirst">控制器优先</sys:String>
+    <sys:String x:Key="LOCCSM_OrderMessageFirst">提示优先</sys:String>
+    <sys:String x:Key="LOCCSM_OrderStatusFirst">状态优先</sys:String>
+    <sys:String x:Key="LOCCSM_MetadataOrientation">徽章方向</sys:String>
+    <sys:String x:Key="LOCCSM_OrientationHorizontal">水平</sys:String>
+    <sys:String x:Key="LOCCSM_OrientationVertical">垂直</sys:String>
+    <sys:String x:Key="LOCCSM_OpenCreatorThemesFolder">打开创作者包文件夹</sys:String>
+    <sys:String x:Key="LOCCSM_ReloadCreatorThemes">重新加载创作者包</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGradient">渐变边框</sys:String>
+    <sys:String x:Key="LOCCSM_StateBorderGradientColors">在渐变中使用各状态颜色</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGradientStart">渐变起始色</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGradientEnd">渐变结束色</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGradientAngle">边框角度</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGlow">边框光晕</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGlowColor">光晕颜色</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGlowBlur">光晕模糊</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGlowOpacity">光晕不透明度</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeManagement">创作者设计包</sys:String>
+    <sys:String x:Key="LOCCSM_PresetGroupCustom">自定义</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">此创作者设计控制完整外观。请选择插件预设或自定义以进行编辑。</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">音频由当前创作者设计管理。请选择插件或自定义设计以编辑声音。</sys:String>
 </ResourceDictionary>

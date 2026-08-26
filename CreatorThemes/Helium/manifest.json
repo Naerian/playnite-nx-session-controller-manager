@@ -1,0 +1,11 @@
+{
+  "Id": "Helium",
+  "Name": "Helium",
+  "Author": "darklinkpower",
+  "Version": "1.0.0",
+  "Description": "Graphite and Steam-blue visual adaptation for Controller Manager.",
+  "RecommendedTheme": "Helium",
+  "DesktopThemeIds": [
+    "8b15c46a-90c2-4fe5-9ebb-1ab25ba7fcb1"
+  ]
+}

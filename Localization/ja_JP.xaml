@@ -122,6 +122,10 @@
     <sys:String x:Key="LOCCSM_ResetNotificationStyleConfirm">Restore notification layout and colors to the Soft preset? Sound and overlay settings are not changed.</sys:String>
     <sys:String x:Key="LOCCSM_VisualProfileTitle">Visual profile</sys:String>
     <sys:String x:Key="LOCCSM_VisualProfileHelp">Export or import notification, overlay and sound appearance as a shareable profile.</sys:String>
+    <sys:String x:Key="LOCCSM_VisualProfileNamePrompt">ビジュアルプロファイルに名前を付けます。同じ名前のプロファイルをインポートすると置き換えられます。</sys:String>
+    <sys:String x:Key="LOCCSM_FilterCreatorDesignsByCurrentTheme">クリエイターデザインでは現在のテーマ用のみ表示</sys:String>
+    <sys:String x:Key="LOCCSM_Alerts">通知</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeLockedTitle">クリエイターデザインが有効です</sys:String>
     <sys:String x:Key="LOCCSM_ExportVisualProfile">Export visual profile</sys:String>
     <sys:String x:Key="LOCCSM_ImportVisualProfile">Import visual profile</sys:String>
     <sys:String x:Key="LOCCSM_VisualProfileFileFilter">Controller Manager visual profile (*.pcvisual)|*.pcvisual</sys:String>
@@ -296,7 +300,7 @@
     <sys:String x:Key="LOCCSM_NotificationTitleSize">タイトル文字 (px)</sys:String><sys:String x:Key="LOCCSM_NotificationTextSize">メッセージ文字 (px)</sys:String><sys:String x:Key="LOCCSM_NotificationIconSize">アイコンサイズ (px)</sys:String><sys:String x:Key="LOCCSM_NotificationPadding">内側余白 (px)</sys:String>
     <sys:String x:Key="LOCCSM_ElementSpacing">Spacing between elements (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationShowBorder">状態色の境界線を表示する</sys:String><sys:String x:Key="LOCCSM_NotificationBorderPosition">境界線の位置</sys:String><sys:String x:Key="LOCCSM_NotificationBorderThickness">境界線の太さ (px)</sys:String>
-    <sys:String x:Key="LOCCSM_BorderLeft">左</sys:String><sys:String x:Key="LOCCSM_BorderTop">上</sys:String><sys:String x:Key="LOCCSM_BorderRight">右</sys:String><sys:String x:Key="LOCCSM_BorderBottom">下</sys:String>
+<sys:String x:Key="LOCCSM_BorderLeft">左</sys:String><sys:String x:Key="LOCCSM_BorderTop">上</sys:String><sys:String x:Key="LOCCSM_BorderRight">右</sys:String><sys:String x:Key="LOCCSM_BorderBottom">下</sys:String><sys:String x:Key="LOCCSM_BorderSideLeft">左の境界線</sys:String><sys:String x:Key="LOCCSM_BorderSideTop">上の境界線</sys:String><sys:String x:Key="LOCCSM_BorderSideRight">右の境界線</sys:String><sys:String x:Key="LOCCSM_BorderSideBottom">下の境界線</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPreview">ライブプレビュー</sys:String><sys:String x:Key="LOCCSM_PreviewControllerName">サンプルコントローラー</sys:String><sys:String x:Key="LOCCSM_OverlayPreviewHelp">編集中に色と倍率が更新されます。実際のオーバーレイは画面に合わせて調整されます。</sys:String>
     <sys:String x:Key="LOCCSM_SelectColor">色を選択</sys:String>
     <sys:String x:Key="LOCCSM_ColorPreview">プレビュー</sys:String>
@@ -715,8 +719,8 @@
     <sys:String x:Key="LOCCSM_ControllerDatabaseCurrent">The controller database is already up to date.</sys:String>
     <sys:String x:Key="LOCCSM_ControllerDatabaseUpdateFailed">The database could not be updated. The last valid local copy will continue to be used.</sys:String>
     <sys:String x:Key="LOCCSM_PreviewWithSound">Play preview sound</sys:String>
-    <sys:String x:Key="LOCCSM_CopyDesktopStyleToFullscreen">Copy desktop style to fullscreen</sys:String>
-    <sys:String x:Key="LOCCSM_CopyFullscreenStyleToDesktop">Copy fullscreen style to desktop</sys:String>
+    <sys:String x:Key="LOCCSM_CopyDesktopStyleToFullscreen">デスクトップデザインをコピー</sys:String>
+    <sys:String x:Key="LOCCSM_CopyFullscreenStyleToDesktop">フルスクリーンデザインをコピー</sys:String>
     <sys:String x:Key="LOCCSM_CopyNotificationStyleTitle">Copy notification style</sys:String>
     <sys:String x:Key="LOCCSM_CopyDesktopStyleConfirm">Replace the fullscreen notification style with the desktop style?</sys:String>
     <sys:String x:Key="LOCCSM_CopyFullscreenStyleConfirm">Replace the desktop notification style with the fullscreen style?</sys:String>
@@ -731,4 +735,65 @@
     <sys:String x:Key="LOCCSM_CustomSoundFileFilter">Audio files|*.wav;*.mp3;*.wma|WAV files|*.wav|MP3 files|*.mp3|WMA files|*.wma</sys:String>
     <sys:String x:Key="LOCCSM_CustomSoundInvalid">Choose a valid WAV, MP3, or WMA file no larger than 5 MB.</sys:String>
     <sys:String x:Key="LOCCSM_CustomSoundProcessing">カスタムサウンドを処理しています…</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationTitleFont">タイトルの書体</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationMessageFont">メッセージの書体</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationMessageMaxLines">メッセージの最大行数</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationBadgePosition">接続バッジの位置</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayContentAlignment">コンテンツの配置</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayScreenMargin">画面の余白</sys:String>
+    <sys:String x:Key="LOCCSM_StylePresetAniki">Aniki ReMake</sys:String>
+    <sys:String x:Key="LOCCSM_StylePresetHelium">Helium</sys:String>
+    <sys:String x:Key="LOCCSM_PresetGroupPlugin">プラグインのプリセット</sys:String>
+    <sys:String x:Key="LOCCSM_PresetGroupCreators">クリエイターデザイン</sys:String>
+    <sys:String x:Key="LOCCSM_ImportedDesigns">インポートしたデザイン</sys:String>
+    <sys:String x:Key="LOCCSM_DeleteImportedDesign">インポートしたデザインを削除</sys:String>
+    <sys:String x:Key="LOCCSM_DeleteImportedDesignConfirm">インポートしたデザイン「{0}」を削除しますか？</sys:String>
+    <sys:String x:Key="LOCCSM_ImportedDesignDeleted">インポートしたデザイン「{0}」を削除しました。</sys:String>
+    <sys:String x:Key="LOCCSM_UseGradient">グラデーションを使用</sys:String>
+    <sys:String x:Key="LOCCSM_GradientAngle">グラデーション角度</sys:String>
+    <sys:String x:Key="LOCCSM_UppercaseTitle">タイトルを大文字にする</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayLayoutMode">構成</sys:String>
+    <sys:String x:Key="LOCCSM_LayoutStandard">標準</sys:String>
+    <sys:String x:Key="LOCCSM_LayoutSplit">分割</sys:String>
+    <sys:String x:Key="LOCCSM_LayoutHero">ヒーロー</sys:String>
+    <sys:String x:Key="LOCCSM_ShowIconContainer">アイコンコンテナを表示</sys:String>
+    <sys:String x:Key="LOCCSM_ShowElementContainer">コントローラーコンテナを表示</sys:String>
+    <sys:String x:Key="LOCCSM_ContainerPadding">コンテナの余白</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayBackgroundImage">オーバーレイ背景画像</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayBackgroundImageSelect">オーバーレイ背景画像を選択</sys:String>
+    <sys:String x:Key="LOCCSM_Design">デザイン</sys:String>
+    <sys:String x:Key="LOCCSM_AdvancedDesign">高度なデザイン</sys:String>
+    <sys:String x:Key="LOCCSM_AdvancedDesignHint">クリエイター向け設定です。既存のプリセットと簡易設定との互換性は維持されます。</sys:String>
+    <sys:String x:Key="LOCCSM_TextBlockOrder">テキストの順序</sys:String>
+    <sys:String x:Key="LOCCSM_TitleFirst">タイトルを先に</sys:String>
+    <sys:String x:Key="LOCCSM_MessageFirst">メッセージを先に</sys:String>
+    <sys:String x:Key="LOCCSM_IndependentBorders">枠線を辺ごとに設定</sys:String>
+    <sys:String x:Key="LOCCSM_StateBackgrounds">状態ごとに背景を変更</sys:String>
+    <sys:String x:Key="LOCCSM_StateConnected">接続</sys:String>
+    <sys:String x:Key="LOCCSM_StateDisconnected">切断</sys:String>
+    <sys:String x:Key="LOCCSM_StateWarning">警告</sys:String>
+    <sys:String x:Key="LOCCSM_StateLowBattery">バッテリー低下</sys:String>
+    <sys:String x:Key="LOCCSM_BlockOrder">ブロックの順序</sys:String>
+    <sys:String x:Key="LOCCSM_OrderClassic">クラシック</sys:String>
+    <sys:String x:Key="LOCCSM_OrderControllerFirst">コントローラーを先に</sys:String>
+    <sys:String x:Key="LOCCSM_OrderMessageFirst">案内を先に</sys:String>
+    <sys:String x:Key="LOCCSM_OrderStatusFirst">状態を先に</sys:String>
+    <sys:String x:Key="LOCCSM_MetadataOrientation">バッジの配置</sys:String>
+    <sys:String x:Key="LOCCSM_OrientationHorizontal">横</sys:String>
+    <sys:String x:Key="LOCCSM_OrientationVertical">縦</sys:String>
+    <sys:String x:Key="LOCCSM_OpenCreatorThemesFolder">クリエイターパックのフォルダーを開く</sys:String>
+    <sys:String x:Key="LOCCSM_ReloadCreatorThemes">クリエイターパックを再読み込み</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGradient">グラデーション枠</sys:String>
+    <sys:String x:Key="LOCCSM_StateBorderGradientColors">グラデーションに各状態の色を使用</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGradientStart">グラデーション開始色</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGradientEnd">グラデーション終了色</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGradientAngle">枠の角度</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGlow">枠のグロー</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGlowColor">グローの色</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGlowBlur">グローのぼかし</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGlowOpacity">グローの不透明度</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeManagement">クリエイターパック</sys:String>
+    <sys:String x:Key="LOCCSM_PresetGroupCustom">カスタム</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">このクリエイターデザインが外観全体を管理します。編集するにはプラグインプリセットまたはカスタムを選択してください。</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">音声は有効なクリエイターデザインによって管理されています。サウンドを編集するにはプラグインまたはカスタムデザインを選択してください。</sys:String>
 </ResourceDictionary>

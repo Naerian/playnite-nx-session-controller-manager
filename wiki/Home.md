@@ -28,6 +28,7 @@ It supports Desktop and Fullscreen workflows, the built-in Tester, automatic con
 ## Themes
 
 - [Theme Integration](EN-Theme-Integration) · [Integración con temas](ES-Integracion-con-Temas)
+- [Creator designs](EN-Creator-Designs) · [Diseños de creadores](ES-Disenos-de-Creadores)
 
 ## Links
 

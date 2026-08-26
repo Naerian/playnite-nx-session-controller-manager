@@ -122,6 +122,10 @@
     <sys:String x:Key="LOCCSM_ResetNotificationStyleConfirm">Restore notification layout and colors to the Soft preset? Sound and overlay settings are not changed.</sys:String>
     <sys:String x:Key="LOCCSM_VisualProfileTitle">Visual profile</sys:String>
     <sys:String x:Key="LOCCSM_VisualProfileHelp">Export or import notification, overlay and sound appearance as a shareable profile.</sys:String>
+    <sys:String x:Key="LOCCSM_VisualProfileNamePrompt">Назовите визуальный профиль. Импорт профиля с тем же именем заменит его.</sys:String>
+    <sys:String x:Key="LOCCSM_FilterCreatorDesignsByCurrentTheme">В дизайнах авторов показывать только варианты для текущей темы</sys:String>
+    <sys:String x:Key="LOCCSM_Alerts">Оповещения</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeLockedTitle">Активен дизайн автора</sys:String>
     <sys:String x:Key="LOCCSM_ExportVisualProfile">Export visual profile</sys:String>
     <sys:String x:Key="LOCCSM_ImportVisualProfile">Import visual profile</sys:String>
     <sys:String x:Key="LOCCSM_VisualProfileFileFilter">Controller Manager visual profile (*.pcvisual)|*.pcvisual</sys:String>
@@ -296,7 +300,7 @@
     <sys:String x:Key="LOCCSM_NotificationTitleSize">Текст заголовка (px)</sys:String><sys:String x:Key="LOCCSM_NotificationTextSize">Текст сообщения (px)</sys:String><sys:String x:Key="LOCCSM_NotificationIconSize">Размер значка (px)</sys:String><sys:String x:Key="LOCCSM_NotificationPadding">Внутренний отступ (px)</sys:String>
     <sys:String x:Key="LOCCSM_ElementSpacing">Spacing between elements (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationShowBorder">Показывать цветную рамку состояния</sys:String><sys:String x:Key="LOCCSM_NotificationBorderPosition">Положение рамки</sys:String><sys:String x:Key="LOCCSM_NotificationBorderThickness">Толщина рамки (px)</sys:String>
-    <sys:String x:Key="LOCCSM_BorderLeft">Слева</sys:String><sys:String x:Key="LOCCSM_BorderTop">Сверху</sys:String><sys:String x:Key="LOCCSM_BorderRight">Справа</sys:String><sys:String x:Key="LOCCSM_BorderBottom">Снизу</sys:String>
+<sys:String x:Key="LOCCSM_BorderLeft">Слева</sys:String><sys:String x:Key="LOCCSM_BorderTop">Сверху</sys:String><sys:String x:Key="LOCCSM_BorderRight">Справа</sys:String><sys:String x:Key="LOCCSM_BorderBottom">Снизу</sys:String><sys:String x:Key="LOCCSM_BorderSideLeft">Левая рамка</sys:String><sys:String x:Key="LOCCSM_BorderSideTop">Верхняя рамка</sys:String><sys:String x:Key="LOCCSM_BorderSideRight">Правая рамка</sys:String><sys:String x:Key="LOCCSM_BorderSideBottom">Нижняя рамка</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPreview">Предпросмотр</sys:String><sys:String x:Key="LOCCSM_PreviewControllerName">Пример контроллера</sys:String><sys:String x:Key="LOCCSM_OverlayPreviewHelp">Цвета и масштаб обновляются при редактировании. Реальный оверлей адаптируется к экрану.</sys:String>
     <sys:String x:Key="LOCCSM_SelectColor">Выбрать цвет</sys:String>
     <sys:String x:Key="LOCCSM_ColorPreview">Предпросмотр</sys:String>
@@ -715,8 +719,8 @@
     <sys:String x:Key="LOCCSM_ControllerDatabaseCurrent">The controller database is already up to date.</sys:String>
     <sys:String x:Key="LOCCSM_ControllerDatabaseUpdateFailed">The database could not be updated. The last valid local copy will continue to be used.</sys:String>
     <sys:String x:Key="LOCCSM_PreviewWithSound">Play preview sound</sys:String>
-    <sys:String x:Key="LOCCSM_CopyDesktopStyleToFullscreen">Copy desktop style to fullscreen</sys:String>
-    <sys:String x:Key="LOCCSM_CopyFullscreenStyleToDesktop">Copy fullscreen style to desktop</sys:String>
+    <sys:String x:Key="LOCCSM_CopyDesktopStyleToFullscreen">Копировать дизайн рабочего стола</sys:String>
+    <sys:String x:Key="LOCCSM_CopyFullscreenStyleToDesktop">Копировать полноэкранный дизайн</sys:String>
     <sys:String x:Key="LOCCSM_CopyNotificationStyleTitle">Copy notification style</sys:String>
     <sys:String x:Key="LOCCSM_CopyDesktopStyleConfirm">Replace the fullscreen notification style with the desktop style?</sys:String>
     <sys:String x:Key="LOCCSM_CopyFullscreenStyleConfirm">Replace the desktop notification style with the fullscreen style?</sys:String>
@@ -731,4 +735,65 @@
     <sys:String x:Key="LOCCSM_CustomSoundFileFilter">Audio files|*.wav;*.mp3;*.wma|WAV files|*.wav|MP3 files|*.mp3|WMA files|*.wma</sys:String>
     <sys:String x:Key="LOCCSM_CustomSoundInvalid">Choose a valid WAV, MP3, or WMA file no larger than 5 MB.</sys:String>
     <sys:String x:Key="LOCCSM_CustomSoundProcessing">Обработка пользовательского звука…</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationTitleFont">Шрифт заголовка</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationMessageFont">Шрифт сообщения</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationMessageMaxLines">Максимум строк сообщения</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationBadgePosition">Положение значка подключения</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayContentAlignment">Выравнивание содержимого</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayScreenMargin">Отступ от края экрана</sys:String>
+    <sys:String x:Key="LOCCSM_StylePresetAniki">Aniki ReMake</sys:String>
+    <sys:String x:Key="LOCCSM_StylePresetHelium">Helium</sys:String>
+    <sys:String x:Key="LOCCSM_PresetGroupPlugin">Пресеты плагина</sys:String>
+    <sys:String x:Key="LOCCSM_PresetGroupCreators">Дизайны авторов</sys:String>
+    <sys:String x:Key="LOCCSM_ImportedDesigns">Импортированные дизайны</sys:String>
+    <sys:String x:Key="LOCCSM_DeleteImportedDesign">Удалить импортированный дизайн</sys:String>
+    <sys:String x:Key="LOCCSM_DeleteImportedDesignConfirm">Удалить импортированный дизайн «{0}»?</sys:String>
+    <sys:String x:Key="LOCCSM_ImportedDesignDeleted">Импортированный дизайн «{0}» удалён.</sys:String>
+    <sys:String x:Key="LOCCSM_UseGradient">Использовать градиент</sys:String>
+    <sys:String x:Key="LOCCSM_GradientAngle">Угол градиента</sys:String>
+    <sys:String x:Key="LOCCSM_UppercaseTitle">Заголовок прописными</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayLayoutMode">Композиция</sys:String>
+    <sys:String x:Key="LOCCSM_LayoutStandard">Стандартная</sys:String>
+    <sys:String x:Key="LOCCSM_LayoutSplit">Разделённая</sys:String>
+    <sys:String x:Key="LOCCSM_LayoutHero">Hero</sys:String>
+    <sys:String x:Key="LOCCSM_ShowIconContainer">Показывать контейнер значка</sys:String>
+    <sys:String x:Key="LOCCSM_ShowElementContainer">Показывать контейнер контроллера</sys:String>
+    <sys:String x:Key="LOCCSM_ContainerPadding">Внутренний отступ контейнера</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayBackgroundImage">Фоновое изображение оверлея</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayBackgroundImageSelect">Выбрать фоновое изображение оверлея</sys:String>
+    <sys:String x:Key="LOCCSM_Design">Дизайн</sys:String>
+    <sys:String x:Key="LOCCSM_AdvancedDesign">Расширенный дизайн</sys:String>
+    <sys:String x:Key="LOCCSM_AdvancedDesignHint">Настройки для авторов. Пресеты и простые параметры полностью совместимы.</sys:String>
+    <sys:String x:Key="LOCCSM_TextBlockOrder">Порядок текста</sys:String>
+    <sys:String x:Key="LOCCSM_TitleFirst">Сначала заголовок</sys:String>
+    <sys:String x:Key="LOCCSM_MessageFirst">Сначала сообщение</sys:String>
+    <sys:String x:Key="LOCCSM_IndependentBorders">Настроить каждую сторону рамки</sys:String>
+    <sys:String x:Key="LOCCSM_StateBackgrounds">Разный фон для каждого состояния</sys:String>
+    <sys:String x:Key="LOCCSM_StateConnected">Подключено</sys:String>
+    <sys:String x:Key="LOCCSM_StateDisconnected">Отключено</sys:String>
+    <sys:String x:Key="LOCCSM_StateWarning">Предупреждение</sys:String>
+    <sys:String x:Key="LOCCSM_StateLowBattery">Низкий заряд</sys:String>
+    <sys:String x:Key="LOCCSM_BlockOrder">Порядок блоков</sys:String>
+    <sys:String x:Key="LOCCSM_OrderClassic">Классический</sys:String>
+    <sys:String x:Key="LOCCSM_OrderControllerFirst">Сначала контроллер</sys:String>
+    <sys:String x:Key="LOCCSM_OrderMessageFirst">Сначала инструкция</sys:String>
+    <sys:String x:Key="LOCCSM_OrderStatusFirst">Сначала статус</sys:String>
+    <sys:String x:Key="LOCCSM_MetadataOrientation">Расположение значков</sys:String>
+    <sys:String x:Key="LOCCSM_OrientationHorizontal">Горизонтально</sys:String>
+    <sys:String x:Key="LOCCSM_OrientationVertical">Вертикально</sys:String>
+    <sys:String x:Key="LOCCSM_OpenCreatorThemesFolder">Открыть папку авторских пакетов</sys:String>
+    <sys:String x:Key="LOCCSM_ReloadCreatorThemes">Перезагрузить авторские пакеты</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGradient">Градиентная рамка</sys:String>
+    <sys:String x:Key="LOCCSM_StateBorderGradientColors">Использовать цвет каждого состояния в градиенте</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGradientStart">Начало градиента</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGradientEnd">Конец градиента</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGradientAngle">Угол рамки</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGlow">Свечение рамки</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGlowColor">Цвет свечения</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGlowBlur">Размытие свечения</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGlowOpacity">Прозрачность свечения</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeManagement">Пакеты авторов</sys:String>
+    <sys:String x:Key="LOCCSM_PresetGroupCustom">Пользовательские</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">Этот авторский дизайн управляет всем оформлением. Для редактирования выберите пресет плагина или пользовательский.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">Звуком управляет активный авторский дизайн. Для редактирования звуков выберите дизайн плагина или пользовательский.</sys:String>
 </ResourceDictionary>

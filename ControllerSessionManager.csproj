@@ -92,10 +92,12 @@
     <Compile Include="PlayniteIntegration\NotificationAudioService.cs" />
     <Compile Include="PlayniteIntegration\NotificationFontCatalog.cs" />
     <Compile Include="PlayniteIntegration\NotificationStylePresets.cs" />
+    <Compile Include="PlayniteIntegration\CreatorThemeCatalog.cs" />
     <Compile Include="PlayniteIntegration\NotificationStyleState.cs" />
     <Compile Include="PlayniteIntegration\OverlayStylePresets.cs" />
     <Compile Include="PlayniteIntegration\VisualProfileSnapshot.cs" />
     <Compile Include="PlayniteIntegration\VisualProfilePortableStore.cs" />
+    <Compile Include="PlayniteIntegration\ImportedVisualProfileCatalog.cs" />
     <Compile Include="PlayniteIntegration\ColorPickerMath.cs" />
     <Compile Include="PlayniteIntegration\ColorPickerDialog.xaml.cs">
       <DependentUpon>ColorPickerDialog.xaml</DependentUpon>
@@ -308,6 +310,11 @@
     <Compile Include="Tester\Views\ThemeIntegration\GamepadTesterTriggerCheckControl.cs">
       <Link>T\GamepadTesterTriggerCheckControl.cs</Link>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="CreatorThemes\**\*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Page Include="PlayniteIntegration\ColorPickerDialog.xaml">

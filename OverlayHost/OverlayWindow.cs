@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -42,7 +43,12 @@ namespace ControllerSessionManager.OverlayHost
         private readonly TextBlock batteryText;
         private readonly Border incidentCard;
         private readonly StackPanel content;
+        private readonly Grid compositionRoot;
+        private readonly Border overlayImageLayer;
+        private readonly Border overlayTintLayer;
+        private readonly Border overlayContentHost;
         private readonly Grid controllerHost;
+        private readonly Border controllerContainer;
         private readonly DispatcherTimer watchdog;
         private DateTime lastHeartbeatUtc = DateTime.UtcNow;
         private string currentSessionId;
@@ -130,6 +136,14 @@ namespace ControllerSessionManager.OverlayHost
                 HorizontalAlignment = HorizontalAlignment.Center
             };
             ConfigureControllerLayout("Left", 10, true, true);
+            controllerContainer = new Border
+            {
+                Background = Brushes.Transparent,
+                BorderThickness = new Thickness(0),
+                Padding = new Thickness(0),
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Child = controllerHost
+            };
 
             content = new StackPanel
             {
@@ -137,20 +151,34 @@ namespace ControllerSessionManager.OverlayHost
                 VerticalAlignment = VerticalAlignment.Center
             };
             content.Children.Add(titleText);
-            content.Children.Add(controllerHost);
+            content.Children.Add(controllerContainer);
             content.Children.Add(metadataBadges);
             content.Children.Add(instructionText);
             content.Children.Add(pauseStatusBadge);
+            compositionRoot = new Grid();
+            compositionRoot.Children.Add(content);
+            overlayImageLayer = new Border { IsHitTestVisible = false };
+            overlayTintLayer = new Border { IsHitTestVisible = false };
+            overlayContentHost = new Border
+            {
+                Padding = new Thickness(42, 34, 42, 34),
+                Child = compositionRoot
+            };
+            var cardLayers = new Grid();
+            cardLayers.Children.Add(overlayImageLayer);
+            cardLayers.Children.Add(overlayTintLayer);
+            cardLayers.Children.Add(overlayContentHost);
             incidentCard = new Border
             {
                 Background = new SolidColorBrush(Color.FromArgb(235, 18, 20, 24)),
                 BorderBrush = new SolidColorBrush(Color.FromRgb(35, 145, 255)),
                 BorderThickness = new Thickness(2.5),
                 CornerRadius = new CornerRadius(13),
-                Padding = new Thickness(42, 34, 42, 34),
+                Padding = new Thickness(0),
+                ClipToBounds = true,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
-                Child = content
+                Child = cardLayers
             };
             Content = new Grid { Children = { incidentCard } };
 
@@ -306,6 +334,43 @@ namespace ControllerSessionManager.OverlayHost
             var batteryIconSize = ParseInt(parts, 55, 14, 10, 40);
             var batteryTextSize = ParseInt(parts, 56, 13, 9, 30);
             var useBatteryStateColors = ParseBool(parts, 57, true);
+            var contentAlignment = parts.Length > 62 ? parts[62] : "Center";
+            var screenMargin = ParseInt(parts, 63, 42, 0, 160);
+            var useGradient = ParseBool(parts, 64, false);
+            var gradientColor = ParseColor(parts.Length > 65 ? parts[65] : null, card);
+            var gradientAngle = ParseInt(parts, 66, 0, 0, 359);
+            var uppercaseTitle = ParseBool(parts, 67, false);
+            var layoutMode = parts.Length > 68 ? parts[68] : "Standard";
+            var useBackgroundImage = ParseBool(parts, 69, false);
+            var backgroundImagePath = parts.Length > 70 ? DecodeStyleValue(parts[70]) : string.Empty;
+            var backgroundImageStretch = parts.Length > 71 ? parts[71] : "UniformToFill";
+            var backgroundImageHorizontal = parts.Length > 72 ? parts[72] : "Center";
+            var backgroundImageVertical = parts.Length > 73 ? parts[73] : "Center";
+            var backgroundImageOpacity = ParseInt(parts, 74, 70, 0, 100);
+            var backgroundImageTintOpacity = ParseInt(parts, 75, 45, 0, 100);
+            var showControllerContainer = ParseBool(parts, 76, false);
+            var controllerContainerColor = ParseColor(parts.Length > 77 ? parts[77] : null,
+                Color.FromArgb(32, 0, 0, 0));
+            var controllerContainerBorderColor = ParseColor(parts.Length > 78 ? parts[78] : null,
+                Colors.Transparent);
+            var controllerContainerBorderThickness = ParseInt(parts, 79, 0, 0, 8);
+            var controllerContainerCornerRadius = ParseInt(parts, 80, 12, 0, 40);
+            var controllerContainerPadding = ParseInt(parts, 81, 12, 0, 32);
+            var blockOrder = parts.Length > 82 ? parts[82] : "Title,Controller,Metadata,Instruction,Status";
+            var metadataOrientation = parts.Length > 83 ? parts[83] : "Horizontal";
+            var useIndependentBorders = ParseBool(parts, 84, false);
+            var borderLeftThickness = ParseInt(parts, 85, borderThickness, 0, 12);
+            var borderTopThickness = ParseInt(parts, 86, borderThickness, 0, 12);
+            var borderRightThickness = ParseInt(parts, 87, borderThickness, 0, 12);
+            var borderBottomThickness = ParseInt(parts, 88, borderThickness, 0, 12);
+            var useBorderGradient = ParseBool(parts, 89, false);
+            var borderGradientStart = ParseColor(parts.Length > 90 ? parts[90] : null, presentationAccent);
+            var borderGradientEnd = ParseColor(parts.Length > 91 ? parts[91] : null, presentationAccent);
+            var borderGradientAngle = ParseInt(parts, 92, 45, 0, 359);
+            var showBorderGlow = ParseBool(parts, 93, false);
+            var borderGlowColor = ParseColor(parts.Length > 94 ? parts[94] : null, presentationAccent);
+            var borderGlowBlur = ParseInt(parts, 95, 16, 0, 48);
+            var borderGlowOpacity = ParseInt(parts, 96, 30, 0, 100);
             if (useBatteryStateColors)
             {
                 var stateColor = GetBatteryStateColor(parts, currentBatteryState, batteryTextColor);
@@ -314,16 +379,23 @@ namespace ControllerSessionManager.OverlayHost
             }
 
             Background = new SolidColorBrush(dim);
-            incidentCard.Background = new SolidColorBrush(card);
-            incidentCard.BorderBrush = new SolidColorBrush(presentationAccent);
+            incidentCard.Background = useGradient
+                ? (Brush)new LinearGradientBrush(card, gradientColor, gradientAngle)
+                : new SolidColorBrush(card);
+            incidentCard.BorderBrush = useBorderGradient
+                ? (Brush)new LinearGradientBrush(borderGradientStart, borderGradientEnd, borderGradientAngle)
+                : new SolidColorBrush(presentationAccent);
             incidentCard.BorderThickness = showBorder
-                ? CreateBorderThickness(borderPosition, borderThickness)
+                ? useIndependentBorders
+                    ? new Thickness(borderLeftThickness, borderTopThickness,
+                        borderRightThickness, borderBottomThickness)
+                    : CreateBorderThickness(borderPosition, borderThickness)
                 : new Thickness(0);
             incidentCard.CornerRadius = new CornerRadius(cornerRadius);
-            incidentCard.Padding = new Thickness(padding);
+            overlayContentHost.Padding = new Thickness(padding);
             incidentCard.ClearValue(FrameworkElement.MinWidthProperty);
             incidentCard.MaxWidth = cardWidth;
-            content.MaxWidth = Math.Max(220, cardWidth - padding * 2);
+            compositionRoot.MaxWidth = Math.Max(220, cardWidth - padding * 2);
             titleText.FontSize = titleSize;
             messageText.FontSize = controllerSize;
             instructionText.FontSize = instructionSize;
@@ -345,6 +417,10 @@ namespace ControllerSessionManager.OverlayHost
             pauseStatusIcon.Visibility = showStatusIcon ? Visibility.Visible : Visibility.Collapsed;
             titleText.Visibility = showTitle && !string.IsNullOrWhiteSpace(titleText.Text)
                 ? Visibility.Visible : Visibility.Collapsed;
+            if (uppercaseTitle && titleText.Visibility == Visibility.Visible)
+            {
+                titleText.Text = titleText.Text.ToUpperInvariant();
+            }
             instructionText.Visibility = showInstruction && !string.IsNullOrWhiteSpace(instructionText.Text)
                 ? Visibility.Visible : Visibility.Collapsed;
             pauseStatusBadge.Visibility = showPauseStatus ? Visibility.Visible : Visibility.Collapsed;
@@ -354,6 +430,8 @@ namespace ControllerSessionManager.OverlayHost
                 !string.IsNullOrWhiteSpace(batteryText.Text) ? Visibility.Visible : Visibility.Collapsed;
             metadataBadges.Visibility = connectionBadge.Visibility == Visibility.Visible ||
                 batteryBadge.Visibility == Visibility.Visible ? Visibility.Visible : Visibility.Collapsed;
+            metadataBadges.Orientation = string.Equals(metadataOrientation, "Vertical",
+                StringComparison.OrdinalIgnoreCase) ? Orientation.Vertical : Orientation.Horizontal;
             titleText.Foreground = new SolidColorBrush(text);
             messageText.Foreground = new SolidColorBrush(text);
             var textBrush = new SolidColorBrush(text);
@@ -376,11 +454,31 @@ namespace ControllerSessionManager.OverlayHost
             batteryBadge.BorderThickness = new Thickness(batteryBorderThickness);
             batteryBadge.CornerRadius = new CornerRadius(batteryCornerRadius);
 
+            controllerContainer.Background = showControllerContainer
+                ? new SolidColorBrush(controllerContainerColor) : Brushes.Transparent;
+            controllerContainer.BorderBrush = new SolidColorBrush(controllerContainerBorderColor);
+            controllerContainer.BorderThickness = showControllerContainer
+                ? new Thickness(controllerContainerBorderThickness) : new Thickness(0);
+            controllerContainer.CornerRadius = new CornerRadius(controllerContainerCornerRadius);
+            controllerContainer.Padding = showControllerContainer
+                ? new Thickness(controllerContainerPadding) : new Thickness(0);
+            ApplyOverlayBackgroundImage(useBackgroundImage, backgroundImagePath,
+                backgroundImageStretch, backgroundImageHorizontal, backgroundImageVertical,
+                backgroundImageOpacity, backgroundImageTintOpacity, card,
+                new CornerRadius(cornerRadius));
+
+            ApplyContentAlignment(contentAlignment);
+
             var gap = Math.Max(0, elementSpacing);
             ConfigureControllerLayout(iconPosition, gap, showControllerIcon, showControllerName);
-            titleText.Margin = new Thickness(0);
-            controllerHost.Margin = controllerHost.Visibility == Visibility.Visible
-                ? new Thickness(0, gap, 0, 0)
+            ConfigureComposition(layoutMode, gap, blockOrder);
+            var heroLayout = string.Equals(layoutMode, "Hero", StringComparison.OrdinalIgnoreCase);
+            var splitLayout = string.Equals(layoutMode, "Split", StringComparison.OrdinalIgnoreCase);
+            titleText.Margin = heroLayout && titleText.Visibility == Visibility.Visible
+                ? new Thickness(0, gap, 0, 0) : new Thickness(0);
+            controllerContainer.Visibility = controllerHost.Visibility;
+            controllerContainer.Margin = controllerContainer.Visibility == Visibility.Visible
+                ? (splitLayout || heroLayout ? new Thickness(0) : new Thickness(0, gap, 0, 0))
                 : new Thickness(0);
             metadataBadges.Margin = metadataBadges.Visibility == Visibility.Visible
                 ? new Thickness(0, gap, 0, 0) : new Thickness(0);
@@ -388,8 +486,15 @@ namespace ControllerSessionManager.OverlayHost
                 ? new Thickness(0, gap, 0, 0) : new Thickness(0);
             pauseStatusBadge.Margin = pauseStatusBadge.Visibility == Visibility.Visible
                 ? new Thickness(0, gap, 0, 0) : new Thickness(0);
-            ApplyCardPosition(cardPosition);
-            incidentCard.Effect = showShadow ? new DropShadowEffect
+            ApplyCardPosition(cardPosition, screenMargin);
+            incidentCard.Effect = showBorder && showBorderGlow ? new DropShadowEffect
+            {
+                BlurRadius = borderGlowBlur,
+                ShadowDepth = 0,
+                Direction = 0,
+                Opacity = borderGlowOpacity / 100.0,
+                Color = borderGlowColor
+            } : showShadow ? new DropShadowEffect
             {
                 BlurRadius = 24,
                 ShadowDepth = 3,
@@ -399,17 +504,16 @@ namespace ControllerSessionManager.OverlayHost
             } : null;
 
             // Grow the card around its content; padding must not shrink the interior.
-            content.Measure(new Size(Math.Max(220, cardWidth - padding * 2), double.PositiveInfinity));
-            var contentWidth = Math.Ceiling(content.DesiredSize.Width);
-            var contentHeight = Math.Ceiling(content.DesiredSize.Height);
+            compositionRoot.Measure(new Size(Math.Max(220, cardWidth - padding * 2), double.PositiveInfinity));
+            var contentWidth = Math.Ceiling(compositionRoot.DesiredSize.Width);
+            var contentHeight = Math.Ceiling(compositionRoot.DesiredSize.Height);
             incidentCard.MinWidth = Math.Min(cardWidth, contentWidth + padding * 2);
             incidentCard.MinHeight = contentHeight + padding * 2;
             incidentCard.LayoutTransform = new ScaleTransform(scale, scale);
         }
 
-        private void ApplyCardPosition(string position)
+        private void ApplyCardPosition(string position, double margin)
         {
-            const double margin = 42;
             incidentCard.Margin = new Thickness(margin);
             incidentCard.HorizontalAlignment = position != null && position.EndsWith("Left",
                 StringComparison.OrdinalIgnoreCase) ? HorizontalAlignment.Left :
@@ -419,6 +523,161 @@ namespace ControllerSessionManager.OverlayHost
                 StringComparison.OrdinalIgnoreCase) ? VerticalAlignment.Top :
                 position != null && position.StartsWith("Bottom", StringComparison.OrdinalIgnoreCase)
                     ? VerticalAlignment.Bottom : VerticalAlignment.Center;
+        }
+
+        private void ConfigureComposition(string mode, double gap, string blockOrder)
+        {
+            Detach(content);
+            Detach(titleText);
+            Detach(controllerContainer);
+            Detach(metadataBadges);
+            Detach(instructionText);
+            Detach(pauseStatusBadge);
+            content.Children.Clear();
+            compositionRoot.Children.Clear();
+            compositionRoot.ColumnDefinitions.Clear();
+            compositionRoot.RowDefinitions.Clear();
+
+            if (string.Equals(mode, "Split", StringComparison.OrdinalIgnoreCase))
+            {
+                compositionRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+                compositionRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(gap * 2) });
+                compositionRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                Grid.SetColumn(controllerContainer, 0);
+                compositionRoot.Children.Add(controllerContainer);
+                var details = new StackPanel
+                {
+                    VerticalAlignment = VerticalAlignment.Center,
+                    HorizontalAlignment = HorizontalAlignment.Stretch
+                };
+                details.Children.Add(titleText);
+                details.Children.Add(metadataBadges);
+                details.Children.Add(instructionText);
+                details.Children.Add(pauseStatusBadge);
+                Grid.SetColumn(details, 2);
+                compositionRoot.Children.Add(details);
+                return;
+            }
+
+            Grid.SetColumn(controllerContainer, 0);
+            AddOrderedBlocks(content, blockOrder);
+            compositionRoot.Children.Add(content);
+        }
+
+        private void AddOrderedBlocks(Panel panel, string order)
+        {
+            var added = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var token in (order ?? string.Empty).Split(','))
+            {
+                var key = token.Trim();
+                if (!added.Add(key)) continue;
+                if (key.Equals("Title", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(titleText);
+                else if (key.Equals("Controller", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(controllerContainer);
+                else if (key.Equals("Metadata", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(metadataBadges);
+                else if (key.Equals("Instruction", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(instructionText);
+                else if (key.Equals("Status", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(pauseStatusBadge);
+            }
+            if (!added.Contains("Title")) panel.Children.Add(titleText);
+            if (!added.Contains("Controller")) panel.Children.Add(controllerContainer);
+            if (!added.Contains("Metadata")) panel.Children.Add(metadataBadges);
+            if (!added.Contains("Instruction")) panel.Children.Add(instructionText);
+            if (!added.Contains("Status")) panel.Children.Add(pauseStatusBadge);
+        }
+
+        private static void Detach(UIElement element)
+        {
+            var parent = VisualTreeHelper.GetParent(element) as Panel;
+            if (parent != null)
+            {
+                parent.Children.Remove(element);
+            }
+        }
+
+        private void ApplyOverlayBackgroundImage(bool enabled, string path, string stretch,
+            string horizontal, string vertical, int opacity, int tintOpacity, Color cardColor,
+            CornerRadius cornerRadius)
+        {
+            overlayImageLayer.Background = Brushes.Transparent;
+            overlayTintLayer.Background = Brushes.Transparent;
+            overlayImageLayer.CornerRadius = cornerRadius;
+            overlayTintLayer.CornerRadius = cornerRadius;
+            if (!enabled || string.IsNullOrWhiteSpace(path) || !System.IO.File.Exists(path))
+            {
+                return;
+            }
+            try
+            {
+                var bitmap = new System.Windows.Media.Imaging.BitmapImage();
+                bitmap.BeginInit();
+                bitmap.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
+                bitmap.UriSource = new Uri(path, UriKind.Absolute);
+                bitmap.EndInit();
+                bitmap.Freeze();
+                overlayImageLayer.Background = new ImageBrush(bitmap)
+                {
+                    Stretch = ParseImageStretch(stretch),
+                    AlignmentX = ParseAlignmentX(horizontal),
+                    AlignmentY = ParseAlignmentY(vertical),
+                    Opacity = opacity / 100.0
+                };
+                overlayTintLayer.Background = new SolidColorBrush(Color.FromArgb(
+                    (byte)Math.Round(255 * tintOpacity / 100.0),
+                    cardColor.R, cardColor.G, cardColor.B));
+            }
+            catch
+            {
+                overlayImageLayer.Background = Brushes.Transparent;
+                overlayTintLayer.Background = Brushes.Transparent;
+            }
+        }
+
+        private static Stretch ParseImageStretch(string value)
+        {
+            if (string.Equals(value, "Uniform", StringComparison.OrdinalIgnoreCase)) return Stretch.Uniform;
+            if (string.Equals(value, "Fill", StringComparison.OrdinalIgnoreCase)) return Stretch.Fill;
+            return Stretch.UniformToFill;
+        }
+
+        private static AlignmentX ParseAlignmentX(string value)
+        {
+            if (string.Equals(value, "Left", StringComparison.OrdinalIgnoreCase)) return AlignmentX.Left;
+            if (string.Equals(value, "Right", StringComparison.OrdinalIgnoreCase)) return AlignmentX.Right;
+            return AlignmentX.Center;
+        }
+
+        private static AlignmentY ParseAlignmentY(string value)
+        {
+            if (string.Equals(value, "Top", StringComparison.OrdinalIgnoreCase)) return AlignmentY.Top;
+            if (string.Equals(value, "Bottom", StringComparison.OrdinalIgnoreCase)) return AlignmentY.Bottom;
+            return AlignmentY.Center;
+        }
+
+        private static string DecodeStyleValue(string value)
+        {
+            try
+            {
+                return string.IsNullOrWhiteSpace(value) ? string.Empty
+                    : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(value));
+            }
+            catch { return string.Empty; }
+        }
+
+        private void ApplyContentAlignment(string value)
+        {
+            var left = string.Equals(value, "Left", StringComparison.OrdinalIgnoreCase);
+            var right = string.Equals(value, "Right", StringComparison.OrdinalIgnoreCase);
+            var horizontal = left ? HorizontalAlignment.Left : right
+                ? HorizontalAlignment.Right : HorizontalAlignment.Center;
+            var textAlignment = left ? TextAlignment.Left : right
+                ? TextAlignment.Right : TextAlignment.Center;
+            content.HorizontalAlignment = horizontal;
+            titleText.HorizontalAlignment = horizontal;
+            titleText.TextAlignment = textAlignment;
+            controllerHost.HorizontalAlignment = horizontal;
+            metadataBadges.HorizontalAlignment = horizontal;
+            instructionText.HorizontalAlignment = horizontal;
+            instructionText.TextAlignment = textAlignment;
+            pauseStatusBadge.HorizontalAlignment = horizontal;
         }
 
         private void BeginEntryAnimation()

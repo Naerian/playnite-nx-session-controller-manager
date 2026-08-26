@@ -1,5 +1,7 @@
 # Integración con temas
 
+Los autores también pueden aportar adaptaciones revisadas de notificaciones, overlay, fuentes y sonidos para Controller Manager. Consulta la guía completa de [Diseños de creadores](ES-Disenos-de-Creadores).
+
 Controller Manager ofrece dos capas oficiales:
 
 1. **API de datos** (`PluginSettings` + `PluginConverter`) — libertad total para componer UI.

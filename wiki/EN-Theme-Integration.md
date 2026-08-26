@@ -1,5 +1,7 @@
 # Theme integration
 
+Theme authors can also ship reviewed notification, overlay, font and sound adaptations for Controller Manager. See the complete [Creator designs guide](EN-Creator-Designs).
+
 Controller Manager exposes two official layers:
 
 1. **Data API** (`PluginSettings` + `PluginConverter`) — full composition freedom.

@@ -62,7 +62,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 return;
             }
 
-            var path = ResolvePath(kind, settings);
+            var path = ResolvePath(kind, settings, scope);
             if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
             {
                 if (logger != null)
@@ -174,6 +174,16 @@ namespace ControllerSessionManager.PlayniteIntegration
         public string ResolvePath(NotificationSoundKind kind,
             ControllerSessionManagerSettings settings)
         {
+            return ResolvePath(kind, settings, NotificationSoundScope.Fullscreen);
+        }
+
+        public string ResolvePath(NotificationSoundKind kind,
+            ControllerSessionManagerSettings settings, NotificationSoundScope scope)
+        {
+            var creatorPreset = settings == null ? string.Empty : scope == NotificationSoundScope.Desktop
+                ? settings.DesktopNotificationStylePreset : settings.NotificationStylePreset;
+            var creatorSound = CreatorThemeCatalog.GetSoundPath(creatorPreset, kind);
+            if (!string.IsNullOrWhiteSpace(creatorSound)) return creatorSound;
             var custom = CustomPath(kind, settings);
             if (!string.IsNullOrWhiteSpace(custom) && File.Exists(custom))
             {

@@ -1,5 +1,7 @@
 # Notificaciones y overlay
 
+Los selectores separan presets del plugin, diseños importados y diseños revisados de creadores. Estos últimos pueden incluir distribución avanzada, fuentes, imágenes, bordes por estado y sonidos; mientras están activos, sus controles quedan bloqueados y atenuados visualmente. Los autores pueden consultar la guía de [Diseños de creadores](ES-Disenos-de-Creadores).
+
 ## Notificaciones Fullscreen
 
 Las notificaciones de conexión están pensadas para navegar por la interfaz Fullscreen de Playnite sin un juego activo. El fallback de seguridad online también puede usar el estilo de aviso durante una partida. Las ventanas se muestran por encima, no reciben clics ni activación y desaparecen automáticamente.

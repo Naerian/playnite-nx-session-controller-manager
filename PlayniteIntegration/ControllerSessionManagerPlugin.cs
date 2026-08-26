@@ -14,6 +14,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Web.Script.Serialization;
 using Microsoft.Win32;
 using ControllerSessionManager.Controllers;
 using ControllerSessionManager.Overlay;
@@ -108,6 +109,8 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             logger = LogManager.GetLogger();
             var pluginDirectory = Path.GetDirectoryName(GetType().Assembly.Location);
+            CreatorThemeCatalog.Configure(pluginDirectory);
+            ImportedVisualProfileCatalog.Configure(GetPluginUserDataPath());
             controllerDatabaseUpdater = new ControllerMappingDatabaseUpdater(
                 Path.Combine(pluginDirectory, "gamecontrollerdb.txt"), GetPluginUserDataPath());
             if (!controllerDatabaseUpdater.ConfigureActiveDatabase())
@@ -474,6 +477,36 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
         }
 
+        internal string GetConfiguredThemeId(bool fullscreen)
+        {
+            var applicationSettings = PlayniteApi == null ? null : PlayniteApi.ApplicationSettings;
+            var sdkTheme = applicationSettings == null ? string.Empty
+                : fullscreen ? applicationSettings.FullscreenTheme : applicationSettings.DesktopTheme;
+            var configuredTheme = ReadConfiguredThemeId(fullscreen);
+            return string.IsNullOrWhiteSpace(configuredTheme) ? sdkTheme ?? string.Empty : configuredTheme;
+        }
+
+        private string ReadConfiguredThemeId(bool fullscreen)
+        {
+            try
+            {
+                var paths = PlayniteApi == null ? null : PlayniteApi.Paths;
+                if (paths == null || string.IsNullOrWhiteSpace(paths.ConfigurationPath)) return string.Empty;
+                var fileName = fullscreen ? "fullscreenConfig.json" : "config.json";
+                var path = Path.Combine(paths.ConfigurationPath, fileName);
+                if (!File.Exists(path)) return string.Empty;
+                var values = new JavaScriptSerializer().Deserialize<Dictionary<string, object>>(
+                    File.ReadAllText(path, Encoding.UTF8));
+                object value;
+                return values != null && values.TryGetValue("Theme", out value)
+                    ? Convert.ToString(value) ?? string.Empty : string.Empty;
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
         public MessageBoxResult ConfirmReplaceUnsavedNotificationStyle()
         {
             return PlayniteApi.Dialogs.ShowMessage(
@@ -494,14 +527,13 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         public void ShowNotificationPresetPreview()
         {
-            if (PlayniteApi.ApplicationInfo.Mode == ApplicationMode.Fullscreen)
-            {
-                ShowNotificationPreview("connected", false);
-            }
-            else
-            {
-                ShowDesktopNotificationPreview("connected", false);
-            }
+            ShowNotificationPresetPreview(PlayniteApi.ApplicationInfo.Mode != ApplicationMode.Fullscreen);
+        }
+
+        public void ShowNotificationPresetPreview(bool desktop)
+        {
+            if (desktop) ShowDesktopNotificationPreview("connected", false);
+            else ShowNotificationPreview("connected", false);
         }
 
         public void PlayNotificationSoundPreview(string kind)
@@ -617,12 +649,24 @@ namespace ControllerSessionManager.PlayniteIntegration
                     return;
                 }
 
+                var nameResult = PlayniteApi.Dialogs.SelectString(
+                    Loc("LOCCSM_VisualProfileNamePrompt"),
+                    Loc("LOCCSM_ExportVisualProfile"),
+                    "Controller Manager");
+                if (!nameResult.Result || string.IsNullOrWhiteSpace(nameResult.SelectedString))
+                {
+                    return;
+                }
+                var profileName = nameResult.SelectedString.Trim();
+                var invalid = Path.GetInvalidFileNameChars();
+                var safeFileName = new string(profileName.Select(a => invalid.Contains(a) ? '_' : a).ToArray());
+                if (string.IsNullOrWhiteSpace(safeFileName)) safeFileName = "ControllerManager_Visual";
+
                 var dialog = new SaveFileDialog
                 {
                     Title = Loc("LOCCSM_ExportVisualProfile"),
                     Filter = Loc("LOCCSM_VisualProfileFileFilter"),
-                    FileName = "ControllerManager_Visual_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") +
-                        VisualProfileSnapshot.FileExtension,
+                    FileName = safeFileName + VisualProfileSnapshot.FileExtension,
                     DefaultExt = VisualProfileSnapshot.FileExtension.TrimStart('.')
                 };
                 if (dialog.ShowDialog() != true)
@@ -630,8 +674,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                     return;
                 }
 
-                var snapshot = VisualProfileSnapshot.FromSettings(
-                    targetSettings, Path.GetFileNameWithoutExtension(dialog.FileName));
+                var snapshot = VisualProfileSnapshot.FromSettings(targetSettings, profileName);
                 VisualProfilePortableStore.Export(snapshot, dialog.FileName);
                 PlayniteApi.Dialogs.ShowMessage(
                     string.Format(Loc("LOCCSM_VisualProfileExported"), dialog.FileName),
@@ -676,8 +719,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                     return;
                 }
 
-                snapshot.ApplyTo(targetSettings, GetNotificationBackgroundDirectory(),
-                    GetNotificationSoundDirectory());
+                var importedId = ImportedVisualProfileCatalog.Import(dialog.FileName);
+                ApplyImportedVisualProfile(targetSettings, importedId, null);
                 if (onApplied != null)
                 {
                     onApplied();
@@ -2544,7 +2587,30 @@ namespace ControllerSessionManager.PlayniteIntegration
                 settings.NotificationBackgroundImageStretch, settings.NotificationBackgroundImageHorizontalAlignment,
                 settings.NotificationBackgroundImageVerticalAlignment, settings.NotificationBackgroundImageOpacity.ToString(),
                 settings.NotificationBackgroundImageTintOpacity.ToString(),
-                settings.NotificationIconSpacing.ToString()
+                settings.NotificationIconSpacing.ToString(),
+                settings.NotificationTitleFontFamily, settings.NotificationTitleFontWeight,
+                settings.NotificationMessageFontFamily, settings.NotificationMessageFontWeight,
+                settings.NotificationMessageMaxLines.ToString(), settings.NotificationBadgePosition,
+                settings.NotificationUseGradient.ToString(), settings.NotificationGradientColor,
+                settings.NotificationGradientAngle.ToString(), settings.NotificationUppercaseTitle.ToString(),
+                settings.NotificationShowIconContainer.ToString(), settings.NotificationIconContainerColor,
+                settings.NotificationIconContainerBorderColor,
+                settings.NotificationIconContainerBorderThickness.ToString(),
+                settings.NotificationIconContainerCornerRadius.ToString(),
+                settings.NotificationIconContainerPadding.ToString(),
+                settings.NotificationTextOrder, settings.NotificationUseIndependentBorders.ToString(),
+                settings.NotificationBorderLeftThickness.ToString(), settings.NotificationBorderTopThickness.ToString(),
+                settings.NotificationBorderRightThickness.ToString(), settings.NotificationBorderBottomThickness.ToString(),
+                settings.NotificationUseStateBackgroundColors.ToString(),
+                settings.NotificationConnectedBackgroundColor, settings.NotificationDisconnectedBackgroundColor,
+                settings.NotificationWarningBackgroundColor, settings.NotificationLowBatteryBackgroundColor,
+                settings.NotificationUseBorderGradient.ToString(), settings.NotificationBorderGradientStartColor,
+                settings.NotificationBorderGradientEndColor, settings.NotificationBorderGradientAngle.ToString(),
+                settings.NotificationShowBorderGlow.ToString(), settings.NotificationBorderGlowColor,
+                settings.NotificationBorderGlowBlur.ToString(), settings.NotificationBorderGlowOpacity.ToString(),
+                settings.NotificationUseStateBorderColors.ToString(), settings.NotificationConnectedBorderColor,
+                settings.NotificationDisconnectedBorderColor, settings.NotificationWarningBorderColor,
+                settings.NotificationLowBatteryBorderColor
             });
         }
 
@@ -2574,7 +2640,31 @@ namespace ControllerSessionManager.PlayniteIntegration
                 settings.DesktopNotificationBackgroundImageStretch, settings.DesktopNotificationBackgroundImageHorizontalAlignment,
                 settings.DesktopNotificationBackgroundImageVerticalAlignment, settings.DesktopNotificationBackgroundImageOpacity.ToString(),
                 settings.DesktopNotificationBackgroundImageTintOpacity.ToString(),
-                settings.DesktopNotificationIconSpacing.ToString()
+                settings.DesktopNotificationIconSpacing.ToString(),
+                settings.DesktopNotificationTitleFontFamily, settings.DesktopNotificationTitleFontWeight,
+                settings.DesktopNotificationMessageFontFamily, settings.DesktopNotificationMessageFontWeight,
+                settings.DesktopNotificationMessageMaxLines.ToString(), settings.DesktopNotificationBadgePosition,
+                settings.DesktopNotificationUseGradient.ToString(), settings.DesktopNotificationGradientColor,
+                settings.DesktopNotificationGradientAngle.ToString(), settings.DesktopNotificationUppercaseTitle.ToString(),
+                settings.DesktopNotificationShowIconContainer.ToString(),
+                settings.DesktopNotificationIconContainerColor,
+                settings.DesktopNotificationIconContainerBorderColor,
+                settings.DesktopNotificationIconContainerBorderThickness.ToString(),
+                settings.DesktopNotificationIconContainerCornerRadius.ToString(),
+                settings.DesktopNotificationIconContainerPadding.ToString(),
+                settings.DesktopNotificationTextOrder, settings.DesktopNotificationUseIndependentBorders.ToString(),
+                settings.DesktopNotificationBorderLeftThickness.ToString(), settings.DesktopNotificationBorderTopThickness.ToString(),
+                settings.DesktopNotificationBorderRightThickness.ToString(), settings.DesktopNotificationBorderBottomThickness.ToString(),
+                settings.DesktopNotificationUseStateBackgroundColors.ToString(),
+                settings.DesktopNotificationConnectedBackgroundColor, settings.DesktopNotificationDisconnectedBackgroundColor,
+                settings.DesktopNotificationWarningBackgroundColor, settings.DesktopNotificationLowBatteryBackgroundColor,
+                settings.DesktopNotificationUseBorderGradient.ToString(), settings.DesktopNotificationBorderGradientStartColor,
+                settings.DesktopNotificationBorderGradientEndColor, settings.DesktopNotificationBorderGradientAngle.ToString(),
+                settings.DesktopNotificationShowBorderGlow.ToString(), settings.DesktopNotificationBorderGlowColor,
+                settings.DesktopNotificationBorderGlowBlur.ToString(), settings.DesktopNotificationBorderGlowOpacity.ToString(),
+                settings.DesktopNotificationUseStateBorderColors.ToString(), settings.DesktopNotificationConnectedBorderColor,
+                settings.DesktopNotificationDisconnectedBorderColor, settings.DesktopNotificationWarningBorderColor,
+                settings.DesktopNotificationLowBatteryBorderColor
             });
         }
 
@@ -2650,6 +2740,50 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
         }
 
+        public bool ApplyImportedVisualProfile(ControllerSessionManagerSettings targetSettings,
+            string profileId, Action onApplied)
+        {
+            VisualProfileSnapshot snapshot;
+            if (targetSettings == null ||
+                !ImportedVisualProfileCatalog.TryGetSnapshot(profileId, out snapshot)) return false;
+            snapshot.ApplyTo(targetSettings, GetNotificationBackgroundDirectory(),
+                GetNotificationSoundDirectory());
+            targetSettings.NotificationStylePreset = profileId;
+            targetSettings.DesktopNotificationStylePreset = profileId;
+            targetSettings.OverlayStylePreset = profileId;
+            targetSettings.RefreshCreatorThemeState();
+            if (onApplied != null) onApplied();
+            return true;
+        }
+
+        public bool DeleteImportedVisualProfile(ControllerSessionManagerSettings targetSettings,
+            string profileId)
+        {
+            if (!ImportedVisualProfileCatalog.Contains(profileId)) return false;
+            var name = ImportedVisualProfileCatalog.GetName(profileId);
+            if (PlayniteApi.Dialogs.ShowMessage(
+                    string.Format(Loc("LOCCSM_DeleteImportedDesignConfirm"), name),
+                    Loc("LOCCSM_ImportedDesigns"), MessageBoxButton.YesNo,
+                    MessageBoxImage.Question) != MessageBoxResult.Yes) return false;
+            if (!ImportedVisualProfileCatalog.Delete(profileId)) return false;
+            if (targetSettings != null)
+            {
+                if (string.Equals(targetSettings.NotificationStylePreset, profileId,
+                    StringComparison.OrdinalIgnoreCase))
+                    targetSettings.NotificationStylePreset = NotificationStylePresets.Custom;
+                if (string.Equals(targetSettings.DesktopNotificationStylePreset, profileId,
+                    StringComparison.OrdinalIgnoreCase))
+                    targetSettings.DesktopNotificationStylePreset = NotificationStylePresets.Custom;
+                if (string.Equals(targetSettings.OverlayStylePreset, profileId,
+                    StringComparison.OrdinalIgnoreCase))
+                    targetSettings.OverlayStylePreset = OverlayStylePresets.Custom;
+            }
+            PlayniteApi.Notifications.Add(new NotificationMessage(
+                "ControllerManager-VisualProfile-" + Guid.NewGuid().ToString("N"),
+                string.Format(Loc("LOCCSM_ImportedDesignDeleted"), name), NotificationType.Info));
+            return true;
+        }
+
         private static void SaveOptimizedNotificationBackground(
             System.Windows.Media.Imaging.BitmapSource source, string destination, string extension)
         {
@@ -2699,6 +2833,58 @@ namespace ControllerSessionManager.PlayniteIntegration
                 targetSettings.NotificationUseBackgroundImage = false;
                 targetSettings.NotificationBackgroundImagePath = string.Empty;
             }
+        }
+
+        public void SelectOverlayBackgroundImage(ControllerSessionManagerSettings targetSettings)
+        {
+            if (targetSettings == null) return;
+            var dialog = new OpenFileDialog
+            {
+                Title = Loc("LOCCSM_OverlayBackgroundImageSelect"),
+                Filter = "Images (*.png;*.jpg;*.jpeg)|*.png;*.jpg;*.jpeg"
+            };
+            if (dialog.ShowDialog() != true) return;
+            try
+            {
+                var info = new FileInfo(dialog.FileName);
+                if (!info.Exists || info.Length <= 0 || info.Length > 10 * 1024 * 1024)
+                {
+                    throw new InvalidDataException(Loc("LOCCSM_NotificationBackgroundImageInvalid"));
+                }
+                System.Windows.Media.Imaging.BitmapSource image;
+                using (var stream = File.OpenRead(info.FullName))
+                {
+                    var decoder = System.Windows.Media.Imaging.BitmapDecoder.Create(stream,
+                        System.Windows.Media.Imaging.BitmapCreateOptions.PreservePixelFormat,
+                        System.Windows.Media.Imaging.BitmapCacheOption.OnLoad);
+                    if (decoder.Frames.Count == 0)
+                    {
+                        throw new InvalidDataException(Loc("LOCCSM_NotificationBackgroundImageInvalid"));
+                    }
+                    image = decoder.Frames[0];
+                }
+                var directory = GetNotificationBackgroundDirectory();
+                Directory.CreateDirectory(directory);
+                var extension = string.Equals(info.Extension, ".png", StringComparison.OrdinalIgnoreCase)
+                    ? ".png" : ".jpg";
+                var destination = Path.Combine(directory,
+                    "overlay-" + Guid.NewGuid().ToString("N") + extension);
+                SaveOptimizedNotificationBackground(image, destination, extension);
+                targetSettings.OverlayBackgroundImagePath = destination;
+                targetSettings.OverlayUseBackgroundImage = true;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Failed to select overlay background image.");
+                PlayniteApi.Dialogs.ShowErrorMessage(ex.Message, Loc("LOCCSM_OverlayBackgroundImage"));
+            }
+        }
+
+        public void ClearOverlayBackgroundImage(ControllerSessionManagerSettings targetSettings)
+        {
+            if (targetSettings == null) return;
+            targetSettings.OverlayUseBackgroundImage = false;
+            targetSettings.OverlayBackgroundImagePath = string.Empty;
         }
 
         internal string GetNotificationBackgroundDirectory()
@@ -3077,7 +3263,31 @@ namespace ControllerSessionManager.PlayniteIntegration
                 settings.OverlayBatteryBadgeIconSize.ToString(), settings.OverlayBatteryBadgeTextSize.ToString(),
                 settings.OverlayBatteryBadgeUseStateColors.ToString(), settings.OverlayBatteryBadgeFullColor,
                 settings.OverlayBatteryBadgeMediumColor, settings.OverlayBatteryBadgeLowColor,
-                settings.OverlayBatteryBadgeEmptyColor
+                settings.OverlayBatteryBadgeEmptyColor,
+                settings.OverlayContentAlignment, settings.OverlayScreenMargin.ToString(),
+                settings.OverlayUseGradient.ToString(), settings.OverlayGradientColor,
+                settings.OverlayGradientAngle.ToString(), settings.OverlayUppercaseTitle.ToString(),
+                settings.OverlayLayoutMode, settings.OverlayUseBackgroundImage.ToString(),
+                EncodeStyleValue(settings.OverlayBackgroundImagePath),
+                settings.OverlayBackgroundImageStretch,
+                settings.OverlayBackgroundImageHorizontalAlignment,
+                settings.OverlayBackgroundImageVerticalAlignment,
+                settings.OverlayBackgroundImageOpacity.ToString(),
+                settings.OverlayBackgroundImageTintOpacity.ToString(),
+                settings.OverlayShowControllerContainer.ToString(),
+                settings.OverlayControllerContainerColor,
+                settings.OverlayControllerContainerBorderColor,
+                settings.OverlayControllerContainerBorderThickness.ToString(),
+                settings.OverlayControllerContainerCornerRadius.ToString(),
+                settings.OverlayControllerContainerPadding.ToString(),
+                settings.OverlayBlockOrder, settings.OverlayMetadataOrientation,
+                settings.OverlayUseIndependentBorders.ToString(),
+                settings.OverlayBorderLeftThickness.ToString(), settings.OverlayBorderTopThickness.ToString(),
+                settings.OverlayBorderRightThickness.ToString(), settings.OverlayBorderBottomThickness.ToString(),
+                settings.OverlayUseBorderGradient.ToString(), settings.OverlayBorderGradientStartColor,
+                settings.OverlayBorderGradientEndColor, settings.OverlayBorderGradientAngle.ToString(),
+                settings.OverlayShowBorderGlow.ToString(), settings.OverlayBorderGlowColor,
+                settings.OverlayBorderGlowBlur.ToString(), settings.OverlayBorderGlowOpacity.ToString()
             });
         }
 

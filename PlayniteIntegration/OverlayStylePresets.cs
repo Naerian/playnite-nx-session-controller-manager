@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace ControllerSessionManager.PlayniteIntegration
 {
@@ -13,11 +14,24 @@ namespace ControllerSessionManager.PlayniteIntegration
         public const string Bold = "Bold";
         public const string Arcade = "Arcade";
         public const string Minimal = "Minimal";
+        public const string Aniki = "Aniki";
+        public const string Helium = "Helium";
 
-        public static readonly string[] NamedPresets =
+        public static readonly string[] PluginPresets = { Soft, Compact, Bold, Arcade, Minimal };
+        public static string[] CreatorPresets
         {
-            Soft, Compact, Bold, Arcade, Minimal
-        };
+            get { return new[] { Aniki, Helium }.Concat(CreatorThemeCatalog.GetPresetIds("overlay"))
+                .Distinct(StringComparer.OrdinalIgnoreCase).ToArray(); }
+        }
+        public static string[] NamedPresets { get { return PluginPresets.Concat(CreatorPresets).ToArray(); } }
+
+        public static bool IsCreatorPreset(string presetId)
+        {
+            var preset = Normalize(presetId);
+            return string.Equals(preset, Aniki, StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(preset, Helium, StringComparison.OrdinalIgnoreCase) ||
+                CreatorThemeCatalog.Contains(preset, "overlay");
+        }
 
         public static string Normalize(string value)
         {
@@ -28,6 +42,12 @@ namespace ControllerSessionManager.PlayniteIntegration
 
             var trimmed = value.Trim();
             if (string.Equals(trimmed, Custom, StringComparison.OrdinalIgnoreCase))
+            {
+                return Custom;
+            }
+            if (ImportedVisualProfileCatalog.Contains(trimmed)) return trimmed;
+            if (string.Equals(trimmed, "Studio", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(trimmed, "NeonPulse", StringComparison.OrdinalIgnoreCase))
             {
                 return Custom;
             }
@@ -70,6 +90,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                     ApplyTypography(settings, NotificationFontCatalog.Rajdhani, "SemiBold");
                     ApplyEnhancements(settings, true, false, false, true, true,
                         "Center", "Slide", "Top", 500, true);
+                    settings.OverlayContentAlignment = "Left";
+                    settings.OverlayScreenMargin = 24;
                     break;
                 case Bold:
                     ApplyValues(settings, 100, "#B0000000", "#F01C202C", "#FF4DA3FF", "#FFFFFFFF", "#FFFFB000",
@@ -77,6 +99,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                     ApplyTypography(settings, NotificationFontCatalog.Outfit, "Bold");
                     ApplyEnhancements(settings, true, true, true, true, true,
                         "Center", "FadeScale", "Full", 760, true);
+                    settings.OverlayContentAlignment = "Left";
+                    settings.OverlayScreenMargin = 42;
                     break;
                 case Arcade:
                     ApplyValues(settings, 110, "#C0080A28", "#F0080A28", "#FF00D4FF", "#FFE6F0FF", "#FFFFE566",
@@ -84,6 +108,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                     ApplyTypography(settings, NotificationFontCatalog.Orbitron, "SemiBold");
                     ApplyEnhancements(settings, true, true, true, true, true,
                         "Center", "FadeScale", "Full", 680, true);
+                    settings.OverlayContentAlignment = "Center";
+                    settings.OverlayScreenMargin = 48;
                     break;
                 case Minimal:
                     ApplyValues(settings, 92, "#70000000", "#990A0C10", "#FF6A849E", "#FFE6E8EE", "#FFB8965A",
@@ -91,6 +117,78 @@ namespace ControllerSessionManager.PlayniteIntegration
                     ApplyTypography(settings, NotificationFontCatalog.Poppins, "Regular");
                     ApplyEnhancements(settings, true, false, false, true, false,
                         "Center", "Fade", "Full", 500, false);
+                    settings.OverlayContentAlignment = "Right";
+                    settings.OverlayScreenMargin = 28;
+                    break;
+                case Aniki:
+                    if (CreatorThemeCatalog.Contains(Aniki, "overlay"))
+                    {
+                        ApplyValues(settings, 100, "#96000000", "#F4161A22", "#FF5BA3E8", "#FFF5F7FA", "#FFF0B14A",
+                            30, 22, 19, 15, 30, 18, true, true, true, "Left", 34, 14, true, 3, 13);
+                        ApplyTypography(settings, NotificationFontCatalog.Inter, "SemiBold");
+                        ApplyEnhancements(settings, true, true, true, true, true, "Center", "FadeScale", "Full", 620, true);
+                        CreatorThemeCatalog.TryApply(settings, Aniki, "overlay");
+                        break;
+                    }
+                    ApplyValues(settings, 100, "#A8000000", "#FA0C1118", "#FFD6B16F", "#FFF5F2EC", "#FFFFC857",
+                        34, 22, 18, 15, 42, 18, true, true, true, "Left", 40, 12, true, 2, 15);
+                    ApplyTypography(settings, NotificationFontCatalog.Exo2, "SemiBold");
+                    ApplyEnhancements(settings, true, true, true, true, true,
+                        "Center", "FadeScale", "Full", 720, true);
+                    settings.OverlayContentAlignment = "Center";
+                    settings.OverlayScreenMargin = 46;
+                    settings.OverlayUseGradient = true;
+                    settings.OverlayGradientColor = "#FF151D26";
+                    settings.OverlayGradientAngle = 135;
+                    settings.OverlayUseBorderGradient = true;
+                    settings.OverlayBorderGradientStartColor = "#B3FFFFFF";
+                    settings.OverlayBorderGradientEndColor = "#FFD6B16F";
+                    settings.OverlayBorderGradientAngle = 45;
+                    settings.OverlayShowBorderGlow = true;
+                    settings.OverlayBorderGlowColor = "#FFE9C48A";
+                    settings.OverlayBorderGlowBlur = 32;
+                    settings.OverlayBorderGlowOpacity = 90;
+                    settings.OverlayShowControllerContainer = true;
+                    settings.OverlayControllerContainerColor = "#33111820";
+                    settings.OverlayControllerContainerBorderColor = "#55D6B16F";
+                    settings.OverlayControllerContainerBorderThickness = 1;
+                    settings.OverlayControllerContainerCornerRadius = 12;
+                    settings.OverlayControllerContainerPadding = 14;
+                    settings.OverlayBlockOrder = "Controller,Title,Metadata,Instruction,Status";
+                    settings.OverlayMetadataOrientation = "Horizontal";
+                    break;
+                case Helium:
+                    if (CreatorThemeCatalog.Contains(Helium, "overlay"))
+                    {
+                        ApplyValues(settings, 100, "#96000000", "#F4161A22", "#FF5BA3E8", "#FFF5F7FA", "#FFF0B14A",
+                            30, 22, 19, 15, 30, 18, true, true, true, "Left", 34, 14, true, 3, 13);
+                        ApplyTypography(settings, NotificationFontCatalog.Inter, "SemiBold");
+                        ApplyEnhancements(settings, true, true, true, true, true, "Center", "FadeScale", "Full", 620, true);
+                        CreatorThemeCatalog.TryApply(settings, Helium, "overlay");
+                        break;
+                    }
+                    ApplyValues(settings, 100, "#A0000000", "#F225282E", "#FF1A9FFF", "#FFDDE3E6", "#FFFFA500",
+                        30, 20, 16, 14, 32, 16, true, true, true, "Left", 32, 10, true, 2, 3);
+                    ApplyTypography(settings, NotificationFontCatalog.Trebuchet, "SemiBold");
+                    ApplyEnhancements(settings, true, true, true, true, true,
+                        "Center", "FadeScale", "Full", 620, true);
+                    settings.OverlayContentAlignment = "Left";
+                    settings.OverlayScreenMargin = 36;
+                    settings.OverlayUseGradient = true;
+                    settings.OverlayGradientColor = "#F23C4047";
+                    settings.OverlayGradientAngle = 90;
+                    settings.OverlayShowControllerContainer = true;
+                    settings.OverlayControllerContainerColor = "#99212124";
+                    settings.OverlayControllerContainerBorderColor = "#663E6184";
+                    settings.OverlayControllerContainerBorderThickness = 1;
+                    settings.OverlayControllerContainerCornerRadius = 3;
+                    settings.OverlayControllerContainerPadding = 12;
+                    settings.OverlayBlockOrder = "Title,Instruction,Controller,Metadata,Status";
+                    settings.OverlayUseIndependentBorders = true;
+                    settings.OverlayBorderLeftThickness = 4;
+                    settings.OverlayBorderTopThickness = 1;
+                    settings.OverlayBorderRightThickness = 1;
+                    settings.OverlayBorderBottomThickness = 1;
                     break;
                 default:
                     ApplyValues(settings, 100, "#96000000", "#F4161A22", "#FF5BA3E8", "#FFF5F7FA", "#FFF0B14A",
@@ -98,6 +196,9 @@ namespace ControllerSessionManager.PlayniteIntegration
                     ApplyTypography(settings, NotificationFontCatalog.Inter, "SemiBold");
                     ApplyEnhancements(settings, true, true, true, true, true,
                         "Center", "FadeScale", "Full", 620, true);
+                    settings.OverlayContentAlignment = "Center";
+                    settings.OverlayScreenMargin = 42;
+                    CreatorThemeCatalog.TryApply(settings, preset, "overlay");
                     break;
             }
 
@@ -114,6 +215,19 @@ namespace ControllerSessionManager.PlayniteIntegration
             s.OverlayScalePercent = scale;
             s.OverlayDimColor = dim;
             s.OverlayCardColor = card;
+            s.OverlayUseGradient = false;
+            s.OverlayGradientColor = card;
+            s.OverlayGradientAngle = 0;
+            s.OverlayUppercaseTitle = false;
+            s.OverlayLayoutMode = "Standard";
+            s.OverlayUseBackgroundImage = false;
+            s.OverlayBackgroundImagePath = string.Empty;
+            s.OverlayShowControllerContainer = false;
+            s.OverlayControllerContainerColor = WithAlpha(accent, "28");
+            s.OverlayControllerContainerBorderColor = WithAlpha(accent, "70");
+            s.OverlayControllerContainerBorderThickness = 1;
+            s.OverlayControllerContainerCornerRadius = Math.Max(4, corner / 2);
+            s.OverlayControllerContainerPadding = 12;
             s.OverlayAccentColor = accent;
             s.OverlayTextColor = text;
             s.OverlayWarningColor = warning;
@@ -132,6 +246,8 @@ namespace ControllerSessionManager.PlayniteIntegration
             s.OverlayShowBorder = showBorder;
             s.OverlayBorderThickness = borderThickness;
             s.OverlayCornerRadius = corner;
+            s.OverlayUseBorderGradient = false;
+            s.OverlayShowBorderGlow = false;
             s.OverlayConnectionBadgeTextColor = text;
             s.OverlayConnectionBadgeIconColor = text;
             s.OverlayConnectionBadgeBackgroundColor = WithAlpha(accent, "30");
@@ -153,6 +269,13 @@ namespace ControllerSessionManager.PlayniteIntegration
             s.OverlayBatteryBadgeMediumColor = "#FFF0B14A";
             s.OverlayBatteryBadgeLowColor = "#FFE05252";
             s.OverlayBatteryBadgeEmptyColor = "#FFC92D45";
+            s.OverlayBlockOrder = "Title,Controller,Metadata,Instruction,Status";
+            s.OverlayMetadataOrientation = "Horizontal";
+            s.OverlayUseIndependentBorders = false;
+            s.OverlayBorderLeftThickness = borderThickness;
+            s.OverlayBorderTopThickness = borderThickness;
+            s.OverlayBorderRightThickness = borderThickness;
+            s.OverlayBorderBottomThickness = borderThickness;
         }
 
         private static void ApplyTypography(ControllerSessionManagerSettings settings, string family, string weight)

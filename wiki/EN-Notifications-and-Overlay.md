@@ -6,6 +6,8 @@ Connection notifications are intended for browsing the Playnite Fullscreen inter
 
 Under **Appearance > Fullscreen notification** and **Appearance > Desktop notification**, configure width, scale, duration, screen corner, typography, icon size, padding, border, corner radius, shadow, colors, semantic accent and animation. Inter, Montserrat, Outfit, Poppins, Rajdhani, Chakra Petch and Orbitron ship with the extension and do not need to be installed in Windows. The color picker includes opacity as a percentage. The icon can appear left, right, above, below or be hidden. Each subsection's buttons exercise connected, disconnected, warning and low-battery states through the real notification renderer. Presets replace the old reset action: **Soft** is the neutral baseline and the others provide distinct compositions.
 
+Preset selectors separate plugin presets, imported designs and reviewed creator designs. Creator designs may include advanced layout, fonts, images, state-specific borders and sounds; their authored controls are locked and visually dimmed while active. Theme authors can use the complete [Creator designs guide](EN-Creator-Designs).
+
 Stable XInput changes use a short 300 ms debounce to reject rapid driver flaps without waiting for the slower reconciliation pass.
 
 ## Disconnect overlay

@@ -14,6 +14,7 @@
 - [Session Protection](EN-Session-Protection)
 - [Notifications & Overlay](EN-Notifications-and-Overlay)
 - [Theme Integration](EN-Theme-Integration)
+- [Creator designs](EN-Creator-Designs)
 - [Troubleshooting & FAQ](EN-Troubleshooting-and-FAQ)
 
 ## Español
@@ -32,4 +33,5 @@
 - [Protección de sesiones](ES-Proteccion-de-Sesiones)
 - [Notificaciones y overlay](ES-Notificaciones-y-Overlay)
 - [Integración con temas](ES-Integracion-con-Temas)
+- [Diseños de creadores](ES-Disenos-de-Creadores)
 - [Solución de problemas y FAQ](ES-Solucion-de-Problemas-y-Preguntas-Frecuentes)

@@ -14,29 +14,44 @@ namespace ControllerSessionManager.PlayniteIntegration
     {
         public const string SystemDefault = "Default";
         public const string ChakraPetch = "ChakraPetch";
+        public const string Exo2 = "Exo 2";
         public const string Inter = "Inter";
         public const string Montserrat = "Montserrat";
         public const string Orbitron = "Orbitron";
         public const string Outfit = "Outfit";
         public const string Poppins = "Poppins";
         public const string Rajdhani = "Rajdhani";
+        public const string Trebuchet = "Trebuchet MS";
 
-        public static readonly string[] NamedFonts =
+        private static readonly string[] BuiltInFonts =
         {
-            SystemDefault, Inter, Montserrat, Outfit, Poppins, Rajdhani, ChakraPetch, Orbitron
+            SystemDefault, Inter, Montserrat, Outfit, Poppins, Rajdhani, ChakraPetch, Exo2, Orbitron, Trebuchet
         };
+        private static readonly IList<string> ExternalFonts = new List<string>();
+        public static string[] NamedFonts
+        {
+            get
+            {
+                lock (ExternalFonts)
+                {
+                    var values = new List<string>(BuiltInFonts);
+                    foreach (var value in ExternalFonts) if (!values.Contains(value)) values.Add(value);
+                    return values.ToArray();
+                }
+            }
+        }
 
         private static readonly IDictionary<string, string> FolderNames =
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
-                { ChakraPetch, "Chakra_Petch" }, { Inter, "Inter" }, { Montserrat, "Montserrat" },
+                { ChakraPetch, "Chakra_Petch" }, { Exo2, "Exo2" }, { Inter, "Inter" }, { Montserrat, "Montserrat" },
                 { Orbitron, "Orbitron" }, { Outfit, "Outfit" }, { Poppins, "Poppins" }, { Rajdhani, "Rajdhani" }
             };
 
         private static readonly IDictionary<string, string> FamilyNames =
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
-                { ChakraPetch, "Chakra Petch" }, { Inter, "Inter 18pt 18pt" }, { Montserrat, "Montserrat" },
+                { ChakraPetch, "Chakra Petch" }, { Exo2, "Exo 2" }, { Inter, "Inter 18pt 18pt" }, { Montserrat, "Montserrat" },
                 { Orbitron, "Orbitron" }, { Outfit, "Outfit" }, { Poppins, "Poppins" }, { Rajdhani, "Rajdhani" }
             };
 
@@ -45,6 +60,8 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         public static string Normalize(string value)
         {
+            if (!string.IsNullOrWhiteSpace(value) && value.StartsWith("ExternalFont|",
+                StringComparison.Ordinal)) return value;
             if (!string.IsNullOrWhiteSpace(value))
             {
                 foreach (var font in NamedFonts)
@@ -70,6 +87,22 @@ namespace ControllerSessionManager.PlayniteIntegration
             if (id == SystemDefault)
             {
                 return SystemFonts.MessageFontFamily;
+            }
+            if (id == Trebuchet)
+            {
+                return new FontFamily("Trebuchet MS");
+            }
+            if (id.StartsWith("ExternalFont|", StringComparison.Ordinal))
+            {
+                try
+                {
+                    var parts = id.Split('|');
+                    var folder = Decode(parts[1]);
+                    var externalFamilyName = Decode(parts[2]);
+                    return new FontFamily(new Uri(folder.TrimEnd(Path.DirectorySeparatorChar) +
+                        Path.DirectorySeparatorChar, UriKind.Absolute), "./#" + externalFamilyName);
+                }
+                catch { return SystemFonts.MessageFontFamily; }
             }
 
             var normalizedWeight = NormalizeWeight(weight);
@@ -147,6 +180,35 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
 
             return NormalizeWeight(value) == "Bold" ? FontWeights.Bold : FontWeights.Normal;
+        }
+
+        public static string RegisterExternalFont(string folder, string familyName, string displayName)
+        {
+            if (string.IsNullOrWhiteSpace(folder) || string.IsNullOrWhiteSpace(familyName) ||
+                !Directory.Exists(folder)) return SystemDefault;
+            var token = "ExternalFont|" + Encode(Path.GetFullPath(folder)) + "|" + Encode(familyName) +
+                "|" + Encode(string.IsNullOrWhiteSpace(displayName) ? familyName : displayName);
+            lock (ExternalFonts) if (!ExternalFonts.Contains(token)) ExternalFonts.Add(token);
+            return token;
+        }
+
+        public static string DisplayName(string value)
+        {
+            if (value != null && value.StartsWith("ExternalFont|", StringComparison.Ordinal))
+            {
+                try { return Decode(value.Split('|')[3]); } catch { }
+            }
+            return value;
+        }
+
+        private static string Encode(string value)
+        {
+            return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(value ?? string.Empty));
+        }
+
+        private static string Decode(string value)
+        {
+            return System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(value ?? string.Empty));
         }
 
         public static string NormalizeAlignment(string value)

@@ -29,6 +29,7 @@ namespace ControllerSessionManager.OverlayHost
         private readonly TextBlock titleText;
         private readonly TextBlock messageText;
         private readonly Path icon;
+        private readonly Border iconContainer;
         private readonly Path connectionIcon;
         private readonly Grid rootLayout;
         private readonly Grid contentLayout;
@@ -70,6 +71,15 @@ namespace ControllerSessionManager.OverlayHost
                 Fill = Brushes.Transparent,
                 Margin = new Thickness(0, 0, 14, 0),
                 VerticalAlignment = VerticalAlignment.Center
+            };
+            iconContainer = new Border
+            {
+                Background = Brushes.Transparent,
+                BorderThickness = new Thickness(0),
+                Padding = new Thickness(0),
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                Child = icon
             };
             connectionIcon = new Path
             {
@@ -189,6 +199,20 @@ namespace ControllerSessionManager.OverlayHost
             messageText.Visibility = string.IsNullOrWhiteSpace(current.Message) ? Visibility.Collapsed : Visibility.Visible;
             var style = ToastStyle.Parse(current.PresentationStyle);
             currentStyle = style;
+            textPanel.Children.Clear();
+            if (string.Equals(style.TextOrder, "MessageFirst", StringComparison.OrdinalIgnoreCase))
+            {
+                textPanel.Children.Add(messageText);
+                textPanel.Children.Add(titleText);
+            }
+            else
+            {
+                textPanel.Children.Add(titleText);
+                textPanel.Children.Add(messageText);
+            }
+            titleText.Text = style.UppercaseTitle
+                ? (current.Title ?? string.Empty).ToUpperInvariant()
+                : current.Title;
             var scale = style.ScalePercent / 100.0;
             var iconSize = Math.Max(16, style.IconSize * scale);
             var titleSize = Math.Max(10, style.TitleFontSize * scale);
@@ -196,28 +220,50 @@ namespace ControllerSessionManager.OverlayHost
             var padding = Math.Max(0, style.Padding * scale);
             var elementSpacing = Math.Max(0, style.ElementSpacing * scale);
             var cardWidth = Math.Max(280, style.Width * scale);
-            currentShadowInset = style.ShowShadow ? Math.Ceiling(18 * scale) : 0;
+            currentShadowInset = style.ShowShadow || style.ShowBorderGlow
+                ? Math.Ceiling(Math.Max(18, style.BorderGlowBlur + 4) * scale)
+                : 0;
             cardShell.Margin = new Thickness(currentShadowInset);
             Width = cardWidth + currentShadowInset * 2;
             titleText.FontSize = titleSize;
             messageText.FontSize = messageSize;
-            titleText.FontFamily = NotificationFontCatalog.Resolve(style.FontFamily, style.FontWeight);
-            messageText.FontFamily = titleText.FontFamily;
-            titleText.FontWeight = NotificationFontCatalog.ResolveEffectiveWeight(style.FontFamily, style.FontWeight);
-            messageText.FontWeight = titleText.FontWeight;
+            titleText.FontFamily = NotificationFontCatalog.Resolve(style.TitleFontFamily, style.TitleFontWeight);
+            titleText.FontWeight = NotificationFontCatalog.ResolveEffectiveWeight(style.TitleFontFamily, style.TitleFontWeight);
+            messageText.FontFamily = NotificationFontCatalog.Resolve(style.MessageFontFamily, style.MessageFontWeight);
+            messageText.FontWeight = NotificationFontCatalog.ResolveEffectiveWeight(style.MessageFontFamily, style.MessageFontWeight);
+            messageText.LineStackingStrategy = LineStackingStrategy.BlockLineHeight;
+            messageText.LineHeight = Math.Ceiling(messageSize * 1.28);
+            messageText.MaxHeight = messageText.LineHeight * style.MessageMaxLines;
+            messageText.TextTrimming = TextTrimming.CharacterEllipsis;
             titleText.TextAlignment = NotificationFontCatalog.ResolveAlignment(style.TextAlignment);
             messageText.TextAlignment = titleText.TextAlignment;
             titleText.Visibility = style.ShowTitle && !string.IsNullOrWhiteSpace(current.Title)
                 ? Visibility.Visible : Visibility.Collapsed;
-            messageText.Margin = titleText.Visibility == Visibility.Visible &&
-                messageText.Visibility == Visibility.Visible
-                ? new Thickness(0, elementSpacing, 0, 0)
-                : new Thickness(0);
+            titleText.Margin = new Thickness(0);
+            messageText.Margin = new Thickness(0);
+            if (titleText.Visibility == Visibility.Visible && messageText.Visibility == Visibility.Visible)
+            {
+                if (string.Equals(style.TextOrder, "MessageFirst", StringComparison.OrdinalIgnoreCase))
+                    titleText.Margin = new Thickness(0, elementSpacing, 0, 0);
+                else messageText.Margin = new Thickness(0, elementSpacing, 0, 0);
+            }
             icon.Width = iconSize;
             icon.Height = iconSize;
             try { icon.Data = Geometry.Parse(current.IconGeometry ?? string.Empty); }
             catch { icon.Data = null; }
             PathAspectSizer.FitToMaxSize(icon, iconSize);
+            var iconContainerPadding = style.ShowIconContainer
+                ? Math.Max(0, style.IconContainerPadding * scale) : 0;
+            iconContainer.Padding = new Thickness(iconContainerPadding);
+            iconContainer.Background = style.ShowIconContainer
+                ? Brush(style.IconContainerColor, Color.FromArgb(32, 0, 0, 0))
+                : Brushes.Transparent;
+            iconContainer.BorderBrush = Brush(style.IconContainerBorderColor, Colors.Transparent);
+            iconContainer.BorderThickness = style.ShowIconContainer
+                ? new Thickness(Math.Max(0, style.IconContainerBorderThickness * scale))
+                : new Thickness(0);
+            iconContainer.CornerRadius = new CornerRadius(
+                Math.Max(0, style.IconContainerCornerRadius * scale));
             var iconGap = Math.Max(0, style.IconSpacing * scale);
             var verticalIcon = string.Equals(style.IconPosition, "Top", StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(style.IconPosition, "Bottom", StringComparison.OrdinalIgnoreCase);
@@ -229,8 +275,8 @@ namespace ControllerSessionManager.OverlayHost
             var contentHeight = hiddenIcon
                 ? textHeight
                 : verticalIcon
-                    ? icon.Height + iconGap + textHeight
-                    : Math.Max(icon.Height, textHeight);
+                    ? icon.Height + iconContainerPadding * 2 + iconGap + textHeight
+                    : Math.Max(icon.Height + iconContainerPadding * 2, textHeight);
             Height = Math.Max(1, contentHeight + padding * 2);
             ConfigureContentLayout(style.IconPosition, iconGap);
             contentHost.Padding = new Thickness(padding);
@@ -260,7 +306,18 @@ namespace ControllerSessionManager.OverlayHost
                             ? Color.FromRgb(79, 194, 126)
                             : Color.FromRgb(80, 170, 255));
             var accentBrush = new SolidColorBrush(accent);
-            var background = ParseColor(style.Background, Color.FromArgb(244, 18, 20, 24));
+            var stateBorderColor = isLowBattery ? style.LowBatteryBorderColor : isWarning
+                ? style.WarningBorderColor : string.Equals(current.Kind, "connected", StringComparison.OrdinalIgnoreCase)
+                    ? style.ConnectedBorderColor : style.DisconnectedBorderColor;
+            var borderAccent = style.UseStateBorderColors
+                ? ParseColor(stateBorderColor, accent)
+                : accent;
+            var borderAccentBrush = new SolidColorBrush(borderAccent);
+            var stateBackground = isLowBattery ? style.LowBatteryBackground : isWarning
+                ? style.WarningBackground : string.Equals(current.Kind, "connected", StringComparison.OrdinalIgnoreCase)
+                    ? style.ConnectedBackground : style.DisconnectedBackground;
+            var background = ParseColor(style.UseStateBackgroundColors ? stateBackground : style.Background,
+                Color.FromArgb(244, 18, 20, 24));
             if (string.Equals(style.AccentMode, "TintedBackground", StringComparison.OrdinalIgnoreCase))
             {
                 background = Blend(background, accent, 0.12);
@@ -269,14 +326,36 @@ namespace ControllerSessionManager.OverlayHost
             {
                 background = Color.FromArgb(Math.Max((byte)220, background.A), accent.R, accent.G, accent.B);
             }
-            card.Background = new SolidColorBrush(background);
+            var gradient = ParseColor(style.GradientColor, background);
+            card.Background = style.UseGradient
+                ? (Brush)new LinearGradientBrush(background, gradient, style.GradientAngle)
+                : new SolidColorBrush(background);
             ApplyBackgroundImage(style, background);
             card.BorderThickness = new Thickness(0);
-            borderOverlay.BorderBrush = accentBrush;
-            borderOverlay.BorderThickness = style.ShowBorder &&
-                string.Equals(style.AccentMode, "IconAndBorder", StringComparison.OrdinalIgnoreCase)
-                ? CreateBorderThickness(style.BorderPosition, style.BorderThickness)
+            borderOverlay.BorderBrush = style.UseBorderGradient
+                ? (Brush)new LinearGradientBrush(
+                    ParseColor(style.BorderGradientStartColor, accent),
+                    style.UseStateBorderColors
+                        ? borderAccent
+                        : ParseColor(style.BorderGradientEndColor, accent),
+                    style.BorderGradientAngle)
+                : borderAccentBrush;
+            borderOverlay.BorderThickness = style.ShowBorder
+                ? style.UseIndependentBorders
+                    ? new Thickness(style.BorderLeftThickness, style.BorderTopThickness,
+                        style.BorderRightThickness, style.BorderBottomThickness)
+                    : CreateBorderThickness(style.BorderPosition, style.BorderThickness)
                 : new Thickness(0);
+            borderOverlay.Effect = style.ShowBorder && style.ShowBorderGlow
+                ? new DropShadowEffect
+                {
+                    BlurRadius = Math.Max(0, style.BorderGlowBlur * scale),
+                    ShadowDepth = 0,
+                    Opacity = style.BorderGlowOpacity / 100.0,
+                    Color = ParseColor(style.BorderGlowColor, accent),
+                    Direction = 0
+                }
+                : null;
             icon.Fill = string.Equals(style.AccentMode, "SolidBackground", StringComparison.OrdinalIgnoreCase)
                 ? primaryTextBrush
                 : accentBrush;
@@ -286,7 +365,8 @@ namespace ControllerSessionManager.OverlayHost
             ApplyConnectionIcon(
                 style.ShowConnectionBadge ? current.ConnectionIconGeometry : null,
                 secondaryBrush,
-                scale);
+                scale,
+                style.BadgePosition);
             // Match PlayniteAchievements' layer model: only the rounded surface casts the shadow;
             // text and icons live in the separate crisp layer above. The outer inset prevents the
             // transparent topmost window from clipping the blur into a displaced hard edge.
@@ -402,13 +482,14 @@ namespace ControllerSessionManager.OverlayHost
             return AlignmentY.Center;
         }
 
-        private void ApplyConnectionIcon(string geometry, Brush stroke, double scale)
+        private void ApplyConnectionIcon(string geometry, Brush stroke, double scale, string position)
         {
             if (string.IsNullOrWhiteSpace(geometry))
             {
                 connectionIcon.Data = null;
                 connectionIcon.Visibility = Visibility.Collapsed;
                 titleText.Margin = new Thickness(0);
+                messageText.Margin = new Thickness(0, messageText.Margin.Top, 0, 0);
                 return;
             }
 
@@ -425,6 +506,7 @@ namespace ControllerSessionManager.OverlayHost
             {
                 connectionIcon.Visibility = Visibility.Collapsed;
                 titleText.Margin = new Thickness(0);
+                messageText.Margin = new Thickness(0, messageText.Margin.Top, 0, 0);
                 return;
             }
 
@@ -434,12 +516,19 @@ namespace ControllerSessionManager.OverlayHost
             connectionIcon.Height = size;
             connectionIcon.Stroke = stroke;
             connectionIcon.StrokeThickness = Math.Max(1.4, 1.75 * scale);
-            connectionIcon.HorizontalAlignment = HorizontalAlignment.Right;
+            var left = string.Equals(position, "TopLeft", StringComparison.OrdinalIgnoreCase);
+            connectionIcon.HorizontalAlignment = left ? HorizontalAlignment.Left : HorizontalAlignment.Right;
             connectionIcon.VerticalAlignment = VerticalAlignment.Top;
             connectionIcon.Margin = new Thickness(0);
             connectionIcon.Visibility = Visibility.Visible;
             // Keep the title from running under the badge; long names ellipsis instead.
-            titleText.Margin = new Thickness(0, 0, reserve, 0);
+            titleText.Margin = left ? new Thickness(reserve, 0, 0, 0) : new Thickness(0, 0, reserve, 0);
+            if (titleText.Visibility != Visibility.Visible)
+            {
+                messageText.Margin = left
+                    ? new Thickness(reserve, messageText.Margin.Top, 0, 0)
+                    : new Thickness(0, messageText.Margin.Top, reserve, 0);
+            }
         }
 
         private void ConfigureContentLayout(string position, double gap)
@@ -449,6 +538,9 @@ namespace ControllerSessionManager.OverlayHost
             contentLayout.ColumnDefinitions.Clear();
             contentLayout.RowDefinitions.Clear();
             icon.Margin = new Thickness(0);
+            iconContainer.Margin = new Thickness(0);
+            iconContainer.HorizontalAlignment = HorizontalAlignment.Center;
+            iconContainer.VerticalAlignment = VerticalAlignment.Center;
             icon.HorizontalAlignment = HorizontalAlignment.Center;
             icon.VerticalAlignment = VerticalAlignment.Center;
             textPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
@@ -456,21 +548,21 @@ namespace ControllerSessionManager.OverlayHost
 
             if (string.Equals(normalized, "Hidden", StringComparison.OrdinalIgnoreCase))
             {
-                icon.Visibility = Visibility.Collapsed;
+                iconContainer.Visibility = Visibility.Collapsed;
                 contentLayout.Children.Add(textPanel);
                 return;
             }
 
-            icon.Visibility = Visibility.Visible;
+            iconContainer.Visibility = Visibility.Visible;
             if (string.Equals(normalized, "Top", StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(normalized, "Bottom", StringComparison.OrdinalIgnoreCase))
             {
                 contentLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
                 contentLayout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
                 var iconFirst = string.Equals(normalized, "Top", StringComparison.OrdinalIgnoreCase);
-                Grid.SetRow(icon, iconFirst ? 0 : 1);
+                Grid.SetRow(iconContainer, iconFirst ? 0 : 1);
                 Grid.SetRow(textPanel, iconFirst ? 1 : 0);
-                icon.Margin = iconFirst ? new Thickness(0, 0, 0, gap) : new Thickness(0, gap, 0, 0);
+                iconContainer.Margin = iconFirst ? new Thickness(0, 0, 0, gap) : new Thickness(0, gap, 0, 0);
             }
             else
             {
@@ -481,12 +573,12 @@ namespace ControllerSessionManager.OverlayHost
                     { Width = string.Equals(normalized, "Right", StringComparison.OrdinalIgnoreCase)
                         ? GridLength.Auto : new GridLength(1, GridUnitType.Star) });
                 var iconFirst = !string.Equals(normalized, "Right", StringComparison.OrdinalIgnoreCase);
-                Grid.SetColumn(icon, iconFirst ? 0 : 1);
+                Grid.SetColumn(iconContainer, iconFirst ? 0 : 1);
                 Grid.SetColumn(textPanel, iconFirst ? 1 : 0);
-                icon.Margin = iconFirst ? new Thickness(0, 0, gap, 0) : new Thickness(gap, 0, 0, 0);
+                iconContainer.Margin = iconFirst ? new Thickness(0, 0, gap, 0) : new Thickness(gap, 0, 0, 0);
             }
 
-            contentLayout.Children.Add(icon);
+            contentLayout.Children.Add(iconContainer);
             contentLayout.Children.Add(textPanel);
         }
 
@@ -622,6 +714,12 @@ namespace ControllerSessionManager.OverlayHost
             public bool ShowShadow = true;
             public string FontFamily = NotificationFontCatalog.SystemDefault;
             public string FontWeight = "SemiBold";
+            public string TitleFontFamily = NotificationFontCatalog.SystemDefault;
+            public string TitleFontWeight = "SemiBold";
+            public string MessageFontFamily = NotificationFontCatalog.SystemDefault;
+            public string MessageFontWeight = "SemiBold";
+            public int MessageMaxLines = 2;
+            public string BadgePosition = "TopRight";
             public string TextAlignment = "Left";
             public string AccentMode = "IconAndBorder";
             public string Animation = "Fade";
@@ -633,6 +731,40 @@ namespace ControllerSessionManager.OverlayHost
             public string BackgroundImageVerticalAlignment = "Center";
             public int BackgroundImageOpacity = 45;
             public int BackgroundImageTintOpacity = 45;
+            public bool UseGradient;
+            public string GradientColor = "#F4121418";
+            public int GradientAngle;
+            public bool UppercaseTitle;
+            public bool ShowIconContainer;
+            public string IconContainerColor = "#20000000";
+            public string IconContainerBorderColor = "#00000000";
+            public int IconContainerBorderThickness;
+            public int IconContainerCornerRadius = 10;
+            public int IconContainerPadding = 8;
+            public string TextOrder = "TitleFirst";
+            public bool UseIndependentBorders;
+            public int BorderLeftThickness;
+            public int BorderTopThickness;
+            public int BorderRightThickness;
+            public int BorderBottomThickness = 3;
+            public bool UseStateBackgroundColors;
+            public string ConnectedBackground = "#F4121418";
+            public string DisconnectedBackground = "#F4121418";
+            public string WarningBackground = "#F4121418";
+            public string LowBatteryBackground = "#F4121418";
+            public bool UseBorderGradient;
+            public bool UseStateBorderColors;
+            public string ConnectedBorderColor = "#FF4FC27E";
+            public string DisconnectedBorderColor = "#FF50AAFF";
+            public string WarningBorderColor = "#FFF5B542";
+            public string LowBatteryBorderColor = "#FFE05252";
+            public string BorderGradientStartColor = "#FFFFFFFF";
+            public string BorderGradientEndColor = "#FF50AAFF";
+            public int BorderGradientAngle = 45;
+            public bool ShowBorderGlow;
+            public string BorderGlowColor = "#8050AAFF";
+            public int BorderGlowBlur = 12;
+            public int BorderGlowOpacity = 30;
 
             public static ToastStyle Parse(string value)
             {
@@ -677,6 +809,52 @@ namespace ControllerSessionManager.OverlayHost
                 if (parts.Length > 34 && int.TryParse(parts[34], out parsed)) style.BackgroundImageOpacity = Math.Max(0, Math.Min(100, parsed));
                 if (parts.Length > 35 && int.TryParse(parts[35], out parsed)) style.BackgroundImageTintOpacity = Math.Max(0, Math.Min(100, parsed));
                 if (parts.Length > 36 && int.TryParse(parts[36], out parsed)) style.IconSpacing = Math.Max(0, Math.Min(40, parsed));
+                style.TitleFontFamily = parts.Length > 37
+                    ? NotificationFontCatalog.Normalize(parts[37]) : style.FontFamily;
+                style.TitleFontWeight = parts.Length > 38
+                    ? NotificationFontCatalog.NormalizeWeight(parts[38]) : style.FontWeight;
+                style.MessageFontFamily = parts.Length > 39
+                    ? NotificationFontCatalog.Normalize(parts[39]) : style.FontFamily;
+                style.MessageFontWeight = parts.Length > 40
+                    ? NotificationFontCatalog.NormalizeWeight(parts[40]) : style.FontWeight;
+                if (parts.Length > 41 && int.TryParse(parts[41], out parsed))
+                    style.MessageMaxLines = Math.Max(1, Math.Min(6, parsed));
+                if (parts.Length > 42 && string.Equals(parts[42], "TopLeft", StringComparison.OrdinalIgnoreCase))
+                    style.BadgePosition = "TopLeft";
+                if (parts.Length > 43 && bool.TryParse(parts[43], out parsedBool)) style.UseGradient = parsedBool;
+                if (parts.Length > 44 && !string.IsNullOrWhiteSpace(parts[44])) style.GradientColor = parts[44];
+                if (parts.Length > 45 && int.TryParse(parts[45], out parsed)) style.GradientAngle = ((parsed % 360) + 360) % 360;
+                if (parts.Length > 46 && bool.TryParse(parts[46], out parsedBool)) style.UppercaseTitle = parsedBool;
+                if (parts.Length > 47 && bool.TryParse(parts[47], out parsedBool)) style.ShowIconContainer = parsedBool;
+                if (parts.Length > 48) style.IconContainerColor = parts[48];
+                if (parts.Length > 49) style.IconContainerBorderColor = parts[49];
+                if (parts.Length > 50 && int.TryParse(parts[50], out parsed)) style.IconContainerBorderThickness = Math.Max(0, Math.Min(8, parsed));
+                if (parts.Length > 51 && int.TryParse(parts[51], out parsed)) style.IconContainerCornerRadius = Math.Max(0, Math.Min(40, parsed));
+                if (parts.Length > 52 && int.TryParse(parts[52], out parsed)) style.IconContainerPadding = Math.Max(0, Math.Min(24, parsed));
+                if (parts.Length > 53 && string.Equals(parts[53], "MessageFirst", StringComparison.OrdinalIgnoreCase)) style.TextOrder = "MessageFirst";
+                if (parts.Length > 54 && bool.TryParse(parts[54], out parsedBool)) style.UseIndependentBorders = parsedBool;
+                if (parts.Length > 55 && int.TryParse(parts[55], out parsed)) style.BorderLeftThickness = Math.Max(0, Math.Min(12, parsed));
+                if (parts.Length > 56 && int.TryParse(parts[56], out parsed)) style.BorderTopThickness = Math.Max(0, Math.Min(12, parsed));
+                if (parts.Length > 57 && int.TryParse(parts[57], out parsed)) style.BorderRightThickness = Math.Max(0, Math.Min(12, parsed));
+                if (parts.Length > 58 && int.TryParse(parts[58], out parsed)) style.BorderBottomThickness = Math.Max(0, Math.Min(12, parsed));
+                if (parts.Length > 59 && bool.TryParse(parts[59], out parsedBool)) style.UseStateBackgroundColors = parsedBool;
+                if (parts.Length > 60) style.ConnectedBackground = parts[60];
+                if (parts.Length > 61) style.DisconnectedBackground = parts[61];
+                if (parts.Length > 62) style.WarningBackground = parts[62];
+                if (parts.Length > 63) style.LowBatteryBackground = parts[63];
+                if (parts.Length > 64 && bool.TryParse(parts[64], out parsedBool)) style.UseBorderGradient = parsedBool;
+                if (parts.Length > 65) style.BorderGradientStartColor = parts[65];
+                if (parts.Length > 66) style.BorderGradientEndColor = parts[66];
+                if (parts.Length > 67 && int.TryParse(parts[67], out parsed)) style.BorderGradientAngle = ((parsed % 360) + 360) % 360;
+                if (parts.Length > 68 && bool.TryParse(parts[68], out parsedBool)) style.ShowBorderGlow = parsedBool;
+                if (parts.Length > 69) style.BorderGlowColor = parts[69];
+                if (parts.Length > 70 && int.TryParse(parts[70], out parsed)) style.BorderGlowBlur = Math.Max(0, Math.Min(40, parsed));
+                if (parts.Length > 71 && int.TryParse(parts[71], out parsed)) style.BorderGlowOpacity = Math.Max(0, Math.Min(100, parsed));
+                if (parts.Length > 72 && bool.TryParse(parts[72], out parsedBool)) style.UseStateBorderColors = parsedBool;
+                if (parts.Length > 73) style.ConnectedBorderColor = parts[73];
+                if (parts.Length > 74) style.DisconnectedBorderColor = parts[74];
+                if (parts.Length > 75) style.WarningBorderColor = parts[75];
+                if (parts.Length > 76) style.LowBatteryBorderColor = parts[76];
                 return style;
             }
 

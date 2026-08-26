@@ -1,7 +1,11 @@
+param([switch]$WithImage, [switch]$Split,
+    [ValidateSet("Aniki", "Helium")][string]$Creator)
+
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 $assemblyPath = Join-Path $root "bin\Release\ControllerSessionManager.OverlayHost.exe"
-$outputPath = Join-Path $root "obj\OverlayPreview.png"
+$outputName = if ($Creator) { "Overlay$($Creator)Preview.png" } elseif ($WithImage -or $Split) { "OverlayImagePreview.png" } else { "OverlayPreview.png" }
+$outputPath = Join-Path $root ("obj\" + $outputName)
 
 Add-Type -AssemblyName PresentationCore, PresentationFramework, WindowsBase
 $assembly = [Reflection.Assembly]::LoadFrom($assemblyPath)
@@ -33,16 +37,37 @@ function Get-SvgGeometry([string]$name) {
 (Get-Field "connectionIcon").Data = Get-SvgGeometry "Icons\bluetooth.svg"
 (Get-Field "batteryIcon").Data = Get-SvgGeometry "Icons\battery.svg"
 $type.GetField("currentBatteryState", $flags).SetValue($window, "Medium")
+$layoutMode = if ($Split) { "Split" } else { "Hero" }
+$backgroundImage = if ($WithImage) { Join-Path $root "Images\NotifyBackgrounds\bg1.jpg" } else { "" }
+$encodedBackgroundImage = if ($backgroundImage) {
+    [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($backgroundImage))
+} else { "" }
 $style = @(
-    "100", "#96000000", "#EB121418", "#238FFF", "#FFFFFFFF", "#F5B542",
-    "30", "22", "19", "15", "64", "18", "34", "True", "3", "13", "True", "True",
-    "14", "Left", "True", "Default", "SemiBold", "True", "True", "True", "True", "True",
-    "Center", "FadeScale", "Full", "620", "True",
-    "Montserrat", "SemiBold", "Outfit", "SemiBold", "Inter", "Regular", "Rajdhani", "SemiBold",
-    "#FFFFFFFF", "#FFFFFFFF", "#302391FF", "#602391FF", "1", "7", "14", "13",
-    "#FFF5B542", "#FFF5B542", "#30F5B542", "#60F5B542", "1", "7", "14", "13",
-    "True", "#FF4FC27E", "#FFF5B542", "#FFE05252", "#FFC92D45"
+    "120", "#D0000010", "#F20A0620", "#FF00FFC6", "#FFFFFFFF", "#FFFFE45E",
+    "42", "26", "21", "16", "54", "20", "52", "True", "5", "24", "True", "True",
+    "18", "Right", "True", "Orbitron", "Bold", "True", "True", "True", "True", "True",
+    "BottomRight", "FadeScale", "Full", "820", "True",
+    "Orbitron", "Bold", "Rajdhani", "SemiBold", "Outfit", "SemiBold", "Orbitron", "Bold",
+    "#FFFFFFFF", "#FFFFFFFF", "#3000FFC6", "#7000FFC6", "1", "12", "16", "14",
+    "#FFFFE45E", "#FFFFE45E", "#30FFE45E", "#70FFE45E", "1", "12", "16", "14",
+    "True", "#FF00FFC6", "#FFFFE45E", "#FFFF2E9D", "#FFFF1744", "Right", "38",
+    "True", "#F22A064A", "30", "True",
+    $layoutMode, $WithImage.ToString(), $encodedBackgroundImage,
+    "UniformToFill", "Center", "Center", "70", "45",
+    "True", "#3800FFC6", "#A000FFC6", "2", "18", "16"
 ) -join ";"
+if ($Creator) {
+    [Reflection.Assembly]::LoadFrom("C:\Playnite\Playnite.SDK.dll") | Out-Null
+    $pluginAssembly = [Reflection.Assembly]::LoadFrom((Join-Path $root "bin\Release\ControllerSessionManager.dll"))
+    $settingsType = $pluginAssembly.GetType("ControllerSessionManager.PlayniteIntegration.ControllerSessionManagerSettings", $true)
+    $settings = [Activator]::CreateInstance($settingsType)
+    $presetType = $pluginAssembly.GetType("ControllerSessionManager.PlayniteIntegration.OverlayStylePresets", $true)
+    $presetType.GetMethod("Apply").Invoke($null, @($settings, $Creator)) | Out-Null
+    $pluginType = $pluginAssembly.GetType("ControllerSessionManager.PlayniteIntegration.ControllerSessionManagerPlugin", $true)
+    $plugin = [Runtime.Serialization.FormatterServices]::GetUninitializedObject($pluginType)
+    $pluginType.GetField("settings", [Reflection.BindingFlags]"Instance,NonPublic").SetValue($plugin, $settings)
+    $style = $pluginType.GetMethod("GetOverlayStylePayload", [Reflection.BindingFlags]"Instance,NonPublic").Invoke($plugin, $null)
+}
 $type.GetMethod("ApplyPresentationStyle", $flags).Invoke($window, @($style)) | Out-Null
 $type.GetMethod("ApplyPauseStatusStyle", $flags).Invoke($window, @("pause")) | Out-Null
 

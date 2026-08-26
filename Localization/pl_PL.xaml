@@ -122,6 +122,10 @@
     <sys:String x:Key="LOCCSM_ResetNotificationStyleConfirm">Restore notification layout and colors to the Soft preset? Sound and overlay settings are not changed.</sys:String>
     <sys:String x:Key="LOCCSM_VisualProfileTitle">Visual profile</sys:String>
     <sys:String x:Key="LOCCSM_VisualProfileHelp">Export or import notification, overlay and sound appearance as a shareable profile.</sys:String>
+    <sys:String x:Key="LOCCSM_VisualProfileNamePrompt">Nadaj nazwę profilowi wizualnemu. Import profilu o tej samej nazwie zastąpi go.</sys:String>
+    <sys:String x:Key="LOCCSM_FilterCreatorDesignsByCurrentTheme">W projektach twórców pokazuj tylko projekty bieżącego motywu</sys:String>
+    <sys:String x:Key="LOCCSM_Alerts">Alerty</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeLockedTitle">Projekt twórcy jest aktywny</sys:String>
     <sys:String x:Key="LOCCSM_ExportVisualProfile">Export visual profile</sys:String>
     <sys:String x:Key="LOCCSM_ImportVisualProfile">Import visual profile</sys:String>
     <sys:String x:Key="LOCCSM_VisualProfileFileFilter">Controller Manager visual profile (*.pcvisual)|*.pcvisual</sys:String>
@@ -296,7 +300,7 @@
     <sys:String x:Key="LOCCSM_NotificationTitleSize">Tekst tytułu (px)</sys:String><sys:String x:Key="LOCCSM_NotificationTextSize">Tekst wiadomości (px)</sys:String><sys:String x:Key="LOCCSM_NotificationIconSize">Rozmiar ikony (px)</sys:String><sys:String x:Key="LOCCSM_NotificationPadding">Wewnętrzny odstęp (px)</sys:String>
     <sys:String x:Key="LOCCSM_ElementSpacing">Spacing between elements (px)</sys:String>
     <sys:String x:Key="LOCCSM_NotificationShowBorder">Pokaż obramowanie w kolorze stanu</sys:String><sys:String x:Key="LOCCSM_NotificationBorderPosition">Pozycja obramowania</sys:String><sys:String x:Key="LOCCSM_NotificationBorderThickness">Grubość obramowania (px)</sys:String>
-    <sys:String x:Key="LOCCSM_BorderLeft">Lewa</sys:String><sys:String x:Key="LOCCSM_BorderTop">Góra</sys:String><sys:String x:Key="LOCCSM_BorderRight">Prawa</sys:String><sys:String x:Key="LOCCSM_BorderBottom">Dół</sys:String>
+<sys:String x:Key="LOCCSM_BorderLeft">Lewa</sys:String><sys:String x:Key="LOCCSM_BorderTop">Góra</sys:String><sys:String x:Key="LOCCSM_BorderRight">Prawa</sys:String><sys:String x:Key="LOCCSM_BorderBottom">Dół</sys:String><sys:String x:Key="LOCCSM_BorderSideLeft">Lewa krawędź</sys:String><sys:String x:Key="LOCCSM_BorderSideTop">Górna krawędź</sys:String><sys:String x:Key="LOCCSM_BorderSideRight">Prawa krawędź</sys:String><sys:String x:Key="LOCCSM_BorderSideBottom">Dolna krawędź</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPreview">Podgląd na żywo</sys:String><sys:String x:Key="LOCCSM_PreviewControllerName">Przykładowy kontroler</sys:String><sys:String x:Key="LOCCSM_OverlayPreviewHelp">Kolory i skala aktualizują się podczas edycji. Rzeczywista nakładka dopasowuje się do ekranu.</sys:String>
     <sys:String x:Key="LOCCSM_SelectColor">Wybierz kolor</sys:String>
     <sys:String x:Key="LOCCSM_ColorPreview">Podgląd</sys:String>
@@ -715,8 +719,8 @@
     <sys:String x:Key="LOCCSM_ControllerDatabaseCurrent">The controller database is already up to date.</sys:String>
     <sys:String x:Key="LOCCSM_ControllerDatabaseUpdateFailed">The database could not be updated. The last valid local copy will continue to be used.</sys:String>
     <sys:String x:Key="LOCCSM_PreviewWithSound">Play preview sound</sys:String>
-    <sys:String x:Key="LOCCSM_CopyDesktopStyleToFullscreen">Copy desktop style to fullscreen</sys:String>
-    <sys:String x:Key="LOCCSM_CopyFullscreenStyleToDesktop">Copy fullscreen style to desktop</sys:String>
+    <sys:String x:Key="LOCCSM_CopyDesktopStyleToFullscreen">Kopiuj projekt pulpitu</sys:String>
+    <sys:String x:Key="LOCCSM_CopyFullscreenStyleToDesktop">Kopiuj projekt pełnoekranowy</sys:String>
     <sys:String x:Key="LOCCSM_CopyNotificationStyleTitle">Copy notification style</sys:String>
     <sys:String x:Key="LOCCSM_CopyDesktopStyleConfirm">Replace the fullscreen notification style with the desktop style?</sys:String>
     <sys:String x:Key="LOCCSM_CopyFullscreenStyleConfirm">Replace the desktop notification style with the fullscreen style?</sys:String>
@@ -731,4 +735,65 @@
     <sys:String x:Key="LOCCSM_CustomSoundFileFilter">Audio files|*.wav;*.mp3;*.wma|WAV files|*.wav|MP3 files|*.mp3|WMA files|*.wma</sys:String>
     <sys:String x:Key="LOCCSM_CustomSoundInvalid">Choose a valid WAV, MP3, or WMA file no larger than 5 MB.</sys:String>
     <sys:String x:Key="LOCCSM_CustomSoundProcessing">Przetwarzanie własnego dźwięku…</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationTitleFont">Typografia tytułu</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationMessageFont">Typografia wiadomości</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationMessageMaxLines">Maksymalna liczba wierszy</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationBadgePosition">Pozycja plakietki połączenia</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayContentAlignment">Wyrównanie zawartości</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayScreenMargin">Margines ekranu</sys:String>
+    <sys:String x:Key="LOCCSM_StylePresetAniki">Aniki ReMake</sys:String>
+    <sys:String x:Key="LOCCSM_StylePresetHelium">Helium</sys:String>
+    <sys:String x:Key="LOCCSM_PresetGroupPlugin">Presety wtyczki</sys:String>
+    <sys:String x:Key="LOCCSM_PresetGroupCreators">Projekty twórców</sys:String>
+    <sys:String x:Key="LOCCSM_ImportedDesigns">Zaimportowane projekty</sys:String>
+    <sys:String x:Key="LOCCSM_DeleteImportedDesign">Usuń zaimportowany projekt</sys:String>
+    <sys:String x:Key="LOCCSM_DeleteImportedDesignConfirm">Usunąć zaimportowany projekt „{0}”?</sys:String>
+    <sys:String x:Key="LOCCSM_ImportedDesignDeleted">Zaimportowany projekt „{0}” został usunięty.</sys:String>
+    <sys:String x:Key="LOCCSM_UseGradient">Użyj gradientu</sys:String>
+    <sys:String x:Key="LOCCSM_GradientAngle">Kąt gradientu</sys:String>
+    <sys:String x:Key="LOCCSM_UppercaseTitle">Tytuł wielkimi literami</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayLayoutMode">Kompozycja</sys:String>
+    <sys:String x:Key="LOCCSM_LayoutStandard">Standardowy</sys:String>
+    <sys:String x:Key="LOCCSM_LayoutSplit">Podzielony</sys:String>
+    <sys:String x:Key="LOCCSM_LayoutHero">Hero</sys:String>
+    <sys:String x:Key="LOCCSM_ShowIconContainer">Pokaż kontener ikony</sys:String>
+    <sys:String x:Key="LOCCSM_ShowElementContainer">Pokaż kontener kontrolera</sys:String>
+    <sys:String x:Key="LOCCSM_ContainerPadding">Wypełnienie kontenera</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayBackgroundImage">Obraz tła nakładki</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayBackgroundImageSelect">Wybierz obraz tła nakładki</sys:String>
+    <sys:String x:Key="LOCCSM_Design">Projekt</sys:String>
+    <sys:String x:Key="LOCCSM_AdvancedDesign">Projekt zaawansowany</sys:String>
+    <sys:String x:Key="LOCCSM_AdvancedDesignHint">Narzędzia dla twórców. Presety i proste ustawienia pozostają w pełni zgodne.</sys:String>
+    <sys:String x:Key="LOCCSM_TextBlockOrder">Kolejność tekstu</sys:String>
+    <sys:String x:Key="LOCCSM_TitleFirst">Najpierw tytuł</sys:String>
+    <sys:String x:Key="LOCCSM_MessageFirst">Najpierw wiadomość</sys:String>
+    <sys:String x:Key="LOCCSM_IndependentBorders">Dostosuj każdy bok obramowania</sys:String>
+    <sys:String x:Key="LOCCSM_StateBackgrounds">Użyj innego tła dla każdego stanu</sys:String>
+    <sys:String x:Key="LOCCSM_StateConnected">Połączono</sys:String>
+    <sys:String x:Key="LOCCSM_StateDisconnected">Rozłączono</sys:String>
+    <sys:String x:Key="LOCCSM_StateWarning">Ostrzeżenie</sys:String>
+    <sys:String x:Key="LOCCSM_StateLowBattery">Niski poziom baterii</sys:String>
+    <sys:String x:Key="LOCCSM_BlockOrder">Kolejność bloków</sys:String>
+    <sys:String x:Key="LOCCSM_OrderClassic">Klasyczna</sys:String>
+    <sys:String x:Key="LOCCSM_OrderControllerFirst">Najpierw kontroler</sys:String>
+    <sys:String x:Key="LOCCSM_OrderMessageFirst">Najpierw instrukcja</sys:String>
+    <sys:String x:Key="LOCCSM_OrderStatusFirst">Najpierw stan</sys:String>
+    <sys:String x:Key="LOCCSM_MetadataOrientation">Układ odznak</sys:String>
+    <sys:String x:Key="LOCCSM_OrientationHorizontal">Poziomy</sys:String>
+    <sys:String x:Key="LOCCSM_OrientationVertical">Pionowy</sys:String>
+    <sys:String x:Key="LOCCSM_OpenCreatorThemesFolder">Otwórz folder pakietów twórców</sys:String>
+    <sys:String x:Key="LOCCSM_ReloadCreatorThemes">Przeładuj pakiety twórców</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGradient">Obramowanie gradientowe</sys:String>
+    <sys:String x:Key="LOCCSM_StateBorderGradientColors">Użyj koloru każdego stanu w gradiencie</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGradientStart">Początek gradientu</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGradientEnd">Koniec gradientu</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGradientAngle">Kąt obramowania</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGlow">Poświata obramowania</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGlowColor">Kolor poświaty</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGlowBlur">Rozmycie poświaty</sys:String>
+    <sys:String x:Key="LOCCSM_BorderGlowOpacity">Krycie poświaty</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeManagement">Pakiety twórców</sys:String>
+    <sys:String x:Key="LOCCSM_PresetGroupCustom">Niestandardowe</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">Ten projekt twórcy kontroluje cały wygląd. Wybierz preset wtyczki lub Niestandardowe, aby edytować.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">Dźwięk jest zarządzany przez aktywny projekt twórcy. Wybierz projekty wtyczki lub niestandardowe, aby edytować dźwięki.</sys:String>
 </ResourceDictionary>
