@@ -165,7 +165,8 @@
     <sys:String x:Key="LOCCSM_EnableNotificationSounds">Enable notification sounds</sys:String>
     <sys:String x:Key="LOCCSM_NotificationSoundPack">Sound pack</sys:String>
     <sys:String x:Key="LOCCSM_NotificationSoundPackHelp">Each pack includes connect, disconnect, low battery, and warning sounds.</sys:String>
-    <sys:String x:Key="LOCCSM_NotificationSoundVolume">Volume</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationSoundVolume">音量</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationSoundVolumeHelp">调整声音包、创作者声音和自定义声音的播放音量。</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnConnected">Play a sound when a controller connects</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnDisconnected">Play a sound when a controller disconnects</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnLowBattery">Play a sound on low battery</sys:String>
@@ -793,7 +794,7 @@
     <sys:String x:Key="LOCCSM_CreatorThemeManagement">创作者设计包</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupCustom">自定义</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">此创作者设计控制完整外观。请选择插件预设或自定义以进行编辑。</sys:String>
-    <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">音频由当前创作者设计管理。请选择插件或自定义设计以编辑声音。</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">当前创作者设计提供声音包和自定义文件。音量、声音开关和预览仍可使用。</sys:String>
     <sys:String x:Key="LOCCSM_UpdateCreatorThemes">更新设计</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateTitle">创作者设计</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">正在检查官方目录并安装兼容设计…</sys:String>

@@ -76,21 +76,41 @@ function Get-ReleaseChanges([string]$Path) {
     return $changes
 }
 
+function Write-ReleaseNotesTemplate([string]$Path, [string]$TargetVersion) {
+    Write-Utf8File $Path @"
+# Controller Manager $TargetVersion release notes
+# Write one public, English change per line. This version marker prevents stale notes from being reused.
+- Added ...
+- Fixed ...
+"@
+}
+
 Set-Location $root
 
 if (-not [System.IO.Path]::IsPathRooted($NotesPath)) {
     $NotesPath = Join-Path $root $NotesPath
 }
+$defaultNotesPath = [System.IO.Path]::GetFullPath((Join-Path $root ".release-notes.md"))
+$resolvedNotesPath = [System.IO.Path]::GetFullPath($NotesPath)
+$usesDefaultNotesPath = $resolvedNotesPath.Equals(
+    $defaultNotesPath, [System.StringComparison]::OrdinalIgnoreCase)
 
 if (-not (Test-Path -LiteralPath $NotesPath)) {
-    Write-Utf8File $NotesPath @"
-# Write one public, English change per line. This file is ignored by Git.
-- Added ...
-- Fixed ...
-"@
+    Write-ReleaseNotesTemplate $NotesPath $Version
     Write-Host "Created release-notes template: $NotesPath" -ForegroundColor Yellow
     Write-Host "Edit it and run this command again."
     exit 2
+}
+
+if ($usesDefaultNotesPath) {
+    $notesHeader = Get-Content -LiteralPath $NotesPath -TotalCount 1
+    $expectedHeader = "# Controller Manager $Version release notes"
+    if ($notesHeader -ne $expectedHeader) {
+        Write-ReleaseNotesTemplate $NotesPath $Version
+        Write-Host "Replaced stale release notes with a template for ${Version}: $NotesPath" -ForegroundColor Yellow
+        Write-Host "Edit it and run this command again."
+        exit 2
+    }
 }
 
 $changes = @(Get-ReleaseChanges $NotesPath)
@@ -167,7 +187,8 @@ foreach ($test in @(
     "tests\run-session-tests.ps1",
     "tests\run-tester-tests.ps1",
     "tests\run-settings-migration-tests.ps1",
-    "tests\run-settings-view-tests.ps1"
+    "tests\run-settings-view-tests.ps1",
+    "tests\run-release-script-tests.ps1"
 )) {
     Invoke-Checked "powershell.exe" @("-NoProfile", "-ExecutionPolicy", "Bypass",
         "-File", (Join-Path $root $test))
@@ -296,6 +317,10 @@ if ($publicInstaller -notmatch "(?m)^\s+- Version:\s*$([regex]::Escape($Version)
 }
 
 Invoke-Checked "git" @("fetch", "--tags")
+if ($usesDefaultNotesPath -and (Test-Path -LiteralPath $NotesPath)) {
+    Remove-Item -LiteralPath $NotesPath -Force
+    Write-Host "Removed published release notes: $NotesPath"
+}
 Write-Host ""
 Write-Host "Release published and verified: $($published.url)" -ForegroundColor Green
 Write-Host "SHA-256: $localHash"

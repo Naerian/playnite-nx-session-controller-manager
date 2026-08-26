@@ -165,7 +165,8 @@
     <sys:String x:Key="LOCCSM_EnableNotificationSounds">Enable notification sounds</sys:String>
     <sys:String x:Key="LOCCSM_NotificationSoundPack">Sound pack</sys:String>
     <sys:String x:Key="LOCCSM_NotificationSoundPackHelp">Each pack includes connect, disconnect, low battery, and warning sounds.</sys:String>
-    <sys:String x:Key="LOCCSM_NotificationSoundVolume">Volume</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationSoundVolume">Ses düzeyi</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationSoundVolumeHelp">Ses paketleri, üretici sesleri ve özel seslerin oynatma düzeyini ayarlar.</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnConnected">Play a sound when a controller connects</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnDisconnected">Play a sound when a controller disconnects</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnLowBattery">Play a sound on low battery</sys:String>
@@ -793,7 +794,7 @@
     <sys:String x:Key="LOCCSM_CreatorThemeManagement">Tasarımcı paketleri</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupCustom">Özel</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">Bu tasarımcı teması tüm görünümü yönetir. Düzenlemek için eklenti hazır ayarı veya Özel’i seçin.</sys:String>
-    <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">Ses etkin tasarımcı teması tarafından yönetilir. Sesleri düzenlemek için eklenti veya özel tasarımları seçin.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">Etkin üretici tasarımı ses paketini ve özel dosyaları sağlar. Ses düzeyi, ses anahtarları ve önizlemeler kullanılabilir kalır.</sys:String>
     <sys:String x:Key="LOCCSM_UpdateCreatorThemes">Tasarımları güncelle</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateTitle">İçerik üretici tasarımları</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">Resmî katalog kontrol ediliyor ve uyumlu tasarımlar yükleniyor…</sys:String>

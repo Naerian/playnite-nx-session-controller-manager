@@ -166,6 +166,7 @@
     <sys:String x:Key="LOCCSM_NotificationSoundPack">Pack de sonido</sys:String>
     <sys:String x:Key="LOCCSM_NotificationSoundPackHelp">Cada pack incluye sonidos de conexión, desconexión, batería baja y aviso.</sys:String>
     <sys:String x:Key="LOCCSM_NotificationSoundVolume">Volumen</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationSoundVolumeHelp">Ajusta el volumen de reproducción de los packs, los sonidos de creadores y los sonidos personalizados.</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnConnected">Reproducir sonido al conectar un mando</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnDisconnected">Reproducir sonido al desconectar un mando</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnLowBattery">Reproducir sonido con batería baja</sys:String>
@@ -823,7 +824,7 @@
     <sys:String x:Key="LOCCSM_CreatorThemeManagement">Packs de diseños de creadores</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupCustom">Personalizado</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">Este diseño de creador controla toda la apariencia. Selecciona un preset del plugin o Personalizado para editarla.</sys:String>
-    <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">El diseño de creador activo controla el audio. Selecciona diseños del plugin o Personalizado en ambos destinos para editar los sonidos.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">El diseño de creador activo proporciona el pack y los archivos personalizados. El volumen, los interruptores y las pruebas de sonido siguen disponibles.</sys:String>
     <sys:String x:Key="LOCCSM_UpdateCreatorThemes">Actualizar diseños</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateTitle">Diseños de creadores</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">Comprobando el catálogo oficial e instalando diseños compatibles…</sys:String>

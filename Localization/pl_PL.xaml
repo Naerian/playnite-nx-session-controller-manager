@@ -165,7 +165,8 @@
     <sys:String x:Key="LOCCSM_EnableNotificationSounds">Enable notification sounds</sys:String>
     <sys:String x:Key="LOCCSM_NotificationSoundPack">Sound pack</sys:String>
     <sys:String x:Key="LOCCSM_NotificationSoundPackHelp">Each pack includes connect, disconnect, low battery, and warning sounds.</sys:String>
-    <sys:String x:Key="LOCCSM_NotificationSoundVolume">Volume</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationSoundVolume">Głośność</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationSoundVolumeHelp">Dostosowuje głośność pakietów, dźwięków twórców i dźwięków niestandardowych.</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnConnected">Play a sound when a controller connects</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnDisconnected">Play a sound when a controller disconnects</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnLowBattery">Play a sound on low battery</sys:String>
@@ -793,7 +794,7 @@
     <sys:String x:Key="LOCCSM_CreatorThemeManagement">Pakiety twórców</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupCustom">Niestandardowe</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">Ten projekt twórcy kontroluje cały wygląd. Wybierz preset wtyczki lub Niestandardowe, aby edytować.</sys:String>
-    <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">Dźwięk jest zarządzany przez aktywny projekt twórcy. Wybierz projekty wtyczki lub niestandardowe, aby edytować dźwięki.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">Aktywny projekt twórcy dostarcza pakiet i pliki niestandardowe. Głośność, przełączniki dźwięku i podglądy pozostają dostępne.</sys:String>
     <sys:String x:Key="LOCCSM_UpdateCreatorThemes">Aktualizuj projekty</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateTitle">Projekty twórców</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">Sprawdzanie oficjalnego katalogu i instalowanie zgodnych projektów…</sys:String>

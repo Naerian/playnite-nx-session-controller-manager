@@ -222,15 +222,24 @@ if ($settings.DesktopNotificationStylePreset -ne "example.creator" -or
 }
 if ($view.FindName("DesktopNotificationStyleEditor").IsEnabled -or
     -not $view.FindName("FullscreenNotificationStyleEditor").IsEnabled -or
-    $view.FindName("NotificationAudioEditor").IsEnabled -or
+    -not $view.FindName("NotificationAudioEditor").IsEnabled -or
+    $view.FindName("NotificationSoundPackSelector").IsEnabled -or
+    $view.FindName("NotificationSoundPackSelector").Visibility -ne [Windows.Visibility]::Collapsed -or
+    $view.FindName("CustomSoundsSection").Visibility -ne [Windows.Visibility]::Collapsed -or
+    -not $view.FindName("NotificationSoundPreviewPanel").IsEnabled -or
+    -not $view.FindName("NotificationSoundOptionsPanel").IsEnabled -or
     $view.FindName("CopyFullscreenToDesktopButton").IsEnabled -or
     $view.FindName("CopyDesktopToFullscreenButton").IsEnabled -or
     $view.FindName("DesktopAppearanceLayoutExpander").IsExpanded -or
     $view.FindName("DesktopNotificationStyleEditor").Opacity -gt 0.5) {
-    throw "Creator notification designs did not lock only their editor and the shared audio editor " +
+    throw "Creator notification designs must lock only appearance, pack selection, and custom files " +
         "(desktop=$($view.FindName('DesktopNotificationStyleEditor').IsEnabled), " +
         "fullscreen=$($view.FindName('FullscreenNotificationStyleEditor').IsEnabled), " +
         "audio=$($view.FindName('NotificationAudioEditor').IsEnabled), " +
+        "pack=$($view.FindName('NotificationSoundPackSelector').IsEnabled)/$($view.FindName('NotificationSoundPackSelector').Visibility), " +
+        "custom=$($view.FindName('CustomSoundsSection').Visibility), " +
+        "preview=$($view.FindName('NotificationSoundPreviewPanel').IsEnabled), " +
+        "options=$($view.FindName('NotificationSoundOptionsPanel').IsEnabled), " +
         "opacity=$($view.FindName('DesktopNotificationStyleEditor').Opacity), " +
         "flags=$($settings.CanEditDesktopNotificationStyle)/$($settings.CanEditFullscreenNotificationStyle)/$($settings.CanEditNotificationAudio))."
 }
@@ -238,6 +247,9 @@ $desktopPresetSelector.SelectedItem = @($desktopPresetSelector.Items | Where-Obj
 $window.UpdateLayout()
 if (-not $view.FindName("DesktopNotificationStyleEditor").IsEnabled -or
     -not $view.FindName("NotificationAudioEditor").IsEnabled -or
+    -not $view.FindName("NotificationSoundPackSelector").IsEnabled -or
+    $view.FindName("NotificationSoundPackSelector").Visibility -ne [Windows.Visibility]::Visible -or
+    $view.FindName("CustomSoundsSection").Visibility -ne [Windows.Visibility]::Visible -or
     $view.FindName("DesktopNotificationStyleEditor").Opacity -lt 0.9) {
     throw "Returning to Custom did not unlock notification appearance and audio editing."
 }

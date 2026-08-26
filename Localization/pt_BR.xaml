@@ -166,6 +166,7 @@
     <sys:String x:Key="LOCCSM_NotificationSoundPack">Pacote de som</sys:String>
     <sys:String x:Key="LOCCSM_NotificationSoundPackHelp">Each pack includes connect, disconnect, low battery, and warning sounds.</sys:String>
     <sys:String x:Key="LOCCSM_NotificationSoundVolume">Volume</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationSoundVolumeHelp">Ajusta o volume de reprodução dos pacotes, sons de criadores e sons personalizados.</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnConnected">Play a sound when a controller connects</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnDisconnected">Play a sound when a controller disconnects</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnLowBattery">Play a sound on low battery</sys:String>
@@ -793,7 +794,7 @@
     <sys:String x:Key="LOCCSM_CreatorThemeManagement">Pacotes de criadores</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupCustom">Personalizado</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">Este design controla toda a aparência. Selecione uma predefinição do plugin ou Personalizado para editar.</sys:String>
-    <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">O áudio é gerenciado pelo design de criador ativo. Use designs do plugin ou personalizados para editar os sons.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">O design de criador ativo fornece o pacote e os arquivos personalizados. Volume, opções de som e prévias continuam disponíveis.</sys:String>
     <sys:String x:Key="LOCCSM_UpdateCreatorThemes">Atualizar designs</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateTitle">Designs de criadores</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">Verificando o catálogo oficial e instalando designs compatíveis…</sys:String>

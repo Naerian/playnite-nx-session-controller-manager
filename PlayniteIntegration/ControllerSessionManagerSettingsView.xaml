@@ -1694,29 +1694,46 @@
                                     <TextBlock Text="{DynamicResource LOCCSM_NotificationSoundsHelp}" Style="{StaticResource SectionSubtitleText}" />
                                 </StackPanel>
                                 <StackPanel Style="{StaticResource FieldGroup}">
-                                    <Border Style="{StaticResource WarningCallout}" Margin="0,0,0,12" Visibility="{Binding IsCreatorNotificationThemeActive, Converter={StaticResource BoolToVis}}">
-                                        <DockPanel LastChildFill="True"><Border DockPanel.Dock="Left" Style="{StaticResource WarningCalloutAccentBar}"/><DockPanel Margin="12,10,12,10" LastChildFill="True"><TextBlock DockPanel.Dock="Left" Text="&#xE7BA;" Style="{StaticResource WarningCalloutGlyph}"/><StackPanel><TextBlock Text="{DynamicResource LOCCSM_CreatorThemeLockedTitle}" Style="{StaticResource InfoCalloutTitle}"/><TextBlock Text="{DynamicResource LOCCSM_CreatorThemeAudioLockedNotice}" Style="{StaticResource InfoCalloutBody}"/></StackPanel></DockPanel></DockPanel>
-                                    </Border>
-                                    <StackPanel x:Name="NotificationAudioEditor" IsEnabled="{Binding CanEditNotificationAudio}">
-                                        <CheckBox Content="{DynamicResource LOCCSM_EnableDesktopNotificationSounds}" IsChecked="{Binding EnableDesktopNotificationSounds}"/>
-                                        <CheckBox Content="{DynamicResource LOCCSM_EnableFullscreenNotificationSounds}" IsChecked="{Binding EnableFullscreenNotificationSounds}" Margin="0,8,0,16"/>
-                                        <TextBlock Text="{DynamicResource LOCCSM_NotificationSoundPack}" Style="{StaticResource FieldLabel}" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_NotificationSoundPackHelp}" Style="{StaticResource FieldHintText}" Margin="0,0,0,8"/>
-                                        <ComboBox x:Name="NotificationSoundPackSelector"
-                                                  Width="320" Height="36" HorizontalAlignment="Left" Margin="0,0,0,16"
-                                                  DisplayMemberPath="DisplayName" SelectedValuePath="Key"/>
+                                    <StackPanel x:Name="NotificationAudioEditor">
+                                        <TextBlock Text="{DynamicResource LOCCSM_PreviewNotificationSounds}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,0,0,8"/>
+                                        <WrapPanel x:Name="NotificationSoundPreviewPanel">
+                                            <Button Content="{DynamicResource LOCCSM_ControllerConnectedToast}" Tag="connected"
+                                                    Style="{StaticResource {x:Type Button}}" Margin="0,0,8,8"
+                                                    Click="PreviewNotificationSoundClick"/>
+                                            <Button Content="{DynamicResource LOCCSM_ControllerDisconnectedToast}" Tag="disconnected"
+                                                    Style="{StaticResource {x:Type Button}}" Margin="0,0,8,8"
+                                                    Click="PreviewNotificationSoundClick"/>
+                                            <Button Content="{DynamicResource LOCCSM_NotificationWarningPreview}" Tag="warning"
+                                                    Style="{StaticResource {x:Type Button}}" Margin="0,0,8,8"
+                                                    Click="PreviewNotificationSoundClick"/>
+                                            <Button Content="{DynamicResource LOCCSM_ControllerLowBatteryToast}" Tag="lowbattery"
+                                                    Style="{StaticResource {x:Type Button}}" Margin="0,0,0,8"
+                                                    Click="PreviewNotificationSoundClick"/>
+                                        </WrapPanel>
+                                        <StackPanel x:Name="NotificationSoundPackSection" Margin="0,12,0,0">
+                                            <TextBlock Text="{DynamicResource LOCCSM_NotificationSoundPack}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,0,0,4" />
+                                            <TextBlock Text="{DynamicResource LOCCSM_NotificationSoundPackHelp}" Style="{StaticResource FieldHintText}" Margin="0,0,0,10"/>
+                                            <ComboBox x:Name="NotificationSoundPackSelector"
+                                                      Width="320" Height="36" HorizontalAlignment="Left" Margin="0,0,0,8"
+                                                      DisplayMemberPath="DisplayName" SelectedValuePath="Key"
+                                                      IsEnabled="{Binding CanEditNotificationAudio}"
+                                                      Visibility="{Binding IsCreatorNotificationThemeActive, Converter={StaticResource InverseBoolToVis}}"/>
+                                            <Border Style="{StaticResource WarningCallout}" Margin="0,0,0,8"
+                                                    Visibility="{Binding IsCreatorNotificationThemeActive, Converter={StaticResource BoolToVis}}">
+                                                <DockPanel LastChildFill="True"><Border DockPanel.Dock="Left" Style="{StaticResource WarningCalloutAccentBar}"/><DockPanel Margin="12,10,12,10" LastChildFill="True"><TextBlock DockPanel.Dock="Left" Text="&#xE7BA;" Style="{StaticResource WarningCalloutGlyph}"/><StackPanel><TextBlock Text="{DynamicResource LOCCSM_CreatorThemeLockedTitle}" Style="{StaticResource InfoCalloutTitle}"/><TextBlock Text="{DynamicResource LOCCSM_CreatorThemeAudioLockedNotice}" Style="{StaticResource InfoCalloutBody}"/></StackPanel></DockPanel></DockPanel>
+                                            </Border>
+                                        </StackPanel>
+                                        <TextBlock Text="{DynamicResource LOCCSM_NotificationSoundVolume}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,12,0,4" />
+                                        <TextBlock Text="{DynamicResource LOCCSM_NotificationSoundVolumeHelp}" Style="{StaticResource FieldHintText}" Margin="0,0,0,10"/>
                                         <DockPanel LastChildFill="True" Margin="0,0,0,8">
-                                            <TextBlock Text="{DynamicResource LOCCSM_NotificationSoundVolume}" VerticalAlignment="Center" Margin="0,0,12,0"/>
                                             <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center" Margin="12,0,0,0"
                                                        Text="{Binding NotificationSoundVolume, StringFormat={}{0:P0}}" Style="{StaticResource SliderValueText}"/>
                                             <Slider Minimum="0" Maximum="1" TickFrequency="0.05" IsSnapToTickEnabled="True"
                                                     Value="{Binding NotificationSoundVolume, UpdateSourceTrigger=PropertyChanged}"/>
                                         </DockPanel>
-                                        <CheckBox Content="{DynamicResource LOCCSM_PlaySoundOnConnected}" IsChecked="{Binding PlaySoundOnConnected}" Margin="0,8,0,0"/>
-                                        <CheckBox Content="{DynamicResource LOCCSM_PlaySoundOnDisconnected}" IsChecked="{Binding PlaySoundOnDisconnected}" Margin="0,8,0,0"/>
-                                        <CheckBox Content="{DynamicResource LOCCSM_PlaySoundOnLowBattery}" IsChecked="{Binding PlaySoundOnLowBattery}" Margin="0,8,0,0"/>
-                                        <CheckBox Content="{DynamicResource LOCCSM_PlaySoundOnWarning}" IsChecked="{Binding PlaySoundOnWarning}" Margin="0,8,0,0"/>
-                                        <TextBlock Text="{DynamicResource LOCCSM_CustomSoundsTitle}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,18,0,4"/>
+                                        <StackPanel x:Name="CustomSoundsSection" Margin="0,12,0,0"
+                                                    Visibility="{Binding IsCreatorNotificationThemeActive, Converter={StaticResource InverseBoolToVis}}">
+                                        <TextBlock Text="{DynamicResource LOCCSM_CustomSoundsTitle}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,0,0,4"/>
                                         <TextBlock Text="{DynamicResource LOCCSM_CustomSoundsHelp}" Style="{StaticResource FieldHintText}" Margin="0,0,0,10"/>
                                         <StackPanel x:Name="CustomSoundEditorPanel">
                                         <TextBlock Text="{DynamicResource LOCCSM_ControllerConnectedToast}" Style="{StaticResource FieldLabel}"/>
@@ -1744,6 +1761,15 @@
                                             <Border Style="{StaticResource ReadOnlyPathInput}" ToolTip="{Binding CustomWarningSoundPath}"><TextBlock Text="{Binding CustomWarningSoundPath}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center"/></Border>
                                         </DockPanel>
                                         </StackPanel>
+                                        </StackPanel>
+                                        <StackPanel x:Name="NotificationSoundOptionsPanel" Margin="0,12,0,0">
+                                        <CheckBox Content="{DynamicResource LOCCSM_EnableDesktopNotificationSounds}" IsChecked="{Binding EnableDesktopNotificationSounds}"/>
+                                        <CheckBox Content="{DynamicResource LOCCSM_EnableFullscreenNotificationSounds}" IsChecked="{Binding EnableFullscreenNotificationSounds}" Margin="0,8,0,16"/>
+                                        <CheckBox Content="{DynamicResource LOCCSM_PlaySoundOnConnected}" IsChecked="{Binding PlaySoundOnConnected}" Margin="0,8,0,0"/>
+                                        <CheckBox Content="{DynamicResource LOCCSM_PlaySoundOnDisconnected}" IsChecked="{Binding PlaySoundOnDisconnected}" Margin="0,8,0,0"/>
+                                        <CheckBox Content="{DynamicResource LOCCSM_PlaySoundOnLowBattery}" IsChecked="{Binding PlaySoundOnLowBattery}" Margin="0,8,0,0"/>
+                                        <CheckBox Content="{DynamicResource LOCCSM_PlaySoundOnWarning}" IsChecked="{Binding PlaySoundOnWarning}" Margin="0,8,0,0"/>
+                                        </StackPanel>
                                         <Border Style="{StaticResource InfoCallout}" Margin="0,16,0,0">
                                             <DockPanel LastChildFill="True">
                                                 <Border DockPanel.Dock="Left" Style="{StaticResource InfoCalloutAccentBar}" />
@@ -1760,21 +1786,6 @@
                                                 </DockPanel>
                                             </DockPanel>
                                         </Border>
-                                        <TextBlock Text="{DynamicResource LOCCSM_PreviewNotificationSounds}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,16,0,8"/>
-                                        <WrapPanel>
-                                            <Button Content="{DynamicResource LOCCSM_ControllerConnectedToast}" Tag="connected"
-                                                    Style="{StaticResource {x:Type Button}}" Margin="0,0,8,8"
-                                                    Click="PreviewNotificationSoundClick"/>
-                                            <Button Content="{DynamicResource LOCCSM_ControllerDisconnectedToast}" Tag="disconnected"
-                                                    Style="{StaticResource {x:Type Button}}" Margin="0,0,8,8"
-                                                    Click="PreviewNotificationSoundClick"/>
-                                            <Button Content="{DynamicResource LOCCSM_NotificationWarningPreview}" Tag="warning"
-                                                    Style="{StaticResource {x:Type Button}}" Margin="0,0,8,8"
-                                                    Click="PreviewNotificationSoundClick"/>
-                                            <Button Content="{DynamicResource LOCCSM_ControllerLowBatteryToast}" Tag="lowbattery"
-                                                    Style="{StaticResource {x:Type Button}}" Margin="0,0,0,8"
-                                                    Click="PreviewNotificationSoundClick"/>
-                                        </WrapPanel>
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>

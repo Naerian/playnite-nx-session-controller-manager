@@ -166,6 +166,7 @@
     <sys:String x:Key="LOCCSM_NotificationSoundPack">Pack sonore</sys:String>
     <sys:String x:Key="LOCCSM_NotificationSoundPackHelp">Chaque pack inclut connexion, déconnexion, batterie faible et avertissement.</sys:String>
     <sys:String x:Key="LOCCSM_NotificationSoundVolume">Volume</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationSoundVolumeHelp">Règle le volume des packs, des sons de créateurs et des sons personnalisés.</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnConnected">Jouer un son à la connexion d'une manette</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnDisconnected">Jouer un son à la déconnexion d'une manette</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnLowBattery">Jouer un son en batterie faible</sys:String>
@@ -795,7 +796,7 @@
     <sys:String x:Key="LOCCSM_CreatorThemeManagement">Packs de créateurs</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupCustom">Personnalisé</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">Ce design de créateur contrôle toute l’apparence. Sélectionnez un preset du plugin ou Personnalisé pour la modifier.</sys:String>
-    <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">L’audio est géré par le design de créateur actif. Utilisez des designs du plugin ou Personnalisé pour modifier les sons.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">Le design de créateur actif fournit le pack et les fichiers personnalisés. Le volume, les options d’activation et les aperçus restent disponibles.</sys:String>
     <sys:String x:Key="LOCCSM_UpdateCreatorThemes">Mettre à jour les designs</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateTitle">Designs de créateurs</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">Vérification du catalogue officiel et installation des designs compatibles…</sys:String>

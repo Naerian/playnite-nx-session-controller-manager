@@ -165,7 +165,8 @@
     <sys:String x:Key="LOCCSM_EnableNotificationSounds">Enable notification sounds</sys:String>
     <sys:String x:Key="LOCCSM_NotificationSoundPack">Sound pack</sys:String>
     <sys:String x:Key="LOCCSM_NotificationSoundPackHelp">Each pack includes connect, disconnect, low battery, and warning sounds.</sys:String>
-    <sys:String x:Key="LOCCSM_NotificationSoundVolume">Volume</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationSoundVolume">Громкость</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationSoundVolumeHelp">Настраивает громкость наборов, звуков авторов и пользовательских звуков.</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnConnected">Play a sound when a controller connects</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnDisconnected">Play a sound when a controller disconnects</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnLowBattery">Play a sound on low battery</sys:String>
@@ -793,7 +794,7 @@
     <sys:String x:Key="LOCCSM_CreatorThemeManagement">Пакеты авторов</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupCustom">Пользовательские</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">Этот авторский дизайн управляет всем оформлением. Для редактирования выберите пресет плагина или пользовательский.</sys:String>
-    <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">Звуком управляет активный авторский дизайн. Для редактирования звуков выберите дизайн плагина или пользовательский.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">Активный авторский дизайн предоставляет набор и пользовательские файлы. Громкость, переключатели звука и предпрослушивание остаются доступны.</sys:String>
     <sys:String x:Key="LOCCSM_UpdateCreatorThemes">Обновить дизайны</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateTitle">Дизайны авторов</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">Проверка официального каталога и установка совместимых дизайнов…</sys:String>

@@ -165,7 +165,8 @@
     <sys:String x:Key="LOCCSM_EnableNotificationSounds">Enable notification sounds</sys:String>
     <sys:String x:Key="LOCCSM_NotificationSoundPack">Sound pack</sys:String>
     <sys:String x:Key="LOCCSM_NotificationSoundPackHelp">Each pack includes connect, disconnect, low battery, and warning sounds.</sys:String>
-    <sys:String x:Key="LOCCSM_NotificationSoundVolume">Volume</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationSoundVolume">音量</sys:String>
+    <sys:String x:Key="LOCCSM_NotificationSoundVolumeHelp">サウンドパック、クリエイターサウンド、カスタムサウンドの再生音量を調整します。</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnConnected">Play a sound when a controller connects</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnDisconnected">Play a sound when a controller disconnects</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnLowBattery">Play a sound on low battery</sys:String>
@@ -793,7 +794,7 @@
     <sys:String x:Key="LOCCSM_CreatorThemeManagement">クリエイターパック</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupCustom">カスタム</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">このクリエイターデザインが外観全体を管理します。編集するにはプラグインプリセットまたはカスタムを選択してください。</sys:String>
-    <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">音声は有効なクリエイターデザインによって管理されています。サウンドを編集するにはプラグインまたはカスタムデザインを選択してください。</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">有効なクリエイターデザインがサウンドパックとカスタムファイルを提供します。音量、サウンド切り替え、プレビューは引き続き利用できます。</sys:String>
     <sys:String x:Key="LOCCSM_UpdateCreatorThemes">デザインを更新</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateTitle">クリエイターデザイン</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">公式カタログを確認し、互換性のあるデザインをインストールしています…</sys:String>
