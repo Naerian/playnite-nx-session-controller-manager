@@ -794,4 +794,9 @@
     <sys:String x:Key="LOCCSM_PresetGroupCustom">Özel</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">Bu tasarımcı teması tüm görünümü yönetir. Düzenlemek için eklenti hazır ayarı veya Özel’i seçin.</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">Ses etkin tasarımcı teması tarafından yönetilir. Sesleri düzenlemek için eklenti veya özel tasarımları seçin.</sys:String>
+    <sys:String x:Key="LOCCSM_UpdateCreatorThemes">Tasarımları güncelle</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesUpdateTitle">İçerik üretici tasarımları</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">Resmî katalog kontrol ediliyor ve uyumlu tasarımlar yükleniyor…</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesCurrent">İçerik üretici tasarımlarınız zaten güncel.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesUpdated">Güncellendi. Yeni: {0}. Güncellenen: {1}. Uyumsuz: {2}.</sys:String>
 </ResourceDictionary>

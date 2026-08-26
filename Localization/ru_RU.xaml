@@ -794,4 +794,9 @@
     <sys:String x:Key="LOCCSM_PresetGroupCustom">Пользовательские</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">Этот авторский дизайн управляет всем оформлением. Для редактирования выберите пресет плагина или пользовательский.</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">Звуком управляет активный авторский дизайн. Для редактирования звуков выберите дизайн плагина или пользовательский.</sys:String>
+    <sys:String x:Key="LOCCSM_UpdateCreatorThemes">Обновить дизайны</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesUpdateTitle">Дизайны авторов</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">Проверка официального каталога и установка совместимых дизайнов…</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesCurrent">Дизайны авторов уже обновлены.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesUpdated">Обновлено. Новые: {0}. Обновлены: {1}. Несовместимы: {2}.</sys:String>
 </ResourceDictionary>

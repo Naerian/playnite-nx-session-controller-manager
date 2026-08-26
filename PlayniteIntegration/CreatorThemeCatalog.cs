@@ -10,7 +10,8 @@ using System.Web.Script.Serialization;
 namespace ControllerSessionManager.PlayniteIntegration
 {
     /// <summary>
-    /// Discovers reviewed, self-contained creator appearance packs bundled beside the plugin.
+    /// Discovers reviewed, self-contained creator appearance packs bundled beside the plugin
+    /// or downloaded into the plugin's user-data directory.
     /// </summary>
     public static class CreatorThemeCatalog
     {
@@ -18,14 +19,27 @@ namespace ControllerSessionManager.PlayniteIntegration
         private static readonly Dictionary<string, CreatorThemeDefinition> Definitions =
             new Dictionary<string, CreatorThemeDefinition>(StringComparer.OrdinalIgnoreCase);
         private static string bundledRoot;
+        private static string downloadedRoot;
 
         public static void Configure(string pluginDirectory)
+        {
+            Configure(pluginDirectory, null);
+        }
+
+        public static void Configure(string pluginDirectory, string userDataDirectory)
         {
             lock (Sync)
             {
                 bundledRoot = Path.Combine(pluginDirectory ?? string.Empty, "CreatorThemes");
+                downloadedRoot = string.IsNullOrWhiteSpace(userDataDirectory) ? null
+                    : Path.Combine(userDataDirectory, "CreatorThemes");
                 ReloadCore();
             }
+        }
+
+        public static string DownloadedRoot
+        {
+            get { lock (Sync) return downloadedRoot; }
         }
 
         public static void Reload()
@@ -87,11 +101,17 @@ namespace ControllerSessionManager.PlayniteIntegration
             lock (Sync)
             {
                 if (!Definitions.TryGetValue(id ?? string.Empty, out definition)) return false;
-                if (definition.GetThemeIds(fullscreen).Any(a => ThemeIdentifiersMatch(a, activeTheme)))
+                var compatibleThemeIds = definition.GetThemeIds(fullscreen)
+                    .Where(a => !string.IsNullOrWhiteSpace(a)).ToList();
+                if (compatibleThemeIds.Any(a => ThemeIdentifiersMatch(a, activeTheme)))
                     return true;
 
                 // Some Playnite versions/themes expose the display name instead of the manifest ID.
                 var normalizedRecommendedTheme = NormalizeThemeIdentifier(definition.RecommendedTheme);
+                // Packs with no declared target are intentionally universal and remain visible
+                // when users enable filtering by their current Playnite theme.
+                if (compatibleThemeIds.Count == 0 && normalizedRecommendedTheme.Length == 0)
+                    return true;
                 return normalizedRecommendedTheme.Length > 0 &&
                     NormalizeThemeIdentifier(activeTheme).Contains(normalizedRecommendedTheme);
             }
@@ -152,6 +172,8 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             Definitions.Clear();
             LoadRoot(bundledRoot);
+            // Reviewed remote packs override an older bundled copy with the same stable ID.
+            LoadRoot(downloadedRoot);
         }
 
         private static void LoadRoot(string root)
@@ -262,6 +284,9 @@ namespace ControllerSessionManager.PlayniteIntegration
             public string Name { get; set; }
             public string Author { get; set; }
             public string Version { get; set; }
+            public int SchemaVersion { get; set; }
+            public string MinimumPluginVersion { get; set; }
+            public string MaximumPluginVersion { get; set; }
             public string Description { get; set; }
             public string RecommendedTheme { get; set; }
             public List<string> ThemeIds { get; set; }

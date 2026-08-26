@@ -1,5 +1,9 @@
 # Creator themes for Controller Manager
 
+> The maintained contribution workflow, templates and complete author reference now live in the dedicated [Controller Manager Creator Themes Wiki](https://github.com/Naerian/controller-manager-creator-themes/wiki). Creator packs are submitted to that repository and installed with **Update designs**; they no longer require a Controller Manager release.
+
+The catalog repository protects `main` behind pull requests and its required `validate` check. Validation covers the complete documented notification and overlay property contracts (names, JSON types, ranges, colors and enumerations), manifests, safe asset paths, declared fonts and sounds, previews and license/credit evidence. Generated packages live in the separate `catalog` branch. Visual quality, accessibility in real themes, asset provenance and the truth of license declarations remain a maintainer review.
+
 Controller Manager can ship complete visual designs for its controller notifications and disconnect overlay. A creator theme is a reviewed, self-contained folder committed to this repository and included in the `.pext` package. It may contain JSON appearance definitions, images, fonts and notification sounds.
 
 This system is intended for Playnite theme authors and visual designers who want Controller Manager to look native to their theme.
@@ -94,6 +98,8 @@ Keep every asset inside the pack folder. Paths which escape it with `..` are rej
 `Id`, `Name` and `Author` must be non-empty. A pack is ignored if neither appearance JSON file contains a property. Duplicate IDs are not allowed in contributions.
 
 Controller Manager reads the configured IDs from Playnite's settings and, for portable installations, verifies them against `config.json` and `fullscreenConfig.json`. When the user enables **In creator designs, show only those for the current theme**, the Desktop notification selector uses `DesktopThemeIds` and the Fullscreen notification selector uses `FullscreenThemeIds`. Because the disconnect overlay can be launched while either Playnite mode is configured, its selector accepts a match from either list. `RecommendedTheme` is used only as a compatibility fallback when a Playnite version exposes a theme name instead of its ID; folder names and visual structure are never inspected. A currently selected creator design remains visible so an existing configuration never becomes blank.
+
+A pack with no `ThemeIds`, `DesktopThemeIds`, `FullscreenThemeIds` or `RecommendedTheme` is universal. Universal designs remain visible when filtering by the current Playnite theme; use this for standalone visual systems such as NarianUX that are not adaptations of one specific theme.
 
 Obtain the ID from the theme's `theme.yaml`, not from its directory name:
 

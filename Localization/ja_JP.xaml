@@ -794,4 +794,9 @@
     <sys:String x:Key="LOCCSM_PresetGroupCustom">カスタム</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">このクリエイターデザインが外観全体を管理します。編集するにはプラグインプリセットまたはカスタムを選択してください。</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">音声は有効なクリエイターデザインによって管理されています。サウンドを編集するにはプラグインまたはカスタムデザインを選択してください。</sys:String>
+    <sys:String x:Key="LOCCSM_UpdateCreatorThemes">デザインを更新</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesUpdateTitle">クリエイターデザイン</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">公式カタログを確認し、互換性のあるデザインをインストールしています…</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesCurrent">クリエイターデザインは最新です。</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesUpdated">更新完了。新規: {0}、更新: {1}、非互換: {2}。</sys:String>
 </ResourceDictionary>

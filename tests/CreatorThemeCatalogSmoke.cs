@@ -31,7 +31,9 @@ internal static class CreatorThemeCatalogSmoke
                 "{\"NotificationTextOrder\":\"MessageFirst\",\"NotificationBorderLeftThickness\":9,\"NotificationTitleFontFamily\":\"$font:Main\"}");
             var catalog = assembly.GetType(
                 "ControllerSessionManager.PlayniteIntegration.CreatorThemeCatalog", true);
-            catalog.GetMethod("Configure").Invoke(null, new object[] { pluginRoot });
+            var configureBundled = catalog.GetMethod("Configure", new[] { typeof(string) });
+            var configureWithData = catalog.GetMethod("Configure", new[] { typeof(string), typeof(string) });
+            configureBundled.Invoke(null, new object[] { pluginRoot });
             var ids = (string[])catalog.GetMethod("GetPresetIds").Invoke(null,
                 new object[] { "notification" });
             if (!ids.Contains("community.test") || ids.Length != 1)
@@ -41,11 +43,11 @@ internal static class CreatorThemeCatalogSmoke
                 !(bool)matchesTheme.Invoke(null, new object[] { "community.test", "fullscreen.test", true }) ||
                 (bool)matchesTheme.Invoke(null, new object[] { "community.test", "desktop.test", true }))
                 throw new Exception("Creator theme ids were not matched by Playnite mode.");
-            catalog.GetMethod("Configure").Invoke(null, new object[] { Path.Combine(root, "obj", "NoCreatorFiles") });
+            configureBundled.Invoke(null, new object[] { Path.Combine(root, "obj", "NoCreatorFiles") });
             if (((string[])catalog.GetMethod("GetPresetIds").Invoke(null,
                     new object[] { "notification" })).Length != 0)
                 throw new Exception("Creator packs remained registered after configuring an empty directory.");
-            catalog.GetMethod("Configure").Invoke(null, new object[] { pluginRoot });
+            configureBundled.Invoke(null, new object[] { pluginRoot });
             var soundKind = assembly.GetType(
                 "ControllerSessionManager.PlayniteIntegration.NotificationSoundKind", true);
             var connected = Enum.Parse(soundKind, "Connected");
@@ -76,7 +78,26 @@ internal static class CreatorThemeCatalogSmoke
                     "Title,Instruction,Controller,Metadata,Status")
                 throw new Exception("The community overlay pack was not applied dynamically.");
 
-            Console.WriteLine("Creator pack discovery and application passed.");
+            var userData = Path.Combine(root, "obj", "CreatorPackData");
+            if (Directory.Exists(userData)) Directory.Delete(userData, true);
+            var downloaded = Path.Combine(userData, "CreatorThemes", "DownloadedTest");
+            Directory.CreateDirectory(downloaded);
+            File.WriteAllText(Path.Combine(downloaded, "manifest.json"),
+                "{\"SchemaVersion\":1,\"Id\":\"downloaded.test\",\"Name\":\"Downloaded Test\",\"Author\":\"Test Author\",\"Version\":\"1.0.0\",\"MinimumPluginVersion\":\"1.0.0\"}");
+            File.WriteAllText(Path.Combine(downloaded, "overlay.json"),
+                "{\"OverlayScalePercent\":111}");
+            configureWithData.Invoke(null, new object[] { pluginRoot, userData });
+            var overlayIds = (string[])catalog.GetMethod("GetPresetIds").Invoke(null,
+                new object[] { "overlay" });
+            if (!overlayIds.Contains("downloaded.test") || !overlayIds.Contains("community.test"))
+                throw new Exception("Bundled and downloaded creator packs were not merged.");
+            if (!(bool)matchesTheme.Invoke(null,
+                    new object[] { "downloaded.test", "any.desktop.theme", false }) ||
+                !(bool)matchesTheme.Invoke(null,
+                    new object[] { "downloaded.test", "any.fullscreen.theme", true }))
+                throw new Exception("Creator packs without a target theme must remain universal.");
+
+            Console.WriteLine("Creator pack discovery, downloaded cache and application passed.");
             return 0;
         }
         catch (Exception error)

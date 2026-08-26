@@ -27,10 +27,10 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Text="{DynamicResource LOCCSM_CustomSoundsTitle}"
+            <TextBlock x:Name="OperationTitleText" Grid.Row="0" Text="{DynamicResource LOCCSM_CustomSoundsTitle}"
                        Foreground="{DynamicResource Narian.Accent}"
                        FontSize="20" FontWeight="SemiBold" Margin="0,0,0,10"/>
-            <TextBlock Grid.Row="1" Text="{DynamicResource LOCCSM_CustomSoundProcessing}"
+            <TextBlock x:Name="OperationMessageText" Grid.Row="1" Text="{DynamicResource LOCCSM_CustomSoundProcessing}"
                        TextWrapping="Wrap" Margin="0,0,0,16"/>
             <ProgressBar Grid.Row="2" IsIndeterminate="True" Height="8" Margin="0,0,0,22"/>
             <Button x:Name="CancelButton" Grid.Row="3"

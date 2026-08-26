@@ -17,6 +17,18 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         public event EventHandler CancelRequested;
 
+        public void Configure(string title, string message)
+        {
+            if (!string.IsNullOrWhiteSpace(title))
+            {
+                OperationTitleText.Text = title;
+            }
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                OperationMessageText.Text = message;
+            }
+        }
+
         public void CompleteAndClose()
         {
             allowClose = true;

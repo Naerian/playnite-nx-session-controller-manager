@@ -826,4 +826,9 @@
     <sys:String x:Key="LOCCSM_PresetGroupCustom">Custom</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">This creator design controls the complete appearance. Select a plugin preset or Custom to edit it.</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">Audio is managed by the active creator design. Select plugin or Custom designs for both notification destinations to edit sounds.</sys:String>
+    <sys:String x:Key="LOCCSM_UpdateCreatorThemes">Update designs</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesUpdateTitle">Creator designs</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">Checking the official catalog and installing compatible designs…</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesCurrent">Your creator designs are already up to date.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesUpdated">Designs updated. New: {0}. Updated: {1}. Incompatible: {2}.</sys:String>
 </ResourceDictionary>

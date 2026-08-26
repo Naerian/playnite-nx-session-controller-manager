@@ -794,4 +794,9 @@
     <sys:String x:Key="LOCCSM_PresetGroupCustom">사용자 지정</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">이 크리에이터 디자인이 전체 모양을 관리합니다. 편집하려면 플러그인 프리셋 또는 사용자 지정을 선택하세요.</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">오디오는 활성 크리에이터 디자인이 관리합니다. 사운드를 편집하려면 플러그인 또는 사용자 지정 디자인을 선택하세요.</sys:String>
+    <sys:String x:Key="LOCCSM_UpdateCreatorThemes">디자인 업데이트</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesUpdateTitle">크리에이터 디자인</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">공식 카탈로그를 확인하고 호환되는 디자인을 설치하는 중…</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesCurrent">크리에이터 디자인이 이미 최신 상태입니다.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesUpdated">업데이트 완료. 신규: {0}. 업데이트: {1}. 비호환: {2}.</sys:String>
 </ResourceDictionary>

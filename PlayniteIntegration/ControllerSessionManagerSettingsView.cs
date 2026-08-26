@@ -1863,7 +1863,19 @@ namespace ControllerSessionManager.PlayniteIntegration
                 return;
             }
 
+            ShowOperationProgress(cancellation, null, null);
+        }
+
+        private void ShowOperationProgress(CancellationTokenSource cancellation,
+            string title, string message)
+        {
+            if (customSoundProgressWindow != null)
+            {
+                return;
+            }
+
             var progressWindow = new CustomSoundProgressWindow();
+            progressWindow.Configure(title, message);
             var appearanceSettings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
             SettingsAppearance.ApplyWindow(progressWindow,
                 appearanceSettings == null
@@ -1890,6 +1902,46 @@ namespace ControllerSessionManager.PlayniteIntegration
             };
             progressWindow.Closed += (sender, args) => RestoreCustomSoundProgressOwner();
             progressWindow.Show();
+        }
+
+        private async void UpdateCreatorThemesClick(object sender, RoutedEventArgs args)
+        {
+            if (plugin == null || customSoundProgressWindow != null)
+            {
+                return;
+            }
+
+            var cancellation = new CancellationTokenSource();
+            try
+            {
+                ShowOperationProgress(cancellation,
+                    plugin.Loc("LOCCSM_CreatorThemesUpdateTitle"),
+                    plugin.Loc("LOCCSM_CreatorThemesUpdateProcessing"));
+                var result = await plugin.UpdateCreatorThemesAsync(cancellation.Token);
+                CloseCustomSoundProgressWindow();
+                if (result != null && result.Succeeded)
+                {
+                    CreatorThemeCatalog.Reload();
+                    RefreshVisualProfileUi();
+                }
+                if (result != null && !result.Cancelled)
+                {
+                    plugin.ShowCreatorThemeUpdateResult(result);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                CloseCustomSoundProgressWindow();
+            }
+            catch (Exception ex)
+            {
+                CloseCustomSoundProgressWindow();
+                plugin.ShowCreatorThemeUpdateResult(CreatorThemeUpdateResult.Failed(ex.Message));
+            }
+            finally
+            {
+                cancellation.Dispose();
+            }
         }
 
         private void CloseCustomSoundProgressWindow()

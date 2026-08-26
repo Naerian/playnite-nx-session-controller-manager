@@ -1,9 +1,10 @@
-param([switch]$WithImage, [string]$Creator)
+param([switch]$WithImage, [switch]$Desktop, [string]$Creator)
 
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 $assemblyPath = Join-Path $root "bin\Release\ControllerSessionManager.OverlayHost.exe"
-$outputName = if ($Creator) { "Toast$($Creator)Preview.png" } else { "ToastPreview.png" }
+$surfaceName = if ($Desktop) { "Desktop" } else { "Fullscreen" }
+$outputName = if ($Creator) { "Toast$($Creator)$($surfaceName)Preview.png" } else { "ToastPreview.png" }
 $outputPath = Join-Path $root ("obj\" + $outputName)
 
 Add-Type -AssemblyName PresentationCore, PresentationFramework, WindowsBase
@@ -36,7 +37,7 @@ if ($Creator) {
     [Reflection.Assembly]::LoadFrom("C:\Playnite\Playnite.SDK.dll") | Out-Null
     $pluginAssembly = [Reflection.Assembly]::LoadFrom((Join-Path $root "bin\Release\ControllerSessionManager.dll"))
     $catalogType = $pluginAssembly.GetType("ControllerSessionManager.PlayniteIntegration.CreatorThemeCatalog", $true)
-    $catalogType.GetMethod("Configure").Invoke($null, @([string]$root)) | Out-Null
+    $catalogType.GetMethod("Configure", [type[]]@([string])).Invoke($null, @([string]$root)) | Out-Null
     $settingsType = $pluginAssembly.GetType("ControllerSessionManager.PlayniteIntegration.ControllerSessionManagerSettings", $true)
     $settings = [Activator]::CreateInstance($settingsType)
     $presetType = $pluginAssembly.GetType("ControllerSessionManager.PlayniteIntegration.NotificationStylePresets", $true)
@@ -44,7 +45,8 @@ if ($Creator) {
     $pluginType = $pluginAssembly.GetType("ControllerSessionManager.PlayniteIntegration.ControllerSessionManagerPlugin", $true)
     $plugin = [Runtime.Serialization.FormatterServices]::GetUninitializedObject($pluginType)
     $pluginType.GetField("settings", [Reflection.BindingFlags]"Instance,NonPublic").SetValue($plugin, $settings)
-    $style = $pluginType.GetMethod("GetToastStylePayload", [Reflection.BindingFlags]"Instance,NonPublic").Invoke($plugin, $null)
+    $payloadMethod = if ($Desktop) { "GetDesktopToastStylePayload" } else { "GetToastStylePayload" }
+    $style = $pluginType.GetMethod($payloadMethod, [Reflection.BindingFlags]"Instance,NonPublic").Invoke($plugin, $null)
 }
 
 $type.GetMethod("Enqueue").Invoke($window, @(
@@ -58,9 +60,12 @@ $content = [Windows.FrameworkElement]$window.Content
 $window.Content = $null
 $preview = [Windows.Controls.Grid]::new()
 $preview.Background = [Windows.Media.SolidColorBrush]::new([Windows.Media.Color]::FromRgb(54, 57, 63))
-$preview.Children.Add($content) | Out-Null
-$width = [Math]::Ceiling($window.Width + 48)
-$height = [Math]::Ceiling($window.Height + 48)
+$frame = [Windows.Controls.Border]::new()
+$frame.Padding = [Windows.Thickness]::new(32)
+$frame.Child = $content
+$preview.Children.Add($frame) | Out-Null
+$width = [Math]::Ceiling($window.Width + 160)
+$height = [Math]::Ceiling($window.Height + 64)
 $size = [Windows.Size]::new($width, $height)
 $preview.Measure($size)
 $preview.Arrange([Windows.Rect]::new($size))

@@ -2,6 +2,7 @@ $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 
 $viewSource = Get-Content -Raw (Join-Path $root "PlayniteIntegration\ControllerSessionManagerSettingsView.cs")
+$viewXaml = Get-Content -Raw (Join-Path $root "PlayniteIntegration\ControllerSessionManagerSettingsView.xaml")
 $pluginSource = Get-Content -Raw (Join-Path $root "PlayniteIntegration\ControllerSessionManagerPlugin.cs")
 if ($viewSource -notmatch 'plugin\.ShowNotificationPresetPreview\s*\(\s*\)') {
     throw "Changing a notification style preset must launch its automatic preview."
@@ -9,6 +10,30 @@ if ($viewSource -notmatch 'plugin\.ShowNotificationPresetPreview\s*\(\s*\)') {
 if ($pluginSource -notmatch 'ShowDesktopNotificationPreview\s*\(\s*"connected"\s*,\s*false\s*\)' -or
     $pluginSource -notmatch 'ShowNotificationPreview\s*\(\s*"connected"\s*,\s*false\s*\)') {
     throw "The automatic notification preset preview must explicitly disable sound."
+}
+if (($viewXaml | Select-String -Pattern 'Click="UpdateCreatorThemesClick"' -AllMatches).Matches.Count -ne 2 -or
+    $viewSource -notmatch 'ShowOperationProgress\s*\(' -or
+    $viewSource -notmatch 'CreatorThemeCatalog\.Reload\s*\(\s*\)') {
+    throw "Creator design updates must use the cancellable progress window and reload the selectors."
+}
+$profileUpdateRows = [regex]::Matches($viewXaml,
+    'Click="ImportVisualProfileClick"\s*/>\s*<Button[^>]+Click="UpdateCreatorThemesClick"',
+    [Text.RegularExpressions.RegexOptions]::Singleline)
+if ($profileUpdateRows.Count -ne 2) {
+    throw "Each visual-profile toolbar must place its single design update button after Import."
+}
+$presetItemStyle = [regex]::Match($viewXaml,
+    '<Style x:Key="AppearancePresetItemStyle"[\s\S]*?</Style>\s*<DataTemplate x:Key="AppearancePresetItemTemplate">').Value
+if ($presetItemStyle -notmatch 'Property="IsSelected" Value="True"' -or
+    $presetItemStyle -notmatch 'Property="Background" Value="\{DynamicResource Narian\.Accent\}"' -or
+    $presetItemStyle -notmatch 'Property="Foreground" Value="\{DynamicResource Narian\.AccentOn\}"') {
+    throw "Appearance preset selectors must use the active settings accent and its contrast color."
+}
+$presetItemTemplate = [regex]::Match($viewXaml,
+    '<DataTemplate x:Key="AppearancePresetItemTemplate">[\s\S]*?</DataTemplate>').Value
+if ($presetItemTemplate -notmatch 'Binding="\{Binding IsSelected, RelativeSource=\{RelativeSource AncestorType=\{x:Type ComboBoxItem\}\}\}"' -or
+    $presetItemTemplate -notmatch 'TargetName="PresetLabel" Property="Foreground" Value="\{DynamicResource Narian\.AccentOn\}"') {
+    throw "The selected preset label must explicitly inherit the active accent contrast color."
 }
 
 [Reflection.Assembly]::LoadFrom("C:\Playnite\Playnite.SDK.dll") | Out-Null
@@ -20,7 +45,7 @@ $assembly = [Reflection.Assembly]::LoadFrom((Join-Path $root "bin\Release\Contro
 $catalogType = $assembly.GetType(
     "ControllerSessionManager.PlayniteIntegration.CreatorThemeCatalog", $true)
 $configureCatalogArgs = [object[]]@([string](Join-Path $root "obj\EmptyCreatorPackPlugin"))
-$catalogType.GetMethod("Configure").Invoke($null, $configureCatalogArgs) | Out-Null
+$catalogType.GetMethod("Configure", [type[]]@([string])).Invoke($null, $configureCatalogArgs) | Out-Null
 $definitionType = $assembly.GetType(
     "ControllerSessionManager.PlayniteIntegration.CreatorThemeDefinition", $true)
 $definition = [Activator]::CreateInstance($definitionType)
@@ -48,6 +73,11 @@ if ($null -eq $constructor) {
 }
 
 $view = $constructor.Invoke(@($null))
+if ($null -eq $view.FindName("DesktopDesignExpander") -or
+    $null -eq $view.FindName("FullscreenDesignExpander") -or
+    $null -eq $view.FindName("OverlayDesignExpander")) {
+    throw "The creator-design update surfaces were not constructed."
+}
 $selector = $view.FindName("NotificationSoundPackSelector")
 if ($null -eq $selector) {
     throw "Settings view XAML did not create the notification sound pack selector."
@@ -86,6 +116,42 @@ if ($view.FindName("DesktopAlertsExpander").IsExpanded -or
     $view.FindName("OverlayDesignExpander").IsExpanded -or
     $view.FindName("OverlayAppearanceLayoutExpander").IsExpanded) {
     throw "Notification and overlay child sections must start collapsed."
+}
+$overlayLayout = $view.FindName("OverlayEditorLayoutGrid")
+$overlaySettingsScroll = $view.FindName("OverlaySettingsScrollViewer")
+$overlayPreviewPane = $view.FindName("OverlayPreviewPane")
+$overlayPreviewViewport = $view.FindName("OverlayPreviewViewport")
+function Test-LogicalAncestor($ancestor, $element) {
+    while ($null -ne $element) {
+        if ([object]::ReferenceEquals($ancestor, $element)) { return $true }
+        $element = [Windows.LogicalTreeHelper]::GetParent($element)
+    }
+    return $false
+}
+if ($null -eq $overlayLayout -or $overlayLayout.ColumnDefinitions.Count -ne 3 -or
+    $overlayLayout.ColumnDefinitions[0].Width.GridUnitType -ne [Windows.GridUnitType]::Star -or
+    $overlayLayout.ColumnDefinitions[2].Width.GridUnitType -ne [Windows.GridUnitType]::Star -or
+    $overlayLayout.ColumnDefinitions[2].MinWidth -lt 360 -or
+    $null -eq $overlaySettingsScroll -or
+    -not (Test-LogicalAncestor $overlaySettingsScroll $view.FindName("OverlayDesignExpander")) -or
+    -not (Test-LogicalAncestor $overlaySettingsScroll $view.FindName("OverlayStyleEditor")) -or
+    $view.FindName("OverlayDesignExpander").Margin.Bottom -lt 8 -or
+    $null -eq $overlayPreviewPane -or
+    (Test-LogicalAncestor $overlaySettingsScroll $overlayPreviewPane) -or
+    [Windows.Controls.Grid]::GetColumn($overlayPreviewPane) -ne 2 -or
+    $overlayPreviewPane.HorizontalAlignment -ne [Windows.HorizontalAlignment]::Stretch -or
+    $overlayPreviewPane.VerticalAlignment -ne [Windows.VerticalAlignment]::Center -or
+    $null -eq $overlayPreviewViewport -or
+    $overlayPreviewViewport -is [Windows.Controls.ScrollViewer]) {
+    throw "The overlay preview must remain in a fixed, non-scrolling, wider right-hand pane " +
+        "(layout=$($null -ne $overlayLayout), columns=$($overlayLayout.ColumnDefinitions.Count), " +
+        "previewMin=$($overlayLayout.ColumnDefinitions[2].MinWidth), scroll=$($null -ne $overlaySettingsScroll), " +
+        "designInScroll=$(Test-LogicalAncestor $overlaySettingsScroll $view.FindName('OverlayDesignExpander')), " +
+        "editorInScroll=$(Test-LogicalAncestor $overlaySettingsScroll $view.FindName('OverlayStyleEditor')), " +
+        "previewInScroll=$(Test-LogicalAncestor $overlaySettingsScroll $overlayPreviewPane), " +
+        "column=$([Windows.Controls.Grid]::GetColumn($overlayPreviewPane)), " +
+        "alignment=$($overlayPreviewPane.HorizontalAlignment)/$($overlayPreviewPane.VerticalAlignment), " +
+        "viewport=$($overlayPreviewViewport.GetType().Name))."
 }
 if ($view.FindName("DesktopAdvancedDesignExpander").Visibility -ne [Windows.Visibility]::Collapsed -or
     $view.FindName("FullscreenAdvancedDesignExpander").Visibility -ne [Windows.Visibility]::Collapsed -or

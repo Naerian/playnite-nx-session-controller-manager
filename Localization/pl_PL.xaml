@@ -794,4 +794,9 @@
     <sys:String x:Key="LOCCSM_PresetGroupCustom">Niestandardowe</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">Ten projekt twórcy kontroluje cały wygląd. Wybierz preset wtyczki lub Niestandardowe, aby edytować.</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">Dźwięk jest zarządzany przez aktywny projekt twórcy. Wybierz projekty wtyczki lub niestandardowe, aby edytować dźwięki.</sys:String>
+    <sys:String x:Key="LOCCSM_UpdateCreatorThemes">Aktualizuj projekty</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesUpdateTitle">Projekty twórców</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">Sprawdzanie oficjalnego katalogu i instalowanie zgodnych projektów…</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesCurrent">Projekty twórców są już aktualne.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesUpdated">Zaktualizowano. Nowe: {0}. Zaktualizowane: {1}. Niezgodne: {2}.</sys:String>
 </ResourceDictionary>

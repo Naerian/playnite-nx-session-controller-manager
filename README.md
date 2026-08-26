@@ -131,7 +131,7 @@ Community translation contributions are welcome.
 
 ## Creator appearance packs
 
-Theme authors can contribute self-contained notification and overlay designs that appear separately under **Creator designs**. Packs can control composition, state backgrounds, independent border sides, typography, gradients, images, containers, badges and sounds. Contributions are added through a project fork and pull request, then distributed with Controller Manager. See the [creator pack guide](docs/CREATOR-THEMES.md).
+Theme authors can contribute self-contained notification and overlay designs that appear separately under **Creator designs**. Packs can control composition, state backgrounds, independent border sides, typography, gradients, images, containers, badges and sounds. Contributions are reviewed in the dedicated [creator-theme repository](https://github.com/Naerian/controller-manager-creator-themes) and users can install updates without waiting for a new plugin release. See the [complete creator Wiki](https://github.com/Naerian/controller-manager-creator-themes/wiki).
 
 ## Acknowledgements
 

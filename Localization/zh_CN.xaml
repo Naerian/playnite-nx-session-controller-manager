@@ -794,4 +794,9 @@
     <sys:String x:Key="LOCCSM_PresetGroupCustom">自定义</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">此创作者设计控制完整外观。请选择插件预设或自定义以进行编辑。</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">音频由当前创作者设计管理。请选择插件或自定义设计以编辑声音。</sys:String>
+    <sys:String x:Key="LOCCSM_UpdateCreatorThemes">更新设计</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesUpdateTitle">创作者设计</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">正在检查官方目录并安装兼容设计…</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesCurrent">创作者设计已是最新版本。</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesUpdated">更新完成。新增：{0}。已更新：{1}。不兼容：{2}。</sys:String>
 </ResourceDictionary>

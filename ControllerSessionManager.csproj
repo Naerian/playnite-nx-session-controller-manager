@@ -93,6 +93,7 @@
     <Compile Include="PlayniteIntegration\NotificationFontCatalog.cs" />
     <Compile Include="PlayniteIntegration\NotificationStylePresets.cs" />
     <Compile Include="PlayniteIntegration\CreatorThemeCatalog.cs" />
+    <Compile Include="PlayniteIntegration\CreatorThemeUpdater.cs" />
     <Compile Include="PlayniteIntegration\NotificationStyleState.cs" />
     <Compile Include="PlayniteIntegration\OverlayStylePresets.cs" />
     <Compile Include="PlayniteIntegration\VisualProfileSnapshot.cs" />

@@ -5,7 +5,7 @@ $root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 $assembly = [Reflection.Assembly]::LoadFrom((Join-Path $root "bin\Release\ControllerSessionManager.dll"))
 $catalogType = $assembly.GetType("ControllerSessionManager.PlayniteIntegration.CreatorThemeCatalog", $true)
 $configureCatalogArgs = [object[]]@([string](Join-Path $root "obj\EmptyCreatorPackPlugin"))
-$catalogType.GetMethod("Configure").Invoke($null, $configureCatalogArgs) | Out-Null
+$catalogType.GetMethod("Configure", [type[]]@([string])).Invoke($null, $configureCatalogArgs) | Out-Null
 $definitionType = $assembly.GetType(
     "ControllerSessionManager.PlayniteIntegration.CreatorThemeDefinition", $true)
 $definition = [Activator]::CreateInstance($definitionType)

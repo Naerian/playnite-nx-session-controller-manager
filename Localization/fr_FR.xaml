@@ -796,4 +796,9 @@
     <sys:String x:Key="LOCCSM_PresetGroupCustom">Personnalisé</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">Ce design de créateur contrôle toute l’apparence. Sélectionnez un preset du plugin ou Personnalisé pour la modifier.</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">L’audio est géré par le design de créateur actif. Utilisez des designs du plugin ou Personnalisé pour modifier les sons.</sys:String>
+    <sys:String x:Key="LOCCSM_UpdateCreatorThemes">Mettre à jour les designs</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesUpdateTitle">Designs de créateurs</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">Vérification du catalogue officiel et installation des designs compatibles…</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesCurrent">Vos designs de créateurs sont déjà à jour.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemesUpdated">Designs mis à jour. Nouveaux : {0}. Mis à jour : {1}. Incompatibles : {2}.</sys:String>
 </ResourceDictionary>

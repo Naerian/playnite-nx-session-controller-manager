@@ -33,6 +33,33 @@
         <Style x:Key="AppearancePresetItemStyle" TargetType="ComboBoxItem"
                BasedOn="{StaticResource {x:Type ComboBoxItem}}">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Foreground" Value="{DynamicResource Narian.Text}" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBoxItem">
+                        <Border x:Name="PresetItemBackground"
+                                Background="{TemplateBinding Background}"
+                                Padding="{TemplateBinding Padding}"
+                                CornerRadius="2"
+                                TextElement.Foreground="{TemplateBinding Foreground}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="PresetItemBackground" Property="Background" Value="{DynamicResource Narian.Hover}" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="PresetItemBackground" Property="Background" Value="{DynamicResource Narian.Accent}" />
+                                <Setter Property="Foreground" Value="{DynamicResource Narian.AccentOn}" />
+                                <Setter Property="FontWeight" Value="SemiBold" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsHeader}" Value="True">
                     <Setter Property="IsHitTestVisible" Value="False" />
@@ -48,7 +75,8 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock x:Name="PresetLabel" Text="{Binding DisplayName}" VerticalAlignment="Center" />
+                    <TextBlock x:Name="PresetLabel" Text="{Binding DisplayName}" VerticalAlignment="Center"
+                               Foreground="{DynamicResource Narian.Text}" />
                     <Button Grid.Column="1" Content="&#xE74D;" FontFamily="Segoe MDL2 Assets"
                             Width="28" Height="24" MinWidth="28" MinHeight="24" Padding="0"
                             Margin="16,0,0,0" Tag="{Binding Key}" Click="DeleteImportedVisualProfileClick"
@@ -57,6 +85,10 @@
                 </Grid>
             </Border>
             <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ComboBoxItem}}}"
+                             Value="True">
+                    <Setter TargetName="PresetLabel" Property="Foreground" Value="{DynamicResource Narian.AccentOn}" />
+                </DataTrigger>
                 <DataTrigger Binding="{Binding IsHeader}" Value="True">
                     <Setter TargetName="PresetRow" Property="BorderBrush" Value="{DynamicResource Narian.Accent}" />
                     <Setter TargetName="PresetRow" Property="BorderThickness" Value="0,0,0,1" />
@@ -1260,6 +1292,8 @@
                                                     Style="{StaticResource {x:Type Button}}" Click="ExportVisualProfileClick"/>
                                             <Button Content="{DynamicResource LOCCSM_ImportVisualProfile}" MinWidth="180" Margin="0,0,8,8"
                                                     Style="{StaticResource {x:Type Button}}" Click="ImportVisualProfileClick"/>
+                                            <Button Content="{DynamicResource LOCCSM_UpdateCreatorThemes}" MinWidth="160" Margin="0,0,8,8"
+                                                    Style="{StaticResource {x:Type Button}}" Click="UpdateCreatorThemesClick"/>
                                         </WrapPanel>
                                     </StackPanel>
                                 </Border>
@@ -1756,7 +1790,6 @@
                         <Grid Margin="16,16,16,16" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
                             <StackPanel Grid.Row="0" Style="{StaticResource PageSection}">
@@ -1765,22 +1798,31 @@
                                 </Border>
                                 <TextBlock Text="{DynamicResource LOCCSM_OverlayAppearanceHelp}" Style="{StaticResource SectionSubtitleText}" />
                             </StackPanel>
-                             <Grid Grid.Row="1" Margin="0,0,0,8">
-                                 <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-                                 <Grid.ColumnDefinitions><ColumnDefinition Width="3*"/><ColumnDefinition Width="14"/><ColumnDefinition Width="2*" MinWidth="280"/></Grid.ColumnDefinitions>
-                                 <StackPanel Grid.Row="0" Grid.ColumnSpan="3">
-                                     <CheckBox Content="{DynamicResource LOCCSM_EnableDisconnectOverlay}" IsChecked="{Binding ShowDisconnectOverlay}" />
-                                     <TextBlock Text="{DynamicResource LOCCSM_ShowDisconnectOverlayHelp}" Style="{StaticResource ControlHintText}" />
-                                     <TextBlock Text="{DynamicResource LOCCSM_VisualProfileHelp}" Style="{StaticResource FieldHintText}" Margin="0,0,0,8"/>
+                            <Grid x:Name="OverlayEditorLayoutGrid" Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="*" MinWidth="360" />
+                                </Grid.ColumnDefinitions>
+                                <ScrollViewer x:Name="OverlaySettingsScrollViewer" Grid.Column="0"
+                                              Style="{StaticResource FillScrollViewer}">
+                                    <StackPanel>
+                                     <StackPanel>
+                                      <CheckBox Content="{DynamicResource LOCCSM_EnableDisconnectOverlay}" IsChecked="{Binding ShowDisconnectOverlay}" />
+                                      <TextBlock Text="{DynamicResource LOCCSM_ShowDisconnectOverlayHelp}" Style="{StaticResource ControlHintText}" />
+                                      <TextBlock Text="{DynamicResource LOCCSM_VisualProfileHelp}" Style="{StaticResource FieldHintText}" Margin="0,0,0,8"/>
                                      <WrapPanel Margin="0,0,0,8">
                                      <Button Content="{DynamicResource LOCCSM_ExportVisualProfile}" MinWidth="180" Margin="0,0,8,8"
                                              Style="{StaticResource {x:Type Button}}" Click="ExportVisualProfileClick"/>
                                      <Button Content="{DynamicResource LOCCSM_ImportVisualProfile}" MinWidth="180" Margin="0,0,8,8"
                                              Style="{StaticResource {x:Type Button}}" Click="ImportVisualProfileClick"/>
-                                     </WrapPanel>
-                                 </StackPanel>
-                                 <Expander x:Name="OverlayDesignExpander" Style="{StaticResource AppearanceSectionExpander}"
-                                           Grid.Row="1" Grid.Column="0" IsExpanded="False" Header="{DynamicResource LOCCSM_Design}" Margin="0,8,0,0">
+                                     <Button Content="{DynamicResource LOCCSM_UpdateCreatorThemes}" MinWidth="160" Margin="0,0,8,8"
+                                             Style="{StaticResource {x:Type Button}}" Click="UpdateCreatorThemesClick"/>
+                                      </WrapPanel>
+                                  </StackPanel>
+                                  <StackPanel IsEnabled="{Binding ShowDisconnectOverlay}">
+                                  <Expander x:Name="OverlayDesignExpander" Style="{StaticResource AppearanceSectionExpander}"
+                                            IsExpanded="False" Header="{DynamicResource LOCCSM_Design}" Margin="0,8,0,8">
                                      <StackPanel>
                                          <CheckBox Content="{DynamicResource LOCCSM_FilterCreatorDesignsByCurrentTheme}"
                                                    IsChecked="{Binding FilterCreatorDesignsByCurrentTheme}" Margin="0,0,0,10"/>
@@ -1797,18 +1839,10 @@
                                          <WrapPanel x:Name="OverlayPluginPresetChips" Visibility="Collapsed"/>
                                          <WrapPanel x:Name="OverlayCreatorPresetChips" Visibility="Collapsed"/>
                                          <WrapPanel x:Name="OverlayCustomPresetChips" Visibility="Collapsed"/>
-                                     </StackPanel>
-                                 </Expander>
-                            </Grid>
-                            <Grid Grid.Row="2" IsEnabled="{Binding ShowDisconnectOverlay}">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="3*" />
-                                    <ColumnDefinition Width="14" />
-                                    <ColumnDefinition Width="2*" MinWidth="280" />
-                                </Grid.ColumnDefinitions>
-                                <ScrollViewer x:Name="OverlayStyleEditor" Grid.Column="0" IsEnabled="{Binding CanEditOverlayStyle}">
-                                    <ScrollViewer.Style><Style TargetType="ScrollViewer" BasedOn="{StaticResource FillScrollViewer}"><Setter Property="Opacity" Value="1"/><Style.Triggers><DataTrigger Binding="{Binding CanEditOverlayStyle}" Value="False"><Setter Property="Opacity" Value="0.42"/></DataTrigger></Style.Triggers></Style></ScrollViewer.Style>
-                                    <StackPanel>
+                                      </StackPanel>
+                                  </Expander>
+                                  <StackPanel x:Name="OverlayStyleEditor" IsEnabled="{Binding CanEditOverlayStyle}">
+                                    <StackPanel.Style><Style TargetType="StackPanel"><Setter Property="Opacity" Value="1"/><Style.Triggers><DataTrigger Binding="{Binding CanEditOverlayStyle}" Value="False"><Setter Property="Opacity" Value="0.42"/></DataTrigger></Style.Triggers></Style></StackPanel.Style>
                                         <Expander x:Name="OverlayAppearanceLayoutExpander" Style="{StaticResource AppearanceSectionExpander}" IsExpanded="False"
                                                   Header="{DynamicResource LOCCSM_AppearanceLayout}">
                                             <WrapPanel>
@@ -1971,9 +2005,13 @@
                                             </WrapPanel>
                                             </StackPanel>
                                         </Expander>
+                                  </StackPanel>
+                                  </StackPanel>
                                     </StackPanel>
                                 </ScrollViewer>
-                                <Grid Grid.Column="2">
+                                <Grid x:Name="OverlayPreviewPane" Grid.Column="2"
+                                      IsEnabled="{Binding ShowDisconnectOverlay}"
+                                      HorizontalAlignment="Stretch" VerticalAlignment="Center">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
@@ -1981,10 +2019,10 @@
                                     </Grid.RowDefinitions>
                                     <TextBlock Grid.Row="0" Text="{DynamicResource LOCCSM_OverlayPreview}" Style="{StaticResource AppearanceGroupHeader}" />
                                     <TextBlock Grid.Row="1" Text="{DynamicResource LOCCSM_OverlayPreviewHelp}" Style="{StaticResource HintText}" Margin="0,0,0,8" />
-                                    <Border Grid.Row="2" MinHeight="280" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                    <Border Grid.Row="2" MinHeight="320" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                             Background="{Binding OverlayDimColor, Converter={StaticResource HexColorBrushConverter}}" CornerRadius="4" ClipToBounds="False">
-                                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
-                                                      VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                                        <Grid x:Name="OverlayPreviewViewport" ClipToBounds="True"
+                                              VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                                              <Border MinWidth="280" MaxWidth="{Binding OverlayCardWidth}" HorizontalAlignment="{Binding OverlayCardPosition, Converter={StaticResource OverlayPositionHorizontalAlignmentConverter}}" VerticalAlignment="{Binding OverlayCardPosition, Converter={StaticResource OverlayPositionVerticalAlignmentConverter}}"
                                                     Margin="{Binding OverlayScreenMargin, Converter={StaticResource NumberToThicknessConverter}}"
                                                     RenderTransformOrigin="0.5,0.5" RenderTransform="{Binding OverlayScalePercent, Converter={StaticResource PreviewScaleConverter}}"
@@ -2030,7 +2068,7 @@
                                                 </Border>
                                                 </Grid>
                                             </Border>
-                                        </ScrollViewer>
+                                        </Grid>
                                     </Border>
                                 </Grid>
                             </Grid>

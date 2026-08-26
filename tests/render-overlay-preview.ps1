@@ -59,7 +59,7 @@ if ($Creator) {
     [Reflection.Assembly]::LoadFrom("C:\Playnite\Playnite.SDK.dll") | Out-Null
     $pluginAssembly = [Reflection.Assembly]::LoadFrom((Join-Path $root "bin\Release\ControllerSessionManager.dll"))
     $catalogType = $pluginAssembly.GetType("ControllerSessionManager.PlayniteIntegration.CreatorThemeCatalog", $true)
-    $catalogType.GetMethod("Configure").Invoke($null, @([string]$root)) | Out-Null
+    $catalogType.GetMethod("Configure", [type[]]@([string])).Invoke($null, @([string]$root)) | Out-Null
     $settingsType = $pluginAssembly.GetType("ControllerSessionManager.PlayniteIntegration.ControllerSessionManagerSettings", $true)
     $settings = [Activator]::CreateInstance($settingsType)
     $presetType = $pluginAssembly.GetType("ControllerSessionManager.PlayniteIntegration.OverlayStylePresets", $true)

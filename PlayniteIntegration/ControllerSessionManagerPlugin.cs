@@ -48,6 +48,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private int notificationSoundCleanupGeneration;
         private readonly DiagnosticEventBuffer diagnosticEvents;
         private readonly ControllerMappingDatabaseUpdater controllerDatabaseUpdater;
+        private readonly CreatorThemeUpdater creatorThemeUpdater;
         private ResourceDictionary englishFallbackResources;
         private ControllerSessionManagerSettings settings;
         private bool disposed;
@@ -109,10 +110,12 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             logger = LogManager.GetLogger();
             var pluginDirectory = Path.GetDirectoryName(GetType().Assembly.Location);
-            CreatorThemeCatalog.Configure(pluginDirectory);
-            ImportedVisualProfileCatalog.Configure(GetPluginUserDataPath());
+            var userDataDirectory = GetPluginUserDataPath();
+            CreatorThemeCatalog.Configure(pluginDirectory, userDataDirectory);
+            creatorThemeUpdater = new CreatorThemeUpdater(CreatorThemeCatalog.DownloadedRoot);
+            ImportedVisualProfileCatalog.Configure(userDataDirectory);
             controllerDatabaseUpdater = new ControllerMappingDatabaseUpdater(
-                Path.Combine(pluginDirectory, "gamecontrollerdb.txt"), GetPluginUserDataPath());
+                Path.Combine(pluginDirectory, "gamecontrollerdb.txt"), userDataDirectory);
             if (!controllerDatabaseUpdater.ConfigureActiveDatabase())
             {
                 logger.Warn("Controller mapping database was unavailable; SDL built-in mappings will be used.");
@@ -475,6 +478,32 @@ namespace ControllerSessionManager.PlayniteIntegration
             {
                 PlayNotificationSound(SoundKindFromToast(previewKind), preview: true);
             }
+        }
+
+        public Task<CreatorThemeUpdateResult> UpdateCreatorThemesAsync(
+            CancellationToken cancellationToken)
+        {
+            return creatorThemeUpdater.CheckForUpdatesAsync(cancellationToken);
+        }
+
+        public void ShowCreatorThemeUpdateResult(CreatorThemeUpdateResult result)
+        {
+            if (result == null)
+            {
+                return;
+            }
+            if (!result.Succeeded)
+            {
+                PlayniteApi.Dialogs.ShowErrorMessage(result.Error,
+                    Loc("LOCCSM_CreatorThemesUpdateTitle"));
+                return;
+            }
+
+            var message = result.CatalogCurrent
+                ? Loc("LOCCSM_CreatorThemesCurrent")
+                : string.Format(Loc("LOCCSM_CreatorThemesUpdated"), result.Installed,
+                    result.Updated, result.Incompatible);
+            PlayniteApi.Dialogs.ShowMessage(message, Loc("LOCCSM_CreatorThemesUpdateTitle"));
         }
 
         internal string GetConfiguredThemeId(bool fullscreen)
