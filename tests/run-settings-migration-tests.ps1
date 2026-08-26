@@ -3,6 +3,31 @@ $root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 
 [Reflection.Assembly]::LoadFrom("C:\Playnite\Playnite.SDK.dll") | Out-Null
 $assembly = [Reflection.Assembly]::LoadFrom((Join-Path $root "bin\Release\ControllerSessionManager.dll"))
+$catalogType = $assembly.GetType("ControllerSessionManager.PlayniteIntegration.CreatorThemeCatalog", $true)
+$configureCatalogArgs = [object[]]@([string](Join-Path $root "obj\EmptyCreatorPackPlugin"))
+$catalogType.GetMethod("Configure").Invoke($null, $configureCatalogArgs) | Out-Null
+$definitionType = $assembly.GetType(
+    "ControllerSessionManager.PlayniteIntegration.CreatorThemeDefinition", $true)
+$definition = [Activator]::CreateInstance($definitionType)
+$definition.Id = "example.creator"
+$definition.Name = "Example Creator Design"
+$definition.Author = "Test Author"
+$definition.Version = "1.0.0"
+$definition.Description = "Test-only creator design."
+$definition.Directory = Join-Path $root "obj\TestCreatorPack"
+$definition.Notification = [Collections.Generic.Dictionary[string, object]]::new()
+$definition.Notification.Add("NotificationBackgroundColor", "#FF112233")
+$definition.Notification.Add("NotificationUseBorderGradient", $true)
+$definition.Notification.Add("NotificationShowBorderGlow", $true)
+$definition.Notification.Add("DesktopNotificationBackgroundColor", "#FF223344")
+$definition.Notification.Add("DesktopNotificationShowIconContainer", $true)
+$definition.Overlay = [Collections.Generic.Dictionary[string, object]]::new()
+$definition.Overlay.Add("OverlayCardColor", "#FF334455")
+$definition.Overlay.Add("OverlayUseIndependentBorders", $true)
+$definition.Overlay.Add("OverlayBlockOrder", "Title,Controller,Metadata,Instruction,Status")
+$catalogFlags = [Reflection.BindingFlags]"Static,NonPublic"
+$definitions = $catalogType.GetField("Definitions", $catalogFlags).GetValue($null)
+$definitions.Add($definition.Id, $definition)
 $type = $assembly.GetType("ControllerSessionManager.PlayniteIntegration.ControllerSessionManagerSettings", $true)
 $settings = [Activator]::CreateInstance($type)
 
@@ -187,27 +212,11 @@ $applyPreset.Invoke($null, @($settings, "Bold")) | Out-Null
 if ($settings.OverlayScalePercent -ne 100) { throw "Bold preset must use 100% scale." }
 $applyPreset.Invoke($null, @($settings, "Arcade")) | Out-Null
 if ($settings.OverlayScalePercent -ne 110) { throw "Arcade preset must use 110% scale." }
-$applyPreset.Invoke($null, @($settings, "Aniki")) | Out-Null
-if ($settings.OverlayFontFamily -ne "Exo 2" -or
-    $settings.OverlayCardColor -ne "#FA0C1118" -or
-    $settings.OverlayAccentColor -ne "#FFD6B16F" -or
-    -not $settings.OverlayUseGradient -or $settings.OverlayGradientAngle -ne 135 -or
-    -not $settings.OverlayShowControllerContainer -or $settings.OverlayCornerRadius -ne 15 -or
-    -not $settings.OverlayUseBorderGradient -or -not $settings.OverlayShowBorderGlow -or
-    $settings.OverlayBorderGradientEndColor -ne "#FFD6B16F" -or
-    $settings.OverlayBorderGlowColor -ne "#FFE9C48A" -or
-    $settings.OverlayBorderGlowBlur -ne 32 -or
-    $settings.OverlayBorderGlowOpacity -ne 90) {
-    throw "Aniki creator overlay does not retain its theme identity."
-}
-$applyPreset.Invoke($null, @($settings, "Helium")) | Out-Null
-if ($settings.OverlayFontFamily -ne "Trebuchet MS" -or
-    $settings.OverlayCardColor -ne "#F225282E" -or
-    $settings.OverlayAccentColor -ne "#FF1A9FFF" -or
-    $settings.OverlayGradientColor -ne "#F23C4047" -or
-    $settings.OverlayContentAlignment -ne "Left" -or $settings.OverlayCornerRadius -ne 3 -or
-    -not $settings.OverlayShowControllerContainer) {
-    throw "Helium creator overlay does not retain its theme identity."
+$applyPreset.Invoke($null, @($settings, "example.creator")) | Out-Null
+if ($settings.OverlayCardColor -ne "#FF334455" -or
+    -not $settings.OverlayUseIndependentBorders -or
+    $settings.OverlayBlockOrder -ne "Title,Controller,Metadata,Instruction,Status") {
+    throw "The creator overlay fixture does not retain its authored appearance."
 }
 
 $notificationPresetType = $assembly.GetType(
@@ -219,25 +228,13 @@ if (-not $settings.NotificationUseBackgroundImage -or
     -not (Test-Path -LiteralPath $settings.NotificationBackgroundImagePath)) {
     throw "Cinematic notification preset did not activate its bundled background image."
 }
-$applyNotificationPreset.Invoke($null, @($settings, "Aniki")) | Out-Null
-if ($settings.NotificationFontFamily -ne "Exo 2" -or
-    $settings.NotificationBackgroundColor -ne "#FA0C1118" -or
-    $settings.NotificationGradientColor -ne "#FF151D26" -or
-    $settings.NotificationGradientAngle -ne 135 -or
-    -not $settings.NotificationShowIconContainer -or
-    -not $settings.DesktopNotificationShowIconContainer -or
-    -not $settings.NotificationUseBorderGradient -or -not $settings.NotificationShowBorderGlow -or
-    -not $settings.DesktopNotificationUseBorderGradient -or -not $settings.DesktopNotificationShowBorderGlow) {
-    throw "Aniki creator notification does not retain its theme identity."
-}
-$applyNotificationPreset.Invoke($null, @($settings, "Helium")) | Out-Null
-if ($settings.NotificationFontFamily -ne "Trebuchet MS" -or
-    $settings.NotificationBackgroundColor -ne "#F2399AEC" -or
-    $settings.NotificationGradientColor -ne "#F2235ECF" -or
-    $settings.NotificationCornerRadius -ne 3 -or
-    -not $settings.NotificationShowIconContainer -or
+$applyNotificationPreset.Invoke($null, @($settings, "example.creator")) | Out-Null
+if ($settings.NotificationBackgroundColor -ne "#FF112233" -or
+    $settings.DesktopNotificationBackgroundColor -ne "#FF223344" -or
+    -not $settings.NotificationUseBorderGradient -or
+    -not $settings.NotificationShowBorderGlow -or
     -not $settings.DesktopNotificationShowIconContainer) {
-    throw "Helium creator notification does not retain its theme identity."
+    throw "The creator notification fixture does not retain its authored appearance."
 }
 $applyNotificationPreset.Invoke($null, @($settings, "Soft")) | Out-Null
 if ($settings.NotificationUseBackgroundImage -or $settings.DesktopNotificationUseBackgroundImage) {
@@ -250,9 +247,11 @@ $normalizeNotification = $notificationPresetType.GetMethod("Normalize", [Reflect
 $normalizeOverlay = $presetType.GetMethod("Normalize", [Reflection.BindingFlags]"Static,Public")
 if ($normalizeNotification.Invoke($null, @("Studio")) -ne "Custom" -or
     $normalizeNotification.Invoke($null, @("NeonPulse")) -ne "Custom" -or
+    $normalizeNotification.Invoke($null, @("removed.creator")) -ne "Custom" -or
     $normalizeOverlay.Invoke($null, @("Studio")) -ne "Custom" -or
-    $normalizeOverlay.Invoke($null, @("NeonPulse")) -ne "Custom") {
-    throw "Removed development presets were not migrated safely to Custom."
+    $normalizeOverlay.Invoke($null, @("NeonPulse")) -ne "Custom" -or
+    $normalizeOverlay.Invoke($null, @("removed.creator")) -ne "Custom") {
+    throw "Removed or unavailable presets were not migrated safely to Custom."
 }
 
 # Visual profiles carry notification background images instead of exporting machine-local paths.
@@ -462,11 +461,11 @@ if ($optimizedFrame.PixelWidth -gt 1920 -or $optimizedFrame.PixelHeight -gt 1080
     throw "Optimized notification background exceeds 1920x1080."
 }
 
-# Bundled creator ids remain locked even if the disk catalog has not been configured yet.
+# Creator designs discovered from disk remain locked while selected.
 $creatorLockSettings = [Activator]::CreateInstance($type)
-$creatorLockSettings.NotificationStylePreset = "Aniki"
-$creatorLockSettings.DesktopNotificationStylePreset = "Helium"
-$creatorLockSettings.OverlayStylePreset = "Aniki"
+$creatorLockSettings.NotificationStylePreset = "example.creator"
+$creatorLockSettings.DesktopNotificationStylePreset = "example.creator"
+$creatorLockSettings.OverlayStylePreset = "example.creator"
 if (-not $creatorLockSettings.IsFullscreenNotificationCreatorThemeActive -or
     -not $creatorLockSettings.IsDesktopNotificationCreatorThemeActive -or
     -not $creatorLockSettings.IsOverlayCreatorThemeActive -or
@@ -474,7 +473,7 @@ if (-not $creatorLockSettings.IsFullscreenNotificationCreatorThemeActive -or
     $creatorLockSettings.CanEditDesktopNotificationStyle -or
     $creatorLockSettings.CanEditOverlayStyle -or
     $creatorLockSettings.CanCopyNotificationStyles) {
-    throw "Bundled creator designs were not classified as locked without the disk catalog."
+    throw "Creator designs were not classified as locked after catalog discovery."
 }
 
 Write-Host "Settings migration and overlay preset tests passed."

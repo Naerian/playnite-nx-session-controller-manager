@@ -14,23 +14,17 @@ namespace ControllerSessionManager.PlayniteIntegration
         public const string Bold = "Bold";
         public const string Arcade = "Arcade";
         public const string Minimal = "Minimal";
-        public const string Aniki = "Aniki";
-        public const string Helium = "Helium";
-
         public static readonly string[] PluginPresets = { Soft, Compact, Bold, Arcade, Minimal };
         public static string[] CreatorPresets
         {
-            get { return new[] { Aniki, Helium }.Concat(CreatorThemeCatalog.GetPresetIds("overlay"))
-                .Distinct(StringComparer.OrdinalIgnoreCase).ToArray(); }
+            get { return CreatorThemeCatalog.GetPresetIds("overlay"); }
         }
         public static string[] NamedPresets { get { return PluginPresets.Concat(CreatorPresets).ToArray(); } }
 
         public static bool IsCreatorPreset(string presetId)
         {
             var preset = Normalize(presetId);
-            return string.Equals(preset, Aniki, StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(preset, Helium, StringComparison.OrdinalIgnoreCase) ||
-                CreatorThemeCatalog.Contains(preset, "overlay");
+            return CreatorThemeCatalog.Contains(preset, "overlay");
         }
 
         public static string Normalize(string value)
@@ -60,7 +54,9 @@ namespace ControllerSessionManager.PlayniteIntegration
                 }
             }
 
-            return Soft;
+            // A missing creator/imported preset must preserve its already-materialized
+            // appearance instead of silently applying an unrelated plugin preset.
+            return Custom;
         }
 
         public static string LocKey(string preset)
@@ -119,76 +115,6 @@ namespace ControllerSessionManager.PlayniteIntegration
                         "Center", "Fade", "Full", 500, false);
                     settings.OverlayContentAlignment = "Right";
                     settings.OverlayScreenMargin = 28;
-                    break;
-                case Aniki:
-                    if (CreatorThemeCatalog.Contains(Aniki, "overlay"))
-                    {
-                        ApplyValues(settings, 100, "#96000000", "#F4161A22", "#FF5BA3E8", "#FFF5F7FA", "#FFF0B14A",
-                            30, 22, 19, 15, 30, 18, true, true, true, "Left", 34, 14, true, 3, 13);
-                        ApplyTypography(settings, NotificationFontCatalog.Inter, "SemiBold");
-                        ApplyEnhancements(settings, true, true, true, true, true, "Center", "FadeScale", "Full", 620, true);
-                        CreatorThemeCatalog.TryApply(settings, Aniki, "overlay");
-                        break;
-                    }
-                    ApplyValues(settings, 100, "#A8000000", "#FA0C1118", "#FFD6B16F", "#FFF5F2EC", "#FFFFC857",
-                        34, 22, 18, 15, 42, 18, true, true, true, "Left", 40, 12, true, 2, 15);
-                    ApplyTypography(settings, NotificationFontCatalog.Exo2, "SemiBold");
-                    ApplyEnhancements(settings, true, true, true, true, true,
-                        "Center", "FadeScale", "Full", 720, true);
-                    settings.OverlayContentAlignment = "Center";
-                    settings.OverlayScreenMargin = 46;
-                    settings.OverlayUseGradient = true;
-                    settings.OverlayGradientColor = "#FF151D26";
-                    settings.OverlayGradientAngle = 135;
-                    settings.OverlayUseBorderGradient = true;
-                    settings.OverlayBorderGradientStartColor = "#B3FFFFFF";
-                    settings.OverlayBorderGradientEndColor = "#FFD6B16F";
-                    settings.OverlayBorderGradientAngle = 45;
-                    settings.OverlayShowBorderGlow = true;
-                    settings.OverlayBorderGlowColor = "#FFE9C48A";
-                    settings.OverlayBorderGlowBlur = 32;
-                    settings.OverlayBorderGlowOpacity = 90;
-                    settings.OverlayShowControllerContainer = true;
-                    settings.OverlayControllerContainerColor = "#33111820";
-                    settings.OverlayControllerContainerBorderColor = "#55D6B16F";
-                    settings.OverlayControllerContainerBorderThickness = 1;
-                    settings.OverlayControllerContainerCornerRadius = 12;
-                    settings.OverlayControllerContainerPadding = 14;
-                    settings.OverlayBlockOrder = "Controller,Title,Metadata,Instruction,Status";
-                    settings.OverlayMetadataOrientation = "Horizontal";
-                    break;
-                case Helium:
-                    if (CreatorThemeCatalog.Contains(Helium, "overlay"))
-                    {
-                        ApplyValues(settings, 100, "#96000000", "#F4161A22", "#FF5BA3E8", "#FFF5F7FA", "#FFF0B14A",
-                            30, 22, 19, 15, 30, 18, true, true, true, "Left", 34, 14, true, 3, 13);
-                        ApplyTypography(settings, NotificationFontCatalog.Inter, "SemiBold");
-                        ApplyEnhancements(settings, true, true, true, true, true, "Center", "FadeScale", "Full", 620, true);
-                        CreatorThemeCatalog.TryApply(settings, Helium, "overlay");
-                        break;
-                    }
-                    ApplyValues(settings, 100, "#A0000000", "#F225282E", "#FF1A9FFF", "#FFDDE3E6", "#FFFFA500",
-                        30, 20, 16, 14, 32, 16, true, true, true, "Left", 32, 10, true, 2, 3);
-                    ApplyTypography(settings, NotificationFontCatalog.Trebuchet, "SemiBold");
-                    ApplyEnhancements(settings, true, true, true, true, true,
-                        "Center", "FadeScale", "Full", 620, true);
-                    settings.OverlayContentAlignment = "Left";
-                    settings.OverlayScreenMargin = 36;
-                    settings.OverlayUseGradient = true;
-                    settings.OverlayGradientColor = "#F23C4047";
-                    settings.OverlayGradientAngle = 90;
-                    settings.OverlayShowControllerContainer = true;
-                    settings.OverlayControllerContainerColor = "#99212124";
-                    settings.OverlayControllerContainerBorderColor = "#663E6184";
-                    settings.OverlayControllerContainerBorderThickness = 1;
-                    settings.OverlayControllerContainerCornerRadius = 3;
-                    settings.OverlayControllerContainerPadding = 12;
-                    settings.OverlayBlockOrder = "Title,Instruction,Controller,Metadata,Status";
-                    settings.OverlayUseIndependentBorders = true;
-                    settings.OverlayBorderLeftThickness = 4;
-                    settings.OverlayBorderTopThickness = 1;
-                    settings.OverlayBorderRightThickness = 1;
-                    settings.OverlayBorderBottomThickness = 1;
                     break;
                 default:
                     ApplyValues(settings, 100, "#96000000", "#F4161A22", "#FF5BA3E8", "#FFF5F7FA", "#FFF0B14A",

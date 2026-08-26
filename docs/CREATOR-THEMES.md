@@ -2,7 +2,7 @@
 
 Controller Manager can ship complete visual designs for its controller notifications and disconnect overlay. A creator theme is a reviewed, self-contained folder committed to this repository and included in the `.pext` package. It may contain JSON appearance definitions, images, fonts and notification sounds.
 
-This system is intended for Playnite theme authors and visual designers who want Controller Manager to look native to their theme. The bundled `Aniki` and `Helium` folders are reference implementations.
+This system is intended for Playnite theme authors and visual designers who want Controller Manager to look native to their theme.
 
 ## Creator themes and imported designs are different
 
@@ -98,8 +98,8 @@ Controller Manager reads the configured IDs from Playnite's settings and, for po
 Obtain the ID from the theme's `theme.yaml`, not from its directory name:
 
 ```yaml
-Id: 8b15c46a-90c2-4fe5-9ebb-1ab25ba7fcb1
-Name: Helium
+Id: my_desktop_theme_00000000-0000-0000-0000-000000000000
+Name: My Desktop Theme
 ```
 
 ## How appearance JSON is applied
@@ -511,11 +511,11 @@ Useful checks:
 
 ```powershell
 .\tests\run-creator-theme-tests.ps1
-.\tests\render-toast-preview.ps1 -Creator Aniki
-.\tests\render-overlay-preview.ps1 -Creator Aniki
+.\tests\render-toast-preview.ps1 -Creator my-theme
+.\tests\render-overlay-preview.ps1 -Creator my-theme
 ```
 
-Replace `Aniki` with the pack ID supported by the preview scripts. Also run the repository's full test suite before opening a pull request.
+Replace `my-theme` with the pack ID from your manifest. Also run the repository's full test suite before opening a pull request.
 
 Test at minimum:
 

@@ -771,8 +771,6 @@
     <sys:String x:Key="LOCCSM_NotificationBadgePosition">Posición de la insignia de conexión</sys:String>
     <sys:String x:Key="LOCCSM_OverlayContentAlignment">Alineación del contenido</sys:String>
     <sys:String x:Key="LOCCSM_OverlayScreenMargin">Margen de pantalla</sys:String>
-    <sys:String x:Key="LOCCSM_StylePresetAniki">Aniki ReMake</sys:String>
-    <sys:String x:Key="LOCCSM_StylePresetHelium">Helium</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupPlugin">Presets del plugin</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupCreators">Diseños de creadores</sys:String>
     <sys:String x:Key="LOCCSM_ImportedDesigns">Diseños importados</sys:String>

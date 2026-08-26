@@ -19,8 +19,23 @@ Add-Type -AssemblyName WindowsBase
 $assembly = [Reflection.Assembly]::LoadFrom((Join-Path $root "bin\Release\ControllerSessionManager.dll"))
 $catalogType = $assembly.GetType(
     "ControllerSessionManager.PlayniteIntegration.CreatorThemeCatalog", $true)
-$configureCatalogArgs = [object[]]@([string]$root)
+$configureCatalogArgs = [object[]]@([string](Join-Path $root "obj\EmptyCreatorPackPlugin"))
 $catalogType.GetMethod("Configure").Invoke($null, $configureCatalogArgs) | Out-Null
+$definitionType = $assembly.GetType(
+    "ControllerSessionManager.PlayniteIntegration.CreatorThemeDefinition", $true)
+$definition = [Activator]::CreateInstance($definitionType)
+$definition.Id = "example.creator"
+$definition.Name = "Example Creator Design"
+$definition.Author = "Test Author"
+$definition.Version = "1.0.0"
+$definition.Description = "Test-only creator design."
+$definition.Directory = Join-Path $root "obj\TestCreatorPack"
+$definition.Notification = [Collections.Generic.Dictionary[string, object]]::new()
+$definition.Notification.Add("NotificationBackgroundColor", "#FF112233")
+$definition.Overlay = [Collections.Generic.Dictionary[string, object]]::new()
+$definition.Overlay.Add("OverlayCardColor", "#FF334455")
+$catalogFlags = [Reflection.BindingFlags]"Static,NonPublic"
+$definitions = $catalogType.GetField("Definitions", $catalogFlags).GetValue($null)
 $viewType = $assembly.GetType(
     "ControllerSessionManager.PlayniteIntegration.ControllerSessionManagerSettingsView", $true)
 $pluginType = $assembly.GetType(
@@ -49,6 +64,15 @@ $settings.DesktopNotificationWidth += 9
 $unsavedFullscreenWidth = $settings.NotificationWidth
 $unsavedDesktopWidth = $settings.DesktopNotificationWidth
 $view.DataContext = $settings
+# DataContext assignment reloads the disk catalog. Reinsert the in-memory fixture because
+# PowerShell 7 cannot instantiate the plugin's .NET Framework JavaScriptSerializer reliably.
+$definitions.Add($definition.Id, $definition)
+$viewFlags = [Reflection.BindingFlags]"Instance,NonPublic"
+foreach ($methodName in @(
+    "BuildNotificationStylePresetChips", "BuildNotificationPresetSelectors",
+    "BuildOverlayStylePresetChips", "BuildOverlayPresetSelector")) {
+    $viewType.GetMethod($methodName, $viewFlags).Invoke($view, $null) | Out-Null
+}
 $window = New-Object System.Windows.Window
 $window.Content = $view
 $window.Show()
@@ -81,8 +105,8 @@ if ($null -eq $desktopPresetSelector -or $null -eq $fullscreenPresetSelector -or
     $null -eq $overlayPresetSelector) {
     throw "The destination-specific appearance preset selectors were not created."
 }
-if ($desktopPresetSelector.Items.Count -ne 11 -or $fullscreenPresetSelector.Items.Count -ne 11 -or
-    $overlayPresetSelector.Items.Count -ne 10) {
+if ($desktopPresetSelector.Items.Count -ne 10 -or $fullscreenPresetSelector.Items.Count -ne 10 -or
+    $overlayPresetSelector.Items.Count -ne 9) {
     throw "The grouped appearance selectors do not contain all plugin, creator, and custom presets."
 }
 if ($desktopPresetSelector.Items[0].Key -ne "Custom" -or
@@ -91,7 +115,7 @@ if ($desktopPresetSelector.Items[0].Key -ne "Custom" -or
     @($desktopPresetSelector.Items | Where-Object { $_.IsHeader }).Count -ne 2 -or
     @($fullscreenPresetSelector.Items | Where-Object { $_.IsHeader }).Count -ne 2 -or
     @($overlayPresetSelector.Items | Where-Object { $_.IsHeader }).Count -ne 2 -or
-    @($desktopPresetSelector.Items | Where-Object { $_.IsSelectable }).Count -ne 9) {
+    @($desktopPresetSelector.Items | Where-Object { $_.IsSelectable }).Count -ne 8) {
     throw "Appearance presets are not grouped into plugin, creator, and custom designs."
 }
 $notificationPluginPresets = $view.FindName("NotificationPluginPresetChips")
@@ -101,16 +125,16 @@ $overlayPluginPresets = $view.FindName("OverlayPluginPresetChips")
 $overlayCreatorPresets = $view.FindName("OverlayCreatorPresetChips")
 $overlayCustomPresets = $view.FindName("OverlayCustomPresetChips")
 if ($notificationPluginPresets.Children.Count -ne 6 -or
-    $notificationCreatorPresets.Children.Count -ne 2 -or
+    $notificationCreatorPresets.Children.Count -ne 1 -or
     $notificationCustomPresets.Children.Count -ne 1 -or
     $overlayPluginPresets.Children.Count -ne 5 -or
-    $overlayCreatorPresets.Children.Count -ne 2 -or
+    $overlayCreatorPresets.Children.Count -ne 1 -or
     $overlayCustomPresets.Children.Count -ne 1) {
     throw "Plugin, creator, and custom appearance presets are not separated correctly."
 }
-$anikiCreatorCard = $notificationCreatorPresets.Children[0]
-if ($anikiCreatorCard.Tag -ne "Aniki" -or
-    $anikiCreatorCard.Content.Children[1].Text -ne "Mike Aniki") {
+$creatorCard = $notificationCreatorPresets.Children[0]
+if ($creatorCard.Tag -ne "example.creator" -or
+    $creatorCard.Content.Children[1].Text -ne "Test Author") {
     throw "Creator preset cards do not expose their design attribution."
 }
 if ($selector.Items.Count -lt 1) {
@@ -123,10 +147,10 @@ if ($settings.NotificationSoundPack -ne "5_Minimal_Soft") {
     throw "Opening the settings view replaced the saved notification sound pack."
 }
 
-$desktopPresetSelector.SelectedItem = @($desktopPresetSelector.Items | Where-Object { $_.Key -eq "Aniki" })[0]
+$desktopPresetSelector.SelectedItem = @($desktopPresetSelector.Items | Where-Object { $_.Key -eq "example.creator" })[0]
 $window.UpdateLayout()
-if ($settings.DesktopNotificationStylePreset -ne "Aniki" -or
-    $settings.NotificationStylePreset -eq "Aniki") {
+if ($settings.DesktopNotificationStylePreset -ne "example.creator" -or
+    $settings.NotificationStylePreset -eq "example.creator") {
     throw "Selecting a desktop notification design also changed the fullscreen destination " +
         "(desktop=$($settings.DesktopNotificationStylePreset), fullscreen=$($settings.NotificationStylePreset))."
 }
@@ -151,9 +175,9 @@ if (-not $view.FindName("DesktopNotificationStyleEditor").IsEnabled -or
     $view.FindName("DesktopNotificationStyleEditor").Opacity -lt 0.9) {
     throw "Returning to Custom did not unlock notification appearance and audio editing."
 }
-$overlayPresetSelector.SelectedItem = @($overlayPresetSelector.Items | Where-Object { $_.Key -eq "Helium" })[0]
+$overlayPresetSelector.SelectedItem = @($overlayPresetSelector.Items | Where-Object { $_.Key -eq "example.creator" })[0]
 $window.UpdateLayout()
-if ($settings.OverlayStylePreset -ne "Helium" -or
+if ($settings.OverlayStylePreset -ne "example.creator" -or
     $view.FindName("OverlayStyleEditor").IsEnabled -or
     $view.FindName("OverlayAppearanceLayoutExpander").IsExpanded -or
     $view.FindName("OverlayStyleEditor").Opacity -gt 0.5) {

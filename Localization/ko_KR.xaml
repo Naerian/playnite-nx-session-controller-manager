@@ -741,8 +741,6 @@
     <sys:String x:Key="LOCCSM_NotificationBadgePosition">연결 배지 위치</sys:String>
     <sys:String x:Key="LOCCSM_OverlayContentAlignment">콘텐츠 정렬</sys:String>
     <sys:String x:Key="LOCCSM_OverlayScreenMargin">화면 여백</sys:String>
-    <sys:String x:Key="LOCCSM_StylePresetAniki">Aniki ReMake</sys:String>
-    <sys:String x:Key="LOCCSM_StylePresetHelium">Helium</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupPlugin">플러그인 프리셋</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupCreators">크리에이터 디자인</sys:String>
     <sys:String x:Key="LOCCSM_ImportedDesigns">가져온 디자인</sys:String>

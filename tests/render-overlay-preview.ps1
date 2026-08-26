@@ -1,5 +1,4 @@
-param([switch]$WithImage, [switch]$Split,
-    [ValidateSet("Aniki", "Helium")][string]$Creator)
+param([switch]$WithImage, [switch]$Split, [string]$Creator)
 
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
@@ -59,6 +58,8 @@ $style = @(
 if ($Creator) {
     [Reflection.Assembly]::LoadFrom("C:\Playnite\Playnite.SDK.dll") | Out-Null
     $pluginAssembly = [Reflection.Assembly]::LoadFrom((Join-Path $root "bin\Release\ControllerSessionManager.dll"))
+    $catalogType = $pluginAssembly.GetType("ControllerSessionManager.PlayniteIntegration.CreatorThemeCatalog", $true)
+    $catalogType.GetMethod("Configure").Invoke($null, @([string]$root)) | Out-Null
     $settingsType = $pluginAssembly.GetType("ControllerSessionManager.PlayniteIntegration.ControllerSessionManagerSettings", $true)
     $settings = [Activator]::CreateInstance($settingsType)
     $presetType = $pluginAssembly.GetType("ControllerSessionManager.PlayniteIntegration.OverlayStylePresets", $true)

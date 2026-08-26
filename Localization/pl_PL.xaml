@@ -741,8 +741,6 @@
     <sys:String x:Key="LOCCSM_NotificationBadgePosition">Pozycja plakietki połączenia</sys:String>
     <sys:String x:Key="LOCCSM_OverlayContentAlignment">Wyrównanie zawartości</sys:String>
     <sys:String x:Key="LOCCSM_OverlayScreenMargin">Margines ekranu</sys:String>
-    <sys:String x:Key="LOCCSM_StylePresetAniki">Aniki ReMake</sys:String>
-    <sys:String x:Key="LOCCSM_StylePresetHelium">Helium</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupPlugin">Presety wtyczki</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupCreators">Projekty twórców</sys:String>
     <sys:String x:Key="LOCCSM_ImportedDesigns">Zaimportowane projekty</sys:String>

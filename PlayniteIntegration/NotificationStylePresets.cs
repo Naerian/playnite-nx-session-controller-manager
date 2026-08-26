@@ -14,22 +14,17 @@ namespace ControllerSessionManager.PlayniteIntegration
         public const string Arcade = "Arcade";
         public const string Minimal = "Minimal";
         public const string Cinematic = "Cinematic";
-        public const string Aniki = "Aniki";
-        public const string Helium = "Helium";
         public static readonly string[] PluginPresets = { Soft, Compact, Bold, Arcade, Minimal, Cinematic };
         public static string[] CreatorPresets
         {
-            get { return new[] { Aniki, Helium }.Concat(CreatorThemeCatalog.GetPresetIds("notification"))
-                .Distinct(StringComparer.OrdinalIgnoreCase).ToArray(); }
+            get { return CreatorThemeCatalog.GetPresetIds("notification"); }
         }
         public static string[] NamedPresets { get { return PluginPresets.Concat(CreatorPresets).ToArray(); } }
 
         public static bool IsCreatorPreset(string presetId)
         {
             var preset = Normalize(presetId);
-            return string.Equals(preset, Aniki, StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(preset, Helium, StringComparison.OrdinalIgnoreCase) ||
-                CreatorThemeCatalog.Contains(preset, "notification");
+            return CreatorThemeCatalog.Contains(preset, "notification");
         }
 
         public static string Normalize(string value)
@@ -46,7 +41,9 @@ namespace ControllerSessionManager.PlayniteIntegration
             {
                 if (string.Equals(name, trimmed, StringComparison.OrdinalIgnoreCase)) return name;
             }
-            return Soft;
+            // A missing creator/imported preset must preserve its already-materialized
+            // appearance instead of silently applying an unrelated plugin preset.
+            return Custom;
         }
 
         public static string LocKey(string preset)
@@ -58,8 +55,6 @@ namespace ControllerSessionManager.PlayniteIntegration
                 case Arcade: return "LOCCSM_StylePresetArcade";
                 case Minimal: return "LOCCSM_StylePresetMinimal";
                 case Cinematic: return "LOCCSM_StylePresetCinematic";
-                case Aniki: return "LOCCSM_StylePresetAniki";
-                case Helium: return "LOCCSM_StylePresetHelium";
                 case Custom: return "LOCCSM_StylePresetCustom";
                 default: return "LOCCSM_StylePresetSoft";
             }
@@ -69,12 +64,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             var catalogAuthor = CreatorThemeCatalog.GetAuthor(preset);
             if (!string.IsNullOrWhiteSpace(catalogAuthor)) return catalogAuthor;
-            switch (Normalize(preset))
-            {
-                case Aniki: return "Mike Aniki";
-                case Helium: return "darklinkpower";
-                default: return string.Empty;
-            }
+            return string.Empty;
         }
 
         public static void Apply(ControllerSessionManagerSettings settings, string presetId)
@@ -90,16 +80,6 @@ namespace ControllerSessionManager.PlayniteIntegration
                 case Arcade: ApplyArcade(settings); break;
                 case Minimal: ApplyMinimal(settings); break;
                 case Cinematic: ApplyCinematic(settings); break;
-                case Aniki:
-                    if (CreatorThemeCatalog.Contains(Aniki, "notification"))
-                    { ApplySoft(settings); CreatorThemeCatalog.TryApply(settings, Aniki, "notification"); }
-                    else ApplyAniki(settings);
-                    break;
-                case Helium:
-                    if (CreatorThemeCatalog.Contains(Helium, "notification"))
-                    { ApplySoft(settings); CreatorThemeCatalog.TryApply(settings, Helium, "notification"); }
-                    else ApplyHelium(settings);
-                    break;
                 default:
                     ApplySoft(settings);
                     CreatorThemeCatalog.TryApply(settings, preset, "notification");
@@ -236,114 +216,6 @@ namespace ControllerSessionManager.PlayniteIntegration
             s.DesktopNotificationBackgroundImageVerticalAlignment = "Center";
             s.DesktopNotificationBackgroundImageOpacity = 82;
             s.DesktopNotificationBackgroundImageTintOpacity = 48;
-        }
-
-        // Creator design by Mike Aniki, adapted from Aniki ReMake's dark-gold glass language.
-        private static void ApplyAniki(ControllerSessionManagerSettings s)
-        {
-            ApplyPair(s, 560, 108, 5200, "TopRight", "#FA0C1118", "#FFF5F2EC", "#E6D8D4CC",
-                "#FFD6B16F", "#FFE8C98F", "#FFFFC857", "#FFFF4D5A", 22, 16, 42, "Left",
-                22, 9, true, "Full", 2, 15, true, 34, true,
-                440, 100, 4200, "BottomRight", "#FA0C1118", "#FFF5F2EC", "#E6D8D4CC",
-                "#FFD6B16F", "#FFE8C98F", "#FFFFC857", "#FFFF4D5A", 18, 14, 32, 16, 7, 8, 24);
-            ApplyIdentity(s, NotificationFontCatalog.Exo2, "SemiBold", "Left", "IconAndBorder", "Slide",
-                true, true, NotificationFontCatalog.Exo2, "SemiBold", "Left", "IconAndBorder", "Slide", true, true);
-            s.NotificationMessageFontFamily = NotificationFontCatalog.Exo2;
-            s.NotificationMessageFontWeight = "Regular";
-            s.NotificationMessageMaxLines = 3;
-            s.NotificationUseGradient = true;
-            s.NotificationGradientColor = "#FF151D26";
-            s.NotificationGradientAngle = 135;
-            s.NotificationUseBorderGradient = true;
-            s.NotificationUseStateBorderColors = true;
-            s.NotificationConnectedBorderColor = "#FFD6B16F";
-            s.NotificationDisconnectedBorderColor = "#FFE8C98F";
-            s.NotificationWarningBorderColor = "#FFFFC857";
-            s.NotificationLowBatteryBorderColor = "#FFFF4D5A";
-            s.NotificationBorderGradientStartColor = "#B3FFFFFF";
-            s.NotificationBorderGradientEndColor = "#FFD6B16F";
-            s.NotificationBorderGradientAngle = 45;
-            s.NotificationShowBorderGlow = true;
-            s.NotificationBorderGlowColor = "#FFE9C48A";
-            s.NotificationBorderGlowBlur = 26;
-            s.NotificationBorderGlowOpacity = 90;
-            s.NotificationShowIconContainer = true;
-            s.NotificationIconContainerColor = "#33111820";
-            s.NotificationIconContainerBorderColor = "#55D6B16F";
-            s.NotificationIconContainerBorderThickness = 1;
-            s.NotificationIconContainerCornerRadius = 10;
-            s.NotificationIconContainerPadding = 10;
-            s.DesktopNotificationMessageFontFamily = NotificationFontCatalog.Exo2;
-            s.DesktopNotificationMessageFontWeight = "Regular";
-            s.DesktopNotificationMessageMaxLines = 3;
-            s.DesktopNotificationUseGradient = true;
-            s.DesktopNotificationGradientColor = "#FF151D26";
-            s.DesktopNotificationGradientAngle = 135;
-            s.DesktopNotificationUseBorderGradient = true;
-            s.DesktopNotificationUseStateBorderColors = true;
-            s.DesktopNotificationConnectedBorderColor = "#FFD6B16F";
-            s.DesktopNotificationDisconnectedBorderColor = "#FFE8C98F";
-            s.DesktopNotificationWarningBorderColor = "#FFFFC857";
-            s.DesktopNotificationLowBatteryBorderColor = "#FFFF4D5A";
-            s.DesktopNotificationBorderGradientStartColor = "#B3FFFFFF";
-            s.DesktopNotificationBorderGradientEndColor = "#FFD6B16F";
-            s.DesktopNotificationBorderGradientAngle = 45;
-            s.DesktopNotificationShowBorderGlow = true;
-            s.DesktopNotificationBorderGlowColor = "#FFE9C48A";
-            s.DesktopNotificationBorderGlowBlur = 24;
-            s.DesktopNotificationBorderGlowOpacity = 85;
-            s.DesktopNotificationShowIconContainer = true;
-            s.DesktopNotificationIconContainerColor = "#33111820";
-            s.DesktopNotificationIconContainerBorderColor = "#55D6B16F";
-            s.DesktopNotificationIconContainerBorderThickness = 1;
-            s.DesktopNotificationIconContainerCornerRadius = 8;
-            s.DesktopNotificationIconContainerPadding = 8;
-            s.NotificationUseStateBackgroundColors = true;
-            s.NotificationConnectedBackgroundColor = "#FA0C1515";
-            s.NotificationDisconnectedBackgroundColor = "#FA0C1118";
-            s.NotificationWarningBackgroundColor = "#FA18140C";
-            s.NotificationLowBatteryBackgroundColor = "#FA1B0D12";
-            s.DesktopNotificationUseStateBackgroundColors = true;
-            s.DesktopNotificationConnectedBackgroundColor = "#FA0C1515";
-            s.DesktopNotificationDisconnectedBackgroundColor = "#FA0C1118";
-            s.DesktopNotificationWarningBackgroundColor = "#FA18140C";
-            s.DesktopNotificationLowBatteryBackgroundColor = "#FA1B0D12";
-        }
-
-        // Creator design by darklinkpower, adapted from Helium's graphite and Steam-blue UI.
-        private static void ApplyHelium(ControllerSessionManagerSettings s)
-        {
-            ApplyPair(s, 500, 100, 4800, "TopRight", "#F2399AEC", "#FFFFFFFF", "#DFFFFFFF",
-                "#FF7CC53F", "#FF1A9FFF", "#FFFFA500", "#FFFF6B6B", 20, 14, 34, "Left",
-                18, 8, true, "Full", 1, 3, true, 28, true,
-                400, 100, 3800, "BottomRight", "#F2399AEC", "#FFFFFFFF", "#DFFFFFFF",
-                "#FF7CC53F", "#FF1A9FFF", "#FFFFA500", "#FFFF6B6B", 16, 13, 28, 14, 6, 3, 20);
-            ApplyIdentity(s, NotificationFontCatalog.Trebuchet, "SemiBold", "Left", "TintedBackground", "Fade",
-                true, true, NotificationFontCatalog.Trebuchet, "SemiBold", "Left", "TintedBackground", "Fade", true, true);
-            s.NotificationUseGradient = true;
-            s.NotificationGradientColor = "#F2235ECF";
-            s.NotificationGradientAngle = 0;
-            s.NotificationShowIconContainer = true;
-            s.NotificationIconContainerColor = "#553E4047";
-            s.NotificationIconContainerBorderColor = "#663E6184";
-            s.NotificationIconContainerBorderThickness = 1;
-            s.NotificationIconContainerCornerRadius = 3;
-            s.NotificationIconContainerPadding = 8;
-            s.DesktopNotificationUseGradient = true;
-            s.DesktopNotificationGradientColor = "#F2235ECF";
-            s.DesktopNotificationGradientAngle = 0;
-            s.DesktopNotificationShowIconContainer = true;
-            s.DesktopNotificationIconContainerColor = "#553E4047";
-            s.DesktopNotificationIconContainerBorderColor = "#663E6184";
-            s.DesktopNotificationIconContainerBorderThickness = 1;
-            s.DesktopNotificationIconContainerCornerRadius = 3;
-            s.DesktopNotificationIconContainerPadding = 7;
-            s.NotificationUseIndependentBorders = true;
-            s.NotificationBorderLeftThickness = 4; s.NotificationBorderTopThickness = 0;
-            s.NotificationBorderRightThickness = 0; s.NotificationBorderBottomThickness = 0;
-            s.DesktopNotificationUseIndependentBorders = true;
-            s.DesktopNotificationBorderLeftThickness = 4; s.DesktopNotificationBorderTopThickness = 0;
-            s.DesktopNotificationBorderRightThickness = 0; s.DesktopNotificationBorderBottomThickness = 0;
         }
 
         private static void ApplyIdentity(ControllerSessionManagerSettings s,

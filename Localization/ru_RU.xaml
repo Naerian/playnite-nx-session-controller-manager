@@ -741,8 +741,6 @@
     <sys:String x:Key="LOCCSM_NotificationBadgePosition">Положение значка подключения</sys:String>
     <sys:String x:Key="LOCCSM_OverlayContentAlignment">Выравнивание содержимого</sys:String>
     <sys:String x:Key="LOCCSM_OverlayScreenMargin">Отступ от края экрана</sys:String>
-    <sys:String x:Key="LOCCSM_StylePresetAniki">Aniki ReMake</sys:String>
-    <sys:String x:Key="LOCCSM_StylePresetHelium">Helium</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupPlugin">Пресеты плагина</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupCreators">Дизайны авторов</sys:String>
     <sys:String x:Key="LOCCSM_ImportedDesigns">Импортированные дизайны</sys:String>

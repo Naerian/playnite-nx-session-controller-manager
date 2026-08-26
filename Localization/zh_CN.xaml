@@ -741,8 +741,6 @@
     <sys:String x:Key="LOCCSM_NotificationBadgePosition">连接徽章位置</sys:String>
     <sys:String x:Key="LOCCSM_OverlayContentAlignment">内容对齐</sys:String>
     <sys:String x:Key="LOCCSM_OverlayScreenMargin">屏幕边距</sys:String>
-    <sys:String x:Key="LOCCSM_StylePresetAniki">Aniki ReMake</sys:String>
-    <sys:String x:Key="LOCCSM_StylePresetHelium">Helium</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupPlugin">插件预设</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupCreators">创作者设计</sys:String>
     <sys:String x:Key="LOCCSM_ImportedDesigns">导入的设计</sys:String>

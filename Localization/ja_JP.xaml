@@ -741,8 +741,6 @@
     <sys:String x:Key="LOCCSM_NotificationBadgePosition">接続バッジの位置</sys:String>
     <sys:String x:Key="LOCCSM_OverlayContentAlignment">コンテンツの配置</sys:String>
     <sys:String x:Key="LOCCSM_OverlayScreenMargin">画面の余白</sys:String>
-    <sys:String x:Key="LOCCSM_StylePresetAniki">Aniki ReMake</sys:String>
-    <sys:String x:Key="LOCCSM_StylePresetHelium">Helium</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupPlugin">プラグインのプリセット</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupCreators">クリエイターデザイン</sys:String>
     <sys:String x:Key="LOCCSM_ImportedDesigns">インポートしたデザイン</sys:String>

@@ -2,7 +2,7 @@
 
 Controller Manager puede distribuir diseños visuales completos para sus notificaciones de mando y el overlay de desconexión. Un diseño de creador es una carpeta autónoma, revisada y guardada en este repositorio que se incluye en el paquete `.pext`. Puede contener definiciones JSON, imágenes, fuentes y sonidos.
 
-El sistema está pensado para autores de temas de Playnite y diseñadores que quieran integrar Controller Manager en su lenguaje visual. Los packs `Aniki` y `Helium` incluidos son implementaciones de referencia.
+El sistema está pensado para autores de temas de Playnite y diseñadores que quieran integrar Controller Manager en su lenguaje visual.
 
 ## Diferencias entre diseños de creadores e importados
 
@@ -98,8 +98,8 @@ Controller Manager lee los IDs configurados por Playnite y, en instalaciones por
 Obtén el ID del `theme.yaml`, no del nombre de la carpeta:
 
 ```yaml
-Id: 8b15c46a-90c2-4fe5-9ebb-1ab25ba7fcb1
-Name: Helium
+Id: my_desktop_theme_00000000-0000-0000-0000-000000000000
+Name: Mi tema de escritorio
 ```
 
 ## Aplicación de los JSON de apariencia
@@ -498,11 +498,11 @@ Compila el plugin con el comando habitual del repositorio y coloca o enlaza la e
 
 ```powershell
 .\tests\run-creator-theme-tests.ps1
-.\tests\render-toast-preview.ps1 -Creator Aniki
-.\tests\render-overlay-preview.ps1 -Creator Aniki
+.\tests\render-toast-preview.ps1 -Creator my-theme
+.\tests\render-overlay-preview.ps1 -Creator my-theme
 ```
 
-Sustituye `Aniki` por el ID compatible con los scripts de previsualización y ejecuta también todas las pruebas antes del pull request.
+Sustituye `my-theme` por el ID de tu manifest y ejecuta también todas las pruebas antes del pull request.
 
 Prueba como mínimo:
 

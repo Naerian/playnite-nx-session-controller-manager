@@ -131,7 +131,7 @@ Community translation contributions are welcome.
 
 ## Creator appearance packs
 
-Theme authors can contribute self-contained notification and overlay designs that appear separately under **Creator designs**. Packs can control composition, state backgrounds, independent border sides, typography, gradients, images, containers, badges and sounds. Contributions are added through a project fork and pull request, then distributed with Controller Manager. See the [creator pack guide](docs/CREATOR-THEMES.md) and the bundled Aniki ReMake and Helium examples.
+Theme authors can contribute self-contained notification and overlay designs that appear separately under **Creator designs**. Packs can control composition, state backgrounds, independent border sides, typography, gradients, images, containers, badges and sounds. Contributions are added through a project fork and pull request, then distributed with Controller Manager. See the [creator pack guide](docs/CREATOR-THEMES.md).
 
 ## Acknowledgements
 
@@ -139,9 +139,7 @@ Thanks to [Controllercons](https://controllercons.github.io/) for its free solid
 
 Thanks to the contributors of [SDL_GameControllerDB](https://github.com/mdqinc/SDL_GameControllerDB) for its community-maintained controller names and SDL button/axis mappings. Controller Manager includes an offline copy under the zlib license and can update it in the background without blocking Playnite startup.
 
-The creator designs included with Controller Manager are visual adaptations inspired by [Aniki ReMake](https://playnite.link/addons.html#Aniki_ReMake_bb8728bd-ac83-4324-88b1-ee5c586527d1) by Mike Aniki and [Helium](https://github.com/darklinkpower/Helium) by darklinkpower. They are provided as examples of how notification and overlay styles can follow the visual language of a Playnite theme; they are not official theme components or endorsements.
-
-The bundled [Exo 2](https://github.com/google/fonts/tree/main/ofl/exo2) font used by the Aniki-inspired design is distributed under the SIL Open Font License 1.1. Its license and copyright notice are included alongside the font files.
+The bundled [Exo 2](https://github.com/google/fonts/tree/main/ofl/exo2) font is distributed under the SIL Open Font License 1.1. Its license and copyright notice are included alongside the font files.
 
 ## Support
 

@@ -83,15 +83,6 @@ namespace ControllerSessionManager.PlayniteIntegration
             if (string.IsNullOrWhiteSpace(themeId)) return false;
             var activeTheme = themeId.Trim();
 
-            // These two reviewed adaptations are also available as built-in fallbacks. Match
-            // them even if an older installed package does not yet contain CreatorThemes files.
-            if (fullscreen && string.Equals(id, "Aniki", StringComparison.OrdinalIgnoreCase) &&
-                ThemeIdentifiersMatch("Aniki_ReMake_bb8728bd-ac83-4324-88b1-ee5c586527d1", activeTheme))
-                return true;
-            if (!fullscreen && string.Equals(id, "Helium", StringComparison.OrdinalIgnoreCase) &&
-                ThemeIdentifiersMatch("8b15c46a-90c2-4fe5-9ebb-1ab25ba7fcb1", activeTheme))
-                return true;
-
             CreatorThemeDefinition definition;
             lock (Sync)
             {

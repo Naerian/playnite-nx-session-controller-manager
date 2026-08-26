@@ -741,8 +741,6 @@
     <sys:String x:Key="LOCCSM_NotificationBadgePosition">Bağlantı rozeti konumu</sys:String>
     <sys:String x:Key="LOCCSM_OverlayContentAlignment">İçerik hizalaması</sys:String>
     <sys:String x:Key="LOCCSM_OverlayScreenMargin">Ekran kenar boşluğu</sys:String>
-    <sys:String x:Key="LOCCSM_StylePresetAniki">Aniki ReMake</sys:String>
-    <sys:String x:Key="LOCCSM_StylePresetHelium">Helium</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupPlugin">Eklenti ön ayarları</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupCreators">Tasarımcı stilleri</sys:String>
     <sys:String x:Key="LOCCSM_ImportedDesigns">İçe aktarılan tasarımlar</sys:String>
