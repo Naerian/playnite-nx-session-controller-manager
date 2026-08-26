@@ -1,5 +1,17 @@
 AddonId: ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc
 Packages:
+  - Version: 1.0.25
+    RequiredApiVersion: 6.16.0
+    ReleaseDate: 2026-08-26
+    PackageUrl: https://github.com/Naerian/playnite-nx-session-controller-manager/releases/download/v1.0.25/ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc_1_0_25.pext
+    Changelog:
+      - '**Creator Appearance Packs:** Added a reviewed, source-controlled pack format for theme authors to ship notification and disconnect-overlay designs with their own images, fonts, sounds, theme IDs, attribution, and version metadata.'
+      - '**Theme-Aware Creator Designs:** Desktop, Fullscreen, and overlay selectors can optionally show only creator designs compatible with the active Playnite theme. Creator-controlled appearance and audio fields are locked while a pack is active.'
+      - '**Advanced Notification Styling:** Added independent state backgrounds and borders, state-aware border gradients, border glow, per-side border thickness, icon containers, content ordering, typography, badge placement, and expanded image controls for Desktop and Fullscreen notifications.'
+      - '**Advanced Overlay Styling:** Added richer card layouts, block ordering, metadata orientation, image composition, gradients, per-side borders, border glow, controller containers, and expanded typography and badge styling.'
+      - '**Named Imported Designs:** Visual profiles can be named when exported, imported into a dedicated group, replaced by name, deleted from the selector, and used for both notifications and the disconnect overlay.'
+      - '**Creator Documentation:** Added complete English and Spanish authoring references, generic preview commands, property tables, manifests, examples, contribution guidance, compatibility rules, and troubleshooting.'
+      - '**Safe Removed-Pack Fallback:** If a creator or imported design is no longer available, its materialized appearance is preserved as Custom instead of being replaced by an unrelated plugin preset.'
   - Version: 1.0.24
     RequiredApiVersion: 6.16.0
     ReleaseDate: 2026-08-25
