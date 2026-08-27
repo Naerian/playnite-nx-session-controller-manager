@@ -800,4 +800,26 @@
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">Resmî katalog kontrol ediliyor ve uyumlu tasarımlar yükleniyor…</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesCurrent">İçerik üretici tasarımlarınız zaten güncel.</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdated">Güncellendi. Yeni: {0}. Güncellenen: {1}. Uyumsuz: {2}.</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceOptions">Seçenekler</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceOptionsHelp">Görsel tasarımların genel davranışını yapılandırın.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdatePolicy">Tasarım güncellemeleri</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdatePolicyHelp">Yeni veya güncellenmiş tasarımların ne zaman denetleneceğini ve kurulacağını seçin. Bağlantı yoksa kurulu tasarımlar korunur.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdateStartup">Playnite başlatıldığında</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdateDaily">Her 24 saatte</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdateManual">El ile</sys:String>
+    <sys:String x:Key="LOCCSM_LayoutAlert">Uyarı kartı</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneBackground">Sahne arka planı</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneBackgroundHelp">Tüm katman arka planını karttan bağımsız özelleştirin.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneImage">Sahne görüntüsü</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneEffects">Ortam efektleri</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneAmbientGlows">Ortam parlamalarını göster</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowOne">Parlama 1</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowTwo">Parlama 2</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowThree">Parlama 3</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGrid">Izgarayı göster</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGridColor">Izgara rengi</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGridSize">Izgara boyutu</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayScenePositionX">X konumu (%)</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayScenePositionY">Y konumu (%)</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowRadius">Parlama yarıçapı (%)</sys:String>
 </ResourceDictionary>

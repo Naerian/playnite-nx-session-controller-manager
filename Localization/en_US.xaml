@@ -832,4 +832,26 @@
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">Checking the official catalog and installing compatible designs…</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesCurrent">Your creator designs are already up to date.</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdated">Designs updated. New: {0}. Updated: {1}. Incompatible: {2}.</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceOptions">Options</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceOptionsHelp">Configure the general behavior of visual designs.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdatePolicy">Design updates</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdatePolicyHelp">Choose when to check for and install new or updated designs. Installed designs are kept when no connection is available.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdateStartup">When Playnite starts</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdateDaily">Every 24 hours</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdateManual">Manual</sys:String>
+    <sys:String x:Key="LOCCSM_LayoutAlert">Alert card</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneBackground">Scene background</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneBackgroundHelp">Customize the full overlay screen independently from the card.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneImage">Scene image</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneEffects">Ambient effects</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneAmbientGlows">Show ambient glows</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowOne">Glow 1</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowTwo">Glow 2</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowThree">Glow 3</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGrid">Show grid</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGridColor">Grid color</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGridSize">Grid size</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayScenePositionX">X position (%)</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayScenePositionY">Y position (%)</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowRadius">Glow radius (%)</sys:String>
 </ResourceDictionary>

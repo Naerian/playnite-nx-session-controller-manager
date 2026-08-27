@@ -4,6 +4,28 @@ $root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 $viewSource = Get-Content -Raw (Join-Path $root "PlayniteIntegration\ControllerSessionManagerSettingsView.cs")
 $viewXaml = Get-Content -Raw (Join-Path $root "PlayniteIntegration\ControllerSessionManagerSettingsView.xaml")
 $pluginSource = Get-Content -Raw (Join-Path $root "PlayniteIntegration\ControllerSessionManagerPlugin.cs")
+$testerIntegrationSource = Get-Content -Raw (Join-Path $root "Tester\TesterIntegration.cs")
+if (([regex]::Matches($pluginSource, 'logger\.Info\s*\(')).Count -gt 1 -or
+    $testerIntegrationSource -match 'logger\.Info\s*\(' -or
+    $testerIntegrationSource -notmatch 'diagnosticLoggingEnabled\s*\(\s*\)') {
+    throw "High-frequency controller, session and tester-host messages must remain behind diagnostic logging."
+}
+if ($viewSource -notmatch 'OnSliderTrackMouseDown' -or
+    $viewSource -notmatch 'Mouse\.PreviewMouseDownEvent') {
+    throw "Every settings slider must support clicking its track to jump to the selected value."
+}
+if ($viewXaml -notmatch '<Expander x:Name="CustomSoundsSection"' -or
+    $viewXaml.IndexOf('x:Name="NotificationSoundPreviewPanel"') -gt
+        $viewXaml.IndexOf('IsChecked="{Binding EnableDesktopNotificationSounds}"') -or
+    $viewXaml.IndexOf('IsChecked="{Binding EnableDesktopNotificationSounds}"') -gt
+        $viewXaml.IndexOf('x:Name="NotificationSoundPackSelector"')) {
+    throw "Custom sounds must be collapsible and sound switches must sit between previews and the pack."
+}
+if ($viewXaml -notmatch 'SelectedValue="{Binding CreatorThemeUpdatePolicy}"' -or
+    $viewXaml -notmatch 'Tag="Startup"' -or $viewXaml -notmatch 'Tag="Daily"' -or
+    $viewXaml -notmatch 'Tag="Manual"') {
+    throw "Appearance options must expose startup, daily and manual creator-design updates."
+}
 if ($viewSource -notmatch 'plugin\.ShowNotificationPresetPreview\s*\(\s*\)') {
     throw "Changing a notification style preset must launch its automatic preview."
 }
@@ -81,6 +103,9 @@ if ($null -eq $view.FindName("DesktopDesignExpander") -or
 $selector = $view.FindName("NotificationSoundPackSelector")
 if ($null -eq $selector) {
     throw "Settings view XAML did not create the notification sound pack selector."
+}
+if ($view.FindName("CustomSoundsSection") -isnot [Windows.Controls.Expander]) {
+    throw "Custom Sounds must be an Expander."
 }
 
 $settings = [Activator]::CreateInstance($settingsType)

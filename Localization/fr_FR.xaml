@@ -802,4 +802,26 @@
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">Vérification du catalogue officiel et installation des designs compatibles…</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesCurrent">Vos designs de créateurs sont déjà à jour.</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdated">Designs mis à jour. Nouveaux : {0}. Mis à jour : {1}. Incompatibles : {2}.</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceOptions">Options</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceOptionsHelp">Configure le comportement général des designs visuels.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdatePolicy">Mise à jour des designs</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdatePolicyHelp">Choisissez quand rechercher et installer les designs nouveaux ou mis à jour. Sans connexion, les designs installés sont conservés.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdateStartup">Au démarrage de Playnite</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdateDaily">Toutes les 24 heures</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdateManual">Manuel</sys:String>
+    <sys:String x:Key="LOCCSM_LayoutAlert">Carte d'alerte</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneBackground">Arrière-plan de scène</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneBackgroundHelp">Personnalisez tout l'écran de l'overlay indépendamment de la carte.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneImage">Image de scène</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneEffects">Effets ambiants</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneAmbientGlows">Afficher les lueurs ambiantes</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowOne">Lueur 1</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowTwo">Lueur 2</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowThree">Lueur 3</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGrid">Afficher la grille</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGridColor">Couleur de la grille</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGridSize">Taille de la grille</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayScenePositionX">Position X (%)</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayScenePositionY">Position Y (%)</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowRadius">Rayon de la lueur (%)</sys:String>
 </ResourceDictionary>

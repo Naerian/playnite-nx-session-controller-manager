@@ -800,4 +800,26 @@
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">Sprawdzanie oficjalnego katalogu i instalowanie zgodnych projektów…</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesCurrent">Projekty twórców są już aktualne.</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdated">Zaktualizowano. Nowe: {0}. Zaktualizowane: {1}. Niezgodne: {2}.</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceOptions">Opcje</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceOptionsHelp">Skonfiguruj ogólne działanie projektów wizualnych.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdatePolicy">Aktualizacje projektów</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdatePolicyHelp">Wybierz, kiedy sprawdzać i instalować nowe lub zaktualizowane projekty. Bez połączenia zainstalowane projekty pozostają dostępne.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdateStartup">Przy uruchomieniu Playnite</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdateDaily">Co 24 godziny</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdateManual">Ręcznie</sys:String>
+    <sys:String x:Key="LOCCSM_LayoutAlert">Karta alertu</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneBackground">Tło sceny</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneBackgroundHelp">Dostosuj całe tło nakładki niezależnie od karty.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneImage">Obraz sceny</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneEffects">Efekty otoczenia</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneAmbientGlows">Pokaż poświaty</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowOne">Poświata 1</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowTwo">Poświata 2</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowThree">Poświata 3</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGrid">Pokaż siatkę</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGridColor">Kolor siatki</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGridSize">Rozmiar siatki</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayScenePositionX">Pozycja X (%)</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayScenePositionY">Pozycja Y (%)</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowRadius">Promień poświaty (%)</sys:String>
 </ResourceDictionary>

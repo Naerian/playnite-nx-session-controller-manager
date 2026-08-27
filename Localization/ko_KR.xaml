@@ -800,4 +800,26 @@
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">공식 카탈로그를 확인하고 호환되는 디자인을 설치하는 중…</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesCurrent">크리에이터 디자인이 이미 최신 상태입니다.</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdated">업데이트 완료. 신규: {0}. 업데이트: {1}. 비호환: {2}.</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceOptions">옵션</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceOptionsHelp">시각 디자인의 일반 동작을 설정합니다.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdatePolicy">디자인 업데이트</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdatePolicyHelp">새 디자인이나 업데이트된 디자인을 확인하고 설치할 시점을 선택합니다. 연결할 수 없어도 설치된 디자인은 유지됩니다.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdateStartup">Playnite 시작 시</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdateDaily">24시간마다</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdateManual">수동</sys:String>
+    <sys:String x:Key="LOCCSM_LayoutAlert">알림 카드</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneBackground">장면 배경</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneBackgroundHelp">카드와 별도로 전체 오버레이 배경을 사용자 지정합니다.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneImage">장면 이미지</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneEffects">주변 효과</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneAmbientGlows">주변 광선 표시</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowOne">광선 1</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowTwo">광선 2</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowThree">광선 3</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGrid">그리드 표시</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGridColor">그리드 색상</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGridSize">그리드 크기</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayScenePositionX">X 위치 (%)</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayScenePositionY">Y 위치 (%)</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowRadius">광선 반경 (%)</sys:String>
 </ResourceDictionary>

@@ -122,7 +122,8 @@ namespace ControllerSessionManager.OverlayHost
                         parts.Length > 20 ? Decode(parts[20]) : string.Empty,
                         parts.Length > 21 ? Decode(parts[21]) : string.Empty,
                         parts.Length > 22 ? Decode(parts[22]) : string.Empty,
-                        parts.Length > 23 ? Decode(parts[23]) : string.Empty);
+                        parts.Length > 23 ? Decode(parts[23]) : string.Empty,
+                        parts.Length > 24 ? Decode(parts[24]) : string.Empty);
                 }
                 else if ((command == "TOAST" || command == "TOASTPREVIEW") && parts.Length >= 12)
                 {

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -68,12 +69,72 @@ namespace ControllerSessionManager.PlayniteIntegration
                 OverlayPreviewBatteryIcon.Data = null;
             }
             NotificationSoundPackSelector.SelectionChanged += NotificationSoundPackSelector_OnSelectionChanged;
+            AddHandler(Mouse.PreviewMouseDownEvent,
+                new MouseButtonEventHandler(OnSliderTrackMouseDown), true);
             AboutVersionText.Text = plugin == null
                 ? GetInstalledVersion()
                 : string.Format(plugin.Loc("LOCCSM_VersionAuthorFormat"), GetInstalledVersion());
             Loaded += OnLoaded;
             Unloaded += OnUnloaded;
             DataContextChanged += OnSettingsDataContextChanged;
+        }
+
+        private void OnSliderTrackMouseDown(object sender, MouseButtonEventArgs args)
+        {
+            if (args == null || args.ChangedButton != MouseButton.Left ||
+                FindVisualAncestor<Thumb>(args.OriginalSource as DependencyObject) != null)
+            {
+                return;
+            }
+
+            var slider = FindVisualAncestor<Slider>(args.OriginalSource as DependencyObject);
+            if (slider == null || !slider.IsEnabled || slider.Maximum <= slider.Minimum)
+            {
+                return;
+            }
+
+            var point = args.GetPosition(slider);
+            var length = slider.Orientation == Orientation.Horizontal
+                ? slider.ActualWidth : slider.ActualHeight;
+            if (length <= 0)
+            {
+                return;
+            }
+
+            var ratio = slider.Orientation == Orientation.Horizontal
+                ? point.X / length : 1 - point.Y / length;
+            ratio = Math.Max(0, Math.Min(1, ratio));
+            if (slider.IsDirectionReversed)
+            {
+                ratio = 1 - ratio;
+            }
+
+            var value = slider.Minimum + ((slider.Maximum - slider.Minimum) * ratio);
+            if (slider.IsSnapToTickEnabled && slider.TickFrequency > 0)
+            {
+                value = slider.Minimum + Math.Round(
+                    (value - slider.Minimum) / slider.TickFrequency) * slider.TickFrequency;
+            }
+
+            slider.Value = Math.Max(slider.Minimum, Math.Min(slider.Maximum, value));
+            args.Handled = true;
+        }
+
+        private static T FindVisualAncestor<T>(DependencyObject source) where T : DependencyObject
+        {
+            var current = source;
+            while (current != null)
+            {
+                var match = current as T;
+                if (match != null)
+                {
+                    return match;
+                }
+
+                current = VisualTreeHelper.GetParent(current);
+            }
+
+            return null;
         }
 
         private ControllerSessionManagerSettings boundSettings;
@@ -192,6 +253,12 @@ namespace ControllerSessionManager.PlayniteIntegration
                 args.PropertyName == "OverlayLayoutMode" ||
                 args.PropertyName == "OverlayBlockOrder" ||
                 args.PropertyName == "OverlayMetadataOrientation" ||
+                args.PropertyName == "OverlaySplitControllerSide" ||
+                args.PropertyName == "OverlayShowSplitDivider" ||
+                args.PropertyName == "OverlaySplitDividerColor" ||
+                args.PropertyName == "OverlaySplitDividerThickness" ||
+                args.PropertyName == "OverlayShowIncidentBadge" ||
+                args.PropertyName == "OverlayStatusInMetadata" ||
                 args.PropertyName == "OverlayElementSpacing")
             {
                 RefreshOverlayPreviewComposition();
@@ -223,6 +290,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             if (OverlayPreviewCompositionRoot == null || OverlayPreviewContentRoot == null ||
                 OverlayPreviewTitle == null || OverlayPreviewControllerContainer == null ||
+                OverlayPreviewIncidentBadge == null || OverlayPreviewControllerName == null ||
                 OverlayPreviewMetadataBadges == null || OverlayPreviewInstruction == null ||
                 OverlayPreviewPauseStatus == null)
             {
@@ -237,6 +305,8 @@ namespace ControllerSessionManager.PlayniteIntegration
             var gap = settings == null ? 14 : Math.Max(0, settings.OverlayElementSpacing);
             DetachPreviewElement(OverlayPreviewContentRoot);
             DetachPreviewElement(OverlayPreviewTitle);
+            DetachPreviewElement(OverlayPreviewIncidentBadge);
+            DetachPreviewElement(OverlayPreviewControllerName);
             DetachPreviewElement(OverlayPreviewControllerContainer);
             DetachPreviewElement(OverlayPreviewMetadataBadges);
             DetachPreviewElement(OverlayPreviewInstruction);
@@ -245,19 +315,41 @@ namespace ControllerSessionManager.PlayniteIntegration
             OverlayPreviewCompositionRoot.Children.Clear();
             OverlayPreviewCompositionRoot.ColumnDefinitions.Clear();
 
-            if (string.Equals(mode, "Split", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(mode, "Split", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(mode, "Alert", StringComparison.OrdinalIgnoreCase))
             {
+                var alert = string.Equals(mode, "Alert", StringComparison.OrdinalIgnoreCase);
+                var controllerRight = settings != null && string.Equals(
+                    settings.OverlaySplitControllerSide, "Right", StringComparison.OrdinalIgnoreCase);
                 OverlayPreviewCompositionRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-                OverlayPreviewCompositionRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(gap * 2) });
+                OverlayPreviewCompositionRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
                 OverlayPreviewCompositionRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-                Grid.SetColumn(OverlayPreviewControllerContainer, 0);
+                Grid.SetColumn(OverlayPreviewControllerContainer, controllerRight ? 2 : 0);
                 OverlayPreviewCompositionRoot.Children.Add(OverlayPreviewControllerContainer);
                 var details = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
-                details.Children.Add(OverlayPreviewTitle);
-                details.Children.Add(OverlayPreviewMetadataBadges);
-                details.Children.Add(OverlayPreviewInstruction);
-                details.Children.Add(OverlayPreviewPauseStatus);
-                Grid.SetColumn(details, 2);
+                if (alert)
+                {
+                    AddAlertPreviewBlocks(details, blockOrder);
+                }
+                else
+                {
+                    details.Children.Add(OverlayPreviewTitle);
+                    details.Children.Add(OverlayPreviewMetadataBadges);
+                    details.Children.Add(OverlayPreviewInstruction);
+                    details.Children.Add(OverlayPreviewPauseStatus);
+                }
+                var divider = new Border
+                {
+                    Width = settings != null && settings.OverlayShowSplitDivider
+                        ? settings.OverlaySplitDividerThickness : 0,
+                    Background = settings != null && settings.OverlayShowSplitDivider
+                        ? new SolidColorBrush(ParsePreviewColor(
+                            settings.OverlaySplitDividerColor, Colors.Transparent)) : Brushes.Transparent,
+                    Margin = new Thickness(gap, 0, gap, 0)
+                };
+                Grid.SetColumn(divider, 1);
+                Grid.SetColumn(details, controllerRight ? 0 : 2);
+                OverlayPreviewCompositionRoot.Children.Add(divider);
                 OverlayPreviewCompositionRoot.Children.Add(details);
                 return;
             }
@@ -265,6 +357,28 @@ namespace ControllerSessionManager.PlayniteIntegration
             Grid.SetColumn(OverlayPreviewControllerContainer, 0);
             AddPreviewBlocks(OverlayPreviewContentRoot, blockOrder);
             OverlayPreviewCompositionRoot.Children.Add(OverlayPreviewContentRoot);
+        }
+
+        private void AddAlertPreviewBlocks(Panel panel, string order)
+        {
+            var added = new System.Collections.Generic.HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var token in (order ?? string.Empty).Split(','))
+            {
+                var key = token.Trim();
+                if (!added.Add(key)) continue;
+                if (key.Equals("Incident", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewIncidentBadge);
+                else if (key.Equals("Title", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewTitle);
+                else if (key.Equals("ControllerName", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewControllerName);
+                else if (key.Equals("Metadata", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewMetadataBadges);
+                else if (key.Equals("Instruction", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewInstruction);
+                else if (key.Equals("Status", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewPauseStatus);
+            }
+            if (!added.Contains("Incident")) panel.Children.Add(OverlayPreviewIncidentBadge);
+            if (!added.Contains("Title")) panel.Children.Add(OverlayPreviewTitle);
+            if (!added.Contains("ControllerName")) panel.Children.Add(OverlayPreviewControllerName);
+            if (!added.Contains("Metadata")) panel.Children.Add(OverlayPreviewMetadataBadges);
+            if (!added.Contains("Instruction")) panel.Children.Add(OverlayPreviewInstruction);
+            if (!added.Contains("Status")) panel.Children.Add(OverlayPreviewPauseStatus);
         }
 
         private void AddPreviewBlocks(Panel panel, string order)
@@ -275,6 +389,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 var key = token.Trim();
                 if (!added.Add(key)) continue;
                 if (key.Equals("Title", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewTitle);
+                else if (key.Equals("Incident", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewIncidentBadge);
                 else if (key.Equals("Controller", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewControllerContainer);
                 else if (key.Equals("Metadata", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewMetadataBadges);
                 else if (key.Equals("Instruction", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewInstruction);
@@ -291,6 +406,12 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             var parent = VisualTreeHelper.GetParent(element) as Panel;
             if (parent != null) parent.Children.Remove(element);
+        }
+
+        private static Color ParsePreviewColor(string value, Color fallback)
+        {
+            try { return (Color)ColorConverter.ConvertFromString(value); }
+            catch { return fallback; }
         }
 
         private void RefreshOverlayPreviewControllerLayout()
@@ -518,6 +639,17 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             "OverlayScalePercent", "OverlayDimColor", "OverlayCardColor", "OverlayUseGradient",
             "OverlayGradientColor", "OverlayGradientAngle", "OverlayAccentColor",
+            "OverlayInstructionColor", "OverlayControllerIconColor",
+            "OverlaySceneUseGradient", "OverlaySceneGradientColor", "OverlaySceneGradientAngle",
+            "OverlaySceneUseBackgroundImage", "OverlaySceneBackgroundImagePath",
+            "OverlaySceneBackgroundImageStretch", "OverlaySceneBackgroundImageHorizontalAlignment",
+            "OverlaySceneBackgroundImageVerticalAlignment", "OverlaySceneBackgroundImageOpacity",
+            "OverlaySceneUseAmbientGlows", "OverlaySceneGlow1Color", "OverlaySceneGlow1X",
+            "OverlaySceneGlow1Y", "OverlaySceneGlow1Radius", "OverlaySceneGlow2Color",
+            "OverlaySceneGlow2X", "OverlaySceneGlow2Y", "OverlaySceneGlow2Radius",
+            "OverlaySceneGlow3Color", "OverlaySceneGlow3X", "OverlaySceneGlow3Y",
+            "OverlaySceneGlow3Radius", "OverlaySceneShowGrid", "OverlaySceneGridColor",
+            "OverlaySceneGridSize",
             "OverlayUseBackgroundImage", "OverlayBackgroundImagePath", "OverlayBackgroundImageStretch",
             "OverlayBackgroundImageHorizontalAlignment", "OverlayBackgroundImageVerticalAlignment",
             "OverlayBackgroundImageOpacity", "OverlayBackgroundImageTintOpacity",
@@ -530,6 +662,12 @@ namespace ControllerSessionManager.PlayniteIntegration
             "OverlayShowControllerName", "OverlayShowConnectionBadge", "OverlayShowBatteryBadge",
             "OverlayShowTitle", "OverlayUppercaseTitle", "OverlayShowInstruction", "OverlayShowPauseStatus",
             "OverlayControllerIconPosition", "OverlayCardPosition", "OverlayLayoutMode", "OverlayAnimation",
+            "OverlaySplitControllerSide", "OverlayShowSplitDivider", "OverlaySplitDividerColor",
+            "OverlaySplitDividerThickness", "OverlayShowIncidentBadge",
+            "OverlayIncidentBadgeTextColor", "OverlayIncidentBadgeBackgroundColor",
+            "OverlayIncidentBadgeBorderColor", "OverlayIncidentBadgeBorderThickness",
+            "OverlayIncidentBadgeCornerRadius", "OverlayIncidentBadgeTextSize",
+            "OverlayStatusInMetadata",
             "OverlayBlockOrder", "OverlayMetadataOrientation", "OverlayUseIndependentBorders",
             "OverlayBorderLeftThickness", "OverlayBorderTopThickness", "OverlayBorderRightThickness",
             "OverlayBorderBottomThickness",
@@ -2034,6 +2172,24 @@ namespace ControllerSessionManager.PlayniteIntegration
             if (plugin != null && targetSettings != null)
             {
                 plugin.ClearOverlayBackgroundImage(targetSettings);
+            }
+        }
+
+        private void SelectOverlaySceneBackgroundImageClick(object sender, RoutedEventArgs args)
+        {
+            var targetSettings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            if (plugin != null && targetSettings != null)
+            {
+                plugin.SelectOverlaySceneBackgroundImage(targetSettings);
+            }
+        }
+
+        private void ClearOverlaySceneBackgroundImageClick(object sender, RoutedEventArgs args)
+        {
+            var targetSettings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            if (plugin != null && targetSettings != null)
+            {
+                plugin.ClearOverlaySceneBackgroundImage(targetSettings);
             }
         }
 

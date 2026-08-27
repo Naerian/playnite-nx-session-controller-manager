@@ -38,6 +38,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private readonly DispatcherTimer reconciliationTimer;
         private readonly DispatcherTimer xInputTimer;
         private readonly DispatcherTimer sessionTimer;
+        private readonly DispatcherTimer creatorThemeUpdateTimer;
         private readonly GameSessionManager sessionManager;
         private readonly GamePauseService gamePauseService;
         private readonly OnlineSessionDetector onlineSessionDetector;
@@ -84,6 +85,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private TopPanelItem controllerTopPanelItem;
         private TesterIntegration testerIntegration;
         private bool openingStandaloneSettings;
+        private bool automaticCreatorThemeStartupCheckCompleted;
         private DateTime lastFullscreenLaunchUtc = DateTime.MinValue;
         private DateTime? guideButtonPressedUtc;
         private static readonly TimeSpan FullscreenLaunchCooldown = TimeSpan.FromSeconds(2);
@@ -133,6 +135,11 @@ namespace ControllerSessionManager.PlayniteIntegration
                 Interval = TimeSpan.FromMilliseconds(100)
             };
             sessionTimer.Tick += OnSessionTimerTick;
+            creatorThemeUpdateTimer = new DispatcherTimer(DispatcherPriority.Background)
+            {
+                Interval = TimeSpan.FromHours(1)
+            };
+            creatorThemeUpdateTimer.Tick += OnCreatorThemeUpdateTimerTick;
             sessionManager = new GameSessionManager();
             sessionManager.EventOccurred += OnSessionEventOccurred;
             gamePauseService = new GamePauseService();
@@ -193,7 +200,8 @@ namespace ControllerSessionManager.PlayniteIntegration
             });
 
             settings = new ControllerSessionManagerSettings(this);
-            testerIntegration = new TesterIntegration(PlayniteApi, logger, settings.Tester, Loc, OpenTesterSettings);
+            testerIntegration = new TesterIntegration(PlayniteApi, logger, settings.Tester, Loc,
+                OpenTesterSettings, () => settings != null && settings.EnableDebugLogging);
             ApplySettings();
             logger.Info(string.Format("Controller Manager {0} initialized.",
                 GetType().Assembly.GetName().Version.ToString(3)));
@@ -480,10 +488,16 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
         }
 
-        public Task<CreatorThemeUpdateResult> UpdateCreatorThemesAsync(
+        public async Task<CreatorThemeUpdateResult> UpdateCreatorThemesAsync(
             CancellationToken cancellationToken)
         {
-            return creatorThemeUpdater.CheckForUpdatesAsync(cancellationToken);
+            var result = await creatorThemeUpdater.CheckForUpdatesAsync(cancellationToken);
+            if (result != null && result.Succeeded && settings != null)
+            {
+                settings.CreatorThemeLastUpdateUtc = DateTime.UtcNow.ToString("o");
+                SavePluginSettings(settings);
+            }
+            return result;
         }
 
         public void ShowCreatorThemeUpdateResult(CreatorThemeUpdateResult result)
@@ -1175,7 +1189,74 @@ namespace ControllerSessionManager.PlayniteIntegration
             diagnosticEvents.Add("lifecycle", "Playnite application started");
             RefreshControllers();
             BeginControllerDatabaseUpdate(false, false);
+            creatorThemeUpdateTimer.Start();
+            BeginAutomaticCreatorThemeUpdate();
             TryOfferFirstRunSetupWizard();
+        }
+
+        private void OnCreatorThemeUpdateTimerTick(object sender, EventArgs args)
+        {
+            BeginAutomaticCreatorThemeUpdate();
+        }
+
+        private async void BeginAutomaticCreatorThemeUpdate()
+        {
+            if (settings == null || disposed ||
+                string.Equals(settings.CreatorThemeUpdatePolicy,
+                    ControllerSessionManagerSettings.CreatorThemeUpdatePolicyManual,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            if (string.Equals(settings.CreatorThemeUpdatePolicy,
+                ControllerSessionManagerSettings.CreatorThemeUpdatePolicyDaily,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                DateTime lastUpdate;
+                if (DateTime.TryParse(settings.CreatorThemeLastUpdateUtc, null,
+                    System.Globalization.DateTimeStyles.RoundtripKind, out lastUpdate) &&
+                    DateTime.UtcNow - lastUpdate.ToUniversalTime() < TimeSpan.FromHours(24))
+                {
+                    return;
+                }
+            }
+            else if (!string.Equals(settings.CreatorThemeUpdatePolicy,
+                ControllerSessionManagerSettings.CreatorThemeUpdatePolicyStartup,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+            else
+            {
+                if (automaticCreatorThemeStartupCheckCompleted)
+                {
+                    return;
+                }
+                automaticCreatorThemeStartupCheckCompleted = true;
+            }
+
+            try
+            {
+                var result = await UpdateCreatorThemesAsync(CancellationToken.None);
+                if (result == null || !result.Succeeded)
+                {
+                    LogDiagnostic("Automatic creator-theme update failed: " +
+                        (result == null ? "No result." : result.Error));
+                    return;
+                }
+
+                CreatorThemeCatalog.Reload();
+                settings.RefreshCreatorThemeState();
+                diagnosticEvents.Add("creator-themes", result.CatalogCurrent
+                    ? "Automatic design check completed; catalog is current"
+                    : string.Format("Automatic design update completed: {0} installed, {1} updated",
+                        result.Installed, result.Updated));
+            }
+            catch (Exception ex)
+            {
+                LogDiagnostic("Automatic creator-theme update failed: " + ex.Message);
+            }
         }
 
         public void CheckControllerDatabaseUpdates()
@@ -1322,6 +1403,7 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         public override void OnApplicationStopped(OnApplicationStoppedEventArgs args)
         {
+            creatorThemeUpdateTimer.Stop();
             StopMonitoring();
         }
 
@@ -1336,7 +1418,7 @@ namespace ControllerSessionManager.PlayniteIntegration
 
                 QuiesceSdl(true);
                 controllerManager.RecordConnected(args.Controller);
-                logger.Info(string.Format("Controller connected: {0}", SafeName(args.Controller)));
+                LogDiagnostic(string.Format("Controller connected: {0}", SafeName(args.Controller)));
                 diagnosticEvents.Add("controller", "Connected: " + SafeName(args.Controller));
             }
             catch (Exception ex)
@@ -1356,7 +1438,7 @@ namespace ControllerSessionManager.PlayniteIntegration
 
                 QuiesceSdl(true);
                 controllerManager.RecordDisconnected(args.Controller);
-                logger.Info(string.Format("Controller disconnected: {0}", SafeName(args.Controller)));
+                LogDiagnostic(string.Format("Controller disconnected: {0}", SafeName(args.Controller)));
                 diagnosticEvents.Add("controller", "Disconnected: " + SafeName(args.Controller));
             }
             catch (Exception ex)
@@ -1677,7 +1759,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                     GetControllerSnapshot(), sessionStartedUtc);
                 overlayClient.Prepare(activeSessionId);
                 sessionTimer.Start();
-                logger.Info(string.Format("session.started game={0} scope={1} takeover={2} pause={3} forcePauseOffline={4}",
+                LogDiagnostic(string.Format("session.started game={0} scope={1} takeover={2} pause={3} forcePauseOffline={4}",
                     activeGameId.Value,
                     activeSessionPolicy.ProtectAllActiveControllers ? "all-active" : "most-recent",
                     activeSessionPolicy.AllowControllerTakeover,
@@ -1685,7 +1767,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                     activeSessionPolicy.ForcePauseOfflineGames));
                 if (!seededInitialController)
                 {
-                    logger.Info("session.initialControllerPending reason=no-connected-controller");
+                    LogDiagnostic("session.initialControllerPending reason=no-connected-controller");
                 }
                 diagnosticEvents.Add("session", string.Format(
                     "Started game={0} scope={1} takeover={2} pause={3} forcePause={4}",
@@ -1811,7 +1893,7 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private void OnSessionEventOccurred(object sender, SessionEventArgs args)
         {
-            logger.Info(string.Format("session.{0} controller={1} name={2} replacement={3} replacementName={4} evidence={5}",
+            LogDiagnostic(string.Format("session.{0} controller={1} name={2} replacement={3} replacementName={4} evidence={5}",
                 args.Type.ToString().ToLowerInvariant(), args.ControllerKey, args.ControllerName,
                 args.ReplacementControllerKey, args.ReplacementControllerName, args.InputEvidence));
             diagnosticEvents.Add("incident", string.Format("{0}: {1}; replacement={2}; evidence={3}",
@@ -1994,7 +2076,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             if (promoted && !adaptiveLocalScopeLogged)
             {
                 adaptiveLocalScopeLogged = true;
-                logger.Info("session.scopePromoted scope=local-multiplayer evidence=alternating-controllers");
+                LogDiagnostic("session.scopePromoted scope=local-multiplayer evidence=alternating-controllers");
             }
             return promoted;
         }
@@ -2228,7 +2310,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 string.IsNullOrWhiteSpace(connectionLabel) ? string.Empty :
                     ControllerConnectionIcons.GetPathData(connectionType),
                 string.IsNullOrWhiteSpace(batteryLabel) ? string.Empty :
-                    SvgIconGeometryLoader.GetPathData("battery.svg"), batteryLevel);
+                    SvgIconGeometryLoader.GetPathData("battery.svg"), batteryLevel,
+                Loc("LOCCSM_Disconnected"));
         }
 
         private void EnsureDisconnectIncident()
@@ -2265,7 +2348,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             activePauseReceipt = gamePauseService.ResolveForegroundTarget(activeGameProcessId, DateTime.UtcNow);
             if (activePauseReceipt.Status != PauseAttemptStatus.Sent)
             {
-                logger.Info(string.Format("session.suspendPause targetUnavailable={0}", activePauseReceipt.Status));
+                LogDiagnostic(string.Format("session.suspendPause targetUnavailable={0}", activePauseReceipt.Status));
                 diagnosticEvents.Add("pause", "Suspend target unavailable: " + activePauseReceipt.Status);
                 return;
             }
@@ -2274,7 +2357,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             {
                 var online = onlineSessionDetector.Detect(activeGameOnlineMetadata,
                     gamePauseService.GetProcessTree(activeGameProcessId));
-                logger.Info(string.Format("session.onlineDetection evidence={0} detail={1}",
+                LogDiagnostic(string.Format("session.onlineDetection evidence={0} detail={1}",
                     online.Evidence, online.Detail ?? string.Empty));
                 diagnosticEvents.Add("online", string.Format("likely={0} evidence={1} detail={2}",
                     online.IsOnlineLikely, online.Evidence, online.Detail));
@@ -2866,6 +2949,17 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         public void SelectOverlayBackgroundImage(ControllerSessionManagerSettings targetSettings)
         {
+            SelectOverlayBackgroundImage(targetSettings, false);
+        }
+
+        public void SelectOverlaySceneBackgroundImage(ControllerSessionManagerSettings targetSettings)
+        {
+            SelectOverlayBackgroundImage(targetSettings, true);
+        }
+
+        private void SelectOverlayBackgroundImage(
+            ControllerSessionManagerSettings targetSettings, bool sceneBackground)
+        {
             if (targetSettings == null) return;
             var dialog = new OpenFileDialog
             {
@@ -2897,10 +2991,19 @@ namespace ControllerSessionManager.PlayniteIntegration
                 var extension = string.Equals(info.Extension, ".png", StringComparison.OrdinalIgnoreCase)
                     ? ".png" : ".jpg";
                 var destination = Path.Combine(directory,
-                    "overlay-" + Guid.NewGuid().ToString("N") + extension);
+                    (sceneBackground ? "overlay-scene-" : "overlay-") +
+                    Guid.NewGuid().ToString("N") + extension);
                 SaveOptimizedNotificationBackground(image, destination, extension);
-                targetSettings.OverlayBackgroundImagePath = destination;
-                targetSettings.OverlayUseBackgroundImage = true;
+                if (sceneBackground)
+                {
+                    targetSettings.OverlaySceneBackgroundImagePath = destination;
+                    targetSettings.OverlaySceneUseBackgroundImage = true;
+                }
+                else
+                {
+                    targetSettings.OverlayBackgroundImagePath = destination;
+                    targetSettings.OverlayUseBackgroundImage = true;
+                }
             }
             catch (Exception ex)
             {
@@ -2914,6 +3017,13 @@ namespace ControllerSessionManager.PlayniteIntegration
             if (targetSettings == null) return;
             targetSettings.OverlayUseBackgroundImage = false;
             targetSettings.OverlayBackgroundImagePath = string.Empty;
+        }
+
+        public void ClearOverlaySceneBackgroundImage(ControllerSessionManagerSettings targetSettings)
+        {
+            if (targetSettings == null) return;
+            targetSettings.OverlaySceneUseBackgroundImage = false;
+            targetSettings.OverlaySceneBackgroundImagePath = string.Empty;
         }
 
         internal string GetNotificationBackgroundDirectory()
@@ -3316,7 +3426,33 @@ namespace ControllerSessionManager.PlayniteIntegration
                 settings.OverlayUseBorderGradient.ToString(), settings.OverlayBorderGradientStartColor,
                 settings.OverlayBorderGradientEndColor, settings.OverlayBorderGradientAngle.ToString(),
                 settings.OverlayShowBorderGlow.ToString(), settings.OverlayBorderGlowColor,
-                settings.OverlayBorderGlowBlur.ToString(), settings.OverlayBorderGlowOpacity.ToString()
+                settings.OverlayBorderGlowBlur.ToString(), settings.OverlayBorderGlowOpacity.ToString(),
+                settings.OverlaySceneUseGradient.ToString(), settings.OverlaySceneGradientColor,
+                settings.OverlaySceneGradientAngle.ToString(),
+                settings.OverlaySceneUseBackgroundImage.ToString(),
+                EncodeStyleValue(settings.OverlaySceneBackgroundImagePath),
+                settings.OverlaySceneBackgroundImageStretch,
+                settings.OverlaySceneBackgroundImageHorizontalAlignment,
+                settings.OverlaySceneBackgroundImageVerticalAlignment,
+                settings.OverlaySceneBackgroundImageOpacity.ToString(),
+                settings.OverlaySceneUseAmbientGlows.ToString(),
+                settings.OverlaySceneGlow1Color, settings.OverlaySceneGlow1X.ToString(),
+                settings.OverlaySceneGlow1Y.ToString(), settings.OverlaySceneGlow1Radius.ToString(),
+                settings.OverlaySceneGlow2Color, settings.OverlaySceneGlow2X.ToString(),
+                settings.OverlaySceneGlow2Y.ToString(), settings.OverlaySceneGlow2Radius.ToString(),
+                settings.OverlaySceneGlow3Color, settings.OverlaySceneGlow3X.ToString(),
+                settings.OverlaySceneGlow3Y.ToString(), settings.OverlaySceneGlow3Radius.ToString(),
+                settings.OverlaySceneShowGrid.ToString(), settings.OverlaySceneGridColor,
+                settings.OverlaySceneGridSize.ToString(), settings.OverlaySplitControllerSide,
+                settings.OverlayShowSplitDivider.ToString(), settings.OverlaySplitDividerColor,
+                settings.OverlaySplitDividerThickness.ToString(),
+                settings.OverlayShowIncidentBadge.ToString(), settings.OverlayIncidentBadgeTextColor,
+                settings.OverlayIncidentBadgeBackgroundColor, settings.OverlayIncidentBadgeBorderColor,
+                settings.OverlayIncidentBadgeBorderThickness.ToString(),
+                settings.OverlayIncidentBadgeCornerRadius.ToString(),
+                settings.OverlayIncidentBadgeTextSize.ToString(),
+                settings.OverlayStatusInMetadata.ToString(),
+                settings.OverlayInstructionColor, settings.OverlayControllerIconColor
             });
         }
 
@@ -3409,6 +3545,14 @@ namespace ControllerSessionManager.PlayniteIntegration
             return englishFallbackResources != null && englishFallbackResources.Contains(key)
                 ? Convert.ToString(englishFallbackResources[key])
                 : null;
+        }
+
+        private void LogDiagnostic(string message)
+        {
+            if (settings != null && settings.EnableDebugLogging)
+            {
+                logger.Debug(message);
+            }
         }
 
         private static string SafeName(GamepadController controller)

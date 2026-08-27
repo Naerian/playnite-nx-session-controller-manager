@@ -800,4 +800,26 @@
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">公式カタログを確認し、互換性のあるデザインをインストールしています…</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesCurrent">クリエイターデザインは最新です。</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdated">更新完了。新規: {0}、更新: {1}、非互換: {2}。</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceOptions">オプション</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceOptionsHelp">ビジュアルデザインの全般的な動作を設定します。</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdatePolicy">デザインの更新</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdatePolicyHelp">新規または更新されたデザインを確認してインストールするタイミングを選択します。接続できない場合もインストール済みデザインは保持されます。</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdateStartup">Playnite 起動時</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdateDaily">24 時間ごと</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdateManual">手動</sys:String>
+    <sys:String x:Key="LOCCSM_LayoutAlert">アラートカード</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneBackground">シーンの背景</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneBackgroundHelp">カードとは別にオーバーレイ画面全体をカスタマイズします。</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneImage">シーン画像</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneEffects">アンビエント効果</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneAmbientGlows">アンビエントグローを表示</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowOne">グロー 1</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowTwo">グロー 2</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowThree">グロー 3</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGrid">グリッドを表示</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGridColor">グリッドの色</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGridSize">グリッドサイズ</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayScenePositionX">X 位置 (%)</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayScenePositionY">Y 位置 (%)</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowRadius">グロー半径 (%)</sys:String>
 </ResourceDictionary>

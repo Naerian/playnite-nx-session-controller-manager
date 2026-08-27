@@ -800,4 +800,26 @@
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">正在检查官方目录并安装兼容设计…</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesCurrent">创作者设计已是最新版本。</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdated">更新完成。新增：{0}。已更新：{1}。不兼容：{2}。</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceOptions">选项</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceOptionsHelp">配置视觉设计的常规行为。</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdatePolicy">设计更新</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdatePolicyHelp">选择检查并安装新增或更新设计的时间。无法连接时会保留已安装的设计。</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdateStartup">Playnite 启动时</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdateDaily">每 24 小时</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdateManual">手动</sys:String>
+    <sys:String x:Key="LOCCSM_LayoutAlert">警报卡片</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneBackground">场景背景</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneBackgroundHelp">独立于卡片自定义整个叠加层背景。</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneImage">场景图像</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneEffects">环境效果</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneAmbientGlows">显示环境光晕</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowOne">光晕 1</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowTwo">光晕 2</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowThree">光晕 3</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGrid">显示网格</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGridColor">网格颜色</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGridSize">网格大小</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayScenePositionX">X 位置 (%)</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayScenePositionY">Y 位置 (%)</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowRadius">光晕半径 (%)</sys:String>
 </ResourceDictionary>

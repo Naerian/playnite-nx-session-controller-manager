@@ -8,7 +8,7 @@ namespace ControllerSessionManager.PlayniteIntegration
     /// </summary>
     public sealed class VisualProfileSnapshot
     {
-        public const int CurrentVersion = 13;
+        public const int CurrentVersion = 14;
         public const string FileExtension = ".pcvisual";
 
         public int Version { get; set; }
@@ -203,6 +203,32 @@ namespace ControllerSessionManager.PlayniteIntegration
         public bool OverlayUseGradient { get; set; }
         public string OverlayGradientColor { get; set; }
         public int OverlayGradientAngle { get; set; }
+        public bool OverlaySceneUseGradient { get; set; }
+        public string OverlaySceneGradientColor { get; set; }
+        public int OverlaySceneGradientAngle { get; set; }
+        public bool OverlaySceneUseBackgroundImage { get; set; }
+        public string OverlaySceneBackgroundImageStretch { get; set; }
+        public string OverlaySceneBackgroundImageHorizontalAlignment { get; set; }
+        public string OverlaySceneBackgroundImageVerticalAlignment { get; set; }
+        public int OverlaySceneBackgroundImageOpacity { get; set; }
+        public string OverlaySceneBackgroundImageData { get; set; }
+        public string OverlaySceneBackgroundImageExtension { get; set; }
+        public bool OverlaySceneUseAmbientGlows { get; set; }
+        public string OverlaySceneGlow1Color { get; set; }
+        public int OverlaySceneGlow1X { get; set; }
+        public int OverlaySceneGlow1Y { get; set; }
+        public int OverlaySceneGlow1Radius { get; set; }
+        public string OverlaySceneGlow2Color { get; set; }
+        public int OverlaySceneGlow2X { get; set; }
+        public int OverlaySceneGlow2Y { get; set; }
+        public int OverlaySceneGlow2Radius { get; set; }
+        public string OverlaySceneGlow3Color { get; set; }
+        public int OverlaySceneGlow3X { get; set; }
+        public int OverlaySceneGlow3Y { get; set; }
+        public int OverlaySceneGlow3Radius { get; set; }
+        public bool OverlaySceneShowGrid { get; set; }
+        public string OverlaySceneGridColor { get; set; }
+        public int OverlaySceneGridSize { get; set; }
         public bool OverlayUseBackgroundImage { get; set; }
         public string OverlayBackgroundImageStretch { get; set; }
         public string OverlayBackgroundImageHorizontalAlignment { get; set; }
@@ -212,6 +238,8 @@ namespace ControllerSessionManager.PlayniteIntegration
         public string OverlayBackgroundImageData { get; set; }
         public string OverlayBackgroundImageExtension { get; set; }
         public string OverlayAccentColor { get; set; }
+        public string OverlayInstructionColor { get; set; }
+        public string OverlayControllerIconColor { get; set; }
         public string OverlayTextColor { get; set; }
         public string OverlayWarningColor { get; set; }
         public int OverlayTitleFontSize { get; set; }
@@ -238,6 +266,18 @@ namespace ControllerSessionManager.PlayniteIntegration
         public string OverlayControllerIconPosition { get; set; }
         public string OverlayCardPosition { get; set; }
         public string OverlayLayoutMode { get; set; }
+        public string OverlaySplitControllerSide { get; set; }
+        public bool OverlayShowSplitDivider { get; set; }
+        public string OverlaySplitDividerColor { get; set; }
+        public int OverlaySplitDividerThickness { get; set; }
+        public bool OverlayShowIncidentBadge { get; set; }
+        public string OverlayIncidentBadgeTextColor { get; set; }
+        public string OverlayIncidentBadgeBackgroundColor { get; set; }
+        public string OverlayIncidentBadgeBorderColor { get; set; }
+        public int OverlayIncidentBadgeBorderThickness { get; set; }
+        public int OverlayIncidentBadgeCornerRadius { get; set; }
+        public int OverlayIncidentBadgeTextSize { get; set; }
+        public bool OverlayStatusInMetadata { get; set; }
         public string OverlayContentAlignment { get; set; }
         public int OverlayScreenMargin { get; set; }
         public string OverlayAnimation { get; set; }
@@ -492,6 +532,32 @@ namespace ControllerSessionManager.PlayniteIntegration
                 OverlayUseGradient = settings.OverlayUseGradient,
                 OverlayGradientColor = settings.OverlayGradientColor,
                 OverlayGradientAngle = settings.OverlayGradientAngle,
+                OverlaySceneUseGradient = settings.OverlaySceneUseGradient,
+                OverlaySceneGradientColor = settings.OverlaySceneGradientColor,
+                OverlaySceneGradientAngle = settings.OverlaySceneGradientAngle,
+                OverlaySceneUseBackgroundImage = settings.OverlaySceneUseBackgroundImage,
+                OverlaySceneBackgroundImageStretch = settings.OverlaySceneBackgroundImageStretch,
+                OverlaySceneBackgroundImageHorizontalAlignment = settings.OverlaySceneBackgroundImageHorizontalAlignment,
+                OverlaySceneBackgroundImageVerticalAlignment = settings.OverlaySceneBackgroundImageVerticalAlignment,
+                OverlaySceneBackgroundImageOpacity = settings.OverlaySceneBackgroundImageOpacity,
+                OverlaySceneBackgroundImageData = ReadImageData(settings.OverlaySceneBackgroundImagePath),
+                OverlaySceneBackgroundImageExtension = ImageExtension(settings.OverlaySceneBackgroundImagePath),
+                OverlaySceneUseAmbientGlows = settings.OverlaySceneUseAmbientGlows,
+                OverlaySceneGlow1Color = settings.OverlaySceneGlow1Color,
+                OverlaySceneGlow1X = settings.OverlaySceneGlow1X,
+                OverlaySceneGlow1Y = settings.OverlaySceneGlow1Y,
+                OverlaySceneGlow1Radius = settings.OverlaySceneGlow1Radius,
+                OverlaySceneGlow2Color = settings.OverlaySceneGlow2Color,
+                OverlaySceneGlow2X = settings.OverlaySceneGlow2X,
+                OverlaySceneGlow2Y = settings.OverlaySceneGlow2Y,
+                OverlaySceneGlow2Radius = settings.OverlaySceneGlow2Radius,
+                OverlaySceneGlow3Color = settings.OverlaySceneGlow3Color,
+                OverlaySceneGlow3X = settings.OverlaySceneGlow3X,
+                OverlaySceneGlow3Y = settings.OverlaySceneGlow3Y,
+                OverlaySceneGlow3Radius = settings.OverlaySceneGlow3Radius,
+                OverlaySceneShowGrid = settings.OverlaySceneShowGrid,
+                OverlaySceneGridColor = settings.OverlaySceneGridColor,
+                OverlaySceneGridSize = settings.OverlaySceneGridSize,
                 OverlayUseBackgroundImage = settings.OverlayUseBackgroundImage,
                 OverlayBackgroundImageStretch = settings.OverlayBackgroundImageStretch,
                 OverlayBackgroundImageHorizontalAlignment = settings.OverlayBackgroundImageHorizontalAlignment,
@@ -501,6 +567,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 OverlayBackgroundImageData = ReadImageData(settings.OverlayBackgroundImagePath),
                 OverlayBackgroundImageExtension = ImageExtension(settings.OverlayBackgroundImagePath),
                 OverlayAccentColor = settings.OverlayAccentColor,
+                OverlayInstructionColor = settings.OverlayInstructionColor,
+                OverlayControllerIconColor = settings.OverlayControllerIconColor,
                 OverlayTextColor = settings.OverlayTextColor,
                 OverlayWarningColor = settings.OverlayWarningColor,
                 OverlayTitleFontSize = settings.OverlayTitleFontSize,
@@ -527,6 +595,18 @@ namespace ControllerSessionManager.PlayniteIntegration
                 OverlayControllerIconPosition = settings.OverlayControllerIconPosition,
                 OverlayCardPosition = settings.OverlayCardPosition,
                 OverlayLayoutMode = settings.OverlayLayoutMode,
+                OverlaySplitControllerSide = settings.OverlaySplitControllerSide,
+                OverlayShowSplitDivider = settings.OverlayShowSplitDivider,
+                OverlaySplitDividerColor = settings.OverlaySplitDividerColor,
+                OverlaySplitDividerThickness = settings.OverlaySplitDividerThickness,
+                OverlayShowIncidentBadge = settings.OverlayShowIncidentBadge,
+                OverlayIncidentBadgeTextColor = settings.OverlayIncidentBadgeTextColor,
+                OverlayIncidentBadgeBackgroundColor = settings.OverlayIncidentBadgeBackgroundColor,
+                OverlayIncidentBadgeBorderColor = settings.OverlayIncidentBadgeBorderColor,
+                OverlayIncidentBadgeBorderThickness = settings.OverlayIncidentBadgeBorderThickness,
+                OverlayIncidentBadgeCornerRadius = settings.OverlayIncidentBadgeCornerRadius,
+                OverlayIncidentBadgeTextSize = settings.OverlayIncidentBadgeTextSize,
+                OverlayStatusInMetadata = settings.OverlayStatusInMetadata,
                 OverlayContentAlignment = settings.OverlayContentAlignment,
                 OverlayScreenMargin = settings.OverlayScreenMargin,
                 OverlayAnimation = settings.OverlayAnimation,
@@ -837,6 +917,36 @@ namespace ControllerSessionManager.PlayniteIntegration
             settings.OverlayUseGradient = Version >= 8 && OverlayUseGradient;
             settings.OverlayGradientColor = Version < 8 ? OverlayCardColor : OverlayGradientColor;
             settings.OverlayGradientAngle = Version < 8 ? 0 : OverlayGradientAngle;
+            if (Version >= 14)
+            {
+                settings.OverlaySceneUseGradient = OverlaySceneUseGradient;
+                settings.OverlaySceneGradientColor = OverlaySceneGradientColor;
+                settings.OverlaySceneGradientAngle = OverlaySceneGradientAngle;
+                settings.OverlaySceneUseBackgroundImage = OverlaySceneUseBackgroundImage;
+                settings.OverlaySceneBackgroundImageStretch = OverlaySceneBackgroundImageStretch;
+                settings.OverlaySceneBackgroundImageHorizontalAlignment = OverlaySceneBackgroundImageHorizontalAlignment;
+                settings.OverlaySceneBackgroundImageVerticalAlignment = OverlaySceneBackgroundImageVerticalAlignment;
+                settings.OverlaySceneBackgroundImageOpacity = OverlaySceneBackgroundImageOpacity;
+                settings.OverlaySceneBackgroundImagePath = RestoreImage(
+                    OverlaySceneBackgroundImageData, OverlaySceneBackgroundImageExtension,
+                    imageDirectory, "overlay-scene", settings.OverlaySceneBackgroundImagePath);
+                settings.OverlaySceneUseAmbientGlows = OverlaySceneUseAmbientGlows;
+                settings.OverlaySceneGlow1Color = OverlaySceneGlow1Color;
+                settings.OverlaySceneGlow1X = OverlaySceneGlow1X;
+                settings.OverlaySceneGlow1Y = OverlaySceneGlow1Y;
+                settings.OverlaySceneGlow1Radius = OverlaySceneGlow1Radius;
+                settings.OverlaySceneGlow2Color = OverlaySceneGlow2Color;
+                settings.OverlaySceneGlow2X = OverlaySceneGlow2X;
+                settings.OverlaySceneGlow2Y = OverlaySceneGlow2Y;
+                settings.OverlaySceneGlow2Radius = OverlaySceneGlow2Radius;
+                settings.OverlaySceneGlow3Color = OverlaySceneGlow3Color;
+                settings.OverlaySceneGlow3X = OverlaySceneGlow3X;
+                settings.OverlaySceneGlow3Y = OverlaySceneGlow3Y;
+                settings.OverlaySceneGlow3Radius = OverlaySceneGlow3Radius;
+                settings.OverlaySceneShowGrid = OverlaySceneShowGrid;
+                settings.OverlaySceneGridColor = OverlaySceneGridColor;
+                settings.OverlaySceneGridSize = OverlaySceneGridSize;
+            }
             settings.OverlayUseBackgroundImage = Version >= 9 && OverlayUseBackgroundImage;
             if (Version >= 9)
             {
@@ -850,6 +960,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                     imageDirectory, "overlay", settings.OverlayBackgroundImagePath);
             }
             settings.OverlayAccentColor = OverlayAccentColor;
+            settings.OverlayInstructionColor = Version >= 14 ? OverlayInstructionColor : OverlayAccentColor;
+            settings.OverlayControllerIconColor = Version >= 14 ? OverlayControllerIconColor : OverlayTextColor;
             settings.OverlayTextColor = OverlayTextColor;
             settings.OverlayWarningColor = OverlayWarningColor;
             settings.OverlayTitleFontSize = OverlayTitleFontSize;
@@ -880,6 +992,21 @@ namespace ControllerSessionManager.PlayniteIntegration
             settings.OverlayCardPosition = Version < 3 || string.IsNullOrWhiteSpace(OverlayCardPosition)
                 ? "Center" : OverlayCardPosition;
             settings.OverlayLayoutMode = Version < 9 ? "Standard" : OverlayLayoutMode;
+            if (Version >= 14)
+            {
+                settings.OverlaySplitControllerSide = OverlaySplitControllerSide;
+                settings.OverlayShowSplitDivider = OverlayShowSplitDivider;
+                settings.OverlaySplitDividerColor = OverlaySplitDividerColor;
+                settings.OverlaySplitDividerThickness = OverlaySplitDividerThickness;
+                settings.OverlayShowIncidentBadge = OverlayShowIncidentBadge;
+                settings.OverlayIncidentBadgeTextColor = OverlayIncidentBadgeTextColor;
+                settings.OverlayIncidentBadgeBackgroundColor = OverlayIncidentBadgeBackgroundColor;
+                settings.OverlayIncidentBadgeBorderColor = OverlayIncidentBadgeBorderColor;
+                settings.OverlayIncidentBadgeBorderThickness = OverlayIncidentBadgeBorderThickness;
+                settings.OverlayIncidentBadgeCornerRadius = OverlayIncidentBadgeCornerRadius;
+                settings.OverlayIncidentBadgeTextSize = OverlayIncidentBadgeTextSize;
+                settings.OverlayStatusInMetadata = OverlayStatusInMetadata;
+            }
             settings.OverlayContentAlignment = Version < 7 ? "Center" : OverlayContentAlignment;
             settings.OverlayScreenMargin = Version < 7 ? 42 : OverlayScreenMargin;
             settings.OverlayAnimation = Version < 3 || string.IsNullOrWhiteSpace(OverlayAnimation)

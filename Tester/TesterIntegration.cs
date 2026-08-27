@@ -27,6 +27,7 @@ namespace ControllerSessionManager.Tester
         private readonly ILogger logger;
         private readonly Func<string, string> loc;
         private readonly Action openDesktopSettings;
+        private readonly Func<bool> diagnosticLoggingEnabled;
         private GamepadTesterSettings settings;
         private GamepadTesterViewModel sidebarViewModel;
         private GamepadTesterThemeIntegration themeIntegration;
@@ -52,12 +53,14 @@ namespace ControllerSessionManager.Tester
         }
 
         public TesterIntegration(IPlayniteAPI api, ILogger sourceLogger, GamepadTesterSettings testerSettings,
-            Func<string, string> localizer, Action openDesktopSettings)
+            Func<string, string> localizer, Action openDesktopSettings,
+            Func<bool> diagnosticLoggingEnabled = null)
         {
             playniteApi = api;
             logger = sourceLogger;
             loc = localizer;
             this.openDesktopSettings = openDesktopSettings;
+            this.diagnosticLoggingEnabled = diagnosticLoggingEnabled;
             settings = testerSettings ?? new GamepadTesterSettings();
             openTesterCommand = new Commands.RelayCommand(() => OpenTester(0, false));
             openButtonTestCommand = new Commands.RelayCommand(() => OpenTester(0, true));
@@ -70,7 +73,7 @@ namespace ControllerSessionManager.Tester
                 settings,
                 Loc,
                 () => OpenTester(0, true),
-                message => logger.Info(message));
+                LogDiagnostic);
         }
 
         public void UpdateSettings(GamepadTesterSettings testerSettings)
@@ -80,7 +83,15 @@ namespace ControllerSessionManager.Tester
                 settings,
                 Loc,
                 () => OpenTester(0, true),
-                message => logger.Info(message));
+                LogDiagnostic);
+        }
+
+        private void LogDiagnostic(string message)
+        {
+            if (diagnosticLoggingEnabled != null && diagnosticLoggingEnabled())
+            {
+                logger.Debug(message);
+            }
         }
 
         public void Shutdown()

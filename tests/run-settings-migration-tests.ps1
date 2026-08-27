@@ -272,6 +272,26 @@ $settings.NotificationIconContainerPadding = 19
 $settings.OverlayUseBackgroundImage = $true
 $settings.OverlayBackgroundImagePath = $imagePath
 $settings.OverlayBackgroundImageOpacity = 52
+$settings.OverlaySceneUseGradient = $true
+$settings.OverlaySceneGradientColor = "#FF05060A"
+$settings.OverlaySceneGradientAngle = 160
+$settings.OverlaySceneUseBackgroundImage = $true
+$settings.OverlaySceneBackgroundImagePath = $imagePath
+$settings.OverlaySceneBackgroundImageOpacity = 73
+$settings.OverlaySceneUseAmbientGlows = $true
+$settings.OverlaySceneGlow1Color = "#293FE0E8"
+$settings.OverlaySceneGlow1X = 20
+$settings.OverlaySceneGlow1Y = 25
+$settings.OverlaySceneGlow1Radius = 60
+$settings.OverlaySceneShowGrid = $true
+$settings.OverlaySceneGridColor = "#09FFFFFF"
+$settings.OverlaySceneGridSize = 44
+$settings.OverlayLayoutMode = "Alert"
+$settings.OverlayBlockOrder = "Incident,Title,ControllerName,Metadata,Instruction,Status"
+$settings.OverlayShowIncidentBadge = $true
+$settings.OverlayStatusInMetadata = $true
+$settings.OverlayInstructionColor = "#FF9498A8"
+$settings.OverlayControllerIconColor = "#FFFFB454"
 $settings.OverlayBackgroundImageTintOpacity = 71
 $settings.OverlayShowControllerContainer = $true
 $settings.OverlayControllerContainerPadding = 18
@@ -353,7 +373,17 @@ if ($restoredSettings.NotificationTitleFontFamily -ne $settings.NotificationTitl
     $restoredSettings.OverlayBorderGlowBlur -ne $settings.OverlayBorderGlowBlur -or
     $restoredSettings.DesktopNotificationStylePreset -ne $settings.DesktopNotificationStylePreset -or
     $restoredSettings.OverlayBackgroundImageOpacity -ne $settings.OverlayBackgroundImageOpacity -or
-    $restoredSettings.OverlayBackgroundImageTintOpacity -ne $settings.OverlayBackgroundImageTintOpacity) {
+    $restoredSettings.OverlayBackgroundImageTintOpacity -ne $settings.OverlayBackgroundImageTintOpacity -or
+    $restoredSettings.OverlaySceneUseGradient -ne $settings.OverlaySceneUseGradient -or
+    $restoredSettings.OverlaySceneGradientAngle -ne $settings.OverlaySceneGradientAngle -or
+    $restoredSettings.OverlaySceneUseAmbientGlows -ne $settings.OverlaySceneUseAmbientGlows -or
+    $restoredSettings.OverlaySceneGlow1Color -ne $settings.OverlaySceneGlow1Color -or
+    $restoredSettings.OverlaySceneShowGrid -ne $settings.OverlaySceneShowGrid -or
+    $restoredSettings.OverlaySceneGridSize -ne $settings.OverlaySceneGridSize -or
+    $restoredSettings.OverlayShowIncidentBadge -ne $settings.OverlayShowIncidentBadge -or
+    $restoredSettings.OverlayStatusInMetadata -ne $settings.OverlayStatusInMetadata -or
+    $restoredSettings.OverlayInstructionColor -ne $settings.OverlayInstructionColor -or
+    $restoredSettings.OverlayControllerIconColor -ne $settings.OverlayControllerIconColor) {
     throw "Visual profile did not restore advanced notification and overlay appearance."
 }
 if (-not $restoredSettings.NotificationUseBackgroundImage -or
@@ -363,6 +393,10 @@ if (-not $restoredSettings.NotificationUseBackgroundImage -or
 if (-not $restoredSettings.OverlayUseBackgroundImage -or
     -not (Test-Path -LiteralPath $restoredSettings.OverlayBackgroundImagePath)) {
     throw "Visual profile did not restore the embedded overlay background image."
+}
+if (-not $restoredSettings.OverlaySceneUseBackgroundImage -or
+    -not (Test-Path -LiteralPath $restoredSettings.OverlaySceneBackgroundImagePath)) {
+    throw "Visual profile did not restore the embedded overlay scene background image."
 }
 if ((Get-FileHash -LiteralPath $imagePath).Hash -ne
     (Get-FileHash -LiteralPath $restoredSettings.OverlayBackgroundImagePath).Hash) {

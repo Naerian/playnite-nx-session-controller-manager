@@ -800,4 +800,26 @@
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">Verificando o catálogo oficial e instalando designs compatíveis…</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesCurrent">Seus designs de criadores já estão atualizados.</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdated">Designs atualizados. Novos: {0}. Atualizados: {1}. Incompatíveis: {2}.</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceOptions">Opções</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceOptionsHelp">Configure o comportamento geral dos designs visuais.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdatePolicy">Atualização de designs</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdatePolicyHelp">Escolha quando verificar e instalar designs novos ou atualizados. Sem conexão, os designs instalados são mantidos.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdateStartup">Ao iniciar o Playnite</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdateDaily">A cada 24 horas</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdateManual">Manual</sys:String>
+    <sys:String x:Key="LOCCSM_LayoutAlert">Cartão de alerta</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneBackground">Fundo da cena</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneBackgroundHelp">Personalize toda a tela do overlay separadamente do cartão.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneImage">Imagem da cena</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneEffects">Efeitos ambientais</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneAmbientGlows">Mostrar brilhos ambientais</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowOne">Brilho 1</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowTwo">Brilho 2</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowThree">Brilho 3</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGrid">Mostrar grade</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGridColor">Cor da grade</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGridSize">Tamanho da grade</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayScenePositionX">Posição X (%)</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayScenePositionY">Posição Y (%)</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowRadius">Raio do brilho (%)</sys:String>
 </ResourceDictionary>

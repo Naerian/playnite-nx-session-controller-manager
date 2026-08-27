@@ -800,4 +800,26 @@
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">Controllo del catalogo ufficiale e installazione dei design compatibili…</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesCurrent">I design dei creatori sono già aggiornati.</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdated">Design aggiornati. Nuovi: {0}. Aggiornati: {1}. Incompatibili: {2}.</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceOptions">Opzioni</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceOptionsHelp">Configura il comportamento generale dei design visivi.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdatePolicy">Aggiornamento dei design</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdatePolicyHelp">Scegli quando cercare e installare design nuovi o aggiornati. Senza connessione, i design installati vengono mantenuti.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdateStartup">All'avvio di Playnite</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdateDaily">Ogni 24 ore</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeUpdateManual">Manuale</sys:String>
+    <sys:String x:Key="LOCCSM_LayoutAlert">Scheda di avviso</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneBackground">Sfondo della scena</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneBackgroundHelp">Personalizza l'intero sfondo dell'overlay separatamente dalla scheda.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneImage">Immagine della scena</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneEffects">Effetti ambientali</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneAmbientGlows">Mostra bagliori ambientali</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowOne">Bagliore 1</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowTwo">Bagliore 2</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowThree">Bagliore 3</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGrid">Mostra griglia</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGridColor">Colore griglia</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGridSize">Dimensione griglia</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayScenePositionX">Posizione X (%)</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayScenePositionY">Posizione Y (%)</sys:String>
+    <sys:String x:Key="LOCCSM_OverlaySceneGlowRadius">Raggio bagliore (%)</sys:String>
 </ResourceDictionary>
