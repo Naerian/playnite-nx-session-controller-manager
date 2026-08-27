@@ -692,6 +692,8 @@
     <sys:String x:Key="LOCCSM_OverlayShowTitle">Pokaż tytuł</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowInstruction">Pokaż instrukcje</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowPauseStatus">Pokaż stan wstrzymania</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowDisconnectTimer">Pokaż czas rozłączenia</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayDisconnectTimerFormat">Kontroler rozłączony od {0}</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowConnectionBadge">Pokaż plakietkę połączenia</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowBatteryBadge">Pokaż plakietkę baterii</sys:String>
     <sys:String x:Key="LOCCSM_OverlayTypographyTitle">Typografia tytułu</sys:String><sys:String x:Key="LOCCSM_OverlayTypographyController">Typografia kontrolera</sys:String><sys:String x:Key="LOCCSM_OverlayTypographyInstruction">Typografia instrukcji</sys:String><sys:String x:Key="LOCCSM_OverlayTypographyStatus">Typografia stanu i odznak</sys:String><sys:String x:Key="LOCCSM_OverlayBadges">Odznaki połączenia i baterii</sys:String><sys:String x:Key="LOCCSM_OverlayConnectionBadge">Odznaka połączenia</sys:String><sys:String x:Key="LOCCSM_OverlayBatteryBadge">Odznaka baterii</sys:String><sys:String x:Key="LOCCSM_BadgeTextColor">Kolor tekstu</sys:String><sys:String x:Key="LOCCSM_BadgeIconColor">Kolor ikony</sys:String><sys:String x:Key="LOCCSM_BadgeBackgroundColor">Kolor tła</sys:String><sys:String x:Key="LOCCSM_BadgeBorderColor">Kolor obramowania</sys:String><sys:String x:Key="LOCCSM_BatteryBadgeUseStateColors">Koloruj tekst i ikonę według poziomu baterii</sys:String>
@@ -796,6 +798,15 @@
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">Ten projekt twórcy kontroluje cały wygląd. Wybierz preset wtyczki lub Niestandardowe, aby edytować.</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">Aktywny projekt twórcy dostarcza pakiet i pliki niestandardowe. Głośność, przełączniki dźwięku i podglądy pozostają dostępne.</sys:String>
     <sys:String x:Key="LOCCSM_UpdateCreatorThemes">Aktualizuj projekty</sys:String>
+    <sys:String x:Key="LOCCSM_InstallCreatorTheme">Zainstaluj projekt twórcy</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeFileFilter">Pakiet projektu twórcy (*.csmtheme)|*.csmtheme</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstallConfirm">Zainstalować „{0}” w wersji {1}, autor: {2}? Projekt o tym samym ID zostanie zastąpiony.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstallProcessing">Sprawdzanie i instalowanie projektu…</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstalled">Zainstalowano „{0}” w wersji {1}.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeSchemaIncompatible">Ten projekt używa schematu {0}, a obsługiwany jest schemat {1}.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeVersionIncompatible">Ten projekt nie jest zgodny z Controller Manager {0}. Wymagany zakres: {1}–{2}.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeNoMaximumVersion">bez maksimum</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstallInvalid">Nie można zainstalować wybranego projektu: {0}</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateTitle">Projekty twórców</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">Sprawdzanie oficjalnego katalogu i instalowanie zgodnych projektów…</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesCurrent">Projekty twórców są już aktualne.</sys:String>

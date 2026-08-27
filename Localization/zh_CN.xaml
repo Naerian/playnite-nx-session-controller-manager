@@ -692,6 +692,8 @@
     <sys:String x:Key="LOCCSM_OverlayShowTitle">显示标题</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowInstruction">显示说明</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowPauseStatus">显示暂停状态</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowDisconnectTimer">显示断开时长</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayDisconnectTimerFormat">控制器已断开 {0}</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowConnectionBadge">显示连接徽章</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowBatteryBadge">显示电池徽章</sys:String>
     <sys:String x:Key="LOCCSM_OverlayTypographyTitle">标题字体</sys:String><sys:String x:Key="LOCCSM_OverlayTypographyController">控制器字体</sys:String><sys:String x:Key="LOCCSM_OverlayTypographyInstruction">说明字体</sys:String><sys:String x:Key="LOCCSM_OverlayTypographyStatus">状态和徽章字体</sys:String><sys:String x:Key="LOCCSM_OverlayBadges">连接和电池徽章</sys:String><sys:String x:Key="LOCCSM_OverlayConnectionBadge">连接徽章</sys:String><sys:String x:Key="LOCCSM_OverlayBatteryBadge">电池徽章</sys:String><sys:String x:Key="LOCCSM_BadgeTextColor">文本颜色</sys:String><sys:String x:Key="LOCCSM_BadgeIconColor">图标颜色</sys:String><sys:String x:Key="LOCCSM_BadgeBackgroundColor">背景颜色</sys:String><sys:String x:Key="LOCCSM_BadgeBorderColor">边框颜色</sys:String><sys:String x:Key="LOCCSM_BatteryBadgeUseStateColors">根据电池电量为文本和图标着色</sys:String>
@@ -796,6 +798,15 @@
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">此创作者设计控制完整外观。请选择插件预设或自定义以进行编辑。</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">当前创作者设计提供声音包和自定义文件。音量、声音开关和预览仍可使用。</sys:String>
     <sys:String x:Key="LOCCSM_UpdateCreatorThemes">更新设计</sys:String>
+    <sys:String x:Key="LOCCSM_InstallCreatorTheme">安装创作者设计</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeFileFilter">创作者设计包 (*.csmtheme)|*.csmtheme</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstallConfirm">是否安装由 {2} 制作的“{0}”版本 {1}？相同 ID 的已安装设计将被替换。</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstallProcessing">正在验证并安装创作者设计…</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstalled">“{0}”版本 {1}已成功安装。</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeSchemaIncompatible">此设计使用架构 {0}，当前 Controller Manager 版本支持架构 {1}。</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeVersionIncompatible">此设计与 Controller Manager {0} 不兼容。所需范围：{1} 至 {2}。</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeNoMaximumVersion">无上限</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstallInvalid">无法安装所选设计：{0}</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateTitle">创作者设计</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">正在检查官方目录并安装兼容设计…</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesCurrent">创作者设计已是最新版本。</sys:String>

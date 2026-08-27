@@ -721,6 +721,8 @@
     <sys:String x:Key="LOCCSM_OverlayShowTitle">Mostrar título</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowInstruction">Mostrar instrucciones</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowPauseStatus">Mostrar estado de pausa</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowDisconnectTimer">Mostrar tiempo de desconexión</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayDisconnectTimerFormat">Mando desconectado desde hace {0}</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowConnectionBadge">Mostrar insignia de conexión</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowBatteryBadge">Mostrar insignia de batería</sys:String>
     <sys:String x:Key="LOCCSM_OverlayTypographyTitle">Tipografía del título</sys:String><sys:String x:Key="LOCCSM_OverlayTypographyController">Tipografía del mando</sys:String><sys:String x:Key="LOCCSM_OverlayTypographyInstruction">Tipografía de instrucciones</sys:String><sys:String x:Key="LOCCSM_OverlayTypographyStatus">Tipografía de estado e insignias</sys:String>
@@ -826,6 +828,15 @@
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">Este diseño de creador controla toda la apariencia. Selecciona un preset del plugin o Personalizado para editarla.</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">El diseño de creador activo proporciona el pack y los archivos personalizados. El volumen, los interruptores y las pruebas de sonido siguen disponibles.</sys:String>
     <sys:String x:Key="LOCCSM_UpdateCreatorThemes">Actualizar diseños</sys:String>
+    <sys:String x:Key="LOCCSM_InstallCreatorTheme">Instalar diseño de creador</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeFileFilter">Pack de diseño de creador (*.csmtheme)|*.csmtheme</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstallConfirm">¿Instalar “{0}” versión {1}, de {2}? Si ya existe un diseño con el mismo ID, se reemplazará.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstallProcessing">Validando e instalando el diseño de creador…</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstalled">“{0}” versión {1} se ha instalado correctamente.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeSchemaIncompatible">Este diseño usa el esquema {0}, pero esta versión de Controller Manager admite el esquema {1}.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeVersionIncompatible">Este diseño no es compatible con Controller Manager {0}. Rango requerido: de {1} a {2}.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeNoMaximumVersion">sin máximo</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstallInvalid">No se ha podido instalar el diseño seleccionado: {0}</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateTitle">Diseños de creadores</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">Comprobando el catálogo oficial e instalando diseños compatibles…</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesCurrent">Tus diseños de creadores ya están actualizados.</sys:String>

@@ -176,6 +176,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             s.OverlaySplitDividerColor = WithAlpha(accent, "45");
             s.OverlaySplitDividerThickness = 1;
             s.OverlayShowIncidentBadge = false;
+            s.OverlayShowDisconnectTimer = false;
             s.OverlayIncidentBadgeTextColor = text;
             s.OverlayIncidentBadgeBackgroundColor = WithAlpha(accent, "30");
             s.OverlayIncidentBadgeBorderColor = WithAlpha(accent, "70");

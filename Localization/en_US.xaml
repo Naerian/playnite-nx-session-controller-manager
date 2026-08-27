@@ -723,6 +723,8 @@
     <sys:String x:Key="LOCCSM_OverlayShowTitle">Show title</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowInstruction">Show instructions</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowPauseStatus">Show pause status</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowDisconnectTimer">Show disconnect timer</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayDisconnectTimerFormat">Controller disconnected for {0}</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowConnectionBadge">Show connection badge</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowBatteryBadge">Show battery badge</sys:String>
     <sys:String x:Key="LOCCSM_OverlayTypographyTitle">Title typography</sys:String><sys:String x:Key="LOCCSM_OverlayTypographyController">Controller typography</sys:String><sys:String x:Key="LOCCSM_OverlayTypographyInstruction">Instruction typography</sys:String><sys:String x:Key="LOCCSM_OverlayTypographyStatus">Status and badge typography</sys:String>
@@ -828,6 +830,15 @@
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">This creator design controls the complete appearance. Select a plugin preset or Custom to edit it.</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">The active creator design provides the sound pack and custom files. Volume, sound toggles, and previews remain available.</sys:String>
     <sys:String x:Key="LOCCSM_UpdateCreatorThemes">Update designs</sys:String>
+    <sys:String x:Key="LOCCSM_InstallCreatorTheme">Install creator design</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeFileFilter">Creator design package (*.csmtheme)|*.csmtheme</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstallConfirm">Install “{0}” version {1} by {2}? An installed design with the same ID will be replaced.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstallProcessing">Validating and installing the creator design…</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstalled">“{0}” version {1} was installed successfully.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeSchemaIncompatible">This design uses schema {0}, but this version of Controller Manager supports schema {1}.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeVersionIncompatible">This design is not compatible with Controller Manager {0}. Required range: {1} to {2}.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeNoMaximumVersion">no maximum</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstallInvalid">The selected design could not be installed: {0}</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateTitle">Creator designs</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">Checking the official catalog and installing compatible designs…</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesCurrent">Your creator designs are already up to date.</sys:String>

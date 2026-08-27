@@ -253,6 +253,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private bool overlayUppercaseTitle;
         private bool overlayShowInstruction = true;
         private bool overlayShowPauseStatus = true;
+        private bool overlayShowDisconnectTimer;
         private string overlayControllerIconPosition = "Left";
         private string overlayCardPosition = "Center";
         private string overlayLayoutMode = "Standard";
@@ -947,6 +948,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         public bool OverlayUppercaseTitle { get { return overlayUppercaseTitle; } set { SetValue(ref overlayUppercaseTitle, value); } }
         public bool OverlayShowInstruction { get { return overlayShowInstruction; } set { SetValue(ref overlayShowInstruction, value); } }
         public bool OverlayShowPauseStatus { get { return overlayShowPauseStatus; } set { SetValue(ref overlayShowPauseStatus, value); } }
+        public bool OverlayShowDisconnectTimer { get { return overlayShowDisconnectTimer; } set { SetValue(ref overlayShowDisconnectTimer, value); } }
         public string OverlayControllerIconPosition { get { return overlayControllerIconPosition; } set { SetValue(ref overlayControllerIconPosition, value); } }
         public string OverlayCardPosition { get { return overlayCardPosition; } set { SetValue(ref overlayCardPosition, value); } }
         public string OverlayLayoutMode { get { return NormalizeLayoutMode(overlayLayoutMode); } set { SetValue(ref overlayLayoutMode, NormalizeLayoutMode(value)); } }
@@ -1602,6 +1604,12 @@ namespace ControllerSessionManager.PlayniteIntegration
                 SettingsSchemaVersion = 21;
             }
 
+            if (SettingsSchemaVersion < 22)
+            {
+                overlayShowDisconnectTimer = false;
+                SettingsSchemaVersion = 22;
+            }
+
             topPanelControllerMode = NormalizeTopPanelControllerMode(topPanelControllerMode);
             creatorThemeUpdatePolicy = NormalizeCreatorThemeUpdatePolicy(creatorThemeUpdatePolicy);
             appearancePreset = SettingsAppearance.Normalize(appearancePreset);
@@ -2224,6 +2232,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 OverlayUppercaseTitle = OverlayUppercaseTitle,
                 OverlayShowInstruction = OverlayShowInstruction,
                 OverlayShowPauseStatus = OverlayShowPauseStatus,
+                OverlayShowDisconnectTimer = OverlayShowDisconnectTimer,
                 OverlayControllerIconPosition = OverlayControllerIconPosition,
                 OverlayCardPosition = OverlayCardPosition,
                 OverlayLayoutMode = OverlayLayoutMode,
@@ -2571,6 +2580,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             OverlayUppercaseTitle = source.OverlayUppercaseTitle;
             OverlayShowInstruction = source.OverlayShowInstruction;
             OverlayShowPauseStatus = source.OverlayShowPauseStatus;
+            OverlayShowDisconnectTimer = source.OverlayShowDisconnectTimer;
             OverlayControllerIconPosition = source.OverlayControllerIconPosition;
             OverlayCardPosition = source.OverlayCardPosition;
             OverlayLayoutMode = source.OverlayLayoutMode;

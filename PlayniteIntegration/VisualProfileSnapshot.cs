@@ -8,7 +8,7 @@ namespace ControllerSessionManager.PlayniteIntegration
     /// </summary>
     public sealed class VisualProfileSnapshot
     {
-        public const int CurrentVersion = 14;
+        public const int CurrentVersion = 15;
         public const string FileExtension = ".pcvisual";
 
         public int Version { get; set; }
@@ -263,6 +263,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         public bool OverlayUppercaseTitle { get; set; }
         public bool OverlayShowInstruction { get; set; }
         public bool OverlayShowPauseStatus { get; set; }
+        public bool OverlayShowDisconnectTimer { get; set; }
         public string OverlayControllerIconPosition { get; set; }
         public string OverlayCardPosition { get; set; }
         public string OverlayLayoutMode { get; set; }
@@ -592,6 +593,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 OverlayUppercaseTitle = settings.OverlayUppercaseTitle,
                 OverlayShowInstruction = settings.OverlayShowInstruction,
                 OverlayShowPauseStatus = settings.OverlayShowPauseStatus,
+                OverlayShowDisconnectTimer = settings.OverlayShowDisconnectTimer,
                 OverlayControllerIconPosition = settings.OverlayControllerIconPosition,
                 OverlayCardPosition = settings.OverlayCardPosition,
                 OverlayLayoutMode = settings.OverlayLayoutMode,
@@ -988,6 +990,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             settings.OverlayUppercaseTitle = Version >= 8 && OverlayUppercaseTitle;
             settings.OverlayShowInstruction = Version < 3 || OverlayShowInstruction;
             settings.OverlayShowPauseStatus = Version < 3 || OverlayShowPauseStatus;
+            settings.OverlayShowDisconnectTimer = Version >= 15 && OverlayShowDisconnectTimer;
             settings.OverlayControllerIconPosition = OverlayControllerIconPosition;
             settings.OverlayCardPosition = Version < 3 || string.IsNullOrWhiteSpace(OverlayCardPosition)
                 ? "Center" : OverlayCardPosition;

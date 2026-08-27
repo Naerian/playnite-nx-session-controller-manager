@@ -692,6 +692,8 @@
     <sys:String x:Key="LOCCSM_OverlayShowTitle">Mostrar título</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowInstruction">Mostrar instruções</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowPauseStatus">Mostrar status de pausa</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowDisconnectTimer">Mostrar tempo de desconexão</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayDisconnectTimerFormat">Controle desconectado há {0}</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowConnectionBadge">Mostrar indicador de conexão</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowBatteryBadge">Mostrar indicador de bateria</sys:String>
     <sys:String x:Key="LOCCSM_OverlayTypographyTitle">Tipografia do título</sys:String><sys:String x:Key="LOCCSM_OverlayTypographyController">Tipografia do controle</sys:String><sys:String x:Key="LOCCSM_OverlayTypographyInstruction">Tipografia das instruções</sys:String><sys:String x:Key="LOCCSM_OverlayTypographyStatus">Tipografia de status e emblemas</sys:String><sys:String x:Key="LOCCSM_OverlayBadges">Emblemas de conexão e bateria</sys:String><sys:String x:Key="LOCCSM_OverlayConnectionBadge">Emblema de conexão</sys:String><sys:String x:Key="LOCCSM_OverlayBatteryBadge">Emblema da bateria</sys:String><sys:String x:Key="LOCCSM_BadgeTextColor">Cor do texto</sys:String><sys:String x:Key="LOCCSM_BadgeIconColor">Cor do ícone</sys:String><sys:String x:Key="LOCCSM_BadgeBackgroundColor">Cor de fundo</sys:String><sys:String x:Key="LOCCSM_BadgeBorderColor">Cor da borda</sys:String><sys:String x:Key="LOCCSM_BatteryBadgeUseStateColors">Colorir texto e ícone conforme o nível da bateria</sys:String>
@@ -796,6 +798,15 @@
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">Este design controla toda a aparência. Selecione uma predefinição do plugin ou Personalizado para editar.</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">O design de criador ativo fornece o pacote e os arquivos personalizados. Volume, opções de som e prévias continuam disponíveis.</sys:String>
     <sys:String x:Key="LOCCSM_UpdateCreatorThemes">Atualizar designs</sys:String>
+    <sys:String x:Key="LOCCSM_InstallCreatorTheme">Instalar design de criador</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeFileFilter">Pacote de design de criador (*.csmtheme)|*.csmtheme</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstallConfirm">Instalar “{0}” versão {1}, de {2}? Um design com o mesmo ID será substituído.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstallProcessing">Validando e instalando o design…</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstalled">“{0}” versão {1} foi instalado.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeSchemaIncompatible">Este design usa o esquema {0}, mas o esquema compatível é {1}.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeVersionIncompatible">Este design não é compatível com o Controller Manager {0}. Intervalo exigido: {1} a {2}.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeNoMaximumVersion">sem máximo</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstallInvalid">Não foi possível instalar o design selecionado: {0}</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateTitle">Designs de criadores</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">Verificando o catálogo oficial e instalando designs compatíveis…</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesCurrent">Seus designs de criadores já estão atualizados.</sys:String>

@@ -14,6 +14,7 @@ using System.Windows.Threading;
 using ControllerSessionManager.Controllers;
 using ControllerSessionManager.Tester;
 using ControllerSessionManager.Tester.ViewModels;
+using Microsoft.Win32;
 
 namespace ControllerSessionManager.PlayniteIntegration
 {
@@ -25,6 +26,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private CustomSoundProgressWindow customSoundProgressWindow;
         private Window customSoundProgressOwner;
         private bool customSoundProgressOwnerHitTestVisible;
+        private bool suppressingOverlayPreviewRefresh;
 
         public ControllerSessionManagerSettingsView(ControllerSessionManagerPlugin sourcePlugin)
             : this(sourcePlugin, false)
@@ -238,6 +240,11 @@ namespace ControllerSessionManager.PlayniteIntegration
                 }
             }
 
+            if (suppressingOverlayPreviewRefresh)
+            {
+                return;
+            }
+
             if (args == null ||
                 string.IsNullOrEmpty(args.PropertyName) ||
                 args.PropertyName == "OverlayControllerIconPosition" ||
@@ -258,6 +265,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 args.PropertyName == "OverlaySplitDividerColor" ||
                 args.PropertyName == "OverlaySplitDividerThickness" ||
                 args.PropertyName == "OverlayShowIncidentBadge" ||
+                args.PropertyName == "OverlayShowDisconnectTimer" ||
                 args.PropertyName == "OverlayStatusInMetadata" ||
                 args.PropertyName == "OverlayElementSpacing")
             {
@@ -292,7 +300,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 OverlayPreviewTitle == null || OverlayPreviewControllerContainer == null ||
                 OverlayPreviewIncidentBadge == null || OverlayPreviewControllerName == null ||
                 OverlayPreviewMetadataBadges == null || OverlayPreviewInstruction == null ||
-                OverlayPreviewPauseStatus == null)
+                OverlayPreviewDisconnectTimer == null || OverlayPreviewPauseStatus == null)
             {
                 return;
             }
@@ -303,6 +311,14 @@ namespace ControllerSessionManager.PlayniteIntegration
                 string.Equals(settings.OverlayMetadataOrientation, "Vertical", StringComparison.OrdinalIgnoreCase)
                 ? Orientation.Vertical : Orientation.Horizontal;
             var gap = settings == null ? 14 : Math.Max(0, settings.OverlayElementSpacing);
+            if (OverlayPreviewIncidentText != null)
+            {
+                OverlayPreviewIncidentText.Text = (plugin == null ? "Disconnected" :
+                    plugin.Loc("LOCCSM_Disconnected")).ToUpperInvariant();
+            }
+            OverlayPreviewDisconnectTimer.Text = string.Format(
+                plugin == null ? "Disconnected for {0}" : plugin.Loc("LOCCSM_OverlayDisconnectTimerFormat"),
+                "00:42");
             DetachPreviewElement(OverlayPreviewContentRoot);
             DetachPreviewElement(OverlayPreviewTitle);
             DetachPreviewElement(OverlayPreviewIncidentBadge);
@@ -310,6 +326,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             DetachPreviewElement(OverlayPreviewControllerContainer);
             DetachPreviewElement(OverlayPreviewMetadataBadges);
             DetachPreviewElement(OverlayPreviewInstruction);
+            DetachPreviewElement(OverlayPreviewDisconnectTimer);
             DetachPreviewElement(OverlayPreviewPauseStatus);
             OverlayPreviewContentRoot.Children.Clear();
             OverlayPreviewCompositionRoot.Children.Clear();
@@ -341,6 +358,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 {
                     details.Children.Add(OverlayPreviewTitle);
                     details.Children.Add(OverlayPreviewMetadataBadges);
+                    details.Children.Add(OverlayPreviewDisconnectTimer);
                     details.Children.Add(OverlayPreviewInstruction);
                     if (!statusInMetadata) details.Children.Add(OverlayPreviewPauseStatus);
                 }
@@ -361,7 +379,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
 
             Grid.SetColumn(OverlayPreviewControllerContainer, 0);
-            AddPreviewBlocks(OverlayPreviewContentRoot, blockOrder);
+            AddPreviewBlocks(OverlayPreviewContentRoot, blockOrder, statusInMetadata);
             OverlayPreviewCompositionRoot.Children.Add(OverlayPreviewContentRoot);
         }
 
@@ -375,6 +393,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 if (key.Equals("Incident", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewIncidentBadge);
                 else if (key.Equals("Title", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewTitle);
                 else if (key.Equals("ControllerName", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewControllerName);
+                else if (key.Equals("Timer", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewDisconnectTimer);
                 else if (key.Equals("Metadata", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewMetadataBadges);
                 else if (key.Equals("Instruction", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewInstruction);
                 else if (key.Equals("Status", StringComparison.OrdinalIgnoreCase) && !statusInMetadata) panel.Children.Add(OverlayPreviewPauseStatus);
@@ -382,12 +401,13 @@ namespace ControllerSessionManager.PlayniteIntegration
             if (!added.Contains("Incident")) panel.Children.Add(OverlayPreviewIncidentBadge);
             if (!added.Contains("Title")) panel.Children.Add(OverlayPreviewTitle);
             if (!added.Contains("ControllerName")) panel.Children.Add(OverlayPreviewControllerName);
+            if (!added.Contains("Timer")) panel.Children.Add(OverlayPreviewDisconnectTimer);
             if (!added.Contains("Metadata")) panel.Children.Add(OverlayPreviewMetadataBadges);
             if (!added.Contains("Instruction")) panel.Children.Add(OverlayPreviewInstruction);
             if (!added.Contains("Status") && !statusInMetadata) panel.Children.Add(OverlayPreviewPauseStatus);
         }
 
-        private void AddPreviewBlocks(Panel panel, string order)
+        private void AddPreviewBlocks(Panel panel, string order, bool statusInMetadata)
         {
             var added = new System.Collections.Generic.HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (var token in (order ?? string.Empty).Split(','))
@@ -397,15 +417,17 @@ namespace ControllerSessionManager.PlayniteIntegration
                 if (key.Equals("Title", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewTitle);
                 else if (key.Equals("Incident", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewIncidentBadge);
                 else if (key.Equals("Controller", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewControllerContainer);
+                else if (key.Equals("Timer", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewDisconnectTimer);
                 else if (key.Equals("Metadata", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewMetadataBadges);
                 else if (key.Equals("Instruction", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewInstruction);
-                else if (key.Equals("Status", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewPauseStatus);
+                else if (key.Equals("Status", StringComparison.OrdinalIgnoreCase) && !statusInMetadata) panel.Children.Add(OverlayPreviewPauseStatus);
             }
             if (!added.Contains("Title")) panel.Children.Add(OverlayPreviewTitle);
             if (!added.Contains("Controller")) panel.Children.Add(OverlayPreviewControllerContainer);
+            if (!added.Contains("Timer")) panel.Children.Add(OverlayPreviewDisconnectTimer);
             if (!added.Contains("Metadata")) panel.Children.Add(OverlayPreviewMetadataBadges);
             if (!added.Contains("Instruction")) panel.Children.Add(OverlayPreviewInstruction);
-            if (!added.Contains("Status")) panel.Children.Add(OverlayPreviewPauseStatus);
+            if (!added.Contains("Status") && !statusInMetadata) panel.Children.Add(OverlayPreviewPauseStatus);
         }
 
         private static void DetachPreviewElement(UIElement element)
@@ -445,6 +467,11 @@ namespace ControllerSessionManager.PlayniteIntegration
                 : (settings == null || string.IsNullOrWhiteSpace(settings.OverlayControllerIconPosition)
                     ? "Left" : settings.OverlayControllerIconPosition);
 
+            DetachPreviewElement(OverlayPreviewControllerIcon);
+            if (showNameInControllerHost)
+            {
+                DetachPreviewElement(OverlayPreviewControllerName);
+            }
             OverlayPreviewControllerHost.Children.Clear();
             OverlayPreviewControllerHost.RowDefinitions.Clear();
             OverlayPreviewControllerHost.ColumnDefinitions.Clear();
@@ -568,7 +595,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private ScrollViewer hostScrollViewer;
         private Window hostWindow;
         private GamepadTesterViewModel testerViewModel;
-        private static readonly string[] NotificationStylePropertyNames =
+        internal static readonly string[] NotificationStylePropertyNames =
         {
             "NotificationWidth", "NotificationScalePercent", "NotificationDurationMilliseconds",
             "NotificationPosition", "NotificationBackgroundColor", "NotificationUseGradient",
@@ -649,7 +676,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             "ShowControllerNameInNotifications", "ShowControllerNameInDesktopNotifications"
         };
 
-        private static readonly string[] OverlayStylePropertyNames =
+        internal static readonly string[] OverlayStylePropertyNames =
         {
             "OverlayScalePercent", "OverlayDimColor", "OverlayCardColor", "OverlayUseGradient",
             "OverlayGradientColor", "OverlayGradientAngle", "OverlayAccentColor",
@@ -675,6 +702,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             "OverlayStatusIconSize", "OverlayShowControllerIcon", "OverlayShowStatusIcon",
             "OverlayShowControllerName", "OverlayShowConnectionBadge", "OverlayShowBatteryBadge",
             "OverlayShowTitle", "OverlayUppercaseTitle", "OverlayShowInstruction", "OverlayShowPauseStatus",
+            "OverlayShowDisconnectTimer",
             "OverlayControllerIconPosition", "OverlayCardPosition", "OverlayLayoutMode", "OverlayAnimation",
             "OverlaySplitControllerSide", "OverlayShowSplitDivider", "OverlaySplitDividerColor",
             "OverlaySplitDividerThickness", "OverlayShowIncidentBadge",
@@ -706,6 +734,13 @@ namespace ControllerSessionManager.PlayniteIntegration
             "OverlayBatteryBadgeFullColor", "OverlayBatteryBadgeMediumColor",
             "OverlayBatteryBadgeLowColor", "OverlayBatteryBadgeEmptyColor"
         };
+
+        internal static bool IsCreatorThemePropertyAllowed(string propertyName, string surface)
+        {
+            return string.Equals(surface, "overlay", StringComparison.OrdinalIgnoreCase)
+                ? OverlayStylePropertyNames.Contains(propertyName)
+                : NotificationStylePropertyNames.Contains(propertyName);
+        }
 
         private void OnLoaded(object sender, RoutedEventArgs args)
         {
@@ -1174,16 +1209,29 @@ namespace ControllerSessionManager.PlayniteIntegration
             if (ImportedVisualProfileCatalog.Contains(preset))
             {
                 suppressingStylePresetMark = true;
+                suppressingOverlayPreviewRefresh = true;
                 try { if (plugin != null) plugin.ApplyImportedVisualProfile(settings, preset, null); }
-                finally { suppressingStylePresetMark = false; }
+                finally
+                {
+                    suppressingOverlayPreviewRefresh = false;
+                    suppressingStylePresetMark = false;
+                }
                 RefreshVisualProfileUi();
+                RefreshOverlayPreviewComposition();
+                RefreshOverlayPreviewControllerLayout();
                 return;
             }
             suppressingStylePresetMark = true;
+            suppressingOverlayPreviewRefresh = true;
             try { OverlayStylePresets.Apply(settings, preset); }
-            finally { suppressingStylePresetMark = false; }
+            finally
+            {
+                suppressingOverlayPreviewRefresh = false;
+                suppressingStylePresetMark = false;
+            }
             settings.RefreshCreatorThemeState();
             RefreshOverlayPresetSelector();
+            RefreshOverlayPreviewComposition();
             RefreshOverlayPreviewControllerLayout();
         }
 
@@ -1453,16 +1501,19 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
 
             suppressingStylePresetMark = true;
+            suppressingOverlayPreviewRefresh = true;
             try
             {
                 OverlayStylePresets.Apply(settings, preset);
             }
             finally
             {
+                suppressingOverlayPreviewRefresh = false;
                 suppressingStylePresetMark = false;
             }
 
             RefreshOverlayStylePresetChips();
+            RefreshOverlayPreviewComposition();
             RefreshOverlayPreviewControllerLayout();
         }
 
@@ -2093,6 +2144,74 @@ namespace ControllerSessionManager.PlayniteIntegration
             finally
             {
                 cancellation.Dispose();
+            }
+        }
+
+        private async void InstallCreatorThemeClick(object sender, RoutedEventArgs args)
+        {
+            if (plugin == null || customSoundProgressWindow != null) return;
+            var dialog = new OpenFileDialog
+            {
+                Title = plugin.Loc("LOCCSM_InstallCreatorTheme"),
+                Filter = plugin.Loc("LOCCSM_CreatorThemeFileFilter")
+            };
+            if (dialog.ShowDialog() != true) return;
+
+            var installer = new CreatorThemePackageInstaller(CreatorThemeCatalog.DownloadedRoot);
+            try
+            {
+                var manifest = installer.Inspect(dialog.FileName);
+                if (plugin.PlayniteApi.Dialogs.ShowMessage(
+                        string.Format(plugin.Loc("LOCCSM_CreatorThemeInstallConfirm"),
+                            manifest.Name, manifest.Version, manifest.Author),
+                        plugin.Loc("LOCCSM_InstallCreatorTheme"), MessageBoxButton.YesNo,
+                        MessageBoxImage.Question) != MessageBoxResult.Yes) return;
+
+                var cancellation = new CancellationTokenSource();
+                try
+                {
+                    ShowOperationProgress(cancellation, plugin.Loc("LOCCSM_InstallCreatorTheme"),
+                        plugin.Loc("LOCCSM_CreatorThemeInstallProcessing"));
+                    var installed = await installer.InstallAsync(dialog.FileName, cancellation.Token);
+                    CloseCustomSoundProgressWindow();
+                    RefreshVisualProfileUi();
+                    plugin.PlayniteApi.Dialogs.ShowMessage(
+                        string.Format(plugin.Loc("LOCCSM_CreatorThemeInstalled"),
+                            installed.Name, installed.Version),
+                        plugin.Loc("LOCCSM_InstallCreatorTheme"));
+                }
+                finally
+                {
+                    CloseCustomSoundProgressWindow();
+                    cancellation.Dispose();
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                CloseCustomSoundProgressWindow();
+            }
+            catch (CreatorThemeCompatibilityException ex)
+            {
+                CloseCustomSoundProgressWindow();
+                var manifest = ex.Manifest;
+                var message = ex.Reason == CreatorThemeCompatibilityReason.Schema
+                    ? string.Format(plugin.Loc("LOCCSM_CreatorThemeSchemaIncompatible"),
+                        manifest == null ? 0 : manifest.SchemaVersion,
+                        CreatorThemeUpdater.SupportedThemeSchema)
+                    : string.Format(plugin.Loc("LOCCSM_CreatorThemeVersionIncompatible"),
+                        ex.PluginVersion, manifest == null ? string.Empty : manifest.MinimumPluginVersion,
+                        manifest == null || string.IsNullOrWhiteSpace(manifest.MaximumPluginVersion)
+                            ? plugin.Loc("LOCCSM_CreatorThemeNoMaximumVersion")
+                            : manifest.MaximumPluginVersion);
+                plugin.PlayniteApi.Dialogs.ShowErrorMessage(message,
+                    plugin.Loc("LOCCSM_InstallCreatorTheme"));
+            }
+            catch (Exception ex)
+            {
+                CloseCustomSoundProgressWindow();
+                plugin.PlayniteApi.Dialogs.ShowErrorMessage(
+                    string.Format(plugin.Loc("LOCCSM_CreatorThemeInstallInvalid"), ex.Message),
+                    plugin.Loc("LOCCSM_InstallCreatorTheme"));
             }
         }
 

@@ -442,6 +442,9 @@ namespace ControllerSessionManager.Tester.Tests
 
         private static void TestThemeDeveloperContract()
         {
+            var contractMessages = new List<string>();
+            GamepadTesterThemeHost.Configure(new GamepadTesterSettings(), key => key, () => { },
+                contractMessages.Add);
             Equal("1.1", GamepadTesterThemeContract.Version, "Theme contract has a stable version");
             True(GamepadTesterThemeContract.SupportsBlock("ButtonMap"), "Theme contract lists ButtonMap");
             True(GamepadTesterThemeContract.SupportsBlock("Launcher"), "Theme contract accepts Launcher alias");
@@ -452,6 +455,15 @@ namespace ControllerSessionManager.Tester.Tests
             Equal(0, GamepadTesterThemeHost.Refresh(unknown), "Unknown dynamic block is not initialized");
             Equal("UnknownBlock", GamepadTesterThemeHost.GetInitializationState(unknown),
                 "Unknown block exposes a diagnostic state");
+            var unknownLogCount = contractMessages.Count;
+            Equal(0, GamepadTesterThemeHost.Refresh(unknown), "Repeated unknown block remains ignored");
+            Equal(unknownLogCount, contractMessages.Count, "Repeated unknown block is not logged again");
+
+            var ordinaryTaggedControl = new ContentControl { Tag = "Soft" };
+            Equal(0, GamepadTesterThemeHost.Refresh(ordinaryTaggedControl),
+                "Ordinary Playnite tags are not interpreted as Gamepad Tester blocks");
+            Equal("Unmarked", GamepadTesterThemeHost.GetInitializationState(ordinaryTaggedControl),
+                "Ordinary tagged controls remain unmarked");
 
             var occupied = new ContentControl { Content = new TextBlock { Text = "Theme content" } };
             GamepadTesterThemeHost.SetBlock(occupied, "ButtonMap");

@@ -692,6 +692,8 @@
     <sys:String x:Key="LOCCSM_OverlayShowTitle">タイトルを表示</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowInstruction">説明を表示</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowPauseStatus">一時停止状態を表示</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowDisconnectTimer">切断時間を表示</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayDisconnectTimerFormat">コントローラーの切断から {0}</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowConnectionBadge">接続バッジを表示</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowBatteryBadge">バッテリーバッジを表示</sys:String>
     <sys:String x:Key="LOCCSM_OverlayTypographyTitle">タイトルのフォント</sys:String><sys:String x:Key="LOCCSM_OverlayTypographyController">コントローラーのフォント</sys:String><sys:String x:Key="LOCCSM_OverlayTypographyInstruction">案内のフォント</sys:String><sys:String x:Key="LOCCSM_OverlayTypographyStatus">状態とバッジのフォント</sys:String><sys:String x:Key="LOCCSM_OverlayBadges">接続とバッテリーのバッジ</sys:String><sys:String x:Key="LOCCSM_OverlayConnectionBadge">接続バッジ</sys:String><sys:String x:Key="LOCCSM_OverlayBatteryBadge">バッテリーバッジ</sys:String><sys:String x:Key="LOCCSM_BadgeTextColor">文字色</sys:String><sys:String x:Key="LOCCSM_BadgeIconColor">アイコン色</sys:String><sys:String x:Key="LOCCSM_BadgeBackgroundColor">背景色</sys:String><sys:String x:Key="LOCCSM_BadgeBorderColor">枠線色</sys:String><sys:String x:Key="LOCCSM_BatteryBadgeUseStateColors">バッテリー残量に応じて文字とアイコンを着色</sys:String>
@@ -796,6 +798,15 @@
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">このクリエイターデザインが外観全体を管理します。編集するにはプラグインプリセットまたはカスタムを選択してください。</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">有効なクリエイターデザインがサウンドパックとカスタムファイルを提供します。音量、サウンド切り替え、プレビューは引き続き利用できます。</sys:String>
     <sys:String x:Key="LOCCSM_UpdateCreatorThemes">デザインを更新</sys:String>
+    <sys:String x:Key="LOCCSM_InstallCreatorTheme">クリエイターデザインをインストール</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeFileFilter">クリエイターデザインパック (*.csmtheme)|*.csmtheme</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstallConfirm">{2} による「{0}」バージョン {1} をインストールしますか？同じ ID のデザインは置き換えられます。</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstallProcessing">デザインを検証してインストールしています…</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstalled">「{0}」バージョン {1} をインストールしました。</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeSchemaIncompatible">このデザインはスキーマ {0} を使用しています。対応スキーマは {1} です。</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeVersionIncompatible">このデザインは Controller Manager {0} と互換性がありません。必要範囲: {1} ～ {2}。</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeNoMaximumVersion">上限なし</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstallInvalid">選択したデザインをインストールできませんでした: {0}</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateTitle">クリエイターデザイン</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">公式カタログを確認し、互換性のあるデザインをインストールしています…</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesCurrent">クリエイターデザインは最新です。</sys:String>

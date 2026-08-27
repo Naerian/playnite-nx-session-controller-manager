@@ -692,6 +692,8 @@
     <sys:String x:Key="LOCCSM_OverlayShowTitle">Показывать заголовок</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowInstruction">Показывать инструкции</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowPauseStatus">Показывать состояние паузы</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowDisconnectTimer">Показывать время отключения</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayDisconnectTimerFormat">Контроллер отключён уже {0}</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowConnectionBadge">Показывать значок подключения</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowBatteryBadge">Показывать значок батареи</sys:String>
     <sys:String x:Key="LOCCSM_OverlayTypographyTitle">Шрифт заголовка</sys:String><sys:String x:Key="LOCCSM_OverlayTypographyController">Шрифт контроллера</sys:String><sys:String x:Key="LOCCSM_OverlayTypographyInstruction">Шрифт инструкции</sys:String><sys:String x:Key="LOCCSM_OverlayTypographyStatus">Шрифт статуса и значков</sys:String><sys:String x:Key="LOCCSM_OverlayBadges">Значки подключения и батареи</sys:String><sys:String x:Key="LOCCSM_OverlayConnectionBadge">Значок подключения</sys:String><sys:String x:Key="LOCCSM_OverlayBatteryBadge">Значок батареи</sys:String><sys:String x:Key="LOCCSM_BadgeTextColor">Цвет текста</sys:String><sys:String x:Key="LOCCSM_BadgeIconColor">Цвет иконки</sys:String><sys:String x:Key="LOCCSM_BadgeBackgroundColor">Цвет фона</sys:String><sys:String x:Key="LOCCSM_BadgeBorderColor">Цвет рамки</sys:String><sys:String x:Key="LOCCSM_BatteryBadgeUseStateColors">Окрашивать текст и иконку по уровню батареи</sys:String>
@@ -796,6 +798,15 @@
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">Этот авторский дизайн управляет всем оформлением. Для редактирования выберите пресет плагина или пользовательский.</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">Активный авторский дизайн предоставляет набор и пользовательские файлы. Громкость, переключатели звука и предпрослушивание остаются доступны.</sys:String>
     <sys:String x:Key="LOCCSM_UpdateCreatorThemes">Обновить дизайны</sys:String>
+    <sys:String x:Key="LOCCSM_InstallCreatorTheme">Установить дизайн автора</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeFileFilter">Пакет дизайна (*.csmtheme)|*.csmtheme</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstallConfirm">Установить «{0}» версии {1} от {2}? Установленный дизайн с тем же ID будет заменён.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstallProcessing">Проверка и установка дизайна…</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstalled">«{0}» версии {1} успешно установлен.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeSchemaIncompatible">Дизайн использует схему {0}, но эта версия Controller Manager поддерживает схему {1}.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeVersionIncompatible">Дизайн несовместим с Controller Manager {0}. Требуемый диапазон: {1}–{2}.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeNoMaximumVersion">без максимума</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstallInvalid">Не удалось установить выбранный дизайн: {0}</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateTitle">Дизайны авторов</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">Проверка официального каталога и установка совместимых дизайнов…</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesCurrent">Дизайны авторов уже обновлены.</sys:String>

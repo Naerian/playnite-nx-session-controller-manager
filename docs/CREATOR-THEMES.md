@@ -2,6 +2,8 @@
 
 > The maintained contribution workflow, templates and complete author reference now live in the dedicated [Controller Manager Creator Themes Wiki](https://github.com/Naerian/controller-manager-creator-themes/wiki). Creator packs are submitted to that repository and installed with **Update designs**; they no longer require a Controller Manager release.
 
+Downloaded `.csmtheme` packages can also be installed from **Appearance → Install creator design**. The plugin asks for confirmation with the design name, author and version, rejects incompatible schema/plugin ranges, validates files and properties, and preserves the previous installed copy if installation fails or is cancelled. The package is not registered as a Windows file type, so double-click installation is intentionally unnecessary.
+
 The catalog repository protects `main` behind pull requests and its required `validate` check. Validation covers the complete documented notification and overlay property contracts (names, JSON types, ranges, colors and enumerations), manifests, safe asset paths, declared fonts and sounds, previews and license/credit evidence. Generated packages live in the separate `catalog` branch. Visual quality, accessibility in real themes, asset provenance and the truth of license declarations remain a maintainer review.
 
 Controller Manager can ship complete visual designs for its controller notifications and disconnect overlay. A creator theme is a reviewed, self-contained folder committed to this repository and included in the `.pext` package. It may contain JSON appearance definitions, images, fonts and notification sounds.
@@ -276,10 +278,10 @@ The overlay is a full-screen dim layer containing a configurable card. All keys 
 | `OverlayCardWidth` | integer `320–1000` | Card width. |
 | `OverlayCardPosition` | `Center`, `Top`, `Bottom`, `TopLeft`, `TopRight`, `BottomLeft`, `BottomRight` | Card placement. |
 | `OverlayScreenMargin` | integer `0–160` | Distance from screen edges. |
-| `OverlayLayoutMode` | `Standard`, `Split`, `Hero` | Major composition. |
+| `OverlayLayoutMode` | `Standard`, `Split`, `Hero`, `Alert` | Major composition. |
 | `OverlayContentAlignment` | `Left`, `Center`, `Right` | Content alignment. |
 | `OverlayAnimation` | `None`, `Fade`, `FadeScale`, `Slide` | Entrance/exit. |
-| `OverlayBlockOrder` | comma-separated block list | Order using `Title`, `Controller`, `Metadata`, `Instruction`, `Status` once each. |
+| `OverlayBlockOrder` | comma-separated block list | Standard layouts use `Title`, `Controller`, `Metadata`, `Instruction`, `Status`; Alert uses `Incident`, `Title`, `ControllerName`, `Metadata`, `Instruction`, `Status`. Optional `Timer` may appear once in either composition. |
 | `OverlayMetadataOrientation` | `Horizontal`, `Vertical` | Badge arrangement. |
 | `OverlayPadding` | integer `12–80` | Card inner padding. |
 | `OverlayElementSpacing` | integer `0–48` | Space between blocks. |
@@ -287,6 +289,7 @@ The overlay is a full-screen dim layer containing a configurable card. All keys 
 | `OverlayUppercaseTitle` | boolean | Uppercases the title. |
 | `OverlayShowInstruction` | boolean | Shows reconnection instructions. |
 | `OverlayShowPauseStatus` | boolean | Shows pause/resume state. |
+| `OverlayShowDisconnectTimer` | boolean | Shows a live localized disconnect duration. Position it with the optional `Timer` block. |
 | `OverlayShowControllerName` | boolean | Shows the detected controller name. |
 | `OverlayShowControllerIcon` | boolean | Shows the controller icon. |
 | `OverlayShowStatusIcon` | boolean | Shows the state icon. |
@@ -300,9 +303,10 @@ Example composition:
 
 ```json
 {
-  "OverlayBlockOrder": "Controller,Title,Metadata,Instruction,Status",
+  "OverlayBlockOrder": "Incident,Title,ControllerName,Timer,Metadata,Instruction,Status",
   "OverlayMetadataOrientation": "Vertical",
-  "OverlayLayoutMode": "Hero"
+  "OverlayLayoutMode": "Alert",
+  "OverlayShowDisconnectTimer": true
 }
 ```
 

@@ -32,7 +32,9 @@ namespace ControllerSessionManager.OverlayHost
         private readonly TextBlock instructionText;
         private readonly TextBlock pauseStatusText;
         private readonly TextBlock incidentStateText;
+        private readonly Ellipse incidentStateDot;
         private readonly Border incidentStateBadge;
+        private readonly TextBlock disconnectTimerText;
         private readonly Path controllerIcon;
         private readonly Path pauseStatusIcon;
         private readonly Border pauseStatusBadge;
@@ -60,11 +62,14 @@ namespace ControllerSessionManager.OverlayHost
         private readonly Grid controllerHost;
         private readonly Border controllerContainer;
         private readonly DispatcherTimer watchdog;
+        private readonly DispatcherTimer disconnectTimer;
         private DateTime lastHeartbeatUtc = DateTime.UtcNow;
         private string currentSessionId;
         private string currentIncidentId;
         private string currentAnimation = "FadeScale";
         private string currentBatteryState;
+        private DateTime disconnectedSinceUtc = DateTime.UtcNow;
+        private string disconnectTimerFormat = "Disconnected for {0}";
         private Color presentationAccent = Color.FromRgb(91, 177, 255);
         private Color presentationWarning = Color.FromRgb(245, 181, 66);
 
@@ -127,13 +132,26 @@ namespace ControllerSessionManager.OverlayHost
                 Child = statusContent
             };
             incidentStateText = CreateText(11, FontWeights.Bold, Brushes.White, new Thickness(0));
+            incidentStateDot = new Ellipse
+            {
+                Width = 6,
+                Height = 6,
+                Fill = Brushes.White,
+                Margin = new Thickness(0, 0, 7, 0),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            var incidentBadgeContent = new StackPanel { Orientation = Orientation.Horizontal };
+            incidentBadgeContent.Children.Add(incidentStateDot);
+            incidentBadgeContent.Children.Add(incidentStateText);
             incidentStateBadge = new Border
             {
                 CornerRadius = new CornerRadius(12),
                 Padding = new Thickness(10, 4, 10, 4),
                 HorizontalAlignment = HorizontalAlignment.Left,
-                Child = incidentStateText
+                Child = incidentBadgeContent
             };
+            disconnectTimerText = CreateText(13, FontWeights.Normal,
+                new SolidColorBrush(Color.FromRgb(143, 157, 184)), new Thickness(0));
 
             connectionIcon = CreateBadgeIcon();
             batteryIcon = CreateBadgeIcon();
@@ -160,6 +178,7 @@ namespace ControllerSessionManager.OverlayHost
                 BorderThickness = new Thickness(0),
                 Padding = new Thickness(0),
                 HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
                 Child = controllerHost
             };
 
@@ -219,6 +238,9 @@ namespace ControllerSessionManager.OverlayHost
             watchdog = new DispatcherTimer { Interval = TimeSpan.FromSeconds(2) };
             watchdog.Tick += OnWatchdogTick;
             watchdog.Start();
+            disconnectTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+            disconnectTimer.Tick += delegate { UpdateDisconnectTimer(); };
+            disconnectTimer.Start();
         }
 
         public void ShowIncident(string sessionId, string incidentId, int gameProcessId, string title,
@@ -227,10 +249,14 @@ namespace ControllerSessionManager.OverlayHost
             string pauseFailureStatus, string pauseFailureKind, string pauseFailureIconGeometry,
             string presentationStyle, string connectionLabel, string batteryLabel,
             string connectionIconGeometry, string batteryIconGeometry, string batteryState,
-            string incidentStateLabel)
+            string incidentStateLabel, string timerFormat)
         {
             var animateEntry = !IsVisible ||
                 !string.Equals(currentIncidentId, incidentId, StringComparison.OrdinalIgnoreCase);
+            if (!string.Equals(currentIncidentId, incidentId, StringComparison.OrdinalIgnoreCase))
+            {
+                disconnectedSinceUtc = DateTime.UtcNow;
+            }
             currentSessionId = sessionId;
             currentIncidentId = incidentId;
             lastHeartbeatUtc = DateTime.UtcNow;
@@ -240,7 +266,10 @@ namespace ControllerSessionManager.OverlayHost
             connectionText.Text = connectionLabel;
             batteryText.Text = batteryLabel;
             currentBatteryState = batteryState;
-            incidentStateText.Text = incidentStateLabel;
+            incidentStateText.Text = (incidentStateLabel ?? string.Empty).ToUpperInvariant();
+            disconnectTimerFormat = string.IsNullOrWhiteSpace(timerFormat)
+                ? "Disconnected for {0}" : timerFormat;
+            UpdateDisconnectTimer();
             SetPathData(connectionIcon, connectionIconGeometry);
             SetPathData(batteryIcon, batteryIconGeometry);
             try
@@ -449,6 +478,7 @@ namespace ControllerSessionManager.OverlayHost
             var statusInMetadata = ParseBool(parts, 133, false);
             var instructionColor = ParseColor(parts.Length > 134 ? parts[134] : null, presentationAccent);
             var controllerIconColor = ParseColor(parts.Length > 135 ? parts[135] : null, text);
+            var showDisconnectTimer = ParseBool(parts, 136, false);
             if (useBatteryStateColors)
             {
                 var stateColor = GetBatteryStateColor(parts, currentBatteryState, batteryTextColor);
@@ -489,6 +519,7 @@ namespace ControllerSessionManager.OverlayHost
             ApplyTypeface(titleText, titleFontFamily, titleFontWeight);
             ApplyTypeface(messageText, controllerFontFamily, controllerFontWeight);
             ApplyTypeface(instructionText, instructionFontFamily, instructionFontWeight);
+            ApplyTypeface(disconnectTimerText, instructionFontFamily, "Regular");
             ApplyTypeface(pauseStatusText, statusFontFamily, statusFontWeight);
             ApplyTypeface(connectionText, statusFontFamily, statusFontWeight);
             ApplyTypeface(batteryText, statusFontFamily, statusFontWeight);
@@ -509,11 +540,14 @@ namespace ControllerSessionManager.OverlayHost
             }
             instructionText.Visibility = showInstruction && !string.IsNullOrWhiteSpace(instructionText.Text)
                 ? Visibility.Visible : Visibility.Collapsed;
+            disconnectTimerText.Visibility = showDisconnectTimer
+                ? Visibility.Visible : Visibility.Collapsed;
             pauseStatusBadge.Visibility = showPauseStatus ? Visibility.Visible : Visibility.Collapsed;
             incidentStateBadge.Visibility = showIncidentBadge &&
                 !string.IsNullOrWhiteSpace(incidentStateText.Text)
                 ? Visibility.Visible : Visibility.Collapsed;
             incidentStateText.Foreground = new SolidColorBrush(incidentBadgeTextColor);
+            incidentStateDot.Fill = new SolidColorBrush(incidentBadgeTextColor);
             incidentStateText.FontSize = incidentBadgeTextSize;
             ApplyTypeface(incidentStateText, statusFontFamily, "Bold");
             incidentStateBadge.Background = new SolidColorBrush(incidentBadgeBackgroundColor);
@@ -533,6 +567,8 @@ namespace ControllerSessionManager.OverlayHost
             var textBrush = new SolidColorBrush(text);
             controllerIcon.Fill = new SolidColorBrush(controllerIconColor);
             instructionText.Foreground = new SolidColorBrush(instructionColor);
+            disconnectTimerText.Foreground = new SolidColorBrush(instructionColor);
+            disconnectTimerText.FontSize = Math.Max(10, instructionSize - 3);
             connectionText.Foreground = new SolidColorBrush(connectionTextColor);
             connectionIcon.Stroke = new SolidColorBrush(connectionIconColor);
             connectionIcon.Width = connectionIconSize;
@@ -591,6 +627,8 @@ namespace ControllerSessionManager.OverlayHost
                 ? new Thickness(0, gap, 0, 0) : new Thickness(0);
             instructionText.Margin = instructionText.Visibility == Visibility.Visible
                 ? new Thickness(0, gap, 0, 0) : new Thickness(0);
+            disconnectTimerText.Margin = disconnectTimerText.Visibility == Visibility.Visible
+                ? new Thickness(0, gap, 0, 0) : new Thickness(0);
             pauseStatusBadge.Margin = pauseStatusBadge.Visibility == Visibility.Visible
                 ? statusInMetadata ? new Thickness(4, 0, 4, 0)
                     : new Thickness(0, gap, 0, 0) : new Thickness(0);
@@ -646,6 +684,7 @@ namespace ControllerSessionManager.OverlayHost
             Detach(instructionText);
             Detach(pauseStatusBadge);
             Detach(incidentStateBadge);
+            Detach(disconnectTimerText);
             Detach(splitDivider);
             content.Children.Clear();
             compositionRoot.Children.Clear();
@@ -683,6 +722,7 @@ namespace ControllerSessionManager.OverlayHost
                 {
                     details.Children.Add(titleText);
                     details.Children.Add(metadataBadges);
+                    details.Children.Add(disconnectTimerText);
                     details.Children.Add(instructionText);
                     if (!statusInMetadata) details.Children.Add(pauseStatusBadge);
                 }
@@ -701,7 +741,7 @@ namespace ControllerSessionManager.OverlayHost
             }
 
             Grid.SetColumn(controllerContainer, 0);
-            AddOrderedBlocks(content, blockOrder);
+            AddOrderedBlocks(content, blockOrder, statusInMetadata);
             compositionRoot.Children.Add(content);
         }
 
@@ -715,6 +755,7 @@ namespace ControllerSessionManager.OverlayHost
                 if (key.Equals("Incident", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(incidentStateBadge);
                 else if (key.Equals("Title", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(titleText);
                 else if (key.Equals("ControllerName", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(messageText);
+                else if (key.Equals("Timer", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(disconnectTimerText);
                 else if (key.Equals("Metadata", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(metadataBadges);
                 else if (key.Equals("Instruction", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(instructionText);
                 else if (key.Equals("Status", StringComparison.OrdinalIgnoreCase) && !statusInMetadata) panel.Children.Add(pauseStatusBadge);
@@ -722,12 +763,13 @@ namespace ControllerSessionManager.OverlayHost
             if (!added.Contains("Incident")) panel.Children.Add(incidentStateBadge);
             if (!added.Contains("Title")) panel.Children.Add(titleText);
             if (!added.Contains("ControllerName")) panel.Children.Add(messageText);
+            if (!added.Contains("Timer")) panel.Children.Add(disconnectTimerText);
             if (!added.Contains("Metadata")) panel.Children.Add(metadataBadges);
             if (!added.Contains("Instruction")) panel.Children.Add(instructionText);
             if (!added.Contains("Status") && !statusInMetadata) panel.Children.Add(pauseStatusBadge);
         }
 
-        private void AddOrderedBlocks(Panel panel, string order)
+        private void AddOrderedBlocks(Panel panel, string order, bool statusInMetadata)
         {
             var added = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (var token in (order ?? string.Empty).Split(','))
@@ -737,15 +779,17 @@ namespace ControllerSessionManager.OverlayHost
                 if (key.Equals("Title", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(titleText);
                 else if (key.Equals("Incident", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(incidentStateBadge);
                 else if (key.Equals("Controller", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(controllerContainer);
+                else if (key.Equals("Timer", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(disconnectTimerText);
                 else if (key.Equals("Metadata", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(metadataBadges);
                 else if (key.Equals("Instruction", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(instructionText);
-                else if (key.Equals("Status", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(pauseStatusBadge);
+                else if (key.Equals("Status", StringComparison.OrdinalIgnoreCase) && !statusInMetadata) panel.Children.Add(pauseStatusBadge);
             }
             if (!added.Contains("Title")) panel.Children.Add(titleText);
             if (!added.Contains("Controller")) panel.Children.Add(controllerContainer);
+            if (!added.Contains("Timer")) panel.Children.Add(disconnectTimerText);
             if (!added.Contains("Metadata")) panel.Children.Add(metadataBadges);
             if (!added.Contains("Instruction")) panel.Children.Add(instructionText);
-            if (!added.Contains("Status")) panel.Children.Add(pauseStatusBadge);
+            if (!added.Contains("Status") && !statusInMetadata) panel.Children.Add(pauseStatusBadge);
         }
 
         private static void Detach(UIElement element)
@@ -758,6 +802,27 @@ namespace ControllerSessionManager.OverlayHost
             if (parent != null)
             {
                 parent.Children.Remove(element);
+            }
+        }
+
+        private void UpdateDisconnectTimer()
+        {
+            var elapsed = DateTime.UtcNow - disconnectedSinceUtc;
+            if (elapsed < TimeSpan.Zero)
+            {
+                elapsed = TimeSpan.Zero;
+            }
+
+            var value = elapsed.TotalHours >= 1
+                ? string.Format("{0}:{1:00}:{2:00}", (int)elapsed.TotalHours, elapsed.Minutes, elapsed.Seconds)
+                : string.Format("{0:00}:{1:00}", elapsed.Minutes, elapsed.Seconds);
+            try
+            {
+                disconnectTimerText.Text = string.Format(disconnectTimerFormat, value);
+            }
+            catch (FormatException)
+            {
+                disconnectTimerText.Text = disconnectTimerFormat + " " + value;
             }
         }
 
@@ -925,6 +990,8 @@ namespace ControllerSessionManager.OverlayHost
             metadataBadges.HorizontalAlignment = horizontal;
             instructionText.HorizontalAlignment = horizontal;
             instructionText.TextAlignment = textAlignment;
+            disconnectTimerText.HorizontalAlignment = horizontal;
+            disconnectTimerText.TextAlignment = textAlignment;
             pauseStatusBadge.HorizontalAlignment = horizontal;
         }
 
@@ -1012,6 +1079,11 @@ namespace ControllerSessionManager.OverlayHost
 
         private void ConfigureControllerLayout(string position, double gap, bool showIcon, bool showName)
         {
+            Detach(controllerIcon);
+            if (showName)
+            {
+                Detach(messageText);
+            }
             controllerHost.Children.Clear();
             controllerHost.RowDefinitions.Clear();
             controllerHost.ColumnDefinitions.Clear();

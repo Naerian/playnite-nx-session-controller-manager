@@ -34,12 +34,13 @@ if ($pluginSource -notmatch 'ShowDesktopNotificationPreview\s*\(\s*"connected"\s
     throw "The automatic notification preset preview must explicitly disable sound."
 }
 if (($viewXaml | Select-String -Pattern 'Click="UpdateCreatorThemesClick"' -AllMatches).Matches.Count -ne 2 -or
+    ($viewXaml | Select-String -Pattern 'Click="InstallCreatorThemeClick"' -AllMatches).Matches.Count -ne 2 -or
     $viewSource -notmatch 'ShowOperationProgress\s*\(' -or
     $viewSource -notmatch 'CreatorThemeCatalog\.Reload\s*\(\s*\)') {
     throw "Creator design updates must use the cancellable progress window and reload the selectors."
 }
 $profileUpdateRows = [regex]::Matches($viewXaml,
-    'Click="ImportVisualProfileClick"\s*/>\s*<Button[^>]+Click="UpdateCreatorThemesClick"',
+    'Click="ImportVisualProfileClick"\s*/>\s*<Button[^>]+Click="InstallCreatorThemeClick"\s*/>\s*<Button[^>]+Click="UpdateCreatorThemesClick"',
     [Text.RegularExpressions.RegexOptions]::Singleline)
 if ($profileUpdateRows.Count -ne 2) {
     throw "Each visual-profile toolbar must place its single design update button after Import."
@@ -292,6 +293,16 @@ if ($settings.OverlayStylePreset -ne "example.creator" -or
         "(preset=$($settings.OverlayStylePreset), editor=$($view.FindName('OverlayStyleEditor').IsEnabled), " +
         "expanded=$($view.FindName('OverlayAppearanceLayoutExpander').IsExpanded), " +
         "opacity=$($view.FindName('OverlayStyleEditor').Opacity))."
+}
+$overlayPresetSelector.SelectedItem = @($overlayPresetSelector.Items | Where-Object { $_.Key -eq "Soft" })[0]
+$window.UpdateLayout()
+if ($settings.OverlayStylePreset -ne "Soft" -or $settings.OverlayStatusInMetadata) {
+    throw "Switching from an Alert creator design with status in metadata to a plugin preset failed."
+}
+$overlayPresetSelector.SelectedItem = @($overlayPresetSelector.Items | Where-Object { $_.Key -eq "example.creator" })[0]
+$window.UpdateLayout()
+if ($settings.OverlayStylePreset -ne "example.creator" -or -not $settings.OverlayStatusInMetadata) {
+    throw "Switching back to the Alert creator design did not restore its metadata composition."
 }
 $overlayPresetSelector.SelectedItem = @($overlayPresetSelector.Items | Where-Object { $_.Key -eq "Custom" })[0]
 $window.UpdateLayout()

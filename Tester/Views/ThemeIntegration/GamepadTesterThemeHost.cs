@@ -640,6 +640,14 @@ namespace ControllerSessionManager.Tester.Views.ThemeIntegration
                 return false;
             }
 
+            if (!GamepadTesterThemeContract.SupportsBlock(block) &&
+                string.Equals(GetInitializationState(host), "UnknownBlock",
+                    StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(GetResolvedBlock(host), block, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
             SetHostStatus(host, "Pending", block, "Waiting for Gamepad Tester to initialize this block.");
             if (settings == null)
             {
@@ -703,7 +711,12 @@ namespace ControllerSessionManager.Tester.Views.ThemeIntegration
             var block = NormalizeBlock(GetBlock(host));
             if (string.IsNullOrWhiteSpace(block))
             {
-                block = NormalizeBlock(host.Tag as string);
+                var marker = host.Tag as string;
+                if (!string.IsNullOrWhiteSpace(marker) &&
+                    marker.Trim().StartsWith("GamepadTester", StringComparison.OrdinalIgnoreCase))
+                {
+                    block = NormalizeBlock(marker);
+                }
             }
 
             if (string.IsNullOrWhiteSpace(block))

@@ -3,6 +3,16 @@
 
 
 
+
+## 1.0.27 — 2026-08-27
+- Added secure in-app installation of creator design packages (`.csmtheme`) with schema and plugin compatibility checks, safe archive extraction, file-size and type limits, asset validation, and an appearance-property allowlist.
+- Added a configurable and localized live disconnect timer for overlays, including creator-theme placement through the optional `Timer` block.
+- Expanded creator overlay composition with ambient scene backgrounds, layered gradients, glows, grids, alert layouts, status badges, controller rails, and richer validation.
+- Fixed a fatal settings crash when switching between creator Alert layouts and standard overlay presets.
+- Fixed controller-name and pause-status reparenting in both the settings preview and the external overlay host.
+- Improved overlay presentation with an uppercase state badge, a status dot, vertical controller-icon alignment, and more balanced spacing.
+- Reduced extension log noise by ignoring ordinary Playnite control tags and deduplicating unknown Gamepad Tester block diagnostics.
+
 ## 1.0.26 — 2026-08-26
 - **Creator Appearance Packs:** Added a reviewed, source-controlled pack format for theme authors to ship notification and disconnect-overlay designs with their own images, fonts, sounds, theme IDs, attribution, and version metadata.
 - **Theme-Aware Creator Designs:** Desktop, Fullscreen, and overlay selectors can optionally show only creator designs compatible with the active Playnite theme. Creator-controlled appearance and audio fields are locked while a pack is active.

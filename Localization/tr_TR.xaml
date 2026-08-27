@@ -692,6 +692,8 @@
     <sys:String x:Key="LOCCSM_OverlayShowTitle">Başlığı göster</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowInstruction">Talimatları göster</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowPauseStatus">Duraklatma durumunu göster</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayShowDisconnectTimer">Bağlantı kesilme süresini göster</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayDisconnectTimerFormat">Kontrolcü {0} süredir bağlı değil</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowConnectionBadge">Bağlantı rozetini göster</sys:String>
     <sys:String x:Key="LOCCSM_OverlayShowBatteryBadge">Pil rozetini göster</sys:String>
     <sys:String x:Key="LOCCSM_OverlayTypographyTitle">Başlık yazı tipi</sys:String><sys:String x:Key="LOCCSM_OverlayTypographyController">Kontrolcü yazı tipi</sys:String><sys:String x:Key="LOCCSM_OverlayTypographyInstruction">Talimat yazı tipi</sys:String><sys:String x:Key="LOCCSM_OverlayTypographyStatus">Durum ve rozet yazı tipi</sys:String><sys:String x:Key="LOCCSM_OverlayBadges">Bağlantı ve pil rozetleri</sys:String><sys:String x:Key="LOCCSM_OverlayConnectionBadge">Bağlantı rozeti</sys:String><sys:String x:Key="LOCCSM_OverlayBatteryBadge">Pil rozeti</sys:String><sys:String x:Key="LOCCSM_BadgeTextColor">Metin rengi</sys:String><sys:String x:Key="LOCCSM_BadgeIconColor">Simge rengi</sys:String><sys:String x:Key="LOCCSM_BadgeBackgroundColor">Arka plan rengi</sys:String><sys:String x:Key="LOCCSM_BadgeBorderColor">Kenarlık rengi</sys:String><sys:String x:Key="LOCCSM_BatteryBadgeUseStateColors">Metin ve simgeyi pil düzeyine göre renklendir</sys:String>
@@ -796,6 +798,15 @@
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">Bu tasarımcı teması tüm görünümü yönetir. Düzenlemek için eklenti hazır ayarı veya Özel’i seçin.</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">Etkin üretici tasarımı ses paketini ve özel dosyaları sağlar. Ses düzeyi, ses anahtarları ve önizlemeler kullanılabilir kalır.</sys:String>
     <sys:String x:Key="LOCCSM_UpdateCreatorThemes">Tasarımları güncelle</sys:String>
+    <sys:String x:Key="LOCCSM_InstallCreatorTheme">Üretici tasarımı yükle</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeFileFilter">Üretici tasarım paketi (*.csmtheme)|*.csmtheme</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstallConfirm">{2} tarafından hazırlanan “{0}” sürüm {1} yüklensin mi? Aynı kimliğe sahip tasarım değiştirilir.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstallProcessing">Tasarım doğrulanıyor ve yükleniyor…</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstalled">“{0}” sürüm {1} başarıyla yüklendi.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeSchemaIncompatible">Bu tasarım {0} şemasını kullanıyor; Controller Manager bu sürümde {1} şemasını destekliyor.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeVersionIncompatible">Bu tasarım Controller Manager {0} ile uyumlu değil. Gereken aralık: {1}–{2}.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeNoMaximumVersion">üst sınır yok</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeInstallInvalid">Seçilen tasarım yüklenemedi: {0}</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateTitle">İçerik üretici tasarımları</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesUpdateProcessing">Resmî katalog kontrol ediliyor ve uyumlu tasarımlar yükleniyor…</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemesCurrent">İçerik üretici tasarımlarınız zaten güncel.</sys:String>

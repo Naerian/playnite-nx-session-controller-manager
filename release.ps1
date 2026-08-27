@@ -188,6 +188,10 @@ foreach ($test in @(
     "tests\run-tester-tests.ps1",
     "tests\run-settings-migration-tests.ps1",
     "tests\run-settings-view-tests.ps1",
+    "tests\run-creator-theme-tests.ps1",
+    "tests\run-creator-theme-package-installer-tests.ps1",
+    "tests\run-imported-visual-profile-tests.ps1",
+    "tests\run-overlay-composition-tests.ps1",
     "tests\run-release-script-tests.ps1"
 )) {
     Invoke-Checked "powershell.exe" @("-NoProfile", "-ExecutionPolicy", "Bypass",

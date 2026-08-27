@@ -2311,7 +2311,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                     ControllerConnectionIcons.GetPathData(connectionType),
                 string.IsNullOrWhiteSpace(batteryLabel) ? string.Empty :
                     SvgIconGeometryLoader.GetPathData("battery.svg"), batteryLevel,
-                Loc("LOCCSM_Disconnected"));
+                Loc("LOCCSM_Disconnected"), Loc("LOCCSM_OverlayDisconnectTimerFormat"));
         }
 
         private void EnsureDisconnectIncident()
@@ -3452,7 +3452,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 settings.OverlayIncidentBadgeCornerRadius.ToString(),
                 settings.OverlayIncidentBadgeTextSize.ToString(),
                 settings.OverlayStatusInMetadata.ToString(),
-                settings.OverlayInstructionColor, settings.OverlayControllerIconColor
+                settings.OverlayInstructionColor, settings.OverlayControllerIconColor,
+                settings.OverlayShowDisconnectTimer.ToString()
             });
         }
 

@@ -67,8 +67,8 @@ foreach ($entry in $preserved.GetEnumerator()) {
 if ($settings.NotificationStylePreset -ne "Custom" -or $settings.OverlayStylePreset -ne "Custom") {
     throw "An existing installation must retain its custom notification and overlay appearance."
 }
-if ($settings.SettingsSchemaVersion -ne 21) {
-    throw "Settings were not migrated to schema 21."
+if ($settings.SettingsSchemaVersion -ne 22) {
+    throw "Settings were not migrated to schema 22."
 }
 $notificationStateType = $assembly.GetType("ControllerSessionManager.PlayniteIntegration.NotificationStyleState", $true)
 $legacyCustom = [Activator]::CreateInstance($type)
@@ -290,6 +290,7 @@ $settings.OverlayLayoutMode = "Alert"
 $settings.OverlayBlockOrder = "Incident,Title,ControllerName,Metadata,Instruction,Status"
 $settings.OverlayShowIncidentBadge = $true
 $settings.OverlayStatusInMetadata = $true
+$settings.OverlayShowDisconnectTimer = $true
 $settings.OverlayInstructionColor = "#FF9498A8"
 $settings.OverlayControllerIconColor = "#FFFFB454"
 $settings.OverlayBackgroundImageTintOpacity = 71
@@ -360,6 +361,7 @@ if ($restoredSettings.NotificationTitleFontFamily -ne $settings.NotificationTitl
     $restoredSettings.NotificationBorderLeftThickness -ne $settings.NotificationBorderLeftThickness -or
     $restoredSettings.NotificationConnectedBackgroundColor -ne $settings.NotificationConnectedBackgroundColor -or
     $restoredSettings.OverlayBlockOrder -ne $settings.OverlayBlockOrder -or
+    $restoredSettings.OverlayShowDisconnectTimer -ne $settings.OverlayShowDisconnectTimer -or
     $restoredSettings.OverlayMetadataOrientation -ne $settings.OverlayMetadataOrientation -or
     $restoredSettings.OverlayBorderRightThickness -ne $settings.OverlayBorderRightThickness -or
     $restoredSettings.NotificationUseBorderGradient -ne $settings.NotificationUseBorderGradient -or

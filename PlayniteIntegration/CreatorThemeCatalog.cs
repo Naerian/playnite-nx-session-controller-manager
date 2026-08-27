@@ -143,7 +143,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             var values = string.Equals(surface, "overlay", StringComparison.OrdinalIgnoreCase)
                 ? definition.Overlay : definition.Notification;
             if (values == null || values.Count == 0) return false;
-            ApplyValues(settings, values, definition);
+            ApplyValues(settings, values, definition, surface);
             return true;
         }
 
@@ -242,11 +242,13 @@ namespace ControllerSessionManager.PlayniteIntegration
         }
 
         private static void ApplyValues(ControllerSessionManagerSettings settings,
-            IDictionary<string, object> values, CreatorThemeDefinition definition)
+            IDictionary<string, object> values, CreatorThemeDefinition definition, string surface)
         {
             if (settings == null) return;
             foreach (var pair in values)
             {
+                if (!ControllerSessionManagerSettingsView.IsCreatorThemePropertyAllowed(
+                    pair.Key, surface)) continue;
                 var property = typeof(ControllerSessionManagerSettings).GetProperty(pair.Key,
                     BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
                 if (property == null || !property.CanWrite || pair.Value == null) continue;
