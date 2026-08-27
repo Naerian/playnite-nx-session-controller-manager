@@ -1,4 +1,4 @@
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
     <sys:String x:Key="LOCCSM_PluginName">Controller Manager</sys:String>
     <sys:String x:Key="LOCCSM_SettingsTitle">Controller Manager</sys:String>
     <sys:String x:Key="LOCCSM_EnableMonitoring">Controller-Überwachung aktivieren</sys:String>
@@ -123,7 +123,6 @@
     <sys:String x:Key="LOCCSM_VisualProfileTitle">Visual profile</sys:String>
     <sys:String x:Key="LOCCSM_VisualProfileHelp">Export or import notification, overlay and sound appearance as a shareable profile.</sys:String>
     <sys:String x:Key="LOCCSM_VisualProfileNamePrompt">Gib diesem visuellen Profil einen Namen. Ein Profil mit demselben Namen wird beim Import ersetzt.</sys:String>
-    <sys:String x:Key="LOCCSM_FilterCreatorDesignsByCurrentTheme">Bei Ersteller-Designs nur Designs für das aktuelle Theme anzeigen</sys:String>
     <sys:String x:Key="LOCCSM_Alerts">Hinweise</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeLockedTitle">Ersteller-Design aktiv</sys:String>
     <sys:String x:Key="LOCCSM_ExportVisualProfile">Export visual profile</sys:String>

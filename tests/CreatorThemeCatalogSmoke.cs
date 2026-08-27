@@ -94,7 +94,9 @@ internal static class CreatorThemeCatalogSmoke
             notificationPresets.GetMethod("Apply").Invoke(null, new[] { settings, "community.test" });
             if ((string)settingsType.GetProperty("NotificationTextOrder").GetValue(settings, null) !=
                 "MessageFirst" || (int)settingsType.GetProperty("NotificationBorderLeftThickness")
-                    .GetValue(settings, null) != 9 || !((string)settingsType.GetProperty(
+                    .GetValue(settings, null) != 9 || (string)settingsType.GetProperty(
+                    "DesktopNotificationTextOrder").GetValue(settings, null) != "MessageFirst" ||
+                !((string)settingsType.GetProperty(
                     "NotificationTitleFontFamily").GetValue(settings, null)).StartsWith("ExternalFont|"))
                 throw new Exception("Community notification pack was not applied dynamically.");
 

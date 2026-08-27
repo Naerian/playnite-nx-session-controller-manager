@@ -106,10 +106,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 if (compatibleThemeIds.Any(a => ThemeIdentifiersMatch(a, activeTheme)))
                     return true;
 
-                // Some Playnite versions/themes expose the display name instead of the manifest ID.
                 var normalizedRecommendedTheme = NormalizeThemeIdentifier(definition.RecommendedTheme);
-                // Packs with no declared target are intentionally universal and remain visible
-                // when users enable filtering by their current Playnite theme.
                 if (compatibleThemeIds.Count == 0 && normalizedRecommendedTheme.Length == 0)
                     return true;
                 return normalizedRecommendedTheme.Length > 0 &&
@@ -212,7 +209,7 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private static bool IsEligibleSoundPack(CreatorThemeDefinition definition)
         {
-            return definition != null && definition.Supports("notification") &&
+            return definition != null &&
                 Enum.GetValues(typeof(NotificationSoundKind))
                 .Cast<NotificationSoundKind>().All(kind =>
                     !string.IsNullOrWhiteSpace(ResolveSoundPath(definition, kind)));
@@ -348,9 +345,41 @@ namespace ControllerSessionManager.PlayniteIntegration
                         : type.IsEnum ? Enum.Parse(type, pair.Value.ToString(), true)
                         : Convert.ChangeType(pair.Value, type, CultureInfo.InvariantCulture);
                     property.SetValue(settings, converted, null);
+                    if (!string.Equals(surface, "notification", StringComparison.OrdinalIgnoreCase))
+                        continue;
+                    var desktopKey = DesktopNotificationPropertyName(pair.Key);
+                    if (string.IsNullOrEmpty(desktopKey) || HasValueKey(values, desktopKey))
+                        continue;
+                    var desktopProperty = typeof(ControllerSessionManagerSettings).GetProperty(desktopKey,
+                        BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+                    if (desktopProperty == null || !desktopProperty.CanWrite) continue;
+                    desktopProperty.SetValue(settings, converted, null);
                 }
                 catch { }
             }
+        }
+
+        private static bool HasValueKey(IDictionary<string, object> values, string key)
+        {
+            return values.Keys.Any(a => string.Equals(a, key, StringComparison.OrdinalIgnoreCase));
+        }
+
+        private static string DesktopNotificationPropertyName(string propertyName)
+        {
+            if (string.Equals(propertyName, "ShowControllerNameInNotifications",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return "ShowControllerNameInDesktopNotifications";
+            }
+
+            if (!string.IsNullOrEmpty(propertyName) &&
+                propertyName.StartsWith("Notification", StringComparison.OrdinalIgnoreCase) &&
+                !propertyName.StartsWith("Desktop", StringComparison.OrdinalIgnoreCase))
+            {
+                return "Desktop" + propertyName;
+            }
+
+            return string.Empty;
         }
 
         public sealed class CreatorThemeManifest

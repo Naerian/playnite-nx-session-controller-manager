@@ -205,13 +205,29 @@ if ($settings.NotificationFontWeight -ne "SemiBold") {
 $presetType = $assembly.GetType("ControllerSessionManager.PlayniteIntegration.OverlayStylePresets", $true)
 $applyPreset = $presetType.GetMethod("Apply", [Reflection.BindingFlags]"Static,Public")
 $applyPreset.Invoke($null, @($settings, "Compact")) | Out-Null
-if ($settings.OverlayCardPosition -ne "Center" -or $settings.OverlayBorderPosition -ne "Top") {
-    throw "Compact preset must be centered with a top border."
+if ($settings.OverlayCardPosition -ne "Center" -or $settings.OverlayContentAlignment -ne "Center" -or
+    $settings.OverlayCornerRadius -ne 4 -or -not $settings.OverlayUseIndependentBorders -or
+    $settings.OverlayBorderLeftThickness -ne 4) {
+    throw "Compact overlay preset must be centered with a 4px card and a left accent rail."
+}
+$applyPreset.Invoke($null, @($settings, "Minimal")) | Out-Null
+if ($settings.OverlayBorderPosition -ne "Left" -or $settings.OverlayCornerRadius -ne 4 -or
+    -not $settings.OverlayUseIndependentBorders -or $settings.OverlayBorderLeftThickness -ne 2 -or
+    $settings.OverlayBorderTopThickness -ne 0) {
+    throw "Minimal overlay preset must use a 4px card with a left accent rail."
 }
 $applyPreset.Invoke($null, @($settings, "Bold")) | Out-Null
-if ($settings.OverlayScalePercent -ne 100) { throw "Bold preset must use 100% scale." }
+if ($settings.OverlayLayoutMode -ne "Standard" -or $settings.OverlayContentAlignment -ne "Center") {
+    throw "Bold overlay preset must use a centered Standard layout."
+}
 $applyPreset.Invoke($null, @($settings, "Arcade")) | Out-Null
-if ($settings.OverlayScalePercent -ne 110) { throw "Arcade preset must use 110% scale." }
+if ($settings.OverlayLayoutMode -ne "Alert" -or -not $settings.OverlayUppercaseTitle) {
+    throw "Arcade overlay preset must use the Alert layout with an uppercase title."
+}
+$applyPreset.Invoke($null, @($settings, "Soft")) | Out-Null
+if ($settings.OverlayLayoutMode -ne "Split" -or -not $settings.OverlayShowDisconnectTimer) {
+    throw "Soft overlay preset must use the Split layout with a disconnect timer."
+}
 $applyPreset.Invoke($null, @($settings, "example.creator")) | Out-Null
 if ($settings.OverlayCardColor -ne "#FF334455" -or
     -not $settings.OverlayUseIndependentBorders -or
@@ -222,11 +238,25 @@ if ($settings.OverlayCardColor -ne "#FF334455" -or
 $notificationPresetType = $assembly.GetType(
     "ControllerSessionManager.PlayniteIntegration.NotificationStylePresets", $true)
 $applyNotificationPreset = $notificationPresetType.GetMethod("Apply", [Reflection.BindingFlags]"Static,Public")
+$applyNotificationPreset.Invoke($null, @($settings, "Compact")) | Out-Null
+if ($settings.NotificationCornerRadius -ne 4 -or $settings.DesktopNotificationCornerRadius -ne 4) {
+    throw "Compact notification preset must use a 4px corner radius."
+}
+$applyNotificationPreset.Invoke($null, @($settings, "Arcade")) | Out-Null
+if (-not $settings.NotificationUseStateBackgroundColors -or
+    -not $settings.NotificationUseStateBorderColors -or
+    -not $settings.NotificationUseGradient) {
+    throw "Arcade notification preset must keep its cabinet look with state gradients and borders."
+}
 $applyNotificationPreset.Invoke($null, @($settings, "Cinematic")) | Out-Null
-if (-not $settings.NotificationUseBackgroundImage -or
-    -not $settings.DesktopNotificationUseBackgroundImage -or
-    -not (Test-Path -LiteralPath $settings.NotificationBackgroundImagePath)) {
-    throw "Cinematic notification preset did not activate its bundled background image."
+if ($settings.NotificationUseBackgroundImage -or $settings.DesktopNotificationUseBackgroundImage -or
+    -not $settings.NotificationUseGradient -or -not $settings.DesktopNotificationUseGradient -or
+    -not $settings.NotificationUseStateBackgroundColors) {
+    throw "Cinematic notification preset must use state-tinted scene gradients instead of artwork."
+}
+if ($settings.NotificationGradientColor -eq $settings.NotificationBackgroundColor -or
+    $settings.NotificationConnectedBackgroundColor -eq $settings.NotificationBackgroundColor) {
+    throw "Cinematic notification gradients must differ from the letterbox card color."
 }
 $applyNotificationPreset.Invoke($null, @($settings, "example.creator")) | Out-Null
 if ($settings.NotificationBackgroundColor -ne "#FF112233" -or

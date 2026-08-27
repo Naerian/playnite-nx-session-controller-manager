@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Linq;
 
 namespace ControllerSessionManager.PlayniteIntegration
@@ -128,94 +127,163 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         public static void ResetToDefault(ControllerSessionManagerSettings settings) { Apply(settings, Soft); }
 
-        // Bright frosted card, subtle semantic tint and calm typography.
+        // Dark glass toast with a state-colored left rail and Inter hierarchy.
         private static void ApplySoft(ControllerSessionManagerSettings s)
         {
-            ApplyPair(s, 520, 108, 5000, "TopRight", "#F2F4F7FB", "#FF172033", "#FF596579",
-                "#FF087A4B", "#FF005FAF", "#FF945000", "#FFB42335", 19, 15, 32, "Left",
-                18, 8, false, "Bottom", 0, 16, true, 28, true,
-                420, 100, 4000, "BottomRight", "#F4F5F8FC", "#FF172033", "#FF596579",
-                "#FF087A4B", "#FF005FAF", "#FF945000", "#FFB42335", 17, 14, 28, 14, 6, 14, 28);
+            ApplyPair(s, 480, 104, 4600, "TopRight", "#F2161A22", "#FFF4F6F8", "#FF9AA7B6",
+                "#FF2FA36A", "#FF5B93C9", "#FFD9A24A", "#FFD24A5A", 18, 14, 42, "Left",
+                16, 8, true, "Full", 1, 14, true, 24, true,
+                400, 98, 3800, "BottomRight", "#F4181C24", "#FFF4F6F8", "#FF9AA7B6",
+                "#FF2FA36A", "#FF5B93C9", "#FFD9A24A", "#FFD24A5A", 16, 13, 36, 14, 6, 12, 22);
             ApplyIdentity(s, NotificationFontCatalog.Inter, "SemiBold", "Left", "TintedBackground", "Fade",
                 true, true, NotificationFontCatalog.Inter, "SemiBold", "Left", "TintedBackground", "Fade", true, true);
+            ApplyTypeHierarchy(s, NotificationFontCatalog.Inter, "SemiBold",
+                NotificationFontCatalog.Inter, "Regular");
+            s.NotificationUseGradient = true;
+            s.NotificationGradientColor = "#F2222832";
+            s.NotificationGradientAngle = 168;
+            s.DesktopNotificationUseGradient = true;
+            s.DesktopNotificationGradientColor = "#F2242A34";
+            s.DesktopNotificationGradientAngle = 168;
+            ApplyAccentRail(s, 3, 1, 1, 1, true);
         }
 
-        // One-line HUD with a hard left rail and quick slide motion.
+        // Broadcast ticker: Rajdhani, hard left rail, slide in, no extra chrome.
         private static void ApplyCompact(ControllerSessionManagerSettings s)
         {
-            ApplyPair(s, 340, 92, 3000, "TopRight", "#ED090C12", "#FFF1F5FA", "#FF96A2B2",
-                "#FF27C07D", "#FF4A8FE0", "#FFE0A22E", "#FFE05252", 16, 12, 20, "Left",
-                10, 3, true, "Left", 4, 2, false, 14, false,
-                300, 88, 2600, "BottomRight", "#EF070A0F", "#FFF1F5FA", "#FF96A2B2",
-                "#FF27C07D", "#FF4A8FE0", "#FFE0A22E", "#FFE05252", 15, 11, 18, 8, 2, 2, 12);
+            ApplyPair(s, 360, 92, 2800, "TopRight", "#F20A0C12", "#FFF2F5FA", "#FF8E9BB0",
+                "#FF2BB673", "#FF4F8FDB", "#FFD9A24A", "#FFE05252", 16, 12, 20, "Left",
+                16, 6, true, "Left", 0, 4, false, 16, false,
+                320, 88, 2400, "BottomRight", "#F30B0D14", "#FFF2F5FA", "#FF8E9BB0",
+                "#FF2BB673", "#FF4F8FDB", "#FFD9A24A", "#FFE05252", 15, 11, 18, 14, 5, 4, 14);
             ApplyIdentity(s, NotificationFontCatalog.Rajdhani, "SemiBold", "Left", "IconAndBorder", "Slide",
                 true, false, NotificationFontCatalog.Rajdhani, "SemiBold", "Left", "IconAndBorder", "Slide", true, false);
+            ApplyTypeHierarchy(s, NotificationFontCatalog.Rajdhani, "SemiBold",
+                NotificationFontCatalog.Rajdhani, "Regular");
+            ApplyAccentRail(s, 4, 0, 0, 0, true);
+            s.NotificationIconSpacing = 14;
+            s.DesktopNotificationIconSpacing = 12;
         }
 
-        // The event color becomes the card; large right icon and punchy scale motion.
+        // Event-colored poster with a framed icon and Outfit titles.
         private static void ApplyBold(ControllerSessionManagerSettings s)
         {
-            ApplyPair(s, 590, 120, 5600, "TopLeft", "#F01A1F2A", "#FFFFFFFF", "#FFF2F5FA",
-                "#FF118C57", "#FF176FC1", "#FFB96800", "#FFC92D45", 25, 17, 46, "Right",
-                24, 12, false, "Full", 0, 8, false, 34, true,
-                490, 112, 4700, "BottomLeft", "#F01A1F2A", "#FFFFFFFF", "#FFF2F5FA",
-                "#FF118C57", "#FF176FC1", "#FFB96800", "#FFC92D45", 22, 16, 40, 20, 10, 8, 30);
+            ApplyPair(s, 560, 114, 5200, "TopLeft", "#F2181C28", "#FFFFFFFF", "#FFD7DEE8",
+                "#FF14865A", "#FF1B73C4", "#FFC07A12", "#FFC92D45", 24, 16, 44, "Right",
+                22, 10, true, "Full", 1, 16, true, 28, true,
+                470, 106, 4400, "BottomLeft", "#F21A1E2A", "#FFFFFFFF", "#FFD7DEE8",
+                "#FF14865A", "#FF1B73C4", "#FFC07A12", "#FFC92D45", 21, 15, 38, 18, 8, 14, 24);
             ApplyIdentity(s, NotificationFontCatalog.Outfit, "Bold", "Left", "SolidBackground", "Scale",
                 true, true, NotificationFontCatalog.Outfit, "Bold", "Left", "SolidBackground", "Scale", true, true);
+            ApplyTypeHierarchy(s, NotificationFontCatalog.Outfit, "Bold",
+                NotificationFontCatalog.Outfit, "Regular");
+            s.NotificationShowIconContainer = true;
+            s.NotificationIconContainerColor = "#33FFFFFF";
+            s.NotificationIconContainerBorderColor = "#66FFFFFF";
+            s.NotificationIconContainerCornerRadius = 12;
+            s.NotificationIconContainerPadding = 10;
+            s.DesktopNotificationShowIconContainer = true;
+            s.DesktopNotificationIconContainerColor = "#33FFFFFF";
+            s.DesktopNotificationIconContainerBorderColor = "#66FFFFFF";
+            s.DesktopNotificationIconContainerCornerRadius = 10;
+            s.DesktopNotificationIconContainerPadding = 8;
+            s.NotificationShowBorderGlow = true;
+            s.NotificationBorderGlowColor = "#804F8FDB";
+            s.NotificationBorderGlowBlur = 16;
+            s.NotificationBorderGlowOpacity = 20;
+            s.DesktopNotificationShowBorderGlow = true;
+            s.DesktopNotificationBorderGlowColor = "#804F8FDB";
+            s.DesktopNotificationBorderGlowBlur = 14;
+            s.DesktopNotificationBorderGlowOpacity = 18;
         }
 
-        // Centered neon cabinet card with a top icon and full outline.
+        // One neon accent on indigo, uppercase title, cabinet outline.
         private static void ApplyArcade(ControllerSessionManagerSettings s)
         {
-            ApplyPair(s, 470, 112, 4800, "BottomRight", "#F20A0828", "#FFF1F5FF", "#FFB7C5FF",
-                "#FF00FFC6", "#FF00D4FF", "#FFFFE566", "#FFFF2E9D", 20, 14, 42, "Top",
-                20, 10, true, "Full", 2, 22, true, 22, true,
-                390, 103, 4000, "BottomLeft", "#F20A0828", "#FFF1F5FF", "#FFB7C5FF",
-                "#FF00FFC6", "#FF00D4FF", "#FFFFE566", "#FFFF2E9D", 18, 13, 34, 16, 8, 18, 20);
+            ApplyPair(s, 460, 108, 4400, "BottomRight", "#F1180C10", "#FFFFF4EA", "#FFFFC48A",
+                "#FFFF9A3C", "#FFFF5A4A", "#FFFFD36A", "#FFFF4FA3", 18, 13, 36, "Top",
+                18, 8, true, "Full", 2, 18, true, 22, true,
+                390, 100, 3800, "BottomLeft", "#F11A0E12", "#FFFFF4EA", "#FFFFC48A",
+                "#FFFF9A3C", "#FFFF5A4A", "#FFFFD36A", "#FFFF4FA3", 16, 12, 30, 16, 7, 16, 18);
             ApplyIdentity(s, NotificationFontCatalog.Orbitron, "SemiBold", "Center", "IconAndBorder", "Scale",
                 true, true, NotificationFontCatalog.Orbitron, "SemiBold", "Center", "IconAndBorder", "Scale", true, true);
+            ApplyTypeHierarchy(s, NotificationFontCatalog.Orbitron, "SemiBold",
+                NotificationFontCatalog.Exo2, "Regular");
+            s.NotificationUppercaseTitle = true;
+            s.DesktopNotificationUppercaseTitle = true;
+            s.NotificationUseBorderGradient = true;
+            s.NotificationBorderGradientStartColor = "#FFFF9A3C";
+            s.NotificationBorderGradientEndColor = "#FFFF5A4A";
+            s.NotificationBorderGradientAngle = 125;
+            s.DesktopNotificationUseBorderGradient = true;
+            s.DesktopNotificationBorderGradientStartColor = "#FFFF9A3C";
+            s.DesktopNotificationBorderGradientEndColor = "#FFFF5A4A";
+            s.DesktopNotificationBorderGradientAngle = 125;
+            s.NotificationShowBorderGlow = true;
+            s.NotificationBorderGlowColor = "#90FF9A3C";
+            s.NotificationBorderGlowBlur = 18;
+            s.NotificationBorderGlowOpacity = 26;
+            s.DesktopNotificationShowBorderGlow = true;
+            s.DesktopNotificationBorderGlowColor = "#90FF9A3C";
+            s.DesktopNotificationBorderGlowBlur = 16;
+            s.DesktopNotificationBorderGlowOpacity = 22;
+            ApplyStateSurfaces(s, true, "#F1281810", 145,
+                "#C03A2208", "#C03A100C", "#C03A2808", "#C03A0818",
+                "#FFFF9A3C", "#FFFF5A4A", "#FFFFD36A", "#FFFF4FA3");
         }
 
-        // Square, text-first card with an explicit connection badge and device name.
+        // Quiet type-first card. Almost no chrome, name only.
         private static void ApplyMinimal(ControllerSessionManagerSettings s)
         {
-            ApplyPair(s, 350, 92, 2600, "TopLeft", "#C20A0D12", "#FFF2F4F7", "#FFA7AFBB",
-                "#FF7FC79F", "#FF83A6C8", "#FFD0AD6A", "#FFC98181", 15, 11, 16, "Hidden",
-                15, 2, false, "Bottom", 0, 0, true, 12, false,
-                310, 88, 2300, "TopLeft", "#C20A0D12", "#FFF2F4F7", "#FFA7AFBB",
-                "#FF7FC79F", "#FF83A6C8", "#FFD0AD6A", "#FFC98181", 14, 11, 16, 15, 2, 0, 10);
+            ApplyPair(s, 340, 92, 2400, "TopLeft", "#B8101318", "#FFEEF1F5", "#FF9AA6B4",
+                "#FF6FB392", "#FF7A97B8", "#FFC8A66A", "#FFC98181", 15, 12, 16, "Hidden",
+                14, 4, false, "Full", 0, 4, false, 16, false,
+                300, 88, 2200, "TopLeft", "#C012151A", "#FFEEF1F5", "#FF9AA6B4",
+                "#FF6FB392", "#FF7A97B8", "#FFC8A66A", "#FFC98181", 14, 11, 16, 12, 3, 4, 14);
             ApplyIdentity(s, NotificationFontCatalog.Poppins, "Regular", "Left", "IconOnly", "Fade",
                 true, true, NotificationFontCatalog.Poppins, "Regular", "Left", "IconOnly", "Fade", true, true);
+            ApplyTypeHierarchy(s, NotificationFontCatalog.Poppins, "Regular",
+                NotificationFontCatalog.Poppins, "Regular");
         }
 
-        // Dark cinematic artwork with restrained cyan and gold event accents.
+        // Letterbox toast: overlay scene gradient, no artwork.
         private static void ApplyCinematic(ControllerSessionManagerSettings s)
         {
-            ApplyPair(s, 560, 108, 5200, "TopRight", "#E4070B0D", "#FFFFFFFF", "#FFD6E9E9",
-                "#FF3DE0B5", "#FF57BFEF", "#FFFFC857", "#FFFF657A", 21, 15, 38, "Left",
-                20, 9, true, "Bottom", 2, 18, true, 26, true,
-                450, 100, 4200, "BottomRight", "#E4070B0D", "#FFFFFFFF", "#FFD6E9E9",
-                "#FF3DE0B5", "#FF57BFEF", "#FFFFC857", "#FFFF657A", 18, 14, 32, 16, 7, 16, 24);
-            ApplyIdentity(s, NotificationFontCatalog.Outfit, "SemiBold", "Left", "IconAndBorder", "Fade",
-                true, true, NotificationFontCatalog.Outfit, "SemiBold", "Left", "IconAndBorder", "Fade", true, true);
-
-            var imagePath = Path.Combine(
-                Path.GetDirectoryName(typeof(NotificationStylePresets).Assembly.Location) ?? string.Empty,
-                "Images", "NotifyBackgrounds", "bg1.jpg");
-            s.NotificationUseBackgroundImage = true;
-            s.NotificationBackgroundImagePath = imagePath;
-            s.NotificationBackgroundImageStretch = "UniformToFill";
-            s.NotificationBackgroundImageHorizontalAlignment = "Center";
-            s.NotificationBackgroundImageVerticalAlignment = "Center";
-            s.NotificationBackgroundImageOpacity = 82;
-            s.NotificationBackgroundImageTintOpacity = 48;
-            s.DesktopNotificationUseBackgroundImage = true;
-            s.DesktopNotificationBackgroundImagePath = imagePath;
-            s.DesktopNotificationBackgroundImageStretch = "UniformToFill";
-            s.DesktopNotificationBackgroundImageHorizontalAlignment = "Center";
-            s.DesktopNotificationBackgroundImageVerticalAlignment = "Center";
-            s.DesktopNotificationBackgroundImageOpacity = 82;
-            s.DesktopNotificationBackgroundImageTintOpacity = 48;
+            ApplyPair(s, 540, 104, 5000, "TopRight", "#FF050608", "#FFF7FBFC", "#FFB7CBD0",
+                "#FF3DE0B5", "#FF57C7E8", "#FFFFC45C", "#FFFF657A", 20, 14, 34, "Left",
+                18, 8, true, "Bottom", 2, 4, true, 24, true,
+                440, 98, 4000, "BottomRight", "#FF050608", "#FFF7FBFC", "#FFB7CBD0",
+                "#FF3DE0B5", "#FF57C7E8", "#FFFFC45C", "#FFFF657A", 18, 13, 28, 16, 7, 4, 22);
+            ApplyIdentity(s, NotificationFontCatalog.Outfit, "SemiBold", "Center", "IconAndBorder", "Fade",
+                true, true, NotificationFontCatalog.Outfit, "SemiBold", "Center", "IconAndBorder", "Fade", true, true);
+            ApplyTypeHierarchy(s, NotificationFontCatalog.Outfit, "SemiBold",
+                NotificationFontCatalog.Outfit, "Regular");
+            ApplyAccentRail(s, 0, 0, 0, 2, false);
+            s.NotificationUseGradient = true;
+            s.NotificationGradientColor = "#FF101418";
+            s.NotificationGradientAngle = 45;
+            s.DesktopNotificationUseGradient = true;
+            s.DesktopNotificationGradientColor = "#FF101418";
+            s.DesktopNotificationGradientAngle = 45;
+            s.NotificationUseBorderGradient = true;
+            s.NotificationBorderGradientStartColor = "#FF57C7E8";
+            s.NotificationBorderGradientEndColor = "#FFFFC45C";
+            s.NotificationBorderGradientAngle = 90;
+            s.DesktopNotificationUseBorderGradient = true;
+            s.DesktopNotificationBorderGradientStartColor = "#FF57C7E8";
+            s.DesktopNotificationBorderGradientEndColor = "#FFFFC45C";
+            s.DesktopNotificationBorderGradientAngle = 90;
+            s.NotificationShowBorderGlow = true;
+            s.NotificationBorderGlowColor = "#6657C7E8";
+            s.NotificationBorderGlowBlur = 14;
+            s.NotificationBorderGlowOpacity = 18;
+            s.DesktopNotificationShowBorderGlow = true;
+            s.DesktopNotificationBorderGlowColor = "#6657C7E8";
+            s.DesktopNotificationBorderGlowBlur = 12;
+            s.DesktopNotificationBorderGlowOpacity = 16;
+            ApplyStateSurfaces(s, true, "#FF101418", 45,
+                "#FF0A1210", "#FF0A1018", "#FF161208", "#FF16080C",
+                "#FF3DE0B5", "#FF57C7E8", "#FFFFC45C", "#FFFF657A");
         }
 
         private static void ApplyIdentity(ControllerSessionManagerSettings s,
@@ -299,6 +367,10 @@ namespace ControllerSessionManager.PlayniteIntegration
             s.NotificationUseStateBackgroundColors = false;
             s.NotificationConnectedBackgroundColor = bg; s.NotificationDisconnectedBackgroundColor = bg;
             s.NotificationWarningBackgroundColor = bg; s.NotificationLowBatteryBackgroundColor = bg;
+            s.NotificationConnectedBorderColor = connected;
+            s.NotificationDisconnectedBorderColor = disconnected;
+            s.NotificationWarningBorderColor = warning;
+            s.NotificationLowBatteryBorderColor = lowBattery;
             s.DesktopNotificationTextOrder = "TitleFirst";
             s.DesktopNotificationUseIndependentBorders = false;
             s.DesktopNotificationUseStateBackgroundColors = false;
@@ -306,6 +378,77 @@ namespace ControllerSessionManager.PlayniteIntegration
             s.DesktopNotificationDisconnectedBackgroundColor = deskBg;
             s.DesktopNotificationWarningBackgroundColor = deskBg;
             s.DesktopNotificationLowBatteryBackgroundColor = deskBg;
+            s.DesktopNotificationConnectedBorderColor = deskConnected;
+            s.DesktopNotificationDisconnectedBorderColor = deskDisconnected;
+            s.DesktopNotificationWarningBorderColor = deskWarning;
+            s.DesktopNotificationLowBatteryBorderColor = deskLowBattery;
+        }
+
+        private static void ApplyTypeHierarchy(
+            ControllerSessionManagerSettings s,
+            string titleFamily, string titleWeight,
+            string messageFamily, string messageWeight)
+        {
+            s.NotificationTitleFontFamily = titleFamily;
+            s.NotificationTitleFontWeight = titleWeight;
+            s.NotificationMessageFontFamily = messageFamily;
+            s.NotificationMessageFontWeight = messageWeight;
+            s.DesktopNotificationTitleFontFamily = titleFamily;
+            s.DesktopNotificationTitleFontWeight = titleWeight;
+            s.DesktopNotificationMessageFontFamily = messageFamily;
+            s.DesktopNotificationMessageFontWeight = messageWeight;
+        }
+
+        private static void ApplyAccentRail(
+            ControllerSessionManagerSettings s, int left, int top, int right, int bottom, bool stateColors)
+        {
+            s.NotificationShowBorder = true;
+            s.DesktopNotificationShowBorder = true;
+            s.NotificationUseIndependentBorders = true;
+            s.DesktopNotificationUseIndependentBorders = true;
+            s.NotificationUseStateBorderColors = stateColors;
+            s.DesktopNotificationUseStateBorderColors = stateColors;
+            s.NotificationBorderLeftThickness = left;
+            s.NotificationBorderTopThickness = top;
+            s.NotificationBorderRightThickness = right;
+            s.NotificationBorderBottomThickness = bottom;
+            s.DesktopNotificationBorderLeftThickness = left;
+            s.DesktopNotificationBorderTopThickness = top;
+            s.DesktopNotificationBorderRightThickness = right;
+            s.DesktopNotificationBorderBottomThickness = bottom;
+        }
+
+        private static void ApplyStateSurfaces(
+            ControllerSessionManagerSettings s, bool useGradient, string gradient, int angle,
+            string connectedBg, string disconnectedBg, string warningBg, string lowBatteryBg,
+            string connectedBorder, string disconnectedBorder, string warningBorder, string lowBatteryBorder)
+        {
+            s.NotificationUseGradient = useGradient;
+            s.DesktopNotificationUseGradient = useGradient;
+            s.NotificationGradientColor = gradient;
+            s.DesktopNotificationGradientColor = gradient;
+            s.NotificationGradientAngle = angle;
+            s.DesktopNotificationGradientAngle = angle;
+            s.NotificationUseStateBackgroundColors = true;
+            s.DesktopNotificationUseStateBackgroundColors = true;
+            s.NotificationConnectedBackgroundColor = connectedBg;
+            s.NotificationDisconnectedBackgroundColor = disconnectedBg;
+            s.NotificationWarningBackgroundColor = warningBg;
+            s.NotificationLowBatteryBackgroundColor = lowBatteryBg;
+            s.DesktopNotificationConnectedBackgroundColor = connectedBg;
+            s.DesktopNotificationDisconnectedBackgroundColor = disconnectedBg;
+            s.DesktopNotificationWarningBackgroundColor = warningBg;
+            s.DesktopNotificationLowBatteryBackgroundColor = lowBatteryBg;
+            s.NotificationUseStateBorderColors = true;
+            s.DesktopNotificationUseStateBorderColors = true;
+            s.NotificationConnectedBorderColor = connectedBorder;
+            s.NotificationDisconnectedBorderColor = disconnectedBorder;
+            s.NotificationWarningBorderColor = warningBorder;
+            s.NotificationLowBatteryBorderColor = lowBatteryBorder;
+            s.DesktopNotificationConnectedBorderColor = connectedBorder;
+            s.DesktopNotificationDisconnectedBorderColor = disconnectedBorder;
+            s.DesktopNotificationWarningBorderColor = warningBorder;
+            s.DesktopNotificationLowBatteryBorderColor = lowBatteryBorder;
         }
 
         private static string WithAlpha(string color, string alpha)

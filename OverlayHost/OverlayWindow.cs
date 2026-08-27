@@ -533,6 +533,8 @@ namespace ControllerSessionManager.OverlayHost
                 ? Visibility.Visible : Visibility.Collapsed;
             pauseStatusIcon.Width = statusIconSize;
             pauseStatusIcon.Height = statusIconSize;
+            pauseStatusIcon.VerticalAlignment = VerticalAlignment.Center;
+            pauseStatusText.VerticalAlignment = VerticalAlignment.Center;
             pauseStatusIcon.Visibility = showStatusIcon ? Visibility.Visible : Visibility.Collapsed;
             titleText.Visibility = showTitle && !string.IsNullOrWhiteSpace(titleText.Text)
                 ? Visibility.Visible : Visibility.Collapsed;
@@ -633,7 +635,12 @@ namespace ControllerSessionManager.OverlayHost
                 ? new Thickness(0, gap, 0, 0) : new Thickness(0);
             pauseStatusBadge.Margin = pauseStatusBadge.Visibility == Visibility.Visible
                 ? statusInMetadata ? new Thickness(4, 0, 4, 0)
-                    : new Thickness(0, gap, 0, 0) : new Thickness(0);
+                    : new Thickness(0, gap + 10, 0, 0) : new Thickness(0);
+            if (alertLayout && incidentStateBadge.Visibility == Visibility.Visible)
+            {
+                incidentStateBadge.HorizontalAlignment = HorizontalAlignment.Center;
+                incidentStateBadge.Margin = new Thickness(0, gap, 0, 0);
+            }
             ApplyCardPosition(cardPosition, screenMargin);
             incidentCard.Effect = showBorder && showBorderGlow ? new DropShadowEffect
             {
@@ -716,7 +723,18 @@ namespace ControllerSessionManager.OverlayHost
                     VerticalAlignment = VerticalAlignment.Center,
                     HorizontalAlignment = HorizontalAlignment.Stretch
                 };
-                if (string.Equals(mode, "Alert", StringComparison.OrdinalIgnoreCase))
+                var controllerColumn = new StackPanel
+                {
+                    VerticalAlignment = VerticalAlignment.Center,
+                    HorizontalAlignment = HorizontalAlignment.Center
+                };
+                controllerColumn.Children.Add(controllerContainer);
+                var alertLayout = string.Equals(mode, "Alert", StringComparison.OrdinalIgnoreCase);
+                if (alertLayout && incidentStateBadge.Visibility == Visibility.Visible)
+                {
+                    controllerColumn.Children.Add(incidentStateBadge);
+                }
+                if (alertLayout)
                 {
                     AddOrderedAlertBlocks(details, blockOrder, statusInMetadata);
                 }
@@ -733,10 +751,10 @@ namespace ControllerSessionManager.OverlayHost
                     ? new SolidColorBrush(splitDividerColor) : Brushes.Transparent;
                 splitDivider.Width = showSplitDivider ? splitDividerThickness : 0;
                 splitDivider.Margin = new Thickness(gap, 0, gap, 0);
-                Grid.SetColumn(controllerContainer, controllerOnRight ? 2 : 0);
+                Grid.SetColumn(controllerColumn, controllerOnRight ? 2 : 0);
                 Grid.SetColumn(splitDivider, 1);
                 Grid.SetColumn(details, controllerOnRight ? 0 : 2);
-                compositionRoot.Children.Add(controllerContainer);
+                compositionRoot.Children.Add(controllerColumn);
                 compositionRoot.Children.Add(splitDivider);
                 compositionRoot.Children.Add(details);
                 return;
@@ -754,7 +772,7 @@ namespace ControllerSessionManager.OverlayHost
             {
                 var key = token.Trim();
                 if (!added.Add(key)) continue;
-                if (key.Equals("Incident", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(incidentStateBadge);
+                if (key.Equals("Incident", StringComparison.OrdinalIgnoreCase)) continue;
                 else if (key.Equals("Title", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(titleText);
                 else if (key.Equals("ControllerName", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(messageText);
                 else if (key.Equals("Timer", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(disconnectTimerText);
@@ -762,7 +780,6 @@ namespace ControllerSessionManager.OverlayHost
                 else if (key.Equals("Instruction", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(instructionText);
                 else if (key.Equals("Status", StringComparison.OrdinalIgnoreCase) && !statusInMetadata) panel.Children.Add(pauseStatusBadge);
             }
-            if (!added.Contains("Incident")) panel.Children.Add(incidentStateBadge);
             if (!added.Contains("Title")) panel.Children.Add(titleText);
             if (!added.Contains("ControllerName")) panel.Children.Add(messageText);
             if (!added.Contains("Timer")) panel.Children.Add(disconnectTimerText);
@@ -1139,6 +1156,15 @@ namespace ControllerSessionManager.OverlayHost
             if (showName)
             {
                 controllerHost.Children.Add(messageText);
+            }
+
+            if (both &&
+                (string.Equals(normalized, "Top", StringComparison.OrdinalIgnoreCase) ||
+                 string.Equals(normalized, "Bottom", StringComparison.OrdinalIgnoreCase)))
+            {
+                controllerIcon.HorizontalAlignment = HorizontalAlignment.Center;
+                messageText.HorizontalAlignment = HorizontalAlignment.Center;
+                messageText.TextAlignment = TextAlignment.Center;
             }
         }
 

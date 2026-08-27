@@ -14,7 +14,6 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using System.Web.Script.Serialization;
 using Microsoft.Win32;
 using ControllerSessionManager.Controllers;
 using ControllerSessionManager.Overlay;
@@ -73,6 +72,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             new Dictionary<string, ControllerToastIdentity>(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, ControllerToastCandidate> pendingToastControllers =
             new Dictionary<string, ControllerToastCandidate>(StringComparer.OrdinalIgnoreCase);
+        private int followUpToastSoundDelayMilliseconds;
         private readonly LowBatteryNotificationTracker lowBatteryToastTracker =
             new LowBatteryNotificationTracker();
         private bool connectionToastStateInitialized;
@@ -520,36 +520,6 @@ namespace ControllerSessionManager.PlayniteIntegration
             PlayniteApi.Dialogs.ShowMessage(message, Loc("LOCCSM_CreatorThemesUpdateTitle"));
         }
 
-        internal string GetConfiguredThemeId(bool fullscreen)
-        {
-            var applicationSettings = PlayniteApi == null ? null : PlayniteApi.ApplicationSettings;
-            var sdkTheme = applicationSettings == null ? string.Empty
-                : fullscreen ? applicationSettings.FullscreenTheme : applicationSettings.DesktopTheme;
-            var configuredTheme = ReadConfiguredThemeId(fullscreen);
-            return string.IsNullOrWhiteSpace(configuredTheme) ? sdkTheme ?? string.Empty : configuredTheme;
-        }
-
-        private string ReadConfiguredThemeId(bool fullscreen)
-        {
-            try
-            {
-                var paths = PlayniteApi == null ? null : PlayniteApi.Paths;
-                if (paths == null || string.IsNullOrWhiteSpace(paths.ConfigurationPath)) return string.Empty;
-                var fileName = fullscreen ? "fullscreenConfig.json" : "config.json";
-                var path = Path.Combine(paths.ConfigurationPath, fileName);
-                if (!File.Exists(path)) return string.Empty;
-                var values = new JavaScriptSerializer().Deserialize<Dictionary<string, object>>(
-                    File.ReadAllText(path, Encoding.UTF8));
-                object value;
-                return values != null && values.TryGetValue("Theme", out value)
-                    ? Convert.ToString(value) ?? string.Empty : string.Empty;
-            }
-            catch
-            {
-                return string.Empty;
-            }
-        }
-
         public MessageBoxResult ConfirmReplaceUnsavedNotificationStyle()
         {
             return PlayniteApi.Dialogs.ShowMessage(
@@ -585,7 +555,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         }
 
         private void PlayNotificationSound(NotificationSoundKind kind, bool preview = false,
-            NotificationSoundScope scope = NotificationSoundScope.Fullscreen)
+            NotificationSoundScope scope = NotificationSoundScope.Fullscreen, int delayMilliseconds = 0)
         {
             if (notificationAudio == null || settings == null)
             {
@@ -596,6 +566,25 @@ namespace ControllerSessionManager.PlayniteIntegration
             {
                 notificationAudio.PlayPreview(kind, settings);
                 return;
+            }
+
+            if (delayMilliseconds > 0)
+            {
+                var dispatcher = GetUiDispatcher();
+                if (dispatcher != null)
+                {
+                    var timer = new DispatcherTimer
+                    {
+                        Interval = TimeSpan.FromMilliseconds(delayMilliseconds)
+                    };
+                    timer.Tick += (sender, args) =>
+                    {
+                        timer.Stop();
+                        notificationAudio.Play(kind, settings, scope);
+                    };
+                    timer.Start();
+                    return;
+                }
             }
 
             notificationAudio.Play(kind, settings, scope);
@@ -2451,6 +2440,7 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private void UpdateConnectionNotifications(IReadOnlyList<ControllerDeviceSnapshot> snapshot)
         {
+            followUpToastSoundDelayMilliseconds = 0;
             var now = DateTime.UtcNow;
             var current = (snapshot ?? new List<ControllerDeviceSnapshot>())
                 .Where(a => a.IsConnected && !ControllerDeviceIdentity.IsUnknownConnection(a))
@@ -2540,6 +2530,14 @@ namespace ControllerSessionManager.PlayniteIntegration
                         ? NotificationSoundKind.Connected
                         : NotificationSoundKind.Disconnected, false,
                         showDesktop ? NotificationSoundScope.Desktop : NotificationSoundScope.Fullscreen);
+                    if (isCurrentlyConnected)
+                    {
+                        var duration = 0;
+                        if (show) duration = Math.Max(duration, settings.NotificationDurationMilliseconds);
+                        if (showDesktop) duration = Math.Max(duration,
+                            settings.DesktopNotificationDurationMilliseconds);
+                        followUpToastSoundDelayMilliseconds = duration + 1500;
+                    }
                 }
 
                 if (isCurrentlyConnected)
@@ -2591,6 +2589,12 @@ namespace ControllerSessionManager.PlayniteIntegration
             foreach (var controller in controllers)
             {
                 var key = GetToastControllerKey(controller);
+                if (!connectedToastControllers.ContainsKey(key) ||
+                    pendingToastControllers.ContainsKey(key))
+                {
+                    continue;
+                }
+
                 if (!lowBatteryToastTracker.ShouldShow(
                     key, controller.BatteryLevel, threshold, true))
                 {
@@ -2634,7 +2638,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 }
 
                 PlayNotificationSound(NotificationSoundKind.LowBattery, false,
-                    showDesktop ? NotificationSoundScope.Desktop : NotificationSoundScope.Fullscreen);
+                    showDesktop ? NotificationSoundScope.Desktop : NotificationSoundScope.Fullscreen,
+                    followUpToastSoundDelayMilliseconds);
             }
         }
 

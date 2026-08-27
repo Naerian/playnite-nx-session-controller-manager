@@ -223,7 +223,7 @@ if ($null -eq $desktopPresetSelector -or $null -eq $fullscreenPresetSelector -or
     throw "The destination-specific appearance preset selectors were not created."
 }
 if ($desktopPresetSelector.Items.Count -ne 10 -or $fullscreenPresetSelector.Items.Count -ne 10 -or
-    $overlayPresetSelector.Items.Count -ne 9) {
+    $overlayPresetSelector.Items.Count -ne 10) {
     throw "The grouped appearance selectors do not contain all plugin, creator, and custom presets."
 }
 if ($desktopPresetSelector.Items[0].Key -ne "Custom" -or
@@ -244,7 +244,7 @@ $overlayCustomPresets = $view.FindName("OverlayCustomPresetChips")
 if ($notificationPluginPresets.Children.Count -ne 6 -or
     $notificationCreatorPresets.Children.Count -ne 1 -or
     $notificationCustomPresets.Children.Count -ne 1 -or
-    $overlayPluginPresets.Children.Count -ne 5 -or
+    $overlayPluginPresets.Children.Count -ne 6 -or
     $overlayCreatorPresets.Children.Count -ne 1 -or
     $overlayCustomPresets.Children.Count -ne 1) {
     throw "Plugin, creator, and custom appearance presets are not separated correctly."
@@ -254,9 +254,10 @@ if ($creatorCard.Tag -ne "example.creator" -or
     $creatorCard.Content.Children[1].Text -ne "Test Author") {
     throw "Creator preset cards do not expose their design attribution."
 }
-if ($selector.Items.Count -ne 8 -or
+if (@($selector.Items | Where-Object { $_.IsHeader }).Count -lt 2 -or
+    @($selector.Items | Where-Object { $_.Key -eq "1_Modern_Crystal" }).Count -ne 1 -or
     @($selector.Items | Where-Object { $_.Key -eq "creator:example.creator" }).Count -ne 1) {
-    throw "Settings view did not expose exactly the complete creator sound packs."
+    throw "Settings view did not expose grouped plugin and creator sound packs."
 }
 if ($selector.SelectedValue -ne $settings.NotificationSoundPack) {
     throw "Settings view did not select the configured notification sound pack."
@@ -282,9 +283,10 @@ if ($view.FindName("DesktopNotificationStyleEditor").IsEnabled -or
     -not $view.FindName("NotificationSoundOptionsPanel").IsEnabled -or
     $view.FindName("CopyFullscreenToDesktopButton").IsEnabled -or
     $view.FindName("CopyDesktopToFullscreenButton").IsEnabled -or
-    $view.FindName("DesktopAppearanceLayoutExpander").IsExpanded -or
+    -not $view.FindName("DesktopAppearanceLayoutExpander").IsEnabled -or
+    $view.FindName("DesktopAppearanceLayoutLockedPanel").IsEnabled -or
     $view.FindName("DesktopNotificationStyleEditor").Opacity -gt 0.5) {
-    throw "Creator notification designs must lock appearance while keeping every audio control editable " +
+    throw "Creator notification designs must lock appearance while keeping distribution position editable " +
         "(desktop=$($view.FindName('DesktopNotificationStyleEditor').IsEnabled), " +
         "fullscreen=$($view.FindName('FullscreenNotificationStyleEditor').IsEnabled), " +
         "audio=$($view.FindName('NotificationAudioEditor').IsEnabled), " +
@@ -298,6 +300,16 @@ if ($view.FindName("DesktopNotificationStyleEditor").IsEnabled -or
 if ($settings.NotificationSoundPack -ne "creator:example.creator" -or
     $selector.SelectedValue -ne "creator:example.creator") {
     throw "Selecting a creator notification design did not select its complete sound pack by default."
+}
+$desktopPresetSelector.SelectedItem = @($desktopPresetSelector.Items | Where-Object { $_.Key -eq "Soft" })[0]
+$window.UpdateLayout()
+if ($settings.NotificationSoundPack -ne "1_Modern_Crystal") {
+    throw "Selecting a design without audio did not restore the first plugin sound pack."
+}
+$desktopPresetSelector.SelectedItem = @($desktopPresetSelector.Items | Where-Object { $_.Key -eq "example.creator" })[0]
+$window.UpdateLayout()
+if ($settings.NotificationSoundPack -ne "creator:example.creator") {
+    throw "Reselecting a creator notification design did not restore its sound pack."
 }
 $desktopPresetSelector.SelectedItem = @($desktopPresetSelector.Items | Where-Object { $_.Key -eq "Custom" })[0]
 $window.UpdateLayout()
@@ -313,11 +325,13 @@ $overlayPresetSelector.SelectedItem = @($overlayPresetSelector.Items | Where-Obj
 $window.UpdateLayout()
 if ($settings.OverlayStylePreset -ne "example.creator" -or
     $view.FindName("OverlayStyleEditor").IsEnabled -or
-    $view.FindName("OverlayAppearanceLayoutExpander").IsExpanded -or
+    -not $view.FindName("OverlayAppearanceLayoutExpander").IsEnabled -or
+    $view.FindName("OverlayAppearanceLayoutLockedPanel").IsEnabled -or
     $view.FindName("OverlayStyleEditor").Opacity -gt 0.5) {
-    throw "Creator overlay designs did not lock the overlay appearance editor " +
+    throw "Creator overlay designs must lock appearance while keeping distribution position editable " +
         "(preset=$($settings.OverlayStylePreset), editor=$($view.FindName('OverlayStyleEditor').IsEnabled), " +
-        "expanded=$($view.FindName('OverlayAppearanceLayoutExpander').IsExpanded), " +
+        "layout=$($view.FindName('OverlayAppearanceLayoutExpander').IsEnabled), " +
+        "locked=$($view.FindName('OverlayAppearanceLayoutLockedPanel').IsEnabled), " +
         "opacity=$($view.FindName('OverlayStyleEditor').Opacity))."
 }
 $overlayPresetSelector.SelectedItem = @($overlayPresetSelector.Items | Where-Object { $_.Key -eq "Soft" })[0]
@@ -340,7 +354,7 @@ $settings.NotificationSoundPack = "4_Retro_Arcade"
 if ($selector.SelectedValue -ne $settings.NotificationSoundPack) {
     throw "Settings view did not follow an externally changed notification sound pack."
 }
-$selector.SelectedIndex = 6
+$selector.SelectedItem = @($selector.Items | Where-Object { $_.Key -eq "7_Handheld_Haptic" })[0]
 $window.UpdateLayout()
 if ($settings.NotificationSoundPack -ne "7_Handheld_Haptic") {
     $refreshField = $viewType.GetField(

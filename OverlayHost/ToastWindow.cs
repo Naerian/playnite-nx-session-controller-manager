@@ -41,6 +41,9 @@ namespace ControllerSessionManager.OverlayHost
         private readonly Border borderOverlay;
         private readonly Border contentHost;
         private readonly DispatcherTimer holdTimer;
+        private readonly DispatcherTimer interToastTimer;
+        private const int InterToastDelayMilliseconds = 1500;
+        private bool pauseBeforeQueuedToast;
         private double currentShadowInset;
         private ToastRequest current;
         private ToastStyle currentStyle;
@@ -145,6 +148,8 @@ namespace ControllerSessionManager.OverlayHost
             SourceInitialized += OnSourceInitialized;
             holdTimer = new DispatcherTimer();
             holdTimer.Tick += OnHoldElapsed;
+            interToastTimer = new DispatcherTimer();
+            interToastTimer.Tick += OnInterToastElapsed;
         }
 
         public void Enqueue(string id, int processId, int durationMilliseconds, string kind,
@@ -175,6 +180,8 @@ namespace ControllerSessionManager.OverlayHost
         {
             pending.Clear();
             holdTimer.Stop();
+            interToastTimer.Stop();
+            pauseBeforeQueuedToast = false;
             current = null;
             currentStyle = null;
             BeginAnimation(OpacityProperty, null);
@@ -188,8 +195,17 @@ namespace ControllerSessionManager.OverlayHost
         {
             if (pending.Count == 0)
             {
+                pauseBeforeQueuedToast = false;
                 current = null;
                 Hide();
+                return;
+            }
+
+            if (pauseBeforeQueuedToast)
+            {
+                pauseBeforeQueuedToast = false;
+                interToastTimer.Interval = TimeSpan.FromMilliseconds(InterToastDelayMilliseconds);
+                interToastTimer.Start();
                 return;
             }
 
@@ -284,6 +300,8 @@ namespace ControllerSessionManager.OverlayHost
             imageLayer.CornerRadius = card.CornerRadius;
             tintLayer.CornerRadius = card.CornerRadius;
             borderOverlay.CornerRadius = card.CornerRadius;
+            imageLayer.ClipToBounds = true;
+            tintLayer.ClipToBounds = true;
             var primaryTextBrush = Brush(style.PrimaryText, Colors.White);
             titleText.Foreground = primaryTextBrush;
             messageText.Foreground = Brush(style.SecondaryText, Color.FromRgb(198, 203, 212));
@@ -326,15 +344,18 @@ namespace ControllerSessionManager.OverlayHost
             {
                 background = Color.FromArgb(Math.Max((byte)220, background.A), accent.R, accent.G, accent.B);
             }
-            var gradient = ParseColor(style.GradientColor, background);
-            card.Background = style.UseGradient
-                ? (Brush)new LinearGradientBrush(background, gradient, style.GradientAngle)
-                : new SolidColorBrush(background);
+            card.Background = CreateCardBackground(style, background, accent);
             ApplyBackgroundImage(style, background);
+            if (style.UseGradient && !style.UseBackgroundImage)
+            {
+                ApplyStateWash(style, accent);
+            }
             card.BorderThickness = new Thickness(0);
             borderOverlay.BorderBrush = style.UseBorderGradient
                 ? (Brush)new LinearGradientBrush(
-                    ParseColor(style.BorderGradientStartColor, accent),
+                    style.UseStateBorderColors
+                        ? Blend(borderAccent, Colors.White, 0.28)
+                        : ParseColor(style.BorderGradientStartColor, accent),
                     style.UseStateBorderColors
                         ? borderAccent
                         : ParseColor(style.BorderGradientEndColor, accent),
@@ -352,7 +373,9 @@ namespace ControllerSessionManager.OverlayHost
                     BlurRadius = Math.Max(0, style.BorderGlowBlur * scale),
                     ShadowDepth = 0,
                     Opacity = style.BorderGlowOpacity / 100.0,
-                    Color = ParseColor(style.BorderGlowColor, accent),
+                    Color = style.UseStateBorderColors
+                        ? borderAccent
+                        : ParseColor(style.BorderGlowColor, accent),
                     Direction = 0
                 }
                 : null;
@@ -588,11 +611,18 @@ namespace ControllerSessionManager.OverlayHost
             BeginExitAnimation();
         }
 
+        private void OnInterToastElapsed(object sender, EventArgs args)
+        {
+            interToastTimer.Stop();
+            ShowNext();
+        }
+
         private void BeginExitAnimation()
         {
             var style = currentStyle ?? new ToastStyle();
             if (string.Equals(style.Animation, "None", StringComparison.OrdinalIgnoreCase))
             {
+                pauseBeforeQueuedToast = pending.Count > 0;
                 ShowNext();
                 return;
             }
@@ -615,7 +645,11 @@ namespace ControllerSessionManager.OverlayHost
             }
 
             var fade = new DoubleAnimation(Opacity, 0, duration);
-            fade.Completed += delegate { ShowNext(); };
+            fade.Completed += delegate
+            {
+                pauseBeforeQueuedToast = pending.Count > 0;
+                ShowNext();
+            };
             BeginAnimation(OpacityProperty, fade);
         }
 
@@ -886,6 +920,57 @@ namespace ControllerSessionManager.OverlayHost
             if (string.Equals(position, "Right", StringComparison.OrdinalIgnoreCase)) return new Thickness(0, 0, value, 0);
             if (string.Equals(position, "Full", StringComparison.OrdinalIgnoreCase)) return new Thickness(value);
             return new Thickness(0, 0, 0, value);
+        }
+
+        private void ApplyStateWash(ToastStyle style, Color accent)
+        {
+            var glow = Color.FromArgb(style.UseStateBackgroundColors ? (byte)48 : (byte)36,
+                accent.R, accent.G, accent.B);
+            var transparent = Color.FromArgb(0, accent.R, accent.G, accent.B);
+            var wash = new RadialGradientBrush
+            {
+                Center = new Point(0.08, 0.92),
+                GradientOrigin = new Point(0.08, 0.92),
+                RadiusX = 0.85,
+                RadiusY = 0.95,
+                MappingMode = BrushMappingMode.RelativeToBoundingBox
+            };
+            wash.GradientStops.Add(new GradientStop(glow, 0));
+            wash.GradientStops.Add(new GradientStop(Color.FromArgb(18, accent.R, accent.G, accent.B), 0.42));
+            wash.GradientStops.Add(new GradientStop(transparent, 1));
+            imageLayer.Background = wash;
+        }
+
+        private static Brush CreateCardBackground(ToastStyle style, Color background, Color accent)
+        {
+            if (!style.UseGradient)
+            {
+                return new SolidColorBrush(background);
+            }
+
+            var start = background;
+            var end = ParseColor(style.GradientColor, background);
+            if (style.UseStateBackgroundColors)
+            {
+                start = Opaque(ParseColor(style.Background, background));
+                end = Opaque(Blend(start, accent, 0.18));
+            }
+
+            var brush = new LinearGradientBrush
+            {
+                StartPoint = new Point(0, 1),
+                EndPoint = new Point(1, 0),
+                MappingMode = BrushMappingMode.RelativeToBoundingBox
+            };
+            brush.GradientStops.Add(new GradientStop(start, 0));
+            brush.GradientStops.Add(new GradientStop(Blend(start, end, 0.45), 0.55));
+            brush.GradientStops.Add(new GradientStop(end, 1));
+            return brush;
+        }
+
+        private static Color Opaque(Color color)
+        {
+            return Color.FromArgb(255, color.R, color.G, color.B);
         }
 
         private static Brush Brush(string value, Color fallback)

@@ -99,11 +99,7 @@ Keep every asset inside the pack folder. Paths which escape it with `..` are rej
 
 `Id`, `Name` and `Author` must be non-empty. A pack is ignored if neither appearance JSON file contains a property. Duplicate IDs are not allowed in contributions.
 
-Controller Manager reads the configured IDs from Playnite's settings and, for portable installations, verifies them against `config.json` and `fullscreenConfig.json`. When the user enables **In creator designs, show only those for the current theme**, the Desktop notification selector uses `DesktopThemeIds` and the Fullscreen notification selector uses `FullscreenThemeIds`. Because the disconnect overlay can be launched while either Playnite mode is configured, its selector accepts a match from either list. `RecommendedTheme` is used only as a compatibility fallback when a Playnite version exposes a theme name instead of its ID; folder names and visual structure are never inspected. A currently selected creator design remains visible so an existing configuration never becomes blank.
-
-A pack with no `ThemeIds`, `DesktopThemeIds`, `FullscreenThemeIds` or `RecommendedTheme` is universal. Universal designs remain visible when filtering by the current Playnite theme; use this for standalone visual systems such as NarianUX that are not adaptations of one specific theme.
-
-Obtain the ID from the theme's `theme.yaml`, not from its directory name:
+`RecommendedTheme`, `ThemeIds`, `DesktopThemeIds` and `FullscreenThemeIds` are informational metadata for authors and reviewers. They do not hide or auto-select designs in Controller Manager. Obtain the ID from the theme's `theme.yaml`, not from its directory name:
 
 ```yaml
 Id: my_desktop_theme_00000000-0000-0000-0000-000000000000

@@ -22,7 +22,6 @@ namespace ControllerSessionManager.PlayniteIntegration
         private bool colorTopPanelIndicatorByBattery = true;
         private bool launchFullscreenOnGuideButton;
         private bool setupWizardCompleted;
-        private bool filterCreatorDesignsByCurrentTheme;
         private bool enableSessionTracking = true;
         private bool showDisconnectOverlay = true;
         private bool showFullscreenControllerNotifications = true;
@@ -427,12 +426,6 @@ namespace ControllerSessionManager.PlayniteIntegration
                 SetValue(ref overlayStylePreset, OverlayStylePresets.Normalize(value));
                 NotifyCreatorThemeStateChanged();
             }
-        }
-
-        public bool FilterCreatorDesignsByCurrentTheme
-        {
-            get { return filterCreatorDesignsByCurrentTheme; }
-            set { SetValue(ref filterCreatorDesignsByCurrentTheme, value); }
         }
 
         public bool IsFullscreenNotificationCreatorThemeActive
@@ -1976,7 +1969,6 @@ namespace ControllerSessionManager.PlayniteIntegration
                 NotificationStylePreset = NotificationStylePreset,
                 DesktopNotificationStylePreset = DesktopNotificationStylePreset,
                 OverlayStylePreset = OverlayStylePreset,
-                FilterCreatorDesignsByCurrentTheme = FilterCreatorDesignsByCurrentTheme,
                 EnableNotificationSounds = EnableNotificationSounds,
                 EnableDesktopNotificationSounds = EnableDesktopNotificationSounds,
                 EnableFullscreenNotificationSounds = EnableFullscreenNotificationSounds,
@@ -2324,7 +2316,6 @@ namespace ControllerSessionManager.PlayniteIntegration
             NotificationStylePreset = source.NotificationStylePreset;
             DesktopNotificationStylePreset = source.DesktopNotificationStylePreset;
             OverlayStylePreset = source.OverlayStylePreset;
-            FilterCreatorDesignsByCurrentTheme = source.FilterCreatorDesignsByCurrentTheme;
             EnableNotificationSounds = source.EnableNotificationSounds;
             EnableDesktopNotificationSounds = source.EnableDesktopNotificationSounds;
             EnableFullscreenNotificationSounds = source.EnableFullscreenNotificationSounds;

@@ -200,12 +200,6 @@ namespace ControllerSessionManager.PlayniteIntegration
                 RefreshNotificationSoundPackChips();
             }
 
-            if (args != null && args.PropertyName == "FilterCreatorDesignsByCurrentTheme")
-            {
-                BuildNotificationPresetSelectors();
-                BuildOverlayPresetSelector();
-            }
-
             if (!suppressingStylePresetMark &&
                 args != null &&
                 !string.IsNullOrEmpty(args.PropertyName) &&
@@ -229,6 +223,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 }
 
                 if (OverlayStylePropertyNames.Contains(args.PropertyName) &&
+                    !(boundSettings.IsOverlayCreatorThemeActive &&
+                      args.PropertyName == "OverlayCardPosition") &&
                     !string.Equals(boundSettings.OverlayStylePreset, OverlayStylePresets.Custom,
                         StringComparison.OrdinalIgnoreCase))
                 {
@@ -348,6 +344,10 @@ namespace ControllerSessionManager.PlayniteIntegration
                 OverlayPreviewPauseStatus.Margin = new Thickness(4, 0, 4, 0);
                 OverlayPreviewMetadataBadges.Children.Add(OverlayPreviewPauseStatus);
             }
+            else if (OverlayPreviewPauseStatus.Visibility == Visibility.Visible)
+            {
+                OverlayPreviewPauseStatus.Margin = new Thickness(0, gap + 10, 0, 0);
+            }
 
             if (string.Equals(mode, "Split", StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(mode, "Alert", StringComparison.OrdinalIgnoreCase))
@@ -358,8 +358,20 @@ namespace ControllerSessionManager.PlayniteIntegration
                 OverlayPreviewCompositionRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
                 OverlayPreviewCompositionRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
                 OverlayPreviewCompositionRoot.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-                Grid.SetColumn(OverlayPreviewControllerContainer, controllerRight ? 2 : 0);
-                OverlayPreviewCompositionRoot.Children.Add(OverlayPreviewControllerContainer);
+                var controllerColumn = new StackPanel
+                {
+                    VerticalAlignment = VerticalAlignment.Center,
+                    HorizontalAlignment = HorizontalAlignment.Center
+                };
+                controllerColumn.Children.Add(OverlayPreviewControllerContainer);
+                if (alert && OverlayPreviewIncidentBadge.Visibility == Visibility.Visible)
+                {
+                    OverlayPreviewIncidentBadge.HorizontalAlignment = HorizontalAlignment.Center;
+                    OverlayPreviewIncidentBadge.Margin = new Thickness(0, gap, 0, 0);
+                    controllerColumn.Children.Add(OverlayPreviewIncidentBadge);
+                }
+                Grid.SetColumn(controllerColumn, controllerRight ? 2 : 0);
+                OverlayPreviewCompositionRoot.Children.Add(controllerColumn);
                 var details = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
                 if (alert)
                 {
@@ -401,7 +413,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             {
                 var key = token.Trim();
                 if (!added.Add(key)) continue;
-                if (key.Equals("Incident", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewIncidentBadge);
+                if (key.Equals("Incident", StringComparison.OrdinalIgnoreCase)) continue;
                 else if (key.Equals("Title", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewTitle);
                 else if (key.Equals("ControllerName", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewControllerName);
                 else if (key.Equals("Timer", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewDisconnectTimer);
@@ -409,7 +421,6 @@ namespace ControllerSessionManager.PlayniteIntegration
                 else if (key.Equals("Instruction", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewInstruction);
                 else if (key.Equals("Status", StringComparison.OrdinalIgnoreCase) && !statusInMetadata) panel.Children.Add(OverlayPreviewPauseStatus);
             }
-            if (!added.Contains("Incident")) panel.Children.Add(OverlayPreviewIncidentBadge);
             if (!added.Contains("Title")) panel.Children.Add(OverlayPreviewTitle);
             if (!added.Contains("ControllerName")) panel.Children.Add(OverlayPreviewControllerName);
             if (!added.Contains("Timer")) panel.Children.Add(OverlayPreviewDisconnectTimer);
@@ -542,6 +553,15 @@ namespace ControllerSessionManager.PlayniteIntegration
             if (showNameInControllerHost)
             {
                 OverlayPreviewControllerHost.Children.Add(OverlayPreviewControllerName);
+            }
+
+            if (both &&
+                (string.Equals(position, "Top", StringComparison.OrdinalIgnoreCase) ||
+                 string.Equals(position, "Bottom", StringComparison.OrdinalIgnoreCase)))
+            {
+                OverlayPreviewControllerIcon.HorizontalAlignment = HorizontalAlignment.Center;
+                OverlayPreviewControllerName.HorizontalAlignment = HorizontalAlignment.Center;
+                OverlayPreviewControllerName.TextAlignment = TextAlignment.Center;
             }
 
             FitPreviewControllerIcon(settings == null ? 30 : settings.OverlayControllerIconSize);
@@ -958,8 +978,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             options.Add(CreateAppearancePresetGroupHeader("LOCCSM_PresetGroupPlugin"));
             foreach (var preset in NotificationStylePresets.PluginPresets)
                 options.Add(CreateAppearancePresetOption(preset, "LOCCSM_PresetGroupPlugin", false));
-            var creators = NotificationStylePresets.CreatorPresets
-                .Where(a => ShouldShowCreatorPreset(a, desktop)).ToArray();
+            var creators = NotificationStylePresets.CreatorPresets;
             if (creators.Length > 0)
             {
                 options.Add(CreateAppearancePresetGroupHeader("LOCCSM_PresetGroupCreators"));
@@ -973,29 +992,6 @@ namespace ControllerSessionManager.PlayniteIntegration
                 foreach (var profileId in imported) options.Add(CreateImportedPresetOption(profileId));
             }
             return options;
-        }
-
-        private bool ShouldShowCreatorPreset(string preset, bool desktop)
-        {
-            var currentSettings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
-            if (currentSettings == null || !currentSettings.FilterCreatorDesignsByCurrentTheme) return true;
-            var fullscreen = !desktop;
-            var selected = desktop ? currentSettings.DesktopNotificationStylePreset
-                : currentSettings.NotificationStylePreset;
-            if (string.Equals(selected, preset, StringComparison.OrdinalIgnoreCase)) return true;
-            return plugin != null && CreatorThemeCatalog.MatchesTheme(preset,
-                plugin.GetConfiguredThemeId(fullscreen), fullscreen);
-        }
-
-        private bool ShouldShowOverlayCreatorPreset(string preset)
-        {
-            var currentSettings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
-            if (currentSettings == null || !currentSettings.FilterCreatorDesignsByCurrentTheme) return true;
-            if (string.Equals(currentSettings.OverlayStylePreset, preset,
-                StringComparison.OrdinalIgnoreCase)) return true;
-            return plugin != null &&
-                (CreatorThemeCatalog.MatchesTheme(preset, plugin.GetConfiguredThemeId(false), false) ||
-                 CreatorThemeCatalog.MatchesTheme(preset, plugin.GetConfiguredThemeId(true), true));
         }
 
         private AppearancePresetOption CreateAppearancePresetOption(string preset, string groupKey,
@@ -1170,8 +1166,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 options.Add(CreateAppearancePresetGroupHeader("LOCCSM_PresetGroupPlugin"));
                 foreach (var preset in OverlayStylePresets.PluginPresets)
                     options.Add(CreateOverlayPresetOption(preset, "LOCCSM_PresetGroupPlugin", false));
-                var creators = OverlayStylePresets.CreatorPresets
-                    .Where(ShouldShowOverlayCreatorPreset).ToArray();
+                var creators = OverlayStylePresets.CreatorPresets;
                 if (creators.Length > 0)
                 {
                     options.Add(CreateAppearancePresetGroupHeader("LOCCSM_PresetGroupCreators"));
@@ -1249,7 +1244,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
             suppressingStylePresetMark = true;
             suppressingOverlayPreviewRefresh = true;
-            try { OverlayStylePresets.Apply(settings, preset); }
+            try { OverlayStylePresets.Apply(settings, preset); SelectCreatorSoundPackDefault(settings, preset); }
             finally
             {
                 suppressingOverlayPreviewRefresh = false;
@@ -1316,30 +1311,42 @@ namespace ControllerSessionManager.PlayniteIntegration
                 return;
             }
 
-            var options = new System.Collections.Generic.List<NotificationSoundPackOption>();
+            var options = new System.Collections.Generic.List<AppearancePresetOption>();
+            options.Add(CreateAppearancePresetGroupHeader("LOCCSM_PresetGroupPlugin"));
             foreach (var pack in NotificationSoundCatalog.AllPacks)
             {
                 var label = plugin == null
                     ? NotificationSoundCatalog.DisplayName(pack)
                     : plugin.Loc(NotificationSoundCatalog.LocKey(pack));
                 if (string.IsNullOrWhiteSpace(label) || label == NotificationSoundCatalog.LocKey(pack))
-                {
                     label = NotificationSoundCatalog.DisplayName(pack);
-                }
-
-                options.Add(new NotificationSoundPackOption { Key = pack, DisplayName = label });
-            }
-
-            foreach (var pack in CreatorThemeCatalog.GetCompleteSoundPackIds())
-            {
-                options.Add(new NotificationSoundPackOption
+                options.Add(new AppearancePresetOption
                 {
                     Key = pack,
-                    DisplayName = CreatorThemeCatalog.GetSoundPackDisplayName(pack)
+                    DisplayName = label,
+                    Group = plugin == null ? "Plugin presets" : plugin.Loc("LOCCSM_PresetGroupPlugin"),
+                    IsSelectable = true
                 });
             }
 
-            NotificationSoundPackSelector.ItemsSource = options;
+            var creators = CreatorThemeCatalog.GetCompleteSoundPackIds();
+            if (creators.Length > 0)
+            {
+                options.Add(CreateAppearancePresetGroupHeader("LOCCSM_PresetGroupCreators"));
+                foreach (var pack in creators)
+                {
+                    options.Add(new AppearancePresetOption
+                    {
+                        Key = pack,
+                        DisplayName = CreatorThemeCatalog.GetSoundPackDisplayName(pack),
+                        Group = plugin == null ? "Creator designs" : plugin.Loc("LOCCSM_PresetGroupCreators"),
+                        IsCreator = true,
+                        IsSelectable = true
+                    });
+                }
+            }
+
+            SetGroupedPresetItems(NotificationSoundPackSelector, options);
             RefreshNotificationSoundPackChips();
         }
 
@@ -1541,6 +1548,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             try
             {
                 OverlayStylePresets.Apply(settings, preset);
+                SelectCreatorSoundPackDefault(settings, preset);
             }
             finally
             {
@@ -1612,8 +1620,17 @@ namespace ControllerSessionManager.PlayniteIntegration
             ControllerSessionManagerSettings settings, string creatorPreset)
         {
             if (settings == null) return;
+            if (string.Equals(NotificationStylePresets.Normalize(creatorPreset), NotificationStylePresets.Custom,
+                    StringComparison.OrdinalIgnoreCase) ||
+                ImportedVisualProfileCatalog.Contains(creatorPreset))
+            {
+                return;
+            }
+
             var soundPack = CreatorThemeCatalog.GetSoundPackId(creatorPreset);
-            if (!string.IsNullOrWhiteSpace(soundPack)) settings.NotificationSoundPack = soundPack;
+            settings.NotificationSoundPack = string.IsNullOrWhiteSpace(soundPack)
+                ? NotificationSoundCatalog.AllPacks[0]
+                : soundPack;
         }
 
         private void RefreshChipSelection(WrapPanel panel, string selected)
@@ -2005,11 +2022,12 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private void RefreshVisualProfileUi()
         {
+            CreatorThemeCatalog.Reload();
             RefreshNotificationStylePresetChips();
             BuildNotificationPresetSelectors();
             RefreshOverlayStylePresetChips();
             BuildOverlayPresetSelector();
-            RefreshNotificationSoundPackChips();
+            BuildNotificationSoundPackChips();
             if (boundSettings != null) boundSettings.RefreshCreatorThemeState();
         }
 
@@ -2876,12 +2894,6 @@ namespace ControllerSessionManager.PlayniteIntegration
                 }
             }
         }
-        private sealed class NotificationSoundPackOption
-        {
-            public string Key { get; set; }
-            public string DisplayName { get; set; }
-        }
-
         private sealed class AppearancePresetOption
         {
             public string Key { get; set; }
