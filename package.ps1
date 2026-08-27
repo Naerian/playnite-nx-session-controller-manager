@@ -6,12 +6,17 @@ param(
 
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
-$msbuild = "C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe"
+$msbuildCandidates = @(
+    "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe",
+    "C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe"
+)
+$msbuild = $msbuildCandidates | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
+$frameworkReferencePath = "C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2"
 $solution = Join-Path $root "ControllerSessionManager.sln"
 $extensionYaml = Join-Path $root "extension.yaml"
 
-if (-not (Test-Path -LiteralPath $msbuild)) {
-    throw "MSBuild was not found at $msbuild"
+if ([string]::IsNullOrWhiteSpace($msbuild)) {
+    throw "MSBuild was not found. Checked: $($msbuildCandidates -join ', ')"
 }
 
 if (-not (Test-Path -LiteralPath $ToolboxPath)) {
@@ -34,7 +39,11 @@ elseif (-not [string]::Equals($Version, $manifestVersion, [StringComparison]::Or
 }
 
 Write-Host "Building Controller Manager $Version ($Configuration)..."
-& $msbuild $solution /p:Configuration=$Configuration /v:minimal
+$buildArguments = @($solution, "/p:Configuration=$Configuration", "/v:minimal")
+if (Test-Path -LiteralPath $frameworkReferencePath) {
+    $buildArguments += "/p:FrameworkPathOverride=$frameworkReferencePath"
+}
+& $msbuild $buildArguments
 if ($LASTEXITCODE -ne 0) {
     throw "Build failed with exit code $LASTEXITCODE"
 }

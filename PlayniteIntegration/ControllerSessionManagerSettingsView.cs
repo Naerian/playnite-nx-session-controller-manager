@@ -314,6 +314,12 @@ namespace ControllerSessionManager.PlayniteIntegration
             OverlayPreviewContentRoot.Children.Clear();
             OverlayPreviewCompositionRoot.Children.Clear();
             OverlayPreviewCompositionRoot.ColumnDefinitions.Clear();
+            var statusInMetadata = settings != null && settings.OverlayStatusInMetadata;
+            if (statusInMetadata && OverlayPreviewPauseStatus.Visibility == Visibility.Visible)
+            {
+                OverlayPreviewPauseStatus.Margin = new Thickness(4, 0, 4, 0);
+                OverlayPreviewMetadataBadges.Children.Add(OverlayPreviewPauseStatus);
+            }
 
             if (string.Equals(mode, "Split", StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(mode, "Alert", StringComparison.OrdinalIgnoreCase))
@@ -329,14 +335,14 @@ namespace ControllerSessionManager.PlayniteIntegration
                 var details = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
                 if (alert)
                 {
-                    AddAlertPreviewBlocks(details, blockOrder);
+                    AddAlertPreviewBlocks(details, blockOrder, statusInMetadata);
                 }
                 else
                 {
                     details.Children.Add(OverlayPreviewTitle);
                     details.Children.Add(OverlayPreviewMetadataBadges);
                     details.Children.Add(OverlayPreviewInstruction);
-                    details.Children.Add(OverlayPreviewPauseStatus);
+                    if (!statusInMetadata) details.Children.Add(OverlayPreviewPauseStatus);
                 }
                 var divider = new Border
                 {
@@ -359,7 +365,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             OverlayPreviewCompositionRoot.Children.Add(OverlayPreviewContentRoot);
         }
 
-        private void AddAlertPreviewBlocks(Panel panel, string order)
+        private void AddAlertPreviewBlocks(Panel panel, string order, bool statusInMetadata)
         {
             var added = new System.Collections.Generic.HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (var token in (order ?? string.Empty).Split(','))
@@ -371,14 +377,14 @@ namespace ControllerSessionManager.PlayniteIntegration
                 else if (key.Equals("ControllerName", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewControllerName);
                 else if (key.Equals("Metadata", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewMetadataBadges);
                 else if (key.Equals("Instruction", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewInstruction);
-                else if (key.Equals("Status", StringComparison.OrdinalIgnoreCase)) panel.Children.Add(OverlayPreviewPauseStatus);
+                else if (key.Equals("Status", StringComparison.OrdinalIgnoreCase) && !statusInMetadata) panel.Children.Add(OverlayPreviewPauseStatus);
             }
             if (!added.Contains("Incident")) panel.Children.Add(OverlayPreviewIncidentBadge);
             if (!added.Contains("Title")) panel.Children.Add(OverlayPreviewTitle);
             if (!added.Contains("ControllerName")) panel.Children.Add(OverlayPreviewControllerName);
             if (!added.Contains("Metadata")) panel.Children.Add(OverlayPreviewMetadataBadges);
             if (!added.Contains("Instruction")) panel.Children.Add(OverlayPreviewInstruction);
-            if (!added.Contains("Status")) panel.Children.Add(OverlayPreviewPauseStatus);
+            if (!added.Contains("Status") && !statusInMetadata) panel.Children.Add(OverlayPreviewPauseStatus);
         }
 
         private void AddPreviewBlocks(Panel panel, string order)
@@ -404,7 +410,11 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private static void DetachPreviewElement(UIElement element)
         {
-            var parent = VisualTreeHelper.GetParent(element) as Panel;
+            if (element == null) return;
+            var frameworkElement = element as FrameworkElement;
+            var parent = VisualTreeHelper.GetParent(element) as Panel ??
+                LogicalTreeHelper.GetParent(element) as Panel ??
+                (frameworkElement == null ? null : frameworkElement.Parent as Panel);
             if (parent != null) parent.Children.Remove(element);
         }
 
@@ -426,7 +436,11 @@ namespace ControllerSessionManager.PlayniteIntegration
             var gap = settings == null ? 0 : Math.Max(0, settings.OverlayElementSpacing);
             var showIcon = settings == null || settings.OverlayShowControllerIcon;
             var showName = settings == null || settings.OverlayShowControllerName;
-            var position = !showName
+            var alertLayout = settings != null && string.Equals(settings.OverlayLayoutMode,
+                "Alert", StringComparison.OrdinalIgnoreCase);
+            var showNameInControllerHost = showName && !alertLayout;
+            OverlayPreviewControllerName.Visibility = showName ? Visibility.Visible : Visibility.Collapsed;
+            var position = !showNameInControllerHost
                 ? "Center"
                 : (settings == null || string.IsNullOrWhiteSpace(settings.OverlayControllerIconPosition)
                     ? "Left" : settings.OverlayControllerIconPosition);
@@ -441,14 +455,14 @@ namespace ControllerSessionManager.PlayniteIntegration
             Grid.SetRow(OverlayPreviewControllerName, 0);
             Grid.SetColumn(OverlayPreviewControllerName, 0);
 
-            if (!showIcon && !showName)
+            if (!showIcon && !showNameInControllerHost)
             {
                 OverlayPreviewControllerHost.Visibility = Visibility.Collapsed;
                 return;
             }
 
             OverlayPreviewControllerHost.Visibility = Visibility.Visible;
-            var both = showIcon && showName;
+            var both = showIcon && showNameInControllerHost;
 
             if (both &&
                 (string.Equals(position, "Top", StringComparison.OrdinalIgnoreCase) ||
@@ -487,7 +501,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 OverlayPreviewControllerHost.Children.Add(OverlayPreviewControllerIcon);
             }
 
-            if (showName)
+            if (showNameInControllerHost)
             {
                 OverlayPreviewControllerHost.Children.Add(OverlayPreviewControllerName);
             }

@@ -10,5 +10,5 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 [assembly: Guid("e6241d33-427a-4ec9-8b60-e60e36316348")]
 [assembly: InternalsVisibleTo("ControllerSessionManager.TesterTests")]
-[assembly: AssemblyVersion("1.0.26.0")]
-[assembly: AssemblyFileVersion("1.0.26.0")]
+[assembly: AssemblyVersion("1.0.27.0")]
+[assembly: AssemblyFileVersion("1.0.27.0")]

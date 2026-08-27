@@ -302,6 +302,9 @@ namespace ControllerSessionManager.OverlayHost
             pauseStatusText.Foreground = brush;
             pauseStatusIcon.Stroke = brush;
             pauseStatusBadge.Background = new SolidColorBrush(background);
+            pauseStatusBadge.BorderBrush = new SolidColorBrush(Color.FromArgb(
+                96, foreground.R, foreground.G, foreground.B));
+            pauseStatusBadge.BorderThickness = new Thickness(1);
         }
 
         private void ApplyPresentationStyle(string value)
@@ -538,6 +541,8 @@ namespace ControllerSessionManager.OverlayHost
             connectionBadge.BorderBrush = new SolidColorBrush(connectionBorder);
             connectionBadge.BorderThickness = new Thickness(connectionBorderThickness);
             connectionBadge.CornerRadius = new CornerRadius(connectionCornerRadius);
+            pauseStatusBadge.CornerRadius = new CornerRadius(connectionCornerRadius);
+            pauseStatusBadge.Padding = new Thickness(8, 4, 8, 4);
             batteryText.Foreground = new SolidColorBrush(batteryTextColor);
             batteryIcon.Stroke = new SolidColorBrush(batteryIconColor);
             batteryIcon.Width = batteryIconSize;
@@ -745,7 +750,11 @@ namespace ControllerSessionManager.OverlayHost
 
         private static void Detach(UIElement element)
         {
-            var parent = VisualTreeHelper.GetParent(element) as Panel;
+            if (element == null) return;
+            var frameworkElement = element as FrameworkElement;
+            var parent = VisualTreeHelper.GetParent(element) as Panel ??
+                LogicalTreeHelper.GetParent(element) as Panel ??
+                (frameworkElement == null ? null : frameworkElement.Parent as Panel);
             if (parent != null)
             {
                 parent.Children.Remove(element);

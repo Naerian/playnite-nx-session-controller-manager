@@ -174,6 +174,81 @@ namespace ControllerSessionManager.PlayniteIntegration
         }
     }
 
+    public sealed class OptionalAmbientGlowBrushConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            var enabled = values != null && values.Length > 0 && values[0] is bool && (bool)values[0];
+            if (!enabled) return Brushes.Transparent;
+            try
+            {
+                var color = (Color)ColorConverter.ConvertFromString(values.Length > 1 ? values[1] as string : null);
+                var x = Parse(values, 2, 50) / 100.0;
+                var y = Parse(values, 3, 50) / 100.0;
+                var radius = Math.Max(0.1, Parse(values, 4, 50) / 100.0);
+                var transparent = Color.FromArgb(0, color.R, color.G, color.B);
+                var brush = new RadialGradientBrush
+                {
+                    Center = new Point(x, y),
+                    GradientOrigin = new Point(x, y),
+                    RadiusX = radius,
+                    RadiusY = radius,
+                    MappingMode = BrushMappingMode.RelativeToBoundingBox
+                };
+                brush.GradientStops.Add(new GradientStop(color, 0));
+                brush.GradientStops.Add(new GradientStop(transparent, 1));
+                return brush;
+            }
+            catch { return Brushes.Transparent; }
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        { throw new NotSupportedException(); }
+
+        private static double Parse(object[] values, int index, double fallback)
+        {
+            double parsed;
+            return values != null && values.Length > index && double.TryParse(
+                System.Convert.ToString(values[index], CultureInfo.InvariantCulture),
+                NumberStyles.Float, CultureInfo.InvariantCulture, out parsed) ? parsed : fallback;
+        }
+    }
+
+    public sealed class OptionalGridBrushConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            var enabled = values != null && values.Length > 0 && values[0] is bool && (bool)values[0];
+            if (!enabled) return Brushes.Transparent;
+            try
+            {
+                var color = (Color)ColorConverter.ConvertFromString(values.Length > 1 ? values[1] as string : null);
+                double size;
+                if (!double.TryParse(System.Convert.ToString(values.Length > 2 ? values[2] : 44,
+                    CultureInfo.InvariantCulture), NumberStyles.Float, CultureInfo.InvariantCulture, out size))
+                    size = 44;
+                size = Math.Max(4, size);
+                var geometry = new GeometryGroup();
+                geometry.Children.Add(new LineGeometry(new Point(0, 0), new Point(size, 0)));
+                geometry.Children.Add(new LineGeometry(new Point(0, 0), new Point(0, size)));
+                var drawing = new GeometryDrawing(null, new Pen(new SolidColorBrush(color), 1), geometry);
+                return new DrawingBrush(drawing)
+                {
+                    TileMode = TileMode.Tile,
+                    ViewportUnits = BrushMappingMode.Absolute,
+                    ViewboxUnits = BrushMappingMode.Absolute,
+                    Viewport = new Rect(0, 0, size, size),
+                    Viewbox = new Rect(0, 0, size, size),
+                    Stretch = Stretch.None
+                };
+            }
+            catch { return Brushes.Transparent; }
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        { throw new NotSupportedException(); }
+    }
+
     public sealed class OptionalBorderGradientBrushConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)

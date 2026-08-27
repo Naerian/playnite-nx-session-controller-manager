@@ -81,6 +81,10 @@ $definition.Notification = [Collections.Generic.Dictionary[string, object]]::new
 $definition.Notification.Add("NotificationBackgroundColor", "#FF112233")
 $definition.Overlay = [Collections.Generic.Dictionary[string, object]]::new()
 $definition.Overlay.Add("OverlayCardColor", "#FF334455")
+$definition.Overlay.Add("OverlayLayoutMode", "Alert")
+$definition.Overlay.Add("OverlayBlockOrder", "Incident,Title,ControllerName,Metadata,Instruction,Status")
+$definition.Overlay.Add("OverlayStatusInMetadata", $true)
+$definition.Overlay.Add("OverlayShowIncidentBadge", $true)
 $catalogFlags = [Reflection.BindingFlags]"Static,NonPublic"
 $definitions = $catalogType.GetField("Definitions", $catalogFlags).GetValue($null)
 $viewType = $assembly.GetType(
