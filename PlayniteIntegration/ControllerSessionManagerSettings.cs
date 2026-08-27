@@ -457,7 +457,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             get { return OverlayStylePresets.IsCreatorPreset(OverlayStylePreset); }
         }
         public bool CanEditOverlayStyle { get { return !IsOverlayCreatorThemeActive; } }
-        public bool CanEditNotificationAudio { get { return !IsCreatorNotificationThemeActive; } }
+        public bool CanEditNotificationAudio { get { return true; } }
         public bool CanCopyNotificationStyles { get { return !IsCreatorNotificationThemeActive; } }
 
         public bool EnableNotificationSounds

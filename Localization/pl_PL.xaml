@@ -796,7 +796,6 @@
     <sys:String x:Key="LOCCSM_CreatorThemeManagement">Pakiety twórców</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupCustom">Niestandardowe</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">Ten projekt twórcy kontroluje cały wygląd. Wybierz preset wtyczki lub Niestandardowe, aby edytować.</sys:String>
-    <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">Aktywny projekt twórcy dostarcza pakiet i pliki niestandardowe. Głośność, przełączniki dźwięku i podglądy pozostają dostępne.</sys:String>
     <sys:String x:Key="LOCCSM_UpdateCreatorThemes">Aktualizuj projekty</sys:String>
     <sys:String x:Key="LOCCSM_InstallCreatorTheme">Zainstaluj projekt twórcy</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeFileFilter">Pakiet projektu twórcy (*.csmtheme)|*.csmtheme</sys:String>
@@ -833,4 +832,6 @@
     <sys:String x:Key="LOCCSM_OverlayScenePositionX">Pozycja X (%)</sys:String>
     <sys:String x:Key="LOCCSM_OverlayScenePositionY">Pozycja Y (%)</sys:String>
     <sys:String x:Key="LOCCSM_OverlaySceneGlowRadius">Promień poświaty (%)</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeCommunityHint">Tworzysz motywy Playnite lub chcesz przygotować projekt dla społeczności? Możesz stworzyć własny motyw powiadomień i nakładki oraz przesłać go do oficjalnego katalogu.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeCommunityLink">Otwórz przewodnik tworzenia motywów</sys:String>
 </ResourceDictionary>

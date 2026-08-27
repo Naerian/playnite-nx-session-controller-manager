@@ -796,7 +796,6 @@
     <sys:String x:Key="LOCCSM_CreatorThemeManagement">创作者设计包</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupCustom">自定义</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">此创作者设计控制完整外观。请选择插件预设或自定义以进行编辑。</sys:String>
-    <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">当前创作者设计提供声音包和自定义文件。音量、声音开关和预览仍可使用。</sys:String>
     <sys:String x:Key="LOCCSM_UpdateCreatorThemes">更新设计</sys:String>
     <sys:String x:Key="LOCCSM_InstallCreatorTheme">安装创作者设计</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeFileFilter">创作者设计包 (*.csmtheme)|*.csmtheme</sys:String>
@@ -833,4 +832,6 @@
     <sys:String x:Key="LOCCSM_OverlayScenePositionX">X 位置 (%)</sys:String>
     <sys:String x:Key="LOCCSM_OverlayScenePositionY">Y 位置 (%)</sys:String>
     <sys:String x:Key="LOCCSM_OverlaySceneGlowRadius">光晕半径 (%)</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeCommunityHint">如果你是 Playnite 主题设计者，或想为社区创建设计，可以制作自己的通知与叠加层主题并提交到官方目录。</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeCommunityLink">打开创作者主题指南</sys:String>
 </ResourceDictionary>

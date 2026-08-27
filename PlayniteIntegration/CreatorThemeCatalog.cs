@@ -154,6 +154,74 @@ namespace ControllerSessionManager.PlayniteIntegration
             {
                 if (!Definitions.TryGetValue(id ?? string.Empty, out definition)) return string.Empty;
             }
+            return ResolveSoundPath(definition, kind);
+        }
+
+        public static string[] GetCompleteSoundPackIds()
+        {
+            lock (Sync)
+            {
+                return Definitions.Values.Where(IsEligibleSoundPack)
+                    .OrderBy(a => a.Name, StringComparer.CurrentCultureIgnoreCase)
+                    .Select(a => NotificationSoundCatalog.CreatorPackPrefix + a.Id).ToArray();
+            }
+        }
+
+        public static string GetSoundPackId(string creatorPresetId)
+        {
+            CreatorThemeDefinition definition;
+            lock (Sync)
+            {
+                return Definitions.TryGetValue(creatorPresetId ?? string.Empty, out definition) &&
+                    IsEligibleSoundPack(definition)
+                        ? NotificationSoundCatalog.CreatorPackPrefix + definition.Id : string.Empty;
+            }
+        }
+
+        public static string GetSoundPackDisplayName(string soundPackId)
+        {
+            CreatorThemeDefinition definition;
+            return TryGetSoundPackDefinition(soundPackId, out definition)
+                ? definition.Name + " — " + definition.Author : soundPackId;
+        }
+
+        public static bool IsCompleteSoundPack(string soundPackId)
+        {
+            CreatorThemeDefinition definition;
+            return TryGetSoundPackDefinition(soundPackId, out definition) &&
+                IsEligibleSoundPack(definition);
+        }
+
+        public static string GetSoundPathForPack(string soundPackId, NotificationSoundKind kind)
+        {
+            CreatorThemeDefinition definition;
+            return TryGetSoundPackDefinition(soundPackId, out definition)
+                ? ResolveSoundPath(definition, kind) : string.Empty;
+        }
+
+        private static bool TryGetSoundPackDefinition(string soundPackId,
+            out CreatorThemeDefinition definition)
+        {
+            definition = null;
+            if (string.IsNullOrWhiteSpace(soundPackId) ||
+                !soundPackId.StartsWith(NotificationSoundCatalog.CreatorPackPrefix,
+                    StringComparison.OrdinalIgnoreCase)) return false;
+            var id = soundPackId.Substring(NotificationSoundCatalog.CreatorPackPrefix.Length);
+            lock (Sync) return Definitions.TryGetValue(id, out definition);
+        }
+
+        private static bool IsEligibleSoundPack(CreatorThemeDefinition definition)
+        {
+            return definition != null && definition.Supports("notification") &&
+                Enum.GetValues(typeof(NotificationSoundKind))
+                .Cast<NotificationSoundKind>().All(kind =>
+                    !string.IsNullOrWhiteSpace(ResolveSoundPath(definition, kind)));
+        }
+
+        private static string ResolveSoundPath(CreatorThemeDefinition definition,
+            NotificationSoundKind kind)
+        {
+            if (definition == null) return string.Empty;
             string relative;
             if (!definition.Sounds.TryGetValue(kind.ToString(), out relative) ||
                 string.IsNullOrWhiteSpace(relative)) return string.Empty;
@@ -162,7 +230,12 @@ namespace ControllerSessionManager.PlayniteIntegration
                 var root = Path.GetFullPath(definition.Directory).TrimEnd(Path.DirectorySeparatorChar) +
                     Path.DirectorySeparatorChar;
                 var resolved = Path.GetFullPath(Path.Combine(definition.Directory, relative));
-                return resolved.StartsWith(root, StringComparison.OrdinalIgnoreCase) && File.Exists(resolved)
+                var extension = Path.GetExtension(resolved);
+                var supported = string.Equals(extension, ".wav", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(extension, ".mp3", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(extension, ".wma", StringComparison.OrdinalIgnoreCase);
+                return supported && resolved.StartsWith(root, StringComparison.OrdinalIgnoreCase) &&
+                    File.Exists(resolved)
                     ? resolved : string.Empty;
             }
             catch { return string.Empty; }

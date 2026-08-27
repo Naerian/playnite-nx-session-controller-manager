@@ -180,15 +180,14 @@ namespace ControllerSessionManager.PlayniteIntegration
         public string ResolvePath(NotificationSoundKind kind,
             ControllerSessionManagerSettings settings, NotificationSoundScope scope)
         {
-            var creatorPreset = settings == null ? string.Empty : scope == NotificationSoundScope.Desktop
-                ? settings.DesktopNotificationStylePreset : settings.NotificationStylePreset;
-            var creatorSound = CreatorThemeCatalog.GetSoundPath(creatorPreset, kind);
-            if (!string.IsNullOrWhiteSpace(creatorSound)) return creatorSound;
             var custom = CustomPath(kind, settings);
             if (!string.IsNullOrWhiteSpace(custom) && File.Exists(custom))
             {
                 return custom;
             }
+            var creatorSound = CreatorThemeCatalog.GetSoundPathForPack(
+                settings == null ? string.Empty : settings.NotificationSoundPack, kind);
+            if (!string.IsNullOrWhiteSpace(creatorSound)) return creatorSound;
             return ResolvePath(kind, settings == null ? null : settings.NotificationSoundPack);
         }
 

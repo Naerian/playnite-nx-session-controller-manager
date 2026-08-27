@@ -1108,6 +1108,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             {
                 if (desktop) NotificationStylePresets.ApplyDesktop(settings, selected);
                 else NotificationStylePresets.ApplyFullscreen(settings, selected);
+                SelectCreatorSoundPackDefault(settings, selected);
             }
             finally { suppressingStylePresetMark = false; }
             settings.RefreshCreatorThemeState();
@@ -1304,6 +1305,15 @@ namespace ControllerSessionManager.PlayniteIntegration
                 options.Add(new NotificationSoundPackOption { Key = pack, DisplayName = label });
             }
 
+            foreach (var pack in CreatorThemeCatalog.GetCompleteSoundPackIds())
+            {
+                options.Add(new NotificationSoundPackOption
+                {
+                    Key = pack,
+                    DisplayName = CreatorThemeCatalog.GetSoundPackDisplayName(pack)
+                });
+            }
+
             NotificationSoundPackSelector.ItemsSource = options;
             RefreshNotificationSoundPackChips();
         }
@@ -1476,6 +1486,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             try
             {
                 NotificationStylePresets.Apply(settings, preset);
+                SelectCreatorSoundPackDefault(settings, selectedPreset);
             }
             finally
             {
@@ -1527,7 +1538,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             var selector = sender as ComboBox;
             var pack = selector == null ? null : selector.SelectedValue as string;
             var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
-            if (settings == null || !settings.CanEditNotificationAudio || string.IsNullOrWhiteSpace(pack))
+            if (settings == null || string.IsNullOrWhiteSpace(pack))
             {
                 return;
             }
@@ -1560,15 +1571,24 @@ namespace ControllerSessionManager.PlayniteIntegration
                 refreshingNotificationSoundPackSelection = true;
                 try
                 {
-                    NotificationSoundPackSelector.SelectedValue = boundSettings == null
-                        ? NotificationSoundCatalog.ModernCrystal
-                        : NotificationSoundCatalog.Normalize(boundSettings.NotificationSoundPack);
+                    var selected = boundSettings == null
+                        ? NotificationSoundCatalog.ModernCrystal : boundSettings.NotificationSoundPack;
+                    NotificationSoundPackSelector.SelectedValue = CreatorThemeCatalog.IsCompleteSoundPack(selected)
+                        ? selected : NotificationSoundCatalog.Normalize(selected);
                 }
                 finally
                 {
                     refreshingNotificationSoundPackSelection = false;
                 }
             }
+        }
+
+        private static void SelectCreatorSoundPackDefault(
+            ControllerSessionManagerSettings settings, string creatorPreset)
+        {
+            if (settings == null) return;
+            var soundPack = CreatorThemeCatalog.GetSoundPackId(creatorPreset);
+            if (!string.IsNullOrWhiteSpace(soundPack)) settings.NotificationSoundPack = soundPack;
         }
 
         private void RefreshChipSelection(WrapPanel panel, string selected)

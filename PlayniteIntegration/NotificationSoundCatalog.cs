@@ -21,6 +21,7 @@ namespace ControllerSessionManager.PlayniteIntegration
     /// </summary>
     public static class NotificationSoundCatalog
     {
+        public const string CreatorPackPrefix = "creator:";
         public const string ModernCrystal = "1_Modern_Crystal";
         public const string ConsoleChime = "2_Console_Chime";
         public const string CyberGamer = "3_Cyber_Gamer";
@@ -47,9 +48,16 @@ namespace ControllerSessionManager.PlayniteIntegration
                 return ModernCrystal;
             }
 
+            var trimmed = packId.Trim();
+            if (trimmed.StartsWith(CreatorPackPrefix, StringComparison.OrdinalIgnoreCase) &&
+                trimmed.Length > CreatorPackPrefix.Length)
+            {
+                return CreatorPackPrefix + trimmed.Substring(CreatorPackPrefix.Length);
+            }
+
             foreach (var pack in AllPacks)
             {
-                if (string.Equals(pack, packId.Trim(), StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(pack, trimmed, StringComparison.OrdinalIgnoreCase))
                 {
                     return pack;
                 }

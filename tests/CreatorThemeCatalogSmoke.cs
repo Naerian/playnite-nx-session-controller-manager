@@ -54,10 +54,41 @@ internal static class CreatorThemeCatalogSmoke
             var soundPath = (string)catalog.GetMethod("GetSoundPath").Invoke(null,
                 new[] { (object)"community.test", connected });
             if (!File.Exists(soundPath)) throw new Exception("Creator sound was not resolved.");
+            if (((string[])catalog.GetMethod("GetCompleteSoundPackIds").Invoke(null, null)).Length != 0)
+                throw new Exception("An incomplete creator sound set was exposed as a selectable pack.");
+            File.WriteAllBytes(Path.Combine(community, "Audio", "disconnected.wav"), new byte[] { 2 });
+            File.WriteAllBytes(Path.Combine(community, "Audio", "low_battery.wav"), new byte[] { 3 });
+            File.WriteAllBytes(Path.Combine(community, "Audio", "warning.wav"), new byte[] { 4 });
+            File.WriteAllText(Path.Combine(community, "manifest.json"),
+                "{\"Id\":\"community.test\",\"Name\":\"Community Test\",\"Author\":\"Test Author\",\"Version\":\"1.0.0\",\"DesktopThemeIds\":[\"desktop.test\"],\"FullscreenThemeIds\":[\"fullscreen.test\"],\"Fonts\":[{\"Id\":\"Main\",\"Name\":\"Community Font\",\"Family\":\"Community Font\",\"Folder\":\"Fonts\"}],\"Sounds\":{\"Connected\":\"Audio/connected.wav\",\"Disconnected\":\"Audio/disconnected.wav\",\"LowBattery\":\"Audio/low_battery.wav\",\"Warning\":\"Audio/warning.wav\"}}");
+            catalog.GetMethod("Reload").Invoke(null, null);
+            var soundPacks = (string[])catalog.GetMethod("GetCompleteSoundPackIds").Invoke(null, null);
+            if (soundPacks.Length != 1 || soundPacks[0] != "creator:community.test" ||
+                (string)catalog.GetMethod("GetSoundPackId").Invoke(null,
+                    new object[] { "community.test" }) != "creator:community.test")
+                throw new Exception("A complete creator sound set was not exposed as a selectable pack.");
 
             var settingsType = assembly.GetType(
                 "ControllerSessionManager.PlayniteIntegration.ControllerSessionManagerSettings", true);
             var settings = Activator.CreateInstance(settingsType);
+            settingsType.GetProperty("NotificationSoundPack").SetValue(
+                settings, "creator:community.test", null);
+            var audioType = assembly.GetType(
+                "ControllerSessionManager.PlayniteIntegration.NotificationAudioService", true);
+            var audio = Activator.CreateInstance(audioType, new object[] { null, root });
+            var resolvedCreator = (string)audioType.GetMethod("ResolvePath",
+                new[] { soundKind, settingsType }).Invoke(audio, new[] { connected, settings });
+            if (resolvedCreator != soundPath)
+                throw new Exception("The selected creator sound pack was not resolved.");
+            var customPath = Path.Combine(community, "Audio", "custom.wav");
+            File.WriteAllBytes(customPath, new byte[] { 9 });
+            settingsType.GetProperty("CustomConnectedSoundPath").SetValue(settings, customPath, null);
+            var resolvedCustom = (string)audioType.GetMethod("ResolvePath",
+                new[] { soundKind, settingsType }).Invoke(audio, new[] { connected, settings });
+            if (resolvedCustom != customPath)
+                throw new Exception("A custom sound did not override the selected creator sound pack.");
+            ((IDisposable)audio).Dispose();
+            settingsType.GetProperty("CustomConnectedSoundPath").SetValue(settings, string.Empty, null);
             var notificationPresets = assembly.GetType(
                 "ControllerSessionManager.PlayniteIntegration.NotificationStylePresets", true);
             notificationPresets.GetMethod("Apply").Invoke(null, new[] { settings, "community.test" });

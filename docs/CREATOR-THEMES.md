@@ -137,7 +137,7 @@ Desktop and Fullscreen notifications are independently selectable. A pack may de
 
 To keep both destinations identical, duplicate each property with the other prefix. To adapt the design, use different widths, scale, padding or typography for each destination.
 
-When a creator notification design is active for a destination, all editable appearance controls and its cross-destination copy button are disabled. If either destination uses a creator design, the normal sound editor is also locked because sounds are part of the authored pack identity.
+When a creator notification design is active for a destination, all editable appearance controls and its cross-destination copy button are disabled. Starting with Controller Manager 1.0.28, audio remains user-controlled: complete creator sound sets appear as selectable packs, while built-in packs, custom per-state files, volume and sound toggles remain editable.
 
 ### Notification property reference
 
@@ -426,9 +426,9 @@ The portable font descriptor is also sent to the external overlay/toast process.
 
 `Sounds` accepts the exact event names `Connected`, `Disconnected`, `Warning`, and `LowBattery`. Supported files are `.wav`, `.mp3`, and `.wma`; `.wav` is recommended for predictable low-latency playback.
 
-Each entry is optional. Missing creator audio falls back through Controller Manager's normal resolver. Keep clips short, normalized, free of leading silence and at a consistent perceived loudness. Global notification volume and per-event enable flags still apply.
+Each entry is optional for the design, but starting with Controller Manager 1.0.28 a creator sound pack is shown in the selector only when all four events have valid existing files. Selecting a notification design with a complete set selects that pack by default; incomplete sets are not offered as audio packs.
 
-If Desktop and Fullscreen use different creator designs, each notification resolves audio from the design active for that destination. The editor remains locked while either destination uses a creator design.
+Users can then choose another pack or assign a custom file to any event. Custom per-state audio takes priority over the selected pack. Keep clips short, normalized, free of leading silence and at a consistent perceived loudness. Global volume and the per-event and per-destination switches still apply.
 
 ## Complete starter examples
 

@@ -1727,13 +1727,7 @@
                                             <TextBlock Text="{DynamicResource LOCCSM_NotificationSoundPackHelp}" Style="{StaticResource FieldHintText}" Margin="0,0,0,10"/>
                                             <ComboBox x:Name="NotificationSoundPackSelector"
                                                       Width="320" Height="36" HorizontalAlignment="Left" Margin="0,0,0,8"
-                                                      DisplayMemberPath="DisplayName" SelectedValuePath="Key"
-                                                      IsEnabled="{Binding CanEditNotificationAudio}"
-                                                      Visibility="{Binding IsCreatorNotificationThemeActive, Converter={StaticResource InverseBoolToVis}}"/>
-                                            <Border Style="{StaticResource WarningCallout}" Margin="0,0,0,8"
-                                                    Visibility="{Binding IsCreatorNotificationThemeActive, Converter={StaticResource BoolToVis}}">
-                                                <DockPanel LastChildFill="True"><Border DockPanel.Dock="Left" Style="{StaticResource WarningCalloutAccentBar}"/><DockPanel Margin="12,10,12,10" LastChildFill="True"><TextBlock DockPanel.Dock="Left" Text="&#xE7BA;" Style="{StaticResource WarningCalloutGlyph}"/><StackPanel><TextBlock Text="{DynamicResource LOCCSM_CreatorThemeLockedTitle}" Style="{StaticResource InfoCalloutTitle}"/><TextBlock Text="{DynamicResource LOCCSM_CreatorThemeAudioLockedNotice}" Style="{StaticResource InfoCalloutBody}"/></StackPanel></DockPanel></DockPanel>
-                                            </Border>
+                                                      DisplayMemberPath="DisplayName" SelectedValuePath="Key"/>
                                         </StackPanel>
                                         <TextBlock Text="{DynamicResource LOCCSM_NotificationSoundVolume}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,12,0,4" />
                                         <TextBlock Text="{DynamicResource LOCCSM_NotificationSoundVolumeHelp}" Style="{StaticResource FieldHintText}" Margin="0,0,0,10"/>
@@ -1743,12 +1737,12 @@
                                             <Slider Minimum="0" Maximum="1" TickFrequency="0.05" IsSnapToTickEnabled="True"
                                                     Value="{Binding NotificationSoundVolume, UpdateSourceTrigger=PropertyChanged}"/>
                                         </DockPanel>
-                                        <Expander x:Name="CustomSoundsSection" Margin="0,12,0,0"
-                                                  Style="{StaticResource AppearanceSectionExpander}" IsExpanded="False"
-                                                  Header="{DynamicResource LOCCSM_CustomSoundsTitle}"
-                                                  Visibility="{Binding IsCreatorNotificationThemeActive, Converter={StaticResource InverseBoolToVis}}">
-                                        <StackPanel>
+                                        <TextBlock Text="{DynamicResource LOCCSM_CustomSoundsTitle}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,12,0,4"/>
                                         <TextBlock Text="{DynamicResource LOCCSM_CustomSoundsHelp}" Style="{StaticResource FieldHintText}" Margin="0,0,0,10"/>
+                                        <Expander x:Name="CustomSoundsSection"
+                                                  Style="{StaticResource AppearanceSectionExpander}" IsExpanded="False"
+                                                  Header="{DynamicResource LOCCSM_CustomSoundsTitle}">
+                                        <StackPanel>
                                         <StackPanel x:Name="CustomSoundEditorPanel">
                                         <TextBlock Text="{DynamicResource LOCCSM_ControllerConnectedToast}" Style="{StaticResource FieldLabel}"/>
                                         <DockPanel Margin="0,4,0,10">
@@ -2172,6 +2166,21 @@
                                             <ComboBoxItem Tag="Daily" Content="{DynamicResource LOCCSM_CreatorThemeUpdateDaily}" />
                                             <ComboBoxItem Tag="Manual" Content="{DynamicResource LOCCSM_CreatorThemeUpdateManual}" />
                                         </ComboBox>
+                                        <Border Style="{StaticResource InfoCallout}" Margin="0,16,0,0">
+                                            <DockPanel LastChildFill="True">
+                                                <Border DockPanel.Dock="Left" Style="{StaticResource InfoCalloutAccentBar}" />
+                                                <DockPanel Margin="12,10,12,10" LastChildFill="True">
+                                                    <TextBlock DockPanel.Dock="Left" Style="{StaticResource InfoCalloutGlyph}" Text="&#xE946;" />
+                                                    <StackPanel>
+                                                        <TextBlock Text="{DynamicResource LOCCSM_CreatorThemeCommunityHint}" Style="{StaticResource InfoCalloutBody}" />
+                                                        <Button Content="{DynamicResource LOCCSM_CreatorThemeCommunityLink}"
+                                                                Tag="https://github.com/Naerian/controller-manager-creator-themes/wiki"
+                                                                HorizontalAlignment="Left" Margin="0,8,0,0"
+                                                                Click="OpenExternalButton" />
+                                                    </StackPanel>
+                                                </DockPanel>
+                                            </DockPanel>
+                                        </Border>
                                     </StackPanel>
                                 </Border>
                             </StackPanel>

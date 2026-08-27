@@ -797,7 +797,6 @@
     <sys:String x:Key="LOCCSM_CreatorThemeManagement">Designer-Pakete</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupCustom">Benutzerdefiniert</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">Dieses Designer-Design steuert das gesamte Aussehen. Wähle eine Plugin-Vorlage oder Benutzerdefiniert zum Bearbeiten.</sys:String>
-    <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">Das aktive Creator-Design stellt Soundpaket und benutzerdefinierte Dateien bereit. Lautstärke, Sound-Schalter und Vorschauen bleiben verfügbar.</sys:String>
     <sys:String x:Key="LOCCSM_UpdateCreatorThemes">Designs aktualisieren</sys:String>
     <sys:String x:Key="LOCCSM_InstallCreatorTheme">Creator-Design installieren</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeFileFilter">Creator-Design-Paket (*.csmtheme)|*.csmtheme</sys:String>
@@ -834,4 +833,6 @@
     <sys:String x:Key="LOCCSM_OverlayScenePositionX">X-Position (%)</sys:String>
     <sys:String x:Key="LOCCSM_OverlayScenePositionY">Y-Position (%)</sys:String>
     <sys:String x:Key="LOCCSM_OverlaySceneGlowRadius">Leuchtradius (%)</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeCommunityHint">Entwickelst du ein Playnite-Theme oder möchtest du ein Community-Design erstellen? Du kannst ein eigenes Design für Benachrichtigungen und Overlay erstellen und beim offiziellen Katalog einreichen.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeCommunityLink">Anleitung für Creator-Themes öffnen</sys:String>
 </ResourceDictionary>

@@ -8,15 +8,21 @@ Under **Appearance > Fullscreen notification** and **Appearance > Desktop notifi
 
 Preset selectors separate plugin presets, imported designs and reviewed creator designs. Creator designs may include advanced layout, fonts, images, state-specific borders and sounds; their authored controls are locked and visually dimmed while active. Theme authors can use the complete [Creator designs guide](EN-Creator-Designs).
 
+Use **Update designs** to retrieve compatible releases from the official catalog. A trusted `.csmtheme` file can also be installed with **Install creator design** beside the visual-profile actions. The plugin validates compatibility and package contents before making an atomic replacement; it does not register double-click installation in Windows.
+
+Starting with Controller Manager 1.0.28, if a selected creator notification design includes all four valid event sounds, its audio pack is selected by default and appears in **Sound pack**. Audio is never locked: you can choose another pack, keep using previews and toggles, or assign custom files. A custom sound for an individual event overrides the selected pack. Incomplete creator sound sets are not listed as selectable packs.
+
 Stable XInput changes use a short 300 ms debounce to reject rapid driver flaps without waiting for the slower reconciliation pass.
 
 ## Disconnect overlay
 
-The overlay appears after a participating controller remains absent beyond the configured grace period. It shows the missing device, continuation instruction and pause result. Reconnecting or completing an eligible handover closes it; local multiplayer incidents remain until the corresponding player slot is recovered.
+The overlay appears after a participating controller remains absent beyond the configured grace period. It shows the missing device, continuation instruction and pause result. The optional **Show disconnect timer** line reports the live localized duration and updates once per second. Reconnecting or completing an eligible handover closes it; local multiplayer incidents remain until the corresponding player slot is recovered.
 
 The overlay card and full-screen backdrop have independent colors, sizing, icon sizes, padding, border and corner radius. Card width and position, entry animation, shadow and the accented border edge are configurable too. Title, controller name, instruction, and status/badges each have their own font family and weight; title, instruction and pause status can also be hidden independently.
 
 Optional connection and battery badges have independent text, icon, background and border colors, as well as border thickness, corner radius, icon size and text size. Battery text and icon can follow configurable full, medium, low and empty state colors. `#AARRGGBB` values support alpha; `#00000000` makes the backdrop transparent. The compact preview updates while settings change, and presets apply visibly distinct compositions.
+
+Reviewed creator designs can additionally use an `Alert` composition, full-screen scene gradients, an image, ambient glows and a grid behind the card. These are validated declarative effects rather than arbitrary CSS, XAML or executable code.
 
 ## Compatibility and input
 

@@ -15,6 +15,12 @@ if ($viewSource -notmatch 'OnSliderTrackMouseDown' -or
     throw "Every settings slider must support clicking its track to jump to the selected value."
 }
 if ($viewXaml -notmatch '<Expander x:Name="CustomSoundsSection"' -or
+    $viewXaml -notmatch 'Text="{DynamicResource LOCCSM_CustomSoundsTitle}" Style="{StaticResource AppearanceGroupHeader}"' -or
+    $viewXaml -notmatch 'Text="{DynamicResource LOCCSM_CustomSoundsHelp}" Style="{StaticResource FieldHintText}"' -or
+    $viewXaml.IndexOf('Text="{DynamicResource LOCCSM_CustomSoundsTitle}" Style="{StaticResource AppearanceGroupHeader}"') -gt
+        $viewXaml.IndexOf('<Expander x:Name="CustomSoundsSection"') -or
+    $viewXaml.IndexOf('Text="{DynamicResource LOCCSM_CustomSoundsHelp}" Style="{StaticResource FieldHintText}"') -gt
+        $viewXaml.IndexOf('<Expander x:Name="CustomSoundsSection"') -or
     $viewXaml.IndexOf('x:Name="NotificationSoundPreviewPanel"') -gt
         $viewXaml.IndexOf('IsChecked="{Binding EnableDesktopNotificationSounds}"') -or
     $viewXaml.IndexOf('IsChecked="{Binding EnableDesktopNotificationSounds}"') -gt
@@ -25,6 +31,11 @@ if ($viewXaml -notmatch 'SelectedValue="{Binding CreatorThemeUpdatePolicy}"' -or
     $viewXaml -notmatch 'Tag="Startup"' -or $viewXaml -notmatch 'Tag="Daily"' -or
     $viewXaml -notmatch 'Tag="Manual"') {
     throw "Appearance options must expose startup, daily and manual creator-design updates."
+}
+if ($viewXaml -notmatch 'LOCCSM_CreatorThemeCommunityHint' -or
+    $viewXaml -notmatch 'LOCCSM_CreatorThemeCommunityLink' -or
+    $viewXaml -notmatch 'https://github.com/Naerian/controller-manager-creator-themes/wiki') {
+    throw "Appearance update options must invite theme authors to the creator-theme guide."
 }
 if ($viewSource -notmatch 'plugin\.ShowNotificationPresetPreview\s*\(\s*\)') {
     throw "Changing a notification style preset must launch its automatic preview."
@@ -78,6 +89,15 @@ $definition.Author = "Test Author"
 $definition.Version = "1.0.0"
 $definition.Description = "Test-only creator design."
 $definition.Directory = Join-Path $root "obj\TestCreatorPack"
+$creatorAudioDirectory = Join-Path $definition.Directory "Audio"
+New-Item -ItemType Directory -Path $creatorAudioDirectory -Force | Out-Null
+foreach ($sound in @{
+    Connected = "connected.wav"; Disconnected = "disconnected.wav";
+    LowBattery = "low_battery.wav"; Warning = "warning.wav"
+}.GetEnumerator()) {
+    [IO.File]::WriteAllBytes((Join-Path $creatorAudioDirectory $sound.Value), [byte[]](1, 2, 3))
+    $definition.Sounds.Add($sound.Key, "Audio/$($sound.Value)")
+}
 $definition.Notification = [Collections.Generic.Dictionary[string, object]]::new()
 $definition.Notification.Add("NotificationBackgroundColor", "#FF112233")
 $definition.Overlay = [Collections.Generic.Dictionary[string, object]]::new()
@@ -130,7 +150,8 @@ $definitions.Add($definition.Id, $definition)
 $viewFlags = [Reflection.BindingFlags]"Instance,NonPublic"
 foreach ($methodName in @(
     "BuildNotificationStylePresetChips", "BuildNotificationPresetSelectors",
-    "BuildOverlayStylePresetChips", "BuildOverlayPresetSelector")) {
+    "BuildOverlayStylePresetChips", "BuildOverlayPresetSelector",
+    "BuildNotificationSoundPackChips")) {
     $viewType.GetMethod($methodName, $viewFlags).Invoke($view, $null) | Out-Null
 }
 $window = New-Object System.Windows.Window
@@ -233,8 +254,9 @@ if ($creatorCard.Tag -ne "example.creator" -or
     $creatorCard.Content.Children[1].Text -ne "Test Author") {
     throw "Creator preset cards do not expose their design attribution."
 }
-if ($selector.Items.Count -lt 1) {
-    throw "Settings view did not populate the notification sound packs."
+if ($selector.Items.Count -ne 8 -or
+    @($selector.Items | Where-Object { $_.Key -eq "creator:example.creator" }).Count -ne 1) {
+    throw "Settings view did not expose exactly the complete creator sound packs."
 }
 if ($selector.SelectedValue -ne $settings.NotificationSoundPack) {
     throw "Settings view did not select the configured notification sound pack."
@@ -253,16 +275,16 @@ if ($settings.DesktopNotificationStylePreset -ne "example.creator" -or
 if ($view.FindName("DesktopNotificationStyleEditor").IsEnabled -or
     -not $view.FindName("FullscreenNotificationStyleEditor").IsEnabled -or
     -not $view.FindName("NotificationAudioEditor").IsEnabled -or
-    $view.FindName("NotificationSoundPackSelector").IsEnabled -or
-    $view.FindName("NotificationSoundPackSelector").Visibility -ne [Windows.Visibility]::Collapsed -or
-    $view.FindName("CustomSoundsSection").Visibility -ne [Windows.Visibility]::Collapsed -or
+    -not $view.FindName("NotificationSoundPackSelector").IsEnabled -or
+    $view.FindName("NotificationSoundPackSelector").Visibility -ne [Windows.Visibility]::Visible -or
+    $view.FindName("CustomSoundsSection").Visibility -ne [Windows.Visibility]::Visible -or
     -not $view.FindName("NotificationSoundPreviewPanel").IsEnabled -or
     -not $view.FindName("NotificationSoundOptionsPanel").IsEnabled -or
     $view.FindName("CopyFullscreenToDesktopButton").IsEnabled -or
     $view.FindName("CopyDesktopToFullscreenButton").IsEnabled -or
     $view.FindName("DesktopAppearanceLayoutExpander").IsExpanded -or
     $view.FindName("DesktopNotificationStyleEditor").Opacity -gt 0.5) {
-    throw "Creator notification designs must lock only appearance, pack selection, and custom files " +
+    throw "Creator notification designs must lock appearance while keeping every audio control editable " +
         "(desktop=$($view.FindName('DesktopNotificationStyleEditor').IsEnabled), " +
         "fullscreen=$($view.FindName('FullscreenNotificationStyleEditor').IsEnabled), " +
         "audio=$($view.FindName('NotificationAudioEditor').IsEnabled), " +
@@ -272,6 +294,10 @@ if ($view.FindName("DesktopNotificationStyleEditor").IsEnabled -or
         "options=$($view.FindName('NotificationSoundOptionsPanel').IsEnabled), " +
         "opacity=$($view.FindName('DesktopNotificationStyleEditor').Opacity), " +
         "flags=$($settings.CanEditDesktopNotificationStyle)/$($settings.CanEditFullscreenNotificationStyle)/$($settings.CanEditNotificationAudio))."
+}
+if ($settings.NotificationSoundPack -ne "creator:example.creator" -or
+    $selector.SelectedValue -ne "creator:example.creator") {
+    throw "Selecting a creator notification design did not select its complete sound pack by default."
 }
 $desktopPresetSelector.SelectedItem = @($desktopPresetSelector.Items | Where-Object { $_.Key -eq "Custom" })[0]
 $window.UpdateLayout()

@@ -796,7 +796,6 @@
     <sys:String x:Key="LOCCSM_CreatorThemeManagement">Пакеты авторов</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupCustom">Пользовательские</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">Этот авторский дизайн управляет всем оформлением. Для редактирования выберите пресет плагина или пользовательский.</sys:String>
-    <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">Активный авторский дизайн предоставляет набор и пользовательские файлы. Громкость, переключатели звука и предпрослушивание остаются доступны.</sys:String>
     <sys:String x:Key="LOCCSM_UpdateCreatorThemes">Обновить дизайны</sys:String>
     <sys:String x:Key="LOCCSM_InstallCreatorTheme">Установить дизайн автора</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeFileFilter">Пакет дизайна (*.csmtheme)|*.csmtheme</sys:String>
@@ -833,4 +832,6 @@
     <sys:String x:Key="LOCCSM_OverlayScenePositionX">Позиция X (%)</sys:String>
     <sys:String x:Key="LOCCSM_OverlayScenePositionY">Позиция Y (%)</sys:String>
     <sys:String x:Key="LOCCSM_OverlaySceneGlowRadius">Радиус свечения (%)</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeCommunityHint">Вы создаёте темы Playnite или хотите подготовить дизайн для сообщества? Создайте собственную тему уведомлений и оверлея и отправьте её в официальный каталог.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeCommunityLink">Открыть руководство для авторов тем</sys:String>
 </ResourceDictionary>

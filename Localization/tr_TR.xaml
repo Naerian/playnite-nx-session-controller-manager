@@ -796,7 +796,6 @@
     <sys:String x:Key="LOCCSM_CreatorThemeManagement">Tasarımcı paketleri</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupCustom">Özel</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">Bu tasarımcı teması tüm görünümü yönetir. Düzenlemek için eklenti hazır ayarı veya Özel’i seçin.</sys:String>
-    <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">Etkin üretici tasarımı ses paketini ve özel dosyaları sağlar. Ses düzeyi, ses anahtarları ve önizlemeler kullanılabilir kalır.</sys:String>
     <sys:String x:Key="LOCCSM_UpdateCreatorThemes">Tasarımları güncelle</sys:String>
     <sys:String x:Key="LOCCSM_InstallCreatorTheme">Üretici tasarımı yükle</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeFileFilter">Üretici tasarım paketi (*.csmtheme)|*.csmtheme</sys:String>
@@ -833,4 +832,6 @@
     <sys:String x:Key="LOCCSM_OverlayScenePositionX">X konumu (%)</sys:String>
     <sys:String x:Key="LOCCSM_OverlayScenePositionY">Y konumu (%)</sys:String>
     <sys:String x:Key="LOCCSM_OverlaySceneGlowRadius">Parlama yarıçapı (%)</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeCommunityHint">Playnite teması tasarlıyor veya topluluk için bir tasarım oluşturmak mı istiyorsunuz? Bildirimler ve overlay için kendi temanızı hazırlayıp resmi kataloğa gönderebilirsiniz.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeCommunityLink">Tema oluşturma kılavuzunu aç</sys:String>
 </ResourceDictionary>

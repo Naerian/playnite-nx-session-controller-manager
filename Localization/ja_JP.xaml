@@ -796,7 +796,6 @@
     <sys:String x:Key="LOCCSM_CreatorThemeManagement">クリエイターパック</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupCustom">カスタム</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">このクリエイターデザインが外観全体を管理します。編集するにはプラグインプリセットまたはカスタムを選択してください。</sys:String>
-    <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">有効なクリエイターデザインがサウンドパックとカスタムファイルを提供します。音量、サウンド切り替え、プレビューは引き続き利用できます。</sys:String>
     <sys:String x:Key="LOCCSM_UpdateCreatorThemes">デザインを更新</sys:String>
     <sys:String x:Key="LOCCSM_InstallCreatorTheme">クリエイターデザインをインストール</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeFileFilter">クリエイターデザインパック (*.csmtheme)|*.csmtheme</sys:String>
@@ -833,4 +832,6 @@
     <sys:String x:Key="LOCCSM_OverlayScenePositionX">X 位置 (%)</sys:String>
     <sys:String x:Key="LOCCSM_OverlayScenePositionY">Y 位置 (%)</sys:String>
     <sys:String x:Key="LOCCSM_OverlaySceneGlowRadius">グロー半径 (%)</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeCommunityHint">Playnite テーマの作者、またはコミュニティ向けデザインを作成したい方は、通知とオーバーレイ用の独自テーマを作成して公式カタログへ投稿できます。</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeCommunityLink">クリエイターテーマ作成ガイドを開く</sys:String>
 </ResourceDictionary>

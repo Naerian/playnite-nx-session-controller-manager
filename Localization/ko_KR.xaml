@@ -796,7 +796,6 @@
     <sys:String x:Key="LOCCSM_CreatorThemeManagement">크리에이터 팩</sys:String>
     <sys:String x:Key="LOCCSM_PresetGroupCustom">사용자 지정</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeLockedNotice">이 크리에이터 디자인이 전체 모양을 관리합니다. 편집하려면 플러그인 프리셋 또는 사용자 지정을 선택하세요.</sys:String>
-    <sys:String x:Key="LOCCSM_CreatorThemeAudioLockedNotice">활성 제작자 디자인이 사운드 팩과 사용자 지정 파일을 제공합니다. 볼륨, 사운드 전환 및 미리보기는 계속 사용할 수 있습니다.</sys:String>
     <sys:String x:Key="LOCCSM_UpdateCreatorThemes">디자인 업데이트</sys:String>
     <sys:String x:Key="LOCCSM_InstallCreatorTheme">크리에이터 디자인 설치</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeFileFilter">크리에이터 디자인 패키지 (*.csmtheme)|*.csmtheme</sys:String>
@@ -833,4 +832,6 @@
     <sys:String x:Key="LOCCSM_OverlayScenePositionX">X 위치 (%)</sys:String>
     <sys:String x:Key="LOCCSM_OverlayScenePositionY">Y 위치 (%)</sys:String>
     <sys:String x:Key="LOCCSM_OverlaySceneGlowRadius">광선 반경 (%)</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeCommunityHint">Playnite 테마 디자이너이거나 커뮤니티 디자인을 만들고 싶다면 알림 및 오버레이용 테마를 제작해 공식 카탈로그에 제출할 수 있습니다.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeCommunityLink">크리에이터 테마 제작 가이드 열기</sys:String>
 </ResourceDictionary>
