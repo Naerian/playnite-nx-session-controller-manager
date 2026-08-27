@@ -45,6 +45,9 @@
     <Compile Include="ToastWindow.cs" />
     <Compile Include="PathAspectSizer.cs" />
     <Compile Include="ProcessSuspensionLease.cs" />
+    <Compile Include="..\Overlay\DisconnectDurationFormatter.cs">
+      <Link>DisconnectDurationFormatter.cs</Link>
+    </Compile>
     <Compile Include="..\Overlay\OverlayIpcLimits.cs">
       <Link>OverlayIpcLimits.cs</Link>
     </Compile>

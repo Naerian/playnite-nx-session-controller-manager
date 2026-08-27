@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,6 +12,7 @@ using System.Windows.Media.Effects;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using Forms = System.Windows.Forms;
+using ControllerSessionManager.Overlay;
 using ControllerSessionManager.PlayniteIntegration;
 
 namespace ControllerSessionManager.OverlayHost
@@ -536,7 +538,7 @@ namespace ControllerSessionManager.OverlayHost
                 ? Visibility.Visible : Visibility.Collapsed;
             if (uppercaseTitle && titleText.Visibility == Visibility.Visible)
             {
-                titleText.Text = titleText.Text.ToUpperInvariant();
+                titleText.Text = titleText.Text.ToUpper(CultureInfo.CurrentCulture);
             }
             instructionText.Visibility = showInstruction && !string.IsNullOrWhiteSpace(instructionText.Text)
                 ? Visibility.Visible : Visibility.Collapsed;
@@ -813,9 +815,7 @@ namespace ControllerSessionManager.OverlayHost
                 elapsed = TimeSpan.Zero;
             }
 
-            var value = elapsed.TotalHours >= 1
-                ? string.Format("{0}:{1:00}:{2:00}", (int)elapsed.TotalHours, elapsed.Minutes, elapsed.Seconds)
-                : string.Format("{0:00}:{1:00}", elapsed.Minutes, elapsed.Seconds);
+            var value = DisconnectDurationFormatter.Format(elapsed);
             try
             {
                 disconnectTimerText.Text = string.Format(disconnectTimerFormat, value);

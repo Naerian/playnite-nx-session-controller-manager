@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using ControllerSessionManager.Controllers;
+using ControllerSessionManager.Overlay;
 using ControllerSessionManager.Tester;
 using ControllerSessionManager.Tester.ViewModels;
 using Microsoft.Win32;
@@ -162,7 +163,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             BuildOverlayStylePresetChips();
             BuildOverlayPresetSelector();
             BuildNotificationSoundPackChips();
-            RefreshOverlayPreviewControllerLayout();
+            RefreshOverlayPreview();
             RefreshCreatorThemeEditorState();
         }
 
@@ -267,6 +268,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 args.PropertyName == "OverlayShowIncidentBadge" ||
                 args.PropertyName == "OverlayShowDisconnectTimer" ||
                 args.PropertyName == "OverlayStatusInMetadata" ||
+                args.PropertyName == "OverlayShowTitle" ||
+                args.PropertyName == "OverlayUppercaseTitle" ||
                 args.PropertyName == "OverlayElementSpacing")
             {
                 RefreshOverlayPreviewComposition();
@@ -314,11 +317,19 @@ namespace ControllerSessionManager.PlayniteIntegration
             if (OverlayPreviewIncidentText != null)
             {
                 OverlayPreviewIncidentText.Text = (plugin == null ? "Disconnected" :
-                    plugin.Loc("LOCCSM_Disconnected")).ToUpperInvariant();
+                    plugin.Loc("LOCCSM_Disconnected")).ToUpper(CultureInfo.CurrentCulture);
             }
+            var overlayTitle = plugin == null
+                ? "Controller disconnected"
+                : plugin.Loc("LOCCSM_OverlayDisconnectTitle");
+            if (settings != null && settings.OverlayUppercaseTitle)
+            {
+                overlayTitle = overlayTitle.ToUpper(CultureInfo.CurrentCulture);
+            }
+            OverlayPreviewTitle.Text = overlayTitle;
             OverlayPreviewDisconnectTimer.Text = string.Format(
                 plugin == null ? "Disconnected for {0}" : plugin.Loc("LOCCSM_OverlayDisconnectTimerFormat"),
-                "00:42");
+                DisconnectDurationFormatter.Format(TimeSpan.FromSeconds(42)));
             DetachPreviewElement(OverlayPreviewContentRoot);
             DetachPreviewElement(OverlayPreviewTitle);
             DetachPreviewElement(OverlayPreviewIncidentBadge);
@@ -769,7 +780,21 @@ namespace ControllerSessionManager.PlayniteIntegration
             Dispatcher.BeginInvoke(new Action(AttachToHost), DispatcherPriority.ApplicationIdle);
             Dispatcher.BeginInvoke(new Action(FillSelectedContentHosts), DispatcherPriority.Loaded);
             Dispatcher.BeginInvoke(new Action(FillSelectedContentHosts), DispatcherPriority.ApplicationIdle);
+            QueueOverlayPreviewRefresh();
             RefreshOverview();
+        }
+
+        private void QueueOverlayPreviewRefresh()
+        {
+            RefreshOverlayPreview();
+            Dispatcher.BeginInvoke(new Action(RefreshOverlayPreview), DispatcherPriority.Loaded);
+            Dispatcher.BeginInvoke(new Action(RefreshOverlayPreview), DispatcherPriority.ApplicationIdle);
+        }
+
+        private void RefreshOverlayPreview()
+        {
+            RefreshOverlayPreviewComposition();
+            RefreshOverlayPreviewControllerLayout();
         }
 
         private void ApplyAppearancePreset()

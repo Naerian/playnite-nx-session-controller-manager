@@ -32,7 +32,7 @@ function Get-SvgGeometry([string]$name) {
 (Get-Field "connectionText").Text = "Bluetooth"
 (Get-Field "batteryText").Text = "Bater$([char]0x00ED)a baja"
 (Get-Field "incidentStateText").Text = "DESCONECTADO"
-(Get-Field "disconnectTimerText").Text = "Mando desconectado desde hace 00:42"
+(Get-Field "disconnectTimerText").Text = "Mando desconectado desde hace 42s"
 (Get-Field "controllerIcon").Data = Get-SvgGeometry "Gamepads\default.svg"
 (Get-Field "pauseStatusIcon").Data = Get-SvgGeometry "Icons\player-pause.svg"
 (Get-Field "connectionIcon").Data = Get-SvgGeometry "Icons\bluetooth.svg"

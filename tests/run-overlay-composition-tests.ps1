@@ -30,7 +30,20 @@ function New-Style([string]$mode, [string]$order) {
 (Get-Field 'instructionText').Text = 'Reconnect it to continue.'
 (Get-Field 'pauseStatusText').Text = 'Game paused'
 (Get-Field 'incidentStateText').Text = 'DISCONNECTED'
-(Get-Field 'disconnectTimerText').Text = 'Disconnected for 00:42'
+(Get-Field 'disconnectTimerText').Text = 'Disconnected for 42s'
+
+$formatterType = $assembly.GetType('ControllerSessionManager.Overlay.DisconnectDurationFormatter', $true)
+$format = $formatterType.GetMethod('Format', [Type[]]@([TimeSpan]))
+function Assert-Duration([TimeSpan]$elapsed, [string]$expected) {
+    $actual = [string]$format.Invoke($null, @($elapsed))
+    if ($actual -ne $expected) {
+        throw "Duration format mismatch for $elapsed. Expected '$expected', got '$actual'."
+    }
+}
+Assert-Duration ([TimeSpan]::FromSeconds(42)) '42s'
+Assert-Duration ([TimeSpan]::FromSeconds(90)) '1m 30s'
+Assert-Duration ([TimeSpan]::FromHours(1).Add([TimeSpan]::FromMinutes(2))) '1h 2m'
+Assert-Duration ([TimeSpan]::FromDays(2).Add([TimeSpan]::FromHours(3))) '2d 3h'
 
 $apply = $type.GetMethod('ApplyPresentationStyle', $flags)
 $alert = New-Style 'Alert' 'Incident,Title,ControllerName,Timer,Metadata,Instruction,Status'

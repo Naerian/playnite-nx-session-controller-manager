@@ -77,6 +77,7 @@
     <Compile Include="Sessions\InputPollingPolicy.cs" />
     <Compile Include="Overlay\OverlayClient.cs" />
     <Compile Include="Overlay\OverlayIpcLimits.cs" />
+    <Compile Include="Overlay\DisconnectDurationFormatter.cs" />
     <Compile Include="PlayniteIntegration\ControllerSessionManagerPlugin.cs" />
     <Compile Include="PlayniteIntegration\SupportReportService.cs" />
     <Compile Include="PlayniteIntegration\ControllerSessionManagerSettings.cs" />
