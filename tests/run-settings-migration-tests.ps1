@@ -67,8 +67,11 @@ foreach ($entry in $preserved.GetEnumerator()) {
 if ($settings.NotificationStylePreset -ne "Custom" -or $settings.OverlayStylePreset -ne "Custom") {
     throw "An existing installation must retain its custom notification and overlay appearance."
 }
-if ($settings.SettingsSchemaVersion -ne 22) {
-    throw "Settings were not migrated to schema 22."
+if ($settings.SettingsSchemaVersion -ne 23) {
+    throw "Settings were not migrated to schema 23."
+}
+if (-not $settings.UsePlayniteThemeAppearance) {
+    throw "Playnite theme appearance must default on after migration."
 }
 $notificationStateType = $assembly.GetType("ControllerSessionManager.PlayniteIntegration.NotificationStyleState", $true)
 $legacyCustom = [Activator]::CreateInstance($type)

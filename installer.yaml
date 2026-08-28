@@ -1,5 +1,16 @@
 AddonId: ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc
 Packages:
+  - Version: 1.0.28
+    RequiredApiVersion: 6.16.0
+    ReleaseDate: 2026-08-28
+    PackageUrl: https://github.com/Naerian/playnite-nx-session-controller-manager/releases/download/v1.0.28/ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc_1_0_28.pext
+    Changelog:
+      - 'Added a Playnite theme color bridge so notifications and the overlay can follow live theme colors and optional typefaces, including in-theme palettes such as Aniki.'
+      - 'Enabled Follow the active Playnite theme colors by default; themes without a mapping file are left unchanged.'
+      - 'Added Playnite menu actions to preview the notification and overlay in Fullscreen while the current theme is loaded.'
+      - 'Limited Looks deletion to imported visual profiles and sideloaded creator packs; catalog designs stay installed, and removing the selected look applies Soft.'
+      - 'Fixed deleting an imported look so the first plugin preset is selected instead of Custom with leftover colors.'
+      - 'Stopped showing Playnite notifications after a look or sideloaded design is removed.'
   - Version: 1.0.27
     RequiredApiVersion: 6.16.0
     ReleaseDate: 2026-08-27

@@ -86,6 +86,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private TesterIntegration testerIntegration;
         private bool openingStandaloneSettings;
         private bool automaticCreatorThemeStartupCheckCompleted;
+        private DispatcherTimer overlayPreviewHideTimer;
         private DateTime lastFullscreenLaunchUtc = DateTime.MinValue;
         private DateTime? guideButtonPressedUtc;
         private static readonly TimeSpan FullscreenLaunchCooldown = TimeSpan.FromSeconds(2);
@@ -488,6 +489,51 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
         }
 
+        public void ShowOverlayPreview()
+        {
+            if (settings == null || overlayClient == null) return;
+            if (activeDisconnectIncidentId.HasValue) return;
+
+            var iconFile = ControllerIconCatalog.DefaultFileName;
+            overlayClient.Show(notificationSessionId, Guid.NewGuid(), 0,
+                Loc("LOCCSM_OverlayDisconnectTitle"),
+                Loc("LOCCSM_PreviewControllerName"),
+                Loc("LOCCSM_OverlayAllowTakeover"),
+                Loc("LOCCSM_OverlayPauseDisabled"), "ok",
+                SvgIconGeometryLoader.GetPathData("player-pause.svg"),
+                SvgIconGeometryLoader.GetPathData(iconFile), false, 0,
+                string.Empty, "warning",
+                SvgIconGeometryLoader.GetPathData("alert-triangle.svg"), GetOverlayStylePayload(),
+                Loc("LOCCSM_ValueBluetooth"), Loc("LOCCSM_ValueFull"),
+                ControllerConnectionIcons.GetPathData("Bluetooth"),
+                SvgIconGeometryLoader.GetPathData("battery.svg"), "Full",
+                Loc("LOCCSM_Disconnected"), Loc("LOCCSM_OverlayDisconnectTimerFormat"));
+
+            var duration = settings.NotificationDurationMilliseconds;
+            if (duration < 4000) duration = 4000;
+            if (duration > 12000) duration = 12000;
+            var dispatcher = GetUiDispatcher();
+            if (dispatcher == null) return;
+            dispatcher.BeginInvoke(new Action(() =>
+            {
+                if (overlayPreviewHideTimer == null)
+                {
+                    overlayPreviewHideTimer = new DispatcherTimer(DispatcherPriority.Background)
+                    {
+                        Interval = TimeSpan.FromMilliseconds(duration)
+                    };
+                    overlayPreviewHideTimer.Tick += delegate
+                    {
+                        overlayPreviewHideTimer.Stop();
+                        overlayClient.HideAll(notificationSessionId);
+                    };
+                }
+                overlayPreviewHideTimer.Stop();
+                overlayPreviewHideTimer.Interval = TimeSpan.FromMilliseconds(duration);
+                overlayPreviewHideTimer.Start();
+            }));
+        }
+
         public async Task<CreatorThemeUpdateResult> UpdateCreatorThemesAsync(
             CancellationToken cancellationToken)
         {
@@ -545,8 +591,8 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         public void ShowNotificationPresetPreview(bool desktop)
         {
-            if (desktop) ShowDesktopNotificationPreview("connected", false);
-            else ShowNotificationPreview("connected", false);
+            if (desktop) ShowDesktopNotificationPreview("connected", true);
+            else ShowNotificationPreview("connected", true);
         }
 
         public void PlayNotificationSoundPreview(string kind)
@@ -1091,6 +1137,18 @@ namespace ControllerSessionManager.PlayniteIntegration
                 MenuSection = "Controller Manager",
                 Description = Loc("LOCCSM_OpenTester"),
                 Action = delegate { OpenTesterSettings(); }
+            };
+            yield return new MainMenuItem
+            {
+                MenuSection = "Controller Manager",
+                Description = Loc("LOCCSM_MenuPreviewNotification"),
+                Action = delegate { ShowNotificationPreview("connected", true); }
+            };
+            yield return new MainMenuItem
+            {
+                MenuSection = "Controller Manager",
+                Description = Loc("LOCCSM_MenuPreviewOverlay"),
+                Action = delegate { ShowOverlayPreview(); }
             };
             yield return new MainMenuItem
             {
@@ -1809,6 +1867,11 @@ namespace ControllerSessionManager.PlayniteIntegration
             controllerManager.SnapshotChanged -= OnManagerSnapshotChanged;
             xInputProvider.Dispose();
             overlayClient.Dispose();
+            if (overlayPreviewHideTimer != null)
+            {
+                overlayPreviewHideTimer.Stop();
+                overlayPreviewHideTimer = null;
+            }
             if (notificationAudio != null)
             {
                 notificationAudio.Dispose();
@@ -2678,26 +2741,113 @@ namespace ControllerSessionManager.PlayniteIntegration
             return result.Where(a => !string.IsNullOrWhiteSpace(a)).ToList();
         }
 
+        private static string CoalesceHex(string live, string fallback)
+        {
+            return IsUsableHex(live) ? live : fallback;
+        }
+
+        private static bool IsUsableHex(string hex)
+        {
+            if (string.IsNullOrWhiteSpace(hex) || hex[0] != '#' || hex.Length < 7) return false;
+            if (hex.Length >= 9 &&
+                string.Equals(hex.Substring(1, 2), "00", StringComparison.OrdinalIgnoreCase))
+                return false;
+            return true;
+        }
+
+        private void ApplyLiveNotificationColors(ThemeAppearanceSurface surface,
+            ref string background, ref string text, ref string secondary,
+            ref string connected, ref string warning, ref string lowBattery,
+            ref bool useGradient, ref string gradientColor,
+            ref bool useBorderGradient, ref string borderStart, ref string borderEnd)
+        {
+            if (settings == null || !settings.UsePlayniteThemeAppearance) return;
+            var live = ThemeAppearanceBridge.Resolve(PlayniteApi, surface);
+            if (live == null || !live.HasAny) return;
+            background = CoalesceHex(live.Background, background);
+            text = CoalesceHex(live.Text, text);
+            secondary = CoalesceHex(live.SecondaryText, secondary);
+            connected = CoalesceHex(live.Accent, connected);
+            warning = CoalesceHex(live.Warning, warning);
+            lowBattery = CoalesceHex(live.Warning, lowBattery);
+            if (IsUsableHex(live.Gradient))
+            {
+                useGradient = true;
+                gradientColor = live.Gradient;
+            }
+            if (IsUsableHex(live.Border) && useBorderGradient)
+            {
+                borderStart = live.Border;
+                borderEnd = live.Border;
+            }
+        }
+
+        private void ApplyLiveTypeface(ThemeAppearanceSurface surface,
+            ref string fontFamily, ref string fontWeight,
+            ref string titleFamily, ref string titleWeight,
+            ref string messageFamily, ref string messageWeight)
+        {
+            if (settings == null || !settings.UsePlayniteThemeAppearance) return;
+            var live = ThemeAppearanceBridge.Resolve(PlayniteApi, surface);
+            if (live == null || !live.HasAny) return;
+            fontFamily = CoalesceFamily(live.FontFamily, null, fontFamily);
+            fontWeight = CoalesceFamily(live.FontWeight, null, fontWeight);
+            titleFamily = CoalesceFamily(live.TitleFontFamily, live.FontFamily, titleFamily);
+            titleWeight = CoalesceFamily(live.TitleFontWeight, live.FontWeight, titleWeight);
+            messageFamily = CoalesceFamily(live.MessageFontFamily, live.FontFamily, messageFamily);
+            messageWeight = CoalesceFamily(live.MessageFontWeight, live.FontWeight, messageWeight);
+        }
+
+        private static string CoalesceFamily(string live, string shared, string fallback)
+        {
+            if (!string.IsNullOrWhiteSpace(live)) return live;
+            if (!string.IsNullOrWhiteSpace(shared)) return shared;
+            return fallback;
+        }
+
         private string GetToastStylePayload()
         {
+            var background = settings.NotificationBackgroundColor;
+            var text = settings.NotificationTextColor;
+            var secondary = settings.NotificationSecondaryTextColor;
+            var connected = settings.NotificationConnectedColor;
+            var warning = settings.NotificationWarningColor;
+            var lowBattery = settings.NotificationLowBatteryColor;
+            var useGradient = settings.NotificationUseGradient;
+            var gradientColor = settings.NotificationGradientColor;
+            var useBorderGradient = settings.NotificationUseBorderGradient;
+            var borderStart = settings.NotificationBorderGradientStartColor;
+            var borderEnd = settings.NotificationBorderGradientEndColor;
+            ApplyLiveNotificationColors(ThemeAppearanceSurface.FullscreenNotification,
+                ref background, ref text, ref secondary, ref connected, ref warning, ref lowBattery,
+                ref useGradient, ref gradientColor, ref useBorderGradient, ref borderStart, ref borderEnd);
+            var fontFamily = settings.NotificationFontFamily;
+            var fontWeight = settings.NotificationFontWeight;
+            var titleFamily = settings.NotificationTitleFontFamily;
+            var titleWeight = settings.NotificationTitleFontWeight;
+            var messageFamily = settings.NotificationMessageFontFamily;
+            var messageWeight = settings.NotificationMessageFontWeight;
+            ApplyLiveTypeface(ThemeAppearanceSurface.FullscreenNotification,
+                ref fontFamily, ref fontWeight, ref titleFamily, ref titleWeight,
+                ref messageFamily, ref messageWeight);
             return string.Join(";", new[]
             {
                 settings.NotificationWidth.ToString(), settings.NotificationScalePercent.ToString(),
-                settings.NotificationPosition ?? "TopRight", settings.NotificationBackgroundColor,
-                settings.NotificationTextColor, settings.NotificationSecondaryTextColor,
-                settings.NotificationConnectedColor, settings.NotificationDisconnectedColor,
-                settings.NotificationWarningColor, settings.NotificationTitleFontSize.ToString(),
+                settings.NotificationPosition ?? "TopRight", background,
+                text, secondary,
+                connected, settings.NotificationDisconnectedColor,
+                warning, settings.NotificationTitleFontSize.ToString(),
                 settings.NotificationMessageFontSize.ToString(), settings.NotificationIconSize.ToString(),
                 settings.NotificationPadding.ToString(), settings.NotificationShowBorder.ToString(),
                 settings.NotificationBorderPosition ?? "Bottom",
                 settings.NotificationBorderThickness.ToString(), settings.NotificationCornerRadius.ToString(),
                 settings.NotificationIconPosition ?? "Left",
                 settings.NotificationElementSpacing.ToString(),
-                settings.NotificationLowBatteryColor,
+                lowBattery,
                 settings.NotificationShowConnectionBadge.ToString(),
                 settings.NotificationScreenMargin.ToString(),
                 settings.NotificationShowShadow.ToString(),
-                settings.NotificationFontFamily, settings.NotificationFontWeight,
+                fontFamily, fontWeight,
                 settings.NotificationTextAlignment, settings.NotificationAccentMode,
                 settings.NotificationAnimation, settings.NotificationShowTitle.ToString(),
                 settings.NotificationUseBackgroundImage.ToString(), EncodeStyleValue(settings.NotificationBackgroundImagePath),
@@ -2705,10 +2855,10 @@ namespace ControllerSessionManager.PlayniteIntegration
                 settings.NotificationBackgroundImageVerticalAlignment, settings.NotificationBackgroundImageOpacity.ToString(),
                 settings.NotificationBackgroundImageTintOpacity.ToString(),
                 settings.NotificationIconSpacing.ToString(),
-                settings.NotificationTitleFontFamily, settings.NotificationTitleFontWeight,
-                settings.NotificationMessageFontFamily, settings.NotificationMessageFontWeight,
+                titleFamily, titleWeight,
+                messageFamily, messageWeight,
                 settings.NotificationMessageMaxLines.ToString(), settings.NotificationBadgePosition,
-                settings.NotificationUseGradient.ToString(), settings.NotificationGradientColor,
+                useGradient.ToString(), gradientColor,
                 settings.NotificationGradientAngle.ToString(), settings.NotificationUppercaseTitle.ToString(),
                 settings.NotificationShowIconContainer.ToString(), settings.NotificationIconContainerColor,
                 settings.NotificationIconContainerBorderColor,
@@ -2721,8 +2871,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 settings.NotificationUseStateBackgroundColors.ToString(),
                 settings.NotificationConnectedBackgroundColor, settings.NotificationDisconnectedBackgroundColor,
                 settings.NotificationWarningBackgroundColor, settings.NotificationLowBatteryBackgroundColor,
-                settings.NotificationUseBorderGradient.ToString(), settings.NotificationBorderGradientStartColor,
-                settings.NotificationBorderGradientEndColor, settings.NotificationBorderGradientAngle.ToString(),
+                useBorderGradient.ToString(), borderStart,
+                borderEnd, settings.NotificationBorderGradientAngle.ToString(),
                 settings.NotificationShowBorderGlow.ToString(), settings.NotificationBorderGlowColor,
                 settings.NotificationBorderGlowBlur.ToString(), settings.NotificationBorderGlowOpacity.ToString(),
                 settings.NotificationUseStateBorderColors.ToString(), settings.NotificationConnectedBorderColor,
@@ -2733,24 +2883,47 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private string GetDesktopToastStylePayload()
         {
+            var background = settings.DesktopNotificationBackgroundColor;
+            var text = settings.DesktopNotificationTextColor;
+            var secondary = settings.DesktopNotificationSecondaryTextColor;
+            var connected = settings.DesktopNotificationConnectedColor;
+            var warning = settings.DesktopNotificationWarningColor;
+            var lowBattery = settings.DesktopNotificationLowBatteryColor;
+            var useGradient = settings.DesktopNotificationUseGradient;
+            var gradientColor = settings.DesktopNotificationGradientColor;
+            var useBorderGradient = settings.DesktopNotificationUseBorderGradient;
+            var borderStart = settings.DesktopNotificationBorderGradientStartColor;
+            var borderEnd = settings.DesktopNotificationBorderGradientEndColor;
+            ApplyLiveNotificationColors(ThemeAppearanceSurface.DesktopNotification,
+                ref background, ref text, ref secondary, ref connected, ref warning, ref lowBattery,
+                ref useGradient, ref gradientColor, ref useBorderGradient, ref borderStart, ref borderEnd);
+            var fontFamily = settings.DesktopNotificationFontFamily;
+            var fontWeight = settings.DesktopNotificationFontWeight;
+            var titleFamily = settings.DesktopNotificationTitleFontFamily;
+            var titleWeight = settings.DesktopNotificationTitleFontWeight;
+            var messageFamily = settings.DesktopNotificationMessageFontFamily;
+            var messageWeight = settings.DesktopNotificationMessageFontWeight;
+            ApplyLiveTypeface(ThemeAppearanceSurface.DesktopNotification,
+                ref fontFamily, ref fontWeight, ref titleFamily, ref titleWeight,
+                ref messageFamily, ref messageWeight);
             return string.Join(";", new[]
             {
                 settings.DesktopNotificationWidth.ToString(), settings.DesktopNotificationScalePercent.ToString(),
-                settings.DesktopNotificationPosition ?? "BottomRight", settings.DesktopNotificationBackgroundColor,
-                settings.DesktopNotificationTextColor, settings.DesktopNotificationSecondaryTextColor,
-                settings.DesktopNotificationConnectedColor, settings.DesktopNotificationDisconnectedColor,
-                settings.DesktopNotificationWarningColor, settings.DesktopNotificationTitleFontSize.ToString(),
+                settings.DesktopNotificationPosition ?? "BottomRight", background,
+                text, secondary,
+                connected, settings.DesktopNotificationDisconnectedColor,
+                warning, settings.DesktopNotificationTitleFontSize.ToString(),
                 settings.DesktopNotificationMessageFontSize.ToString(), settings.DesktopNotificationIconSize.ToString(),
                 settings.DesktopNotificationPadding.ToString(), settings.DesktopNotificationShowBorder.ToString(),
                 settings.DesktopNotificationBorderPosition ?? "Bottom",
                 settings.DesktopNotificationBorderThickness.ToString(), settings.DesktopNotificationCornerRadius.ToString(),
                 settings.DesktopNotificationIconPosition ?? "Left",
                 settings.DesktopNotificationElementSpacing.ToString(),
-                settings.DesktopNotificationLowBatteryColor,
+                lowBattery,
                 settings.DesktopNotificationShowConnectionBadge.ToString(),
                 settings.DesktopNotificationScreenMargin.ToString(),
                 settings.DesktopNotificationShowShadow.ToString(),
-                settings.DesktopNotificationFontFamily, settings.DesktopNotificationFontWeight,
+                fontFamily, fontWeight,
                 settings.DesktopNotificationTextAlignment, settings.DesktopNotificationAccentMode,
                 settings.DesktopNotificationAnimation, settings.DesktopNotificationShowTitle.ToString(),
                 settings.DesktopNotificationUseBackgroundImage.ToString(), EncodeStyleValue(settings.DesktopNotificationBackgroundImagePath),
@@ -2758,10 +2931,10 @@ namespace ControllerSessionManager.PlayniteIntegration
                 settings.DesktopNotificationBackgroundImageVerticalAlignment, settings.DesktopNotificationBackgroundImageOpacity.ToString(),
                 settings.DesktopNotificationBackgroundImageTintOpacity.ToString(),
                 settings.DesktopNotificationIconSpacing.ToString(),
-                settings.DesktopNotificationTitleFontFamily, settings.DesktopNotificationTitleFontWeight,
-                settings.DesktopNotificationMessageFontFamily, settings.DesktopNotificationMessageFontWeight,
+                titleFamily, titleWeight,
+                messageFamily, messageWeight,
                 settings.DesktopNotificationMessageMaxLines.ToString(), settings.DesktopNotificationBadgePosition,
-                settings.DesktopNotificationUseGradient.ToString(), settings.DesktopNotificationGradientColor,
+                useGradient.ToString(), gradientColor,
                 settings.DesktopNotificationGradientAngle.ToString(), settings.DesktopNotificationUppercaseTitle.ToString(),
                 settings.DesktopNotificationShowIconContainer.ToString(),
                 settings.DesktopNotificationIconContainerColor,
@@ -2775,8 +2948,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 settings.DesktopNotificationUseStateBackgroundColors.ToString(),
                 settings.DesktopNotificationConnectedBackgroundColor, settings.DesktopNotificationDisconnectedBackgroundColor,
                 settings.DesktopNotificationWarningBackgroundColor, settings.DesktopNotificationLowBatteryBackgroundColor,
-                settings.DesktopNotificationUseBorderGradient.ToString(), settings.DesktopNotificationBorderGradientStartColor,
-                settings.DesktopNotificationBorderGradientEndColor, settings.DesktopNotificationBorderGradientAngle.ToString(),
+                useBorderGradient.ToString(), borderStart,
+                borderEnd, settings.DesktopNotificationBorderGradientAngle.ToString(),
                 settings.DesktopNotificationShowBorderGlow.ToString(), settings.DesktopNotificationBorderGlowColor,
                 settings.DesktopNotificationBorderGlowBlur.ToString(), settings.DesktopNotificationBorderGlowOpacity.ToString(),
                 settings.DesktopNotificationUseStateBorderColors.ToString(), settings.DesktopNotificationConnectedBorderColor,
@@ -2883,22 +3056,50 @@ namespace ControllerSessionManager.PlayniteIntegration
                     Loc("LOCCSM_ImportedDesigns"), MessageBoxButton.YesNo,
                     MessageBoxImage.Question) != MessageBoxResult.Yes) return false;
             if (!ImportedVisualProfileCatalog.Delete(profileId)) return false;
-            if (targetSettings != null)
-            {
-                if (string.Equals(targetSettings.NotificationStylePreset, profileId,
-                    StringComparison.OrdinalIgnoreCase))
-                    targetSettings.NotificationStylePreset = NotificationStylePresets.Custom;
-                if (string.Equals(targetSettings.DesktopNotificationStylePreset, profileId,
-                    StringComparison.OrdinalIgnoreCase))
-                    targetSettings.DesktopNotificationStylePreset = NotificationStylePresets.Custom;
-                if (string.Equals(targetSettings.OverlayStylePreset, profileId,
-                    StringComparison.OrdinalIgnoreCase))
-                    targetSettings.OverlayStylePreset = OverlayStylePresets.Custom;
-            }
-            PlayniteApi.Notifications.Add(new NotificationMessage(
-                "ControllerManager-VisualProfile-" + Guid.NewGuid().ToString("N"),
-                string.Format(Loc("LOCCSM_ImportedDesignDeleted"), name), NotificationType.Info));
+            RestoreDefaultPluginLooks(targetSettings, profileId);
             return true;
+        }
+
+        public bool DeleteUserInstalledCreatorTheme(ControllerSessionManagerSettings targetSettings,
+            string themeId)
+        {
+            if (string.IsNullOrWhiteSpace(themeId)) return false;
+            if (themeId.StartsWith(NotificationSoundCatalog.CreatorPackPrefix, StringComparison.OrdinalIgnoreCase))
+                themeId = themeId.Substring(NotificationSoundCatalog.CreatorPackPrefix.Length);
+            if (!CreatorThemeCatalog.IsUserInstalled(themeId)) return false;
+            var name = CreatorThemeCatalog.GetName(themeId);
+            if (PlayniteApi.Dialogs.ShowMessage(
+                    string.Format(Loc("LOCCSM_DeleteCreatorDesignConfirm"), name),
+                    Loc("LOCCSM_PresetGroupCreators"), MessageBoxButton.YesNo,
+                    MessageBoxImage.Question) != MessageBoxResult.Yes) return false;
+            if (!CreatorThemeCatalog.TryRemoveUserInstalled(themeId)) return false;
+            RestoreDefaultPluginLooks(targetSettings, themeId);
+            return true;
+        }
+
+        private static void RestoreDefaultPluginLooks(ControllerSessionManagerSettings targetSettings,
+            string removedId)
+        {
+            if (targetSettings == null || string.IsNullOrWhiteSpace(removedId)) return;
+            var fallback = NotificationStylePresets.PluginPresets[0];
+            var fullscreen = targetSettings.FullscreenLookIs(removedId);
+            var desktop = targetSettings.DesktopLookIs(removedId);
+            if (fullscreen && desktop)
+            {
+                NotificationStylePresets.Apply(targetSettings, fallback);
+                targetSettings.DesktopNotificationStylePreset = fallback;
+            }
+            else if (fullscreen)
+                NotificationStylePresets.ApplyFullscreen(targetSettings, fallback);
+            else if (desktop)
+                NotificationStylePresets.ApplyDesktop(targetSettings, fallback);
+            if (targetSettings.OverlayLookIs(removedId))
+                OverlayStylePresets.Apply(targetSettings, OverlayStylePresets.PluginPresets[0]);
+            var soundPack = NotificationSoundCatalog.CreatorPackPrefix + removedId;
+            if (string.Equals(targetSettings.NotificationSoundPack, soundPack,
+                StringComparison.OrdinalIgnoreCase))
+                targetSettings.NotificationSoundPack = NotificationSoundCatalog.ModernCrystal;
+            targetSettings.RefreshCreatorThemeState();
         }
 
         private static void SaveOptimizedNotificationBackground(
@@ -3368,11 +3569,61 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private string GetOverlayStylePayload()
         {
+            var card = settings.OverlayCardColor;
+            var accent = settings.OverlayAccentColor;
+            var text = settings.OverlayTextColor;
+            var warning = settings.OverlayWarningColor;
+            var useGradient = settings.OverlayUseGradient;
+            var gradientColor = settings.OverlayGradientColor;
+            var useBorderGradient = settings.OverlayUseBorderGradient;
+            var borderStart = settings.OverlayBorderGradientStartColor;
+            var borderEnd = settings.OverlayBorderGradientEndColor;
+            var fontFamily = settings.OverlayFontFamily;
+            var fontWeight = settings.OverlayFontWeight;
+            var titleFamily = settings.OverlayTitleFontFamily;
+            var titleWeight = settings.OverlayTitleFontWeight;
+            var controllerFamily = settings.OverlayControllerFontFamily;
+            var controllerWeight = settings.OverlayControllerFontWeight;
+            var instructionFamily = settings.OverlayInstructionFontFamily;
+            var instructionWeight = settings.OverlayInstructionFontWeight;
+            var statusFamily = settings.OverlayStatusFontFamily;
+            var statusWeight = settings.OverlayStatusFontWeight;
+            if (settings.UsePlayniteThemeAppearance)
+            {
+                var live = ThemeAppearanceBridge.Resolve(PlayniteApi, ThemeAppearanceSurface.Overlay);
+                if (live != null && live.HasAny)
+                {
+                    card = CoalesceHex(live.Background, card);
+                    accent = CoalesceHex(live.Accent, accent);
+                    text = CoalesceHex(live.Text, text);
+                    warning = CoalesceHex(live.Warning, warning);
+                    if (IsUsableHex(live.Gradient))
+                    {
+                        useGradient = true;
+                        gradientColor = live.Gradient;
+                    }
+                    if (IsUsableHex(live.Border) && useBorderGradient)
+                    {
+                        borderStart = live.Border;
+                        borderEnd = live.Border;
+                    }
+                    fontFamily = CoalesceFamily(live.FontFamily, null, fontFamily);
+                    fontWeight = CoalesceFamily(live.FontWeight, null, fontWeight);
+                    titleFamily = CoalesceFamily(live.TitleFontFamily, live.FontFamily, titleFamily);
+                    titleWeight = CoalesceFamily(live.TitleFontWeight, live.FontWeight, titleWeight);
+                    controllerFamily = CoalesceFamily(live.MessageFontFamily, live.FontFamily, controllerFamily);
+                    controllerWeight = CoalesceFamily(live.MessageFontWeight, live.FontWeight, controllerWeight);
+                    instructionFamily = CoalesceFamily(live.MessageFontFamily, live.FontFamily, instructionFamily);
+                    instructionWeight = CoalesceFamily(live.MessageFontWeight, live.FontWeight, instructionWeight);
+                    statusFamily = CoalesceFamily(live.MessageFontFamily, live.FontFamily, statusFamily);
+                    statusWeight = CoalesceFamily(live.MessageFontWeight, live.FontWeight, statusWeight);
+                }
+            }
             return string.Join(";", new[]
             {
                 settings.OverlayScalePercent.ToString(), settings.OverlayDimColor,
-                settings.OverlayCardColor, settings.OverlayAccentColor,
-                settings.OverlayTextColor, settings.OverlayWarningColor,
+                card, accent,
+                text, warning,
                 settings.OverlayTitleFontSize.ToString(), settings.OverlayControllerFontSize.ToString(),
                 settings.OverlayInstructionFontSize.ToString(), settings.OverlayStatusFontSize.ToString(),
                 settings.OverlayControllerIconSize.ToString(), settings.OverlayStatusIconSize.ToString(),
@@ -3384,17 +3635,17 @@ namespace ControllerSessionManager.PlayniteIntegration
                     ? (settings.OverlayControllerIconPosition ?? "Left")
                     : "Center",
                 settings.OverlayShowControllerName.ToString(),
-                settings.OverlayFontFamily, settings.OverlayFontWeight,
+                fontFamily, fontWeight,
                 settings.OverlayShowConnectionBadge.ToString(),
                 settings.OverlayShowBatteryBadge.ToString(),
                 settings.OverlayShowTitle.ToString(), settings.OverlayShowInstruction.ToString(),
                 settings.OverlayShowPauseStatus.ToString(), settings.OverlayCardPosition,
                 settings.OverlayAnimation, settings.OverlayBorderPosition,
                 settings.OverlayCardWidth.ToString(), settings.OverlayShowShadow.ToString(),
-                settings.OverlayTitleFontFamily, settings.OverlayTitleFontWeight,
-                settings.OverlayControllerFontFamily, settings.OverlayControllerFontWeight,
-                settings.OverlayInstructionFontFamily, settings.OverlayInstructionFontWeight,
-                settings.OverlayStatusFontFamily, settings.OverlayStatusFontWeight,
+                titleFamily, titleWeight,
+                controllerFamily, controllerWeight,
+                instructionFamily, instructionWeight,
+                statusFamily, statusWeight,
                 settings.OverlayConnectionBadgeTextColor, settings.OverlayConnectionBadgeIconColor,
                 settings.OverlayConnectionBadgeBackgroundColor, settings.OverlayConnectionBadgeBorderColor,
                 settings.OverlayConnectionBadgeBorderThickness.ToString(),
@@ -3409,7 +3660,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 settings.OverlayBatteryBadgeMediumColor, settings.OverlayBatteryBadgeLowColor,
                 settings.OverlayBatteryBadgeEmptyColor,
                 settings.OverlayContentAlignment, settings.OverlayScreenMargin.ToString(),
-                settings.OverlayUseGradient.ToString(), settings.OverlayGradientColor,
+                useGradient.ToString(), gradientColor,
                 settings.OverlayGradientAngle.ToString(), settings.OverlayUppercaseTitle.ToString(),
                 settings.OverlayLayoutMode, settings.OverlayUseBackgroundImage.ToString(),
                 EncodeStyleValue(settings.OverlayBackgroundImagePath),
@@ -3428,8 +3679,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 settings.OverlayUseIndependentBorders.ToString(),
                 settings.OverlayBorderLeftThickness.ToString(), settings.OverlayBorderTopThickness.ToString(),
                 settings.OverlayBorderRightThickness.ToString(), settings.OverlayBorderBottomThickness.ToString(),
-                settings.OverlayUseBorderGradient.ToString(), settings.OverlayBorderGradientStartColor,
-                settings.OverlayBorderGradientEndColor, settings.OverlayBorderGradientAngle.ToString(),
+                useBorderGradient.ToString(), borderStart,
+                borderEnd, settings.OverlayBorderGradientAngle.ToString(),
                 settings.OverlayShowBorderGlow.ToString(), settings.OverlayBorderGlowColor,
                 settings.OverlayBorderGlowBlur.ToString(), settings.OverlayBorderGlowOpacity.ToString(),
                 settings.OverlaySceneUseGradient.ToString(), settings.OverlaySceneGradientColor,

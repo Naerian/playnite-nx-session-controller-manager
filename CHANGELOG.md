@@ -4,6 +4,15 @@
 
 
 
+
+## 1.0.28 — 2026-08-28
+- Added a Playnite theme color bridge so notifications and the overlay can follow live theme colors and optional typefaces, including in-theme palettes such as Aniki.
+- Enabled Follow the active Playnite theme colors by default; themes without a mapping file are left unchanged.
+- Added Playnite menu actions to preview the notification and overlay in Fullscreen while the current theme is loaded.
+- Limited Looks deletion to imported visual profiles and sideloaded creator packs; catalog designs stay installed, and removing the selected look applies Soft.
+- Fixed deleting an imported look so the first plugin preset is selected instead of Custom with leftover colors.
+- Stopped showing Playnite notifications after a look or sideloaded design is removed.
+
 ## 1.0.27 — 2026-08-27
 - Added secure in-app installation of creator design packages (`.csmtheme`) with schema and plugin compatibility checks, safe archive extraction, file-size and type limits, asset validation, and an appearance-property allowlist.
 - Added a configurable and localized live disconnect timer for overlays, including creator-theme placement through the optional `Timer` block.

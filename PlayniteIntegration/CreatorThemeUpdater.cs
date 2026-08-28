@@ -184,7 +184,9 @@ namespace ControllerSessionManager.PlayniteIntegration
                 Directory.CreateDirectory(staging);
                 ExtractValidated(temporaryPackage, staging, cancellationToken);
                 ValidateExtracted(staging, id, release);
-                ReplaceDirectory(staging, Path.Combine(themesRoot, id));
+                var destination = Path.Combine(themesRoot, id);
+                ReplaceDirectory(staging, destination);
+                CreatorThemeCatalog.MarkCatalogOrigin(destination);
             }
             finally
             {

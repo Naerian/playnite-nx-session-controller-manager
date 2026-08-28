@@ -13,6 +13,8 @@
     <sys:String x:Key="LOCCSM_FoundationNotice">コントローラー一覧、プレイ中の追跡、切断オーバーレイが利用できます。安全な一時停止と追加のバッテリー機能は今後実装されます。</sys:String>
     <sys:String x:Key="LOCCSM_MenuDiagnostics">コントローラー診断</sys:String>
     <sys:String x:Key="LOCCSM_MenuRefresh">コントローラーを更新</sys:String>
+    <sys:String x:Key="LOCCSM_MenuPreviewNotification">Preview notification</sys:String>
+    <sys:String x:Key="LOCCSM_MenuPreviewOverlay">Preview overlay</sys:String>
     <sys:String x:Key="LOCCSM_DiagnosticsTitle">コントローラー診断</sys:String>
     <sys:String x:Key="LOCCSM_DiagnosticsHeader">Controller Manager 診断スナップショット</sys:String>
     <sys:String x:Key="LOCCSM_DiagnosticsCount">接続数：{0}</sys:String>
@@ -285,6 +287,18 @@
     <sys:String x:Key="LOCCSM_ControllerDisconnectedToast">コントローラー切断</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyForcePauseOffline">ネットワーク通信がない場合はゲームを一時的に停止。通信がある場合は警告のみ表示</sys:String>
     <sys:String x:Key="LOCCSM_TabSession">プレイ中</sys:String><sys:String x:Key="LOCCSM_TabAppearance">外観</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceLooks">Looks</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceLooksHelp">Choose a look for desktop notifications, fullscreen notifications and the overlay. Installing or importing a design applies it immediately. Use the other Appearance tabs to preview, alerts, layout and colors.</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceLooksDesktop">Desktop notif.</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceLooksFullscreen">Fullscreen notif.</sys:String>
+    <sys:String x:Key="LOCCSM_LooksPreview">Preview</sys:String>
+    <sys:String x:Key="LOCCSM_CopyFullscreenStyleHelp">Replace this destination with the current fullscreen notification look.</sys:String>
+    <sys:String x:Key="LOCCSM_CopyDesktopStyleHelp">Replace this destination with the current desktop notification look.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeLockedLooksNotice">Layout, colors and typography stay as the author designed them. Preview from here, or switch to a plugin preset or Custom to edit.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeLockedDestinationNotice">Layout, colors and typography are locked. You can still use alerts, preview, and change the look from Appearance → Looks. Enable Follow the active Playnite theme colors there if you want this Playnite theme's color packs.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeLockedOverlayNotice">Layout, colors and typography are locked. You can still enable or disable the overlay, preview it here, and change the look from Appearance → Looks. Enable Follow the active Playnite theme colors there if you want this Playnite theme's color packs.</sys:String>
+    <sys:String x:Key="LOCCSM_UsePlayniteThemeAppearance">Follow the active Playnite theme colors</sys:String>
+    <sys:String x:Key="LOCCSM_UsePlayniteThemeAppearanceHelp">When the active Playnite theme ships ControllerManager/theme-bridge.json, notifications and the overlay use that theme's live colors (including its color packs). Looks, fonts and images stay as selected. Themes without the file are left unchanged.</sys:String>
     <sys:String x:Key="LOCCSM_AdaptiveProtectionHelp">自動モードは1人用として開始し、複数コントローラーの継続的な交互入力を検出した場合のみローカルマルチプレイへ移行します。コントローラーを一度変更しただけでは移行しません。必要な場合のみゲーム別設定を使用してください。</sys:String>
     <sys:String x:Key="LOCCSM_PauseModesHelp">Choose how the plugin reacts when a controller disconnects. Each game can override this setting from its context menu.</sys:String>
     <sys:String x:Key="LOCCSM_NotificationWidth">幅 (px)</sys:String><sys:String x:Key="LOCCSM_NotificationScale">サイズ (%)</sys:String><sys:String x:Key="LOCCSM_NotificationDuration">表示時間 (ms)</sys:String><sys:String x:Key="LOCCSM_NotificationPosition">位置</sys:String>
@@ -748,7 +762,7 @@
     <sys:String x:Key="LOCCSM_ImportedDesigns">インポートしたデザイン</sys:String>
     <sys:String x:Key="LOCCSM_DeleteImportedDesign">インポートしたデザインを削除</sys:String>
     <sys:String x:Key="LOCCSM_DeleteImportedDesignConfirm">インポートしたデザイン「{0}」を削除しますか？</sys:String>
-    <sys:String x:Key="LOCCSM_ImportedDesignDeleted">インポートしたデザイン「{0}」を削除しました。</sys:String>
+    <sys:String x:Key="LOCCSM_DeleteCreatorDesignConfirm">Remove the installed creator design "{0}"? This deletes the copy in Controller Manager, not the Playnite theme.</sys:String>
     <sys:String x:Key="LOCCSM_UseGradient">グラデーションを使用</sys:String>
     <sys:String x:Key="LOCCSM_GradientAngle">グラデーション角度</sys:String>
     <sys:String x:Key="LOCCSM_UppercaseTitle">タイトルを大文字にする</sys:String>
@@ -833,4 +847,8 @@
     <sys:String x:Key="LOCCSM_OverlaySceneGlowRadius">グロー半径 (%)</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeCommunityHint">Playnite テーマの作者、またはコミュニティ向けデザインを作成したい方は、通知とオーバーレイ用の独自テーマを作成して公式カタログへ投稿できます。</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeCommunityLink">クリエイターテーマ作成ガイドを開く</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorDocsTitle">Creator theme guides</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorDocsHelp">Documentation for Playnite theme authors who want Controller Manager notifications and overlay to match their theme, including the live color bridge.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorDocsEnglish">English</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorDocsSpanish">Español</sys:String>
 </ResourceDictionary>

@@ -124,6 +124,17 @@ internal static class CreatorThemeCatalogSmoke
                 new object[] { "overlay" });
             if (!overlayIds.Contains("downloaded.test") || !overlayIds.Contains("community.test"))
                 throw new Exception("Bundled and downloaded creator packs were not merged.");
+            var isUserInstalled = catalog.GetMethod("IsUserInstalled");
+            if ((bool)isUserInstalled.Invoke(null, new object[] { "downloaded.test" }) ||
+                (bool)isUserInstalled.Invoke(null, new object[] { "community.test" }))
+                throw new Exception("Catalog and bundled creator packs must not be treated as removable sideloads.");
+            catalog.GetMethod("MarkSideloadOrigin").Invoke(null, new object[] { downloaded });
+            if (!(bool)isUserInstalled.Invoke(null, new object[] { "downloaded.test" }))
+                throw new Exception("A manually installed creator pack was not marked removable.");
+            catalog.GetMethod("MarkCatalogOrigin").Invoke(null, new object[] { downloaded });
+            if ((bool)isUserInstalled.Invoke(null, new object[] { "downloaded.test" }))
+                throw new Exception("An official catalog pack remained removable after a catalog install.");
+            catalog.GetMethod("MarkSideloadOrigin").Invoke(null, new object[] { downloaded });
             if (!(bool)matchesTheme.Invoke(null,
                     new object[] { "downloaded.test", "any.desktop.theme", false }) ||
                 !(bool)matchesTheme.Invoke(null,

@@ -2,7 +2,7 @@
 
 > The maintained contribution workflow, templates and complete author reference now live in the dedicated [Controller Manager Creator Themes Wiki](https://github.com/Naerian/controller-manager-creator-themes/wiki). Creator packs are submitted to that repository and installed with **Update designs**; they no longer require a Controller Manager release.
 
-Downloaded `.csmtheme` packages can also be installed from **Appearance → Install creator design**. The plugin asks for confirmation with the design name, author and version, rejects incompatible schema/plugin ranges, validates files and properties, and preserves the previous installed copy if installation fails or is cancelled. The package is not registered as a Windows file type, so double-click installation is intentionally unnecessary.
+Downloaded `.csmtheme` packages can also be installed from **Appearance → Looks → Install creator design**. After a successful install the pack becomes the active look for the surfaces it defines (desktop and fullscreen notifications, overlay, and its sound pack when complete). The plugin asks for confirmation with the design name, author and version, rejects incompatible schema/plugin ranges, validates files and properties, and preserves the previous installed copy if installation fails or is cancelled. The package is not registered as a Windows file type, so double-click installation is intentionally unnecessary.
 
 The catalog repository protects `main` behind pull requests and its required `validate` check. Validation covers the complete documented notification and overlay property contracts (names, JSON types, ranges, colors and enumerations), manifests, safe asset paths, declared fonts and sounds, previews and license/credit evidence. Generated packages live in the separate `catalog` branch. Visual quality, accessibility in real themes, asset provenance and the truth of license declarations remain a maintainer review.
 
@@ -571,7 +571,39 @@ Use a relative path, confirm the extension is supported and ensure the resolved 
 
 ### The glow does not exactly match a Playnite theme effect
 
-Creator themes configure Controller Manager's WPF rendering primitives. They cannot import arbitrary controls, shaders, storyboards or resource dictionaries from the active Playnite theme. Recreate the visual language with gradient borders, glow color/blur/opacity, surface gradients, images and shadows.
+Creator packs still paint Controller Manager's own overlay host (a separate process). They cannot load arbitrary XAML, shaders or storyboards from a Playnite theme.
+
+To **follow that theme's live color packs** (Aniki palettes, Helium accents, or any other author's naming), the Playnite theme ships a small mapping file:
+
+`{ThemeFolder}/ControllerManager/theme-bridge.json`
+
+```json
+{
+  "Notification": {
+    "Background": "AnikiToastBackgroundGradient",
+    "Text": "AnikiToastTextBrush",
+    "SecondaryText": "AnikiToastSubTextBrush",
+    "Border": "AnikiToastBorderBrush",
+    "Accent": "Accent",
+    "Warning": "WarningBrush"
+  },
+  "Overlay": {
+    "Background": "ControlBackgroundBrush",
+    "Text": "TextBrush",
+    "Accent": "GlyphBrush",
+    "Border": "NormalBorderBrush",
+    "Warning": "WarningBrush"
+  }
+}
+```
+
+Keys on the left are Controller Manager roles. Values are **that theme's** WPF resource keys. The plugin resolves them with `Application.Current.TryFindResource` at display time, so whichever color pack the user selected inside the theme is what notifications and overlay receive. Users enable this with **Follow the active Playnite theme colors** on Appearance → Looks.
+
+If the file is missing, the plugin does not guess Playnite chrome brushes. The selected look stays as authored.
+
+Layout, fonts and images still come from the selected Controller Manager look (plugin preset, creator pack or custom). The bridge only replaces color roles.
+
+Full contract: [Playnite theme color bridge](https://github.com/Naerian/controller-manager-creator-themes/wiki/Playnite-Theme-Bridge).
 
 ### The settings controls are disabled
 

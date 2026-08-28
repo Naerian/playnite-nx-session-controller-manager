@@ -32,20 +32,46 @@ if ($viewXaml -notmatch 'SelectedValue="{Binding CreatorThemeUpdatePolicy}"' -or
     $viewXaml -notmatch 'Tag="Manual"') {
     throw "Appearance options must expose startup, daily and manual creator-design updates."
 }
-if ($viewXaml -notmatch 'LOCCSM_CreatorThemeCommunityHint' -or
-    $viewXaml -notmatch 'LOCCSM_CreatorThemeCommunityLink' -or
-    $viewXaml -notmatch 'https://github.com/Naerian/controller-manager-creator-themes/wiki') {
-    throw "Appearance update options must invite theme authors to the creator-theme guide."
+if ($pluginSource -notmatch 'LOCCSM_MenuPreviewNotification' -or
+    $pluginSource -notmatch 'LOCCSM_MenuPreviewOverlay' -or
+    $pluginSource -notmatch 'ShowOverlayPreview\s*\(\s*\)' -or
+    $pluginSource -notmatch 'ShowNotificationPreview\("connected", true\)') {
+    throw "The main menu must preview fullscreen notifications and overlay while the Playnite theme is loaded."
+}
+if ((Get-Content -Raw (Join-Path $root "PlayniteIntegration\ThemeAppearanceBridge.cs")) -notmatch 'BindStyle\(keys, "TextStyle"' -or
+    (Get-Content -Raw (Join-Path $root "PlayniteIntegration\ThemeAppearanceBridge.cs")) -notmatch 'TryResolveStyle') {
+    throw "The theme bridge must resolve TextStyle / TitleStyle / MessageStyle from the active Playnite theme."
+}
+if ($viewXaml -notmatch 'x:Name="DeletePresetButton"' -or
+    $viewXaml -notmatch 'Path=IsVisible, FallbackValue=False' -or
+    $viewSource -notmatch 'DeleteUserInstalledCreatorTheme' -or
+    $pluginSource -notmatch 'RestoreDefaultPluginLooks' -or
+    $pluginSource -notmatch 'FullscreenLookIs\(removedId\)' -or
+    $pluginSource -notmatch 'NotificationStylePresets.Apply\(targetSettings, fallback\)' -or
+    (Get-Content -Raw (Join-Path $root "PlayniteIntegration\ControllerSessionManagerSettings.cs")) -notmatch 'bool FullscreenLookIs' -or
+    $viewSource -notmatch 'DeleteImportedVisualProfileClick[\s\S]*suppressingStylePresetMark = true' -or
+    (Get-Content -Raw (Join-Path $root "PlayniteIntegration\CreatorThemeCatalog.cs")) -notmatch 'OriginSideload' -or
+    (Get-Content -Raw (Join-Path $root "PlayniteIntegration\CreatorThemeCatalog.cs")) -notmatch 'TryRemoveUserInstalled') {
+    throw "Only sideloaded creator packs can be deleted, the trash stays in the dropdown, and Soft is restored when the active look is removed."
+}
+if ($viewXaml -notmatch 'LOCCSM_CreatorDocsTitle' -or
+    $viewXaml -notmatch 'LOCCSM_CreatorDocsEnglish' -or
+    $viewXaml -notmatch 'LOCCSM_CreatorDocsSpanish' -or
+    $viewXaml -notmatch 'controller-manager-creator-themes/wiki/EN-Overview' -or
+    $viewXaml -notmatch 'controller-manager-creator-themes/wiki/ES-Descripcion-General' -or
+    $viewXaml -notmatch 'Text="{DynamicResource LOCCSM_CreatorDocsTitle}" Style="{StaticResource SectionHeaderText}"' -or
+    $viewXaml -match 'LOCCSM_CreatorThemeLockedLooksNotice') {
+    throw "About creator guides must match project-link headers, and Looks must not repeat locked-design warnings."
 }
 if ($viewSource -notmatch 'plugin\.ShowNotificationPresetPreview\s*\(\s*\)') {
     throw "Changing a notification style preset must launch its automatic preview."
 }
-if ($pluginSource -notmatch 'ShowDesktopNotificationPreview\s*\(\s*"connected"\s*,\s*false\s*\)' -or
-    $pluginSource -notmatch 'ShowNotificationPreview\s*\(\s*"connected"\s*,\s*false\s*\)') {
-    throw "The automatic notification preset preview must explicitly disable sound."
+if ($pluginSource -notmatch 'ShowDesktopNotificationPreview\s*\(\s*"connected"\s*,\s*true\s*\)' -or
+    $pluginSource -notmatch 'ShowNotificationPreview\s*\(\s*"connected"\s*,\s*true\s*\)') {
+    throw "Looks and preset previews must play the currently selected sound pack."
 }
-if (($viewXaml | Select-String -Pattern 'Click="UpdateCreatorThemesClick"' -AllMatches).Matches.Count -ne 2 -or
-    ($viewXaml | Select-String -Pattern 'Click="InstallCreatorThemeClick"' -AllMatches).Matches.Count -ne 2 -or
+if (($viewXaml | Select-String -Pattern 'Click="UpdateCreatorThemesClick"' -AllMatches).Matches.Count -ne 1 -or
+    ($viewXaml | Select-String -Pattern 'Click="InstallCreatorThemeClick"' -AllMatches).Matches.Count -ne 1 -or
     $viewSource -notmatch 'ShowOperationProgress\s*\(' -or
     $viewSource -notmatch 'CreatorThemeCatalog\.Reload\s*\(\s*\)') {
     throw "Creator design updates must use the cancellable progress window and reload the selectors."
@@ -53,8 +79,15 @@ if (($viewXaml | Select-String -Pattern 'Click="UpdateCreatorThemesClick"' -AllM
 $profileUpdateRows = [regex]::Matches($viewXaml,
     'Click="ImportVisualProfileClick"\s*/>\s*<Button[^>]+Click="InstallCreatorThemeClick"\s*/>\s*<Button[^>]+Click="UpdateCreatorThemesClick"',
     [Text.RegularExpressions.RegexOptions]::Singleline)
-if ($profileUpdateRows.Count -ne 2) {
-    throw "Each visual-profile toolbar must place its single design update button after Import."
+if ($profileUpdateRows.Count -ne 1) {
+    throw "Appearance must expose a single catalog toolbar after Import."
+}
+if ($viewSource -notmatch 'ActivateInstalledCreatorDesign' -or
+    $viewSource -notmatch 'LooksPreviewClick' -or
+    $pluginSource -notmatch 'ThemeAppearanceBridge.Resolve' -or
+    $viewXaml -notmatch 'UsePlayniteThemeAppearance' -or
+    $viewXaml -match 'Text="{DynamicResource LOCCSM_AppearanceOptions}" Style="{StaticResource TabHeaderLabel}"') {
+    throw "Looks must activate installed designs, preview each look, follow live Playnite colors, and not keep a separate Options tab."
 }
 $presetItemStyle = [regex]::Match($viewXaml,
     '<Style x:Key="AppearancePresetItemStyle"[\s\S]*?</Style>\s*<DataTemplate x:Key="AppearancePresetItemTemplate">').Value
@@ -66,8 +99,10 @@ if ($presetItemStyle -notmatch 'Property="IsSelected" Value="True"' -or
 $presetItemTemplate = [regex]::Match($viewXaml,
     '<DataTemplate x:Key="AppearancePresetItemTemplate">[\s\S]*?</DataTemplate>').Value
 if ($presetItemTemplate -notmatch 'Binding="\{Binding IsSelected, RelativeSource=\{RelativeSource AncestorType=\{x:Type ComboBoxItem\}\}\}"' -or
-    $presetItemTemplate -notmatch 'TargetName="PresetLabel" Property="Foreground" Value="\{DynamicResource Narian\.AccentOn\}"') {
-    throw "The selected preset label must explicitly inherit the active accent contrast color."
+    $presetItemTemplate -notmatch 'TargetName="PresetLabel" Property="Foreground" Value="\{DynamicResource Narian\.AccentOn\}"' -or
+    $presetItemTemplate -notmatch 'TargetName="PresetLabel" Property="FontWeight" Value="SemiBold"' -or
+    $presetItemTemplate -notmatch 'TargetName="DeletePresetButton" Property="FontWeight" Value="Normal"') {
+    throw "The selected preset label must use accent contrast and bold, without bolding the delete icon."
 }
 
 [Reflection.Assembly]::LoadFrom("C:\Playnite\Playnite.SDK.dll") | Out-Null
@@ -120,10 +155,11 @@ if ($null -eq $constructor) {
 }
 
 $view = $constructor.Invoke(@($null))
-if ($null -eq $view.FindName("DesktopDesignExpander") -or
-    $null -eq $view.FindName("FullscreenDesignExpander") -or
-    $null -eq $view.FindName("OverlayDesignExpander")) {
-    throw "The creator-design update surfaces were not constructed."
+if ($null -eq $view.FindName("DesktopNotificationPresetSelector") -or
+    $null -eq $view.FindName("FullscreenNotificationPresetSelector") -or
+    $null -eq $view.FindName("OverlayPresetSelector") -or
+    $viewXaml -notmatch 'LOCCSM_AppearanceLooks') {
+    throw "Appearance Looks must host the three design selectors."
 }
 $selector = $view.FindName("NotificationSoundPackSelector")
 if ($null -eq $selector) {
@@ -159,14 +195,11 @@ $window.Content = $view
 $window.Show()
 $window.UpdateLayout()
 if ($view.FindName("DesktopAlertsExpander").IsExpanded -or
-    $view.FindName("DesktopDesignExpander").IsExpanded -or
     $view.FindName("DesktopAppearanceLayoutExpander").IsExpanded -or
     $view.FindName("FullscreenAlertsExpander").IsExpanded -or
-    $view.FindName("FullscreenDesignExpander").IsExpanded -or
     $view.FindName("FullscreenAppearanceLayoutExpander").IsExpanded -or
-    $view.FindName("OverlayDesignExpander").IsExpanded -or
     $view.FindName("OverlayAppearanceLayoutExpander").IsExpanded) {
-    throw "Notification and overlay child sections must start collapsed."
+    throw "Notification and overlay secondary sections must start collapsed."
 }
 $overlayLayout = $view.FindName("OverlayEditorLayoutGrid")
 $overlaySettingsScroll = $view.FindName("OverlaySettingsScrollViewer")
@@ -184,20 +217,19 @@ if ($null -eq $overlayLayout -or $overlayLayout.ColumnDefinitions.Count -ne 3 -o
     $overlayLayout.ColumnDefinitions[2].Width.GridUnitType -ne [Windows.GridUnitType]::Star -or
     $overlayLayout.ColumnDefinitions[2].MinWidth -lt 360 -or
     $null -eq $overlaySettingsScroll -or
-    -not (Test-LogicalAncestor $overlaySettingsScroll $view.FindName("OverlayDesignExpander")) -or
+    -not (Test-LogicalAncestor $overlaySettingsScroll $view.FindName("OverlayAppearanceLayoutExpander")) -or
     -not (Test-LogicalAncestor $overlaySettingsScroll $view.FindName("OverlayStyleEditor")) -or
-    $view.FindName("OverlayDesignExpander").Margin.Bottom -lt 8 -or
     $null -eq $overlayPreviewPane -or
     (Test-LogicalAncestor $overlaySettingsScroll $overlayPreviewPane) -or
     [Windows.Controls.Grid]::GetColumn($overlayPreviewPane) -ne 2 -or
     $overlayPreviewPane.HorizontalAlignment -ne [Windows.HorizontalAlignment]::Stretch -or
-    $overlayPreviewPane.VerticalAlignment -ne [Windows.VerticalAlignment]::Center -or
+    $overlayPreviewPane.VerticalAlignment -ne [Windows.VerticalAlignment]::Top -or
     $null -eq $overlayPreviewViewport -or
     $overlayPreviewViewport -is [Windows.Controls.ScrollViewer]) {
     throw "The overlay preview must remain in a fixed, non-scrolling, wider right-hand pane " +
         "(layout=$($null -ne $overlayLayout), columns=$($overlayLayout.ColumnDefinitions.Count), " +
         "previewMin=$($overlayLayout.ColumnDefinitions[2].MinWidth), scroll=$($null -ne $overlaySettingsScroll), " +
-        "designInScroll=$(Test-LogicalAncestor $overlaySettingsScroll $view.FindName('OverlayDesignExpander')), " +
+        "layoutInScroll=$(Test-LogicalAncestor $overlaySettingsScroll $view.FindName('OverlayAppearanceLayoutExpander')), " +
         "editorInScroll=$(Test-LogicalAncestor $overlaySettingsScroll $view.FindName('OverlayStyleEditor')), " +
         "previewInScroll=$(Test-LogicalAncestor $overlaySettingsScroll $overlayPreviewPane), " +
         "column=$([Windows.Controls.Grid]::GetColumn($overlayPreviewPane)), " +

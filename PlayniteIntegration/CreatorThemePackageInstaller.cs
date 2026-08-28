@@ -87,6 +87,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 ExtractValidated(packagePath, staging, cancellationToken);
                 var installedManifest = ValidateExtracted(staging, inspected.Id);
                 ReplaceDirectory(staging, Path.Combine(themesRoot, installedManifest.Id));
+                CreatorThemeCatalog.MarkSideloadOrigin(Path.Combine(themesRoot, installedManifest.Id));
                 CreatorThemeCatalog.Reload();
                 return installedManifest;
             }

@@ -56,7 +56,6 @@
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter TargetName="PresetItemBackground" Property="Background" Value="{DynamicResource Narian.Accent}" />
                                 <Setter Property="Foreground" Value="{DynamicResource Narian.AccentOn}" />
-                                <Setter Property="FontWeight" Value="SemiBold" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -79,18 +78,27 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock x:Name="PresetLabel" Text="{Binding DisplayName}" VerticalAlignment="Center"
                                Foreground="{DynamicResource Narian.Text}" />
-                    <Button Grid.Column="1" Content="&#xE74D;" FontFamily="Segoe MDL2 Assets"
+                    <Button x:Name="DeletePresetButton" Grid.Column="1" Content="&#xE74D;" FontFamily="Segoe MDL2 Assets"
                             Width="28" Height="24" MinWidth="28" MinHeight="24" Padding="0"
                             Margin="16,0,0,0" Tag="{Binding Key}" Click="DeleteImportedVisualProfileClick"
                             ToolTip="{DynamicResource LOCCSM_DeleteImportedDesign}"
-                            Visibility="{Binding IsImported, Converter={StaticResource BoolToVis}}" />
+                            FontWeight="Normal" Visibility="Collapsed" />
                 </Grid>
             </Border>
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type ComboBoxItem}}}"
                              Value="True">
                     <Setter TargetName="PresetLabel" Property="Foreground" Value="{DynamicResource Narian.AccentOn}" />
+                    <Setter TargetName="PresetLabel" Property="FontWeight" Value="SemiBold" />
                 </DataTrigger>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding CanDelete}" Value="True" />
+                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type ComboBoxItem}}, Path=IsVisible, FallbackValue=False}" Value="True" />
+                    </MultiDataTrigger.Conditions>
+                    <Setter TargetName="DeletePresetButton" Property="Visibility" Value="Visible" />
+                    <Setter TargetName="DeletePresetButton" Property="FontWeight" Value="Normal" />
+                </MultiDataTrigger>
                 <DataTrigger Binding="{Binding IsHeader}" Value="True">
                     <Setter TargetName="PresetRow" Property="BorderBrush" Value="{DynamicResource Narian.Accent}" />
                     <Setter TargetName="PresetRow" Property="BorderThickness" Value="0,0,0,1" />
@@ -1271,25 +1279,28 @@
                     <TabItem>
                         <TabItem.Header>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Style="{StaticResource TabGlyph}" Text="&#xEA8F;" />
-                                <TextBlock Text="{DynamicResource LOCCSM_ControllerNotificationTitle}" Style="{StaticResource TabHeaderLabel}" />
+                                <TextBlock Style="{StaticResource TabGlyph}" Text="&#xE790;" />
+                                <TextBlock Text="{DynamicResource LOCCSM_AppearanceLooks}" Style="{StaticResource TabHeaderLabel}" />
                             </StackPanel>
                         </TabItem.Header>
                         <ScrollViewer Style="{StaticResource FillScrollViewer}">
                             <StackPanel Margin="16,16,16,16">
                                 <StackPanel Style="{StaticResource PageSection}">
                                     <Border Style="{StaticResource PageHeader}">
-                                        <TextBlock Text="{DynamicResource LOCCSM_ControllerNotificationTitle}" Style="{StaticResource SectionHeaderText}" />
+                                        <TextBlock Text="{DynamicResource LOCCSM_AppearanceLooks}" Style="{StaticResource SectionHeaderText}" />
                                     </Border>
-                                    <TextBlock Text="{DynamicResource LOCCSM_ControllerNotificationHelp}" Style="{StaticResource SectionSubtitleText}" />
+                                    <TextBlock Text="{DynamicResource LOCCSM_AppearanceLooksHelp}" Style="{StaticResource SectionSubtitleText}" />
                                 </StackPanel>
                                 <Border Style="{StaticResource SettingsCard}" Margin="0,0,0,16">
                                     <StackPanel>
                                         <WrapPanel x:Name="NotificationPluginPresetChips" Visibility="Collapsed"/>
                                         <WrapPanel x:Name="NotificationCreatorPresetChips" Visibility="Collapsed"/>
                                         <WrapPanel x:Name="NotificationCustomPresetChips" Visibility="Collapsed"/>
+                                        <WrapPanel x:Name="OverlayPluginPresetChips" Visibility="Collapsed"/>
+                                        <WrapPanel x:Name="OverlayCreatorPresetChips" Visibility="Collapsed"/>
+                                        <WrapPanel x:Name="OverlayCustomPresetChips" Visibility="Collapsed"/>
                                         <TextBlock Text="{DynamicResource LOCCSM_VisualProfileHelp}" Style="{StaticResource FieldHintText}" Margin="0,0,0,8"/>
-                                        <WrapPanel Margin="0,0,0,4">
+                                        <WrapPanel x:Name="AppearanceCatalogToolbar" Margin="0,0,0,4">
                                             <Button Content="{DynamicResource LOCCSM_ExportVisualProfile}" MinWidth="180" Margin="0,0,8,8"
                                                     Style="{StaticResource {x:Type Button}}" Click="ExportVisualProfileClick"/>
                                             <Button Content="{DynamicResource LOCCSM_ImportVisualProfile}" MinWidth="180" Margin="0,0,8,8"
@@ -1301,12 +1312,87 @@
                                         </WrapPanel>
                                     </StackPanel>
                                 </Border>
-                                <Expander Style="{StaticResource SettingsExpander}" IsExpanded="False"
-                                          Header="{DynamicResource LOCCSM_DesktopNotificationsTitle}">
+                                <Border Style="{StaticResource SettingsCard}" Margin="0,0,0,16">
                                     <StackPanel>
-                                        <TextBlock Text="{DynamicResource LOCCSM_PreviewNotification}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,0,0,8"/>
-                                        <CheckBox Content="{DynamicResource LOCCSM_PreviewWithSound}" IsChecked="{Binding NotificationPreviewWithSound}" Margin="0,0,0,8"/>
-                                        <WrapPanel Margin="0,0,0,8">
+                                        <TextBlock Text="{DynamicResource LOCCSM_CreatorThemeUpdatePolicy}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,0,0,4" />
+                                        <TextBlock Text="{DynamicResource LOCCSM_CreatorThemeUpdatePolicyHelp}" Style="{StaticResource FieldHintText}" Margin="0,0,0,10" />
+                                        <ComboBox Width="320" HorizontalAlignment="Left"
+                                                  SelectedValue="{Binding CreatorThemeUpdatePolicy}"
+                                                  SelectedValuePath="Tag">
+                                            <ComboBoxItem Tag="Startup" Content="{DynamicResource LOCCSM_CreatorThemeUpdateStartup}" />
+                                            <ComboBoxItem Tag="Daily" Content="{DynamicResource LOCCSM_CreatorThemeUpdateDaily}" />
+                                            <ComboBoxItem Tag="Manual" Content="{DynamicResource LOCCSM_CreatorThemeUpdateManual}" />
+                                        </ComboBox>
+                                    </StackPanel>
+                                </Border>
+                                <CheckBox Content="{DynamicResource LOCCSM_UsePlayniteThemeAppearance}"
+                                          IsChecked="{Binding UsePlayniteThemeAppearance}" Margin="0,0,0,8"/>
+                                <TextBlock Text="{DynamicResource LOCCSM_UsePlayniteThemeAppearanceHelp}" Style="{StaticResource FieldHintText}" Margin="0,0,0,16"/>
+                                <TextBlock Text="{DynamicResource LOCCSM_AppearanceLooksDesktop}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,0,0,4"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                    <ComboBox x:Name="DesktopNotificationPresetSelector" Width="360" HorizontalAlignment="Left"
+                                              IsSynchronizedWithCurrentItem="False"
+                                              ItemContainerStyle="{StaticResource AppearancePresetItemStyle}"
+                                              ItemTemplate="{StaticResource AppearancePresetItemTemplate}"
+                                              SelectedValuePath="Key"
+                                              SelectionChanged="NotificationPresetSelector_OnSelectionChanged" />
+                                    <Button Content="{DynamicResource LOCCSM_LooksPreview}" Tag="Desktop"
+                                            MinWidth="88" Margin="8,0,0,0" VerticalAlignment="Center"
+                                            Click="LooksPreviewClick"/>
+                                </StackPanel>
+                                <TextBlock Text="{DynamicResource LOCCSM_AppearanceLooksFullscreen}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,12,0,4"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                    <ComboBox x:Name="FullscreenNotificationPresetSelector" Width="360" HorizontalAlignment="Left"
+                                              IsSynchronizedWithCurrentItem="False"
+                                              ItemContainerStyle="{StaticResource AppearancePresetItemStyle}"
+                                              ItemTemplate="{StaticResource AppearancePresetItemTemplate}"
+                                              SelectedValuePath="Key"
+                                              SelectionChanged="NotificationPresetSelector_OnSelectionChanged" />
+                                    <Button Content="{DynamicResource LOCCSM_LooksPreview}" Tag="Fullscreen"
+                                            MinWidth="88" Margin="8,0,0,0" VerticalAlignment="Center"
+                                            Click="LooksPreviewClick"/>
+                                </StackPanel>
+                                <TextBlock Text="{DynamicResource LOCCSM_OverlayStylePreset}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,12,0,4"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                    <ComboBox x:Name="OverlayPresetSelector" Width="360" HorizontalAlignment="Left"
+                                              IsSynchronizedWithCurrentItem="False"
+                                              ItemContainerStyle="{StaticResource AppearancePresetItemStyle}"
+                                              ItemTemplate="{StaticResource AppearancePresetItemTemplate}" SelectedValuePath="Key"
+                                              SelectionChanged="OverlayPresetSelector_OnSelectionChanged" />
+                                    <Button Content="{DynamicResource LOCCSM_LooksPreview}" Tag="Overlay"
+                                            MinWidth="88" Margin="8,0,0,0" VerticalAlignment="Center"
+                                            Click="LooksPreviewClick"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+                    <TabItem>
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource TabGlyph}" Text="&#xE7F4;" />
+                                <TextBlock Text="{DynamicResource LOCCSM_AppearanceLooksDesktop}" Style="{StaticResource TabHeaderLabel}" />
+                            </StackPanel>
+                        </TabItem.Header>
+                        <ScrollViewer Style="{StaticResource FillScrollViewer}">
+                            <StackPanel Margin="16,16,16,16">
+                                <StackPanel Style="{StaticResource PageSection}">
+                                    <Border Style="{StaticResource PageHeader}">
+                                        <TextBlock Text="{DynamicResource LOCCSM_DesktopNotificationsTitle}" Style="{StaticResource SectionHeaderText}" />
+                                    </Border>
+                                    <TextBlock Text="{DynamicResource LOCCSM_ControllerNotificationHelp}" Style="{StaticResource SectionSubtitleText}" />
+                                </StackPanel>
+                                <Border Style="{StaticResource WarningCallout}" Margin="0,0,0,16" Visibility="{Binding IsDesktopNotificationCreatorThemeActive, Converter={StaticResource BoolToVis}}">
+                                    <DockPanel LastChildFill="True"><Border DockPanel.Dock="Left" Style="{StaticResource WarningCalloutAccentBar}"/><DockPanel Margin="12,10,12,10" LastChildFill="True"><TextBlock DockPanel.Dock="Left" Text="&#xE7BA;" Style="{StaticResource WarningCalloutGlyph}"/><StackPanel><TextBlock Text="{DynamicResource LOCCSM_CreatorThemeLockedTitle}" Style="{StaticResource InfoCalloutTitle}"/><TextBlock Text="{DynamicResource LOCCSM_CreatorThemeLockedDestinationNotice}" Style="{StaticResource InfoCalloutBody}"/></StackPanel></DockPanel></DockPanel>
+                                </Border>
+                                <TextBlock Text="{DynamicResource LOCCSM_CopyFullscreenStyleToDesktop}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,0,0,4"/>
+                                <TextBlock Text="{DynamicResource LOCCSM_CopyFullscreenStyleHelp}" Style="{StaticResource FieldHintText}" Margin="0,0,0,8"/>
+                                <Button x:Name="CopyFullscreenToDesktopButton"
+                                        Content="{DynamicResource LOCCSM_CopyFullscreenStyleToDesktop}" Tag="FullscreenToDesktop"
+                                        HorizontalAlignment="Left" Margin="0,0,0,16" Click="CopyNotificationStyleClick"
+                                        IsEnabled="{Binding CanCopyNotificationStyles}"/>
+                                <TextBlock Text="{DynamicResource LOCCSM_PreviewNotification}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,0,0,8"/>
+                                <CheckBox Content="{DynamicResource LOCCSM_PreviewWithSound}" IsChecked="{Binding NotificationPreviewWithSound}" Margin="0,0,0,8"/>
+                                <WrapPanel Margin="0,0,0,8">
                                             <Button Content="{DynamicResource LOCCSM_ControllerConnectedToast}" Tag="connected"
                                                     Style="{StaticResource {x:Type Button}}" Margin="0,0,8,8"
                                                     VerticalAlignment="Center" Click="PreviewDesktopNotificationClick"/>
@@ -1319,9 +1405,9 @@
                                             <Button Content="{DynamicResource LOCCSM_ControllerLowBatteryToast}" Tag="lowbattery"
                                                     Style="{StaticResource {x:Type Button}}" Margin="0,0,0,8"
                                                     VerticalAlignment="Center" Click="PreviewDesktopNotificationClick"/>
-                                        </WrapPanel>
-                                        <Expander x:Name="DesktopAlertsExpander" Style="{StaticResource AppearanceSectionExpander}" IsExpanded="False"
-                                                  Header="{DynamicResource LOCCSM_Alerts}" Margin="0,8,0,0">
+                                </WrapPanel>
+                                <Expander x:Name="DesktopAlertsExpander" Style="{StaticResource AppearanceSectionExpander}" IsExpanded="False"
+                                          Header="{DynamicResource LOCCSM_Alerts}" Margin="0,8,0,0">
                                             <StackPanel>
                                                 <CheckBox Content="{DynamicResource LOCCSM_ShowDesktopControllerNotifications}" IsChecked="{Binding ShowDesktopControllerNotifications}" />
                                                 <CheckBox Content="{DynamicResource LOCCSM_ShowDesktopLowBatteryNotifications}" IsChecked="{Binding ShowDesktopLowBatteryNotifications}" Margin="0,8,0,0" />
@@ -1333,31 +1419,6 @@
                                                     </ComboBox>
                                                 </StackPanel>
                                                 <TextBlock Text="{DynamicResource LOCCSM_LowBatteryNotificationHelp}" Style="{StaticResource HintText}" Margin="0,6,0,0" TextWrapping="Wrap" />
-                                            </StackPanel>
-                                        </Expander>
-                                        <Expander x:Name="DesktopDesignExpander" Style="{StaticResource AppearanceSectionExpander}" IsExpanded="False"
-                                                  Header="{DynamicResource LOCCSM_Design}" Margin="0,8,0,0">
-                                            <StackPanel>
-                                                <TextBlock Text="{DynamicResource LOCCSM_NotificationStylePreset}" Style="{StaticResource FieldLabel}"/>
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*" />
-                                                        <ColumnDefinition Width="Auto" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <ComboBox x:Name="DesktopNotificationPresetSelector" Width="360" HorizontalAlignment="Left"
-                                                              IsSynchronizedWithCurrentItem="False"
-                                                              ItemContainerStyle="{StaticResource AppearancePresetItemStyle}"
-                                                              ItemTemplate="{StaticResource AppearancePresetItemTemplate}"
-                                                              SelectedValuePath="Key"
-                                                              SelectionChanged="NotificationPresetSelector_OnSelectionChanged" />
-                                                    <Button x:Name="CopyFullscreenToDesktopButton" Grid.Column="1"
-                                                            Content="{DynamicResource LOCCSM_CopyFullscreenStyleToDesktop}" Tag="FullscreenToDesktop"
-                                                            HorizontalAlignment="Right" Margin="12,0,0,0" Click="CopyNotificationStyleClick"
-                                                            IsEnabled="{Binding CanCopyNotificationStyles}"/>
-                                                </Grid>
-                                                <Border Style="{StaticResource WarningCallout}" Margin="0,10,0,0" Visibility="{Binding IsDesktopNotificationCreatorThemeActive, Converter={StaticResource BoolToVis}}">
-                                                    <DockPanel LastChildFill="True"><Border DockPanel.Dock="Left" Style="{StaticResource WarningCalloutAccentBar}"/><DockPanel Margin="12,10,12,10" LastChildFill="True"><TextBlock DockPanel.Dock="Left" Text="&#xE7BA;" Style="{StaticResource WarningCalloutGlyph}"/><StackPanel><TextBlock Text="{DynamicResource LOCCSM_CreatorThemeLockedTitle}" Style="{StaticResource InfoCalloutTitle}"/><TextBlock Text="{DynamicResource LOCCSM_CreatorThemeLockedNotice}" Style="{StaticResource InfoCalloutBody}"/></StackPanel></DockPanel></DockPanel>
-                                                </Border>
                                             </StackPanel>
                                         </Expander>
                                         <Expander x:Name="DesktopAppearanceLayoutExpander" Style="{StaticResource AppearanceSectionExpander}" IsExpanded="False"
@@ -1488,12 +1549,34 @@
                                             </StackPanel>
                                         </Expander>
                                         </StackPanel>
-                                    </StackPanel>
-                                </Expander>
-                                <Expander Style="{StaticResource SettingsExpander}" IsExpanded="False"
-                                          Header="{DynamicResource LOCCSM_FullscreenNotificationsTitle}">
-                                    <StackPanel>
-                                        <TextBlock Text="{DynamicResource LOCCSM_PreviewNotification}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,0,0,8"/>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+                    <TabItem>
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource TabGlyph}" Text="&#xEA8F;" />
+                                <TextBlock Text="{DynamicResource LOCCSM_AppearanceLooksFullscreen}" Style="{StaticResource TabHeaderLabel}" />
+                            </StackPanel>
+                        </TabItem.Header>
+                        <ScrollViewer Style="{StaticResource FillScrollViewer}">
+                            <StackPanel Margin="16,16,16,16">
+                                <StackPanel Style="{StaticResource PageSection}">
+                                    <Border Style="{StaticResource PageHeader}">
+                                        <TextBlock Text="{DynamicResource LOCCSM_FullscreenNotificationsTitle}" Style="{StaticResource SectionHeaderText}" />
+                                    </Border>
+                                    <TextBlock Text="{DynamicResource LOCCSM_ControllerNotificationHelp}" Style="{StaticResource SectionSubtitleText}" />
+                                </StackPanel>
+                                <Border Style="{StaticResource WarningCallout}" Margin="0,0,0,16" Visibility="{Binding IsFullscreenNotificationCreatorThemeActive, Converter={StaticResource BoolToVis}}">
+                                    <DockPanel LastChildFill="True"><Border DockPanel.Dock="Left" Style="{StaticResource WarningCalloutAccentBar}"/><DockPanel Margin="12,10,12,10" LastChildFill="True"><TextBlock DockPanel.Dock="Left" Text="&#xE7BA;" Style="{StaticResource WarningCalloutGlyph}"/><StackPanel><TextBlock Text="{DynamicResource LOCCSM_CreatorThemeLockedTitle}" Style="{StaticResource InfoCalloutTitle}"/><TextBlock Text="{DynamicResource LOCCSM_CreatorThemeLockedDestinationNotice}" Style="{StaticResource InfoCalloutBody}"/></StackPanel></DockPanel></DockPanel>
+                                </Border>
+                                <TextBlock Text="{DynamicResource LOCCSM_CopyDesktopStyleToFullscreen}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,0,0,4"/>
+                                <TextBlock Text="{DynamicResource LOCCSM_CopyDesktopStyleHelp}" Style="{StaticResource FieldHintText}" Margin="0,0,0,8"/>
+                                <Button x:Name="CopyDesktopToFullscreenButton"
+                                        Content="{DynamicResource LOCCSM_CopyDesktopStyleToFullscreen}" Tag="DesktopToFullscreen"
+                                        HorizontalAlignment="Left" Margin="0,0,0,16" Click="CopyNotificationStyleClick"
+                                        IsEnabled="{Binding CanCopyNotificationStyles}"/>
+                                <TextBlock Text="{DynamicResource LOCCSM_PreviewNotification}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,0,0,8"/>
                                         <CheckBox Content="{DynamicResource LOCCSM_PreviewWithSound}" IsChecked="{Binding NotificationPreviewWithSound}" Margin="0,0,0,8"/>
                                         <WrapPanel Margin="0,0,0,8">
                                             <Button Content="{DynamicResource LOCCSM_ControllerConnectedToast}" Tag="connected"
@@ -1522,31 +1605,6 @@
                                                     </ComboBox>
                                                 </StackPanel>
                                                 <TextBlock Text="{DynamicResource LOCCSM_LowBatteryNotificationHelp}" Style="{StaticResource HintText}" Margin="0,6,0,0" TextWrapping="Wrap" />
-                                            </StackPanel>
-                                        </Expander>
-                                        <Expander x:Name="FullscreenDesignExpander" Style="{StaticResource AppearanceSectionExpander}" IsExpanded="False"
-                                                  Header="{DynamicResource LOCCSM_Design}" Margin="0,8,0,0">
-                                            <StackPanel>
-                                                <TextBlock Text="{DynamicResource LOCCSM_NotificationStylePreset}" Style="{StaticResource FieldLabel}"/>
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*" />
-                                                        <ColumnDefinition Width="Auto" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <ComboBox x:Name="FullscreenNotificationPresetSelector" Width="360" HorizontalAlignment="Left"
-                                                              IsSynchronizedWithCurrentItem="False"
-                                                              ItemContainerStyle="{StaticResource AppearancePresetItemStyle}"
-                                                              ItemTemplate="{StaticResource AppearancePresetItemTemplate}"
-                                                              SelectedValuePath="Key"
-                                                              SelectionChanged="NotificationPresetSelector_OnSelectionChanged" />
-                                                    <Button x:Name="CopyDesktopToFullscreenButton" Grid.Column="1"
-                                                            Content="{DynamicResource LOCCSM_CopyDesktopStyleToFullscreen}" Tag="DesktopToFullscreen"
-                                                            HorizontalAlignment="Right" Margin="12,0,0,0" Click="CopyNotificationStyleClick"
-                                                            IsEnabled="{Binding CanCopyNotificationStyles}"/>
-                                                </Grid>
-                                                <Border Style="{StaticResource WarningCallout}" Margin="0,10,0,0" Visibility="{Binding IsFullscreenNotificationCreatorThemeActive, Converter={StaticResource BoolToVis}}">
-                                                    <DockPanel LastChildFill="True"><Border DockPanel.Dock="Left" Style="{StaticResource WarningCalloutAccentBar}"/><DockPanel Margin="12,10,12,10" LastChildFill="True"><TextBlock DockPanel.Dock="Left" Text="&#xE7BA;" Style="{StaticResource WarningCalloutGlyph}"/><StackPanel><TextBlock Text="{DynamicResource LOCCSM_CreatorThemeLockedTitle}" Style="{StaticResource InfoCalloutTitle}"/><TextBlock Text="{DynamicResource LOCCSM_CreatorThemeLockedNotice}" Style="{StaticResource InfoCalloutBody}"/></StackPanel></DockPanel></DockPanel>
-                                                </Border>
                                             </StackPanel>
                                         </Expander>
                                         <Expander x:Name="FullscreenAppearanceLayoutExpander" Style="{StaticResource AppearanceSectionExpander}" IsExpanded="False"
@@ -1677,8 +1735,6 @@
                                             </StackPanel>
                                         </Expander>
                                         </StackPanel>
-                                    </StackPanel>
-                                </Expander>
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>
@@ -1795,7 +1851,7 @@
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>
-                    <TabItem>
+                    <TabItem x:Name="OverlayAppearanceTab">
                         <TabItem.Header>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Style="{StaticResource TabGlyph}" Text="&#xE740;" />
@@ -1825,39 +1881,13 @@
                                      <StackPanel>
                                       <CheckBox Content="{DynamicResource LOCCSM_EnableDisconnectOverlay}" IsChecked="{Binding ShowDisconnectOverlay}" />
                                       <TextBlock Text="{DynamicResource LOCCSM_ShowDisconnectOverlayHelp}" Style="{StaticResource ControlHintText}" />
-                                      <TextBlock Text="{DynamicResource LOCCSM_VisualProfileHelp}" Style="{StaticResource FieldHintText}" Margin="0,0,0,8"/>
-                                     <WrapPanel Margin="0,0,0,8">
-                                     <Button Content="{DynamicResource LOCCSM_ExportVisualProfile}" MinWidth="180" Margin="0,0,8,8"
-                                             Style="{StaticResource {x:Type Button}}" Click="ExportVisualProfileClick"/>
-                                     <Button Content="{DynamicResource LOCCSM_ImportVisualProfile}" MinWidth="180" Margin="0,0,8,8"
-                                             Style="{StaticResource {x:Type Button}}" Click="ImportVisualProfileClick"/>
-                                     <Button Content="{DynamicResource LOCCSM_InstallCreatorTheme}" MinWidth="180" Margin="0,0,8,8"
-                                             Style="{StaticResource {x:Type Button}}" Click="InstallCreatorThemeClick"/>
-                                     <Button Content="{DynamicResource LOCCSM_UpdateCreatorThemes}" MinWidth="160" Margin="0,0,8,8"
-                                             Style="{StaticResource {x:Type Button}}" Click="UpdateCreatorThemesClick"/>
-                                      </WrapPanel>
                                   </StackPanel>
+                                  <Border Style="{StaticResource WarningCallout}" Margin="0,8,0,8" Visibility="{Binding IsOverlayCreatorThemeActive, Converter={StaticResource BoolToVis}}">
+                                      <DockPanel LastChildFill="True"><Border DockPanel.Dock="Left" Style="{StaticResource WarningCalloutAccentBar}"/><DockPanel Margin="12,10,12,10" LastChildFill="True"><TextBlock DockPanel.Dock="Left" Text="&#xE7BA;" Style="{StaticResource WarningCalloutGlyph}"/><StackPanel><TextBlock Text="{DynamicResource LOCCSM_CreatorThemeLockedTitle}" Style="{StaticResource InfoCalloutTitle}"/><TextBlock Text="{DynamicResource LOCCSM_CreatorThemeLockedOverlayNotice}" Style="{StaticResource InfoCalloutBody}"/></StackPanel></DockPanel></DockPanel>
+                                  </Border>
                                   <StackPanel IsEnabled="{Binding ShowDisconnectOverlay}">
-                                  <Expander x:Name="OverlayDesignExpander" Style="{StaticResource AppearanceSectionExpander}"
-                                            IsExpanded="False" Header="{DynamicResource LOCCSM_Design}" Margin="0,8,0,8">
-                                     <StackPanel>
-                                         <TextBlock Text="{DynamicResource LOCCSM_OverlayStylePreset}" Style="{StaticResource FieldLabel}" />
-                                         <TextBlock Text="{DynamicResource LOCCSM_OverlayStylePresetHelp}" Style="{StaticResource FieldHintText}" Margin="0,0,0,8"/>
-                                         <ComboBox x:Name="OverlayPresetSelector" Width="360" HorizontalAlignment="Left"
-                                                   IsSynchronizedWithCurrentItem="False"
-                                                   ItemContainerStyle="{StaticResource AppearancePresetItemStyle}"
-                                                   ItemTemplate="{StaticResource AppearancePresetItemTemplate}" SelectedValuePath="Key"
-                                                   SelectionChanged="OverlayPresetSelector_OnSelectionChanged" />
-                                         <Border Style="{StaticResource WarningCallout}" Margin="0,10,0,8" Visibility="{Binding IsOverlayCreatorThemeActive, Converter={StaticResource BoolToVis}}">
-                                             <DockPanel LastChildFill="True"><Border DockPanel.Dock="Left" Style="{StaticResource WarningCalloutAccentBar}"/><DockPanel Margin="12,10,12,10" LastChildFill="True"><TextBlock DockPanel.Dock="Left" Text="&#xE7BA;" Style="{StaticResource WarningCalloutGlyph}"/><StackPanel><TextBlock Text="{DynamicResource LOCCSM_CreatorThemeLockedTitle}" Style="{StaticResource InfoCalloutTitle}"/><TextBlock Text="{DynamicResource LOCCSM_CreatorThemeLockedNotice}" Style="{StaticResource InfoCalloutBody}"/></StackPanel></DockPanel></DockPanel>
-                                         </Border>
-                                         <WrapPanel x:Name="OverlayPluginPresetChips" Visibility="Collapsed"/>
-                                         <WrapPanel x:Name="OverlayCreatorPresetChips" Visibility="Collapsed"/>
-                                         <WrapPanel x:Name="OverlayCustomPresetChips" Visibility="Collapsed"/>
-                                      </StackPanel>
-                                  </Expander>
                                   <Expander x:Name="OverlayAppearanceLayoutExpander" Style="{StaticResource AppearanceSectionExpander}" IsExpanded="False"
-                                            Header="{DynamicResource LOCCSM_AppearanceLayout}">
+                                            Header="{DynamicResource LOCCSM_AppearanceLayout}" Margin="0,8,0,8">
                                             <WrapPanel>
                                                 <StackPanel Style="{StaticResource OverlaySliderPanel}"><TextBlock Text="{DynamicResource LOCCSM_OverlayCardPosition}"/><ComboBox SelectedValue="{Binding OverlayCardPosition}" SelectedValuePath="Tag"><ComboBoxItem Tag="Center" Content="{DynamicResource LOCCSM_IconPositionCenter}"/><ComboBoxItem Tag="Top" Content="{DynamicResource LOCCSM_BorderTop}"/><ComboBoxItem Tag="Bottom" Content="{DynamicResource LOCCSM_BorderBottom}"/><ComboBoxItem Tag="TopLeft" Content="{DynamicResource LOCCSM_PositionTopLeft}"/><ComboBoxItem Tag="TopRight" Content="{DynamicResource LOCCSM_PositionTopRight}"/><ComboBoxItem Tag="BottomLeft" Content="{DynamicResource LOCCSM_PositionBottomLeft}"/><ComboBoxItem Tag="BottomRight" Content="{DynamicResource LOCCSM_PositionBottomRight}"/></ComboBox></StackPanel>
                                                 <WrapPanel x:Name="OverlayAppearanceLayoutLockedPanel" IsEnabled="{Binding CanEditOverlayStyle}">
@@ -2069,7 +2099,7 @@
                                 </ScrollViewer>
                                 <Grid x:Name="OverlayPreviewPane" Grid.Column="2"
                                       IsEnabled="{Binding ShowDisconnectOverlay}"
-                                      HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                                      HorizontalAlignment="Stretch" VerticalAlignment="Top">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
@@ -2144,52 +2174,6 @@
                                 </Grid>
                             </Grid>
                         </Grid>
-                    </TabItem>
-                    <TabItem>
-                        <TabItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Style="{StaticResource TabGlyph}" Text="&#xE713;" />
-                                <TextBlock Text="{DynamicResource LOCCSM_AppearanceOptions}" Style="{StaticResource TabHeaderLabel}" />
-                            </StackPanel>
-                        </TabItem.Header>
-                        <ScrollViewer Style="{StaticResource FillScrollViewer}">
-                            <StackPanel Margin="16,16,16,16">
-                                <StackPanel Style="{StaticResource PageSection}">
-                                    <Border Style="{StaticResource PageHeader}">
-                                        <TextBlock Text="{DynamicResource LOCCSM_AppearanceOptions}" Style="{StaticResource SectionHeaderText}" />
-                                    </Border>
-                                    <TextBlock Text="{DynamicResource LOCCSM_AppearanceOptionsHelp}" Style="{StaticResource SectionSubtitleText}" />
-                                </StackPanel>
-                                <Border Style="{StaticResource SettingsCard}">
-                                    <StackPanel>
-                                        <TextBlock Text="{DynamicResource LOCCSM_CreatorThemeUpdatePolicy}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,0,0,4" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_CreatorThemeUpdatePolicyHelp}" Style="{StaticResource FieldHintText}" Margin="0,0,0,10" />
-                                        <ComboBox Width="320" HorizontalAlignment="Left"
-                                                  SelectedValue="{Binding CreatorThemeUpdatePolicy}"
-                                                  SelectedValuePath="Tag">
-                                            <ComboBoxItem Tag="Startup" Content="{DynamicResource LOCCSM_CreatorThemeUpdateStartup}" />
-                                            <ComboBoxItem Tag="Daily" Content="{DynamicResource LOCCSM_CreatorThemeUpdateDaily}" />
-                                            <ComboBoxItem Tag="Manual" Content="{DynamicResource LOCCSM_CreatorThemeUpdateManual}" />
-                                        </ComboBox>
-                                        <Border Style="{StaticResource InfoCallout}" Margin="0,16,0,0">
-                                            <DockPanel LastChildFill="True">
-                                                <Border DockPanel.Dock="Left" Style="{StaticResource InfoCalloutAccentBar}" />
-                                                <DockPanel Margin="12,10,12,10" LastChildFill="True">
-                                                    <TextBlock DockPanel.Dock="Left" Style="{StaticResource InfoCalloutGlyph}" Text="&#xE946;" />
-                                                    <StackPanel>
-                                                        <TextBlock Text="{DynamicResource LOCCSM_CreatorThemeCommunityHint}" Style="{StaticResource InfoCalloutBody}" />
-                                                        <Button Content="{DynamicResource LOCCSM_CreatorThemeCommunityLink}"
-                                                                Tag="https://github.com/Naerian/controller-manager-creator-themes/wiki"
-                                                                HorizontalAlignment="Left" Margin="0,8,0,0"
-                                                                Click="OpenExternalButton" />
-                                                    </StackPanel>
-                                                </DockPanel>
-                                            </DockPanel>
-                                        </Border>
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
-                        </ScrollViewer>
                     </TabItem>
                 </TabControl>
                 </Grid>
@@ -2397,6 +2381,19 @@
                                             MinWidth="100" Margin="0,0,8,8" Click="OpenExternalButton" />
                                     <Button Content="{DynamicResource LOCCSM_ReportIssue}" Tag="https://github.com/Naerian/playnite-nx-session-controller-manager/issues/new"
                                             MinWidth="140" Margin="0,0,0,8" Click="OpenExternalButton" />
+                                </WrapPanel>
+                                <StackPanel Style="{StaticResource PageSection}" Margin="0,16,0,16">
+                                    <Border Style="{StaticResource PageHeader}">
+                                        <TextBlock Text="{DynamicResource LOCCSM_CreatorDocsTitle}" Style="{StaticResource SectionHeaderText}" />
+                                    </Border>
+                                </StackPanel>
+                                <WrapPanel>
+                                    <Button Content="{DynamicResource LOCCSM_CreatorDocsEnglish}"
+                                            Tag="https://github.com/Naerian/controller-manager-creator-themes/wiki/EN-Overview"
+                                            MinWidth="100" Margin="0,0,8,8" Click="OpenExternalButton" />
+                                    <Button Content="{DynamicResource LOCCSM_CreatorDocsSpanish}"
+                                            Tag="https://github.com/Naerian/controller-manager-creator-themes/wiki/ES-Descripcion-General"
+                                            MinWidth="100" Margin="0,0,0,8" Click="OpenExternalButton" />
                                 </WrapPanel>
                             </StackPanel>
                             <StackPanel Grid.Column="2">

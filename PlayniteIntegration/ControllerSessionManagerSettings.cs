@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ControllerSessionManager.Controllers;
@@ -332,6 +333,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private string notificationStylePreset = NotificationStylePresets.Soft;
         private string desktopNotificationStylePreset = NotificationStylePresets.Soft;
         private string overlayStylePreset = OverlayStylePresets.Soft;
+        private bool usePlayniteThemeAppearance = true;
         private bool enableNotificationSounds = true;
         private bool enableDesktopNotificationSounds = true;
         private bool enableFullscreenNotificationSounds = true;
@@ -426,6 +428,34 @@ namespace ControllerSessionManager.PlayniteIntegration
                 SetValue(ref overlayStylePreset, OverlayStylePresets.Normalize(value));
                 NotifyCreatorThemeStateChanged();
             }
+        }
+
+        /// <summary>Stored look id before Normalize maps a deleted import to Custom.</summary>
+        public bool FullscreenLookIs(string lookId)
+        {
+            return LookIdEquals(notificationStylePreset, lookId);
+        }
+
+        public bool DesktopLookIs(string lookId)
+        {
+            return LookIdEquals(desktopNotificationStylePreset, lookId);
+        }
+
+        public bool OverlayLookIs(string lookId)
+        {
+            return LookIdEquals(overlayStylePreset, lookId);
+        }
+
+        private static bool LookIdEquals(string stored, string lookId)
+        {
+            return !string.IsNullOrWhiteSpace(lookId) &&
+                string.Equals(stored, lookId, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public bool UsePlayniteThemeAppearance
+        {
+            get { return usePlayniteThemeAppearance; }
+            set { SetValue(ref usePlayniteThemeAppearance, value); }
         }
 
         public bool IsFullscreenNotificationCreatorThemeActive
@@ -1603,6 +1633,12 @@ namespace ControllerSessionManager.PlayniteIntegration
                 SettingsSchemaVersion = 22;
             }
 
+            if (SettingsSchemaVersion < 23)
+            {
+                usePlayniteThemeAppearance = true;
+                SettingsSchemaVersion = 23;
+            }
+
             topPanelControllerMode = NormalizeTopPanelControllerMode(topPanelControllerMode);
             creatorThemeUpdatePolicy = NormalizeCreatorThemeUpdatePolicy(creatorThemeUpdatePolicy);
             appearancePreset = SettingsAppearance.Normalize(appearancePreset);
@@ -1969,6 +2005,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 NotificationStylePreset = NotificationStylePreset,
                 DesktopNotificationStylePreset = DesktopNotificationStylePreset,
                 OverlayStylePreset = OverlayStylePreset,
+                UsePlayniteThemeAppearance = UsePlayniteThemeAppearance,
                 EnableNotificationSounds = EnableNotificationSounds,
                 EnableDesktopNotificationSounds = EnableDesktopNotificationSounds,
                 EnableFullscreenNotificationSounds = EnableFullscreenNotificationSounds,
@@ -2316,6 +2353,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             NotificationStylePreset = source.NotificationStylePreset;
             DesktopNotificationStylePreset = source.DesktopNotificationStylePreset;
             OverlayStylePreset = source.OverlayStylePreset;
+            UsePlayniteThemeAppearance = source.UsePlayniteThemeAppearance;
             EnableNotificationSounds = source.EnableNotificationSounds;
             EnableDesktopNotificationSounds = source.EnableDesktopNotificationSounds;
             EnableFullscreenNotificationSounds = source.EnableFullscreenNotificationSounds;

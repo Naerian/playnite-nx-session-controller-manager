@@ -13,6 +13,8 @@
     <sys:String x:Key="LOCCSM_FoundationNotice">Inventario, monitoraggio in partita e overlay di disconnessione sono attivi. Pausa sicura e altri provider batteria restano pianificati.</sys:String>
     <sys:String x:Key="LOCCSM_MenuDiagnostics">Diagnostica controller</sys:String>
     <sys:String x:Key="LOCCSM_MenuRefresh">Aggiorna controller</sys:String>
+    <sys:String x:Key="LOCCSM_MenuPreviewNotification">Preview notification</sys:String>
+    <sys:String x:Key="LOCCSM_MenuPreviewOverlay">Preview overlay</sys:String>
     <sys:String x:Key="LOCCSM_DiagnosticsTitle">Diagnostica controller</sys:String>
     <sys:String x:Key="LOCCSM_DiagnosticsHeader">Istantanea diagnostica di Controller Manager</sys:String>
     <sys:String x:Key="LOCCSM_DiagnosticsCount">Connessi: {0}</sys:String>
@@ -285,6 +287,18 @@
     <sys:String x:Key="LOCCSM_ControllerDisconnectedToast">Controller disconnesso</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyForcePauseOffline">Arresta temporaneamente il gioco senza attività di rete. Altrimenti mostra solo l’avviso</sys:String>
     <sys:String x:Key="LOCCSM_TabSession">In partita</sys:String><sys:String x:Key="LOCCSM_TabAppearance">Aspetto</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceLooks">Looks</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceLooksHelp">Choose a look for desktop notifications, fullscreen notifications and the overlay. Installing or importing a design applies it immediately. Use the other Appearance tabs to preview, alerts, layout and colors.</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceLooksDesktop">Desktop notif.</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceLooksFullscreen">Fullscreen notif.</sys:String>
+    <sys:String x:Key="LOCCSM_LooksPreview">Preview</sys:String>
+    <sys:String x:Key="LOCCSM_CopyFullscreenStyleHelp">Replace this destination with the current fullscreen notification look.</sys:String>
+    <sys:String x:Key="LOCCSM_CopyDesktopStyleHelp">Replace this destination with the current desktop notification look.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeLockedLooksNotice">Layout, colors and typography stay as the author designed them. Preview from here, or switch to a plugin preset or Custom to edit.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeLockedDestinationNotice">Layout, colors and typography are locked. You can still use alerts, preview, and change the look from Appearance → Looks. Enable Follow the active Playnite theme colors there if you want this Playnite theme's color packs.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeLockedOverlayNotice">Layout, colors and typography are locked. You can still enable or disable the overlay, preview it here, and change the look from Appearance → Looks. Enable Follow the active Playnite theme colors there if you want this Playnite theme's color packs.</sys:String>
+    <sys:String x:Key="LOCCSM_UsePlayniteThemeAppearance">Follow the active Playnite theme colors</sys:String>
+    <sys:String x:Key="LOCCSM_UsePlayniteThemeAppearanceHelp">When the active Playnite theme ships ControllerManager/theme-bridge.json, notifications and the overlay use that theme's live colors (including its color packs). Looks, fonts and images stay as selected. Themes without the file are left unchanged.</sys:String>
     <sys:String x:Key="LOCCSM_AdaptiveProtectionHelp">La modalità automatica parte come giocatore singolo e passa al multigiocatore locale solo dopo input alternati e continui da più controller. Provare un controller e poi cambiarlo non attiva la modalità. Usa un'eccezione per gioco solo se necessario.</sys:String>
     <sys:String x:Key="LOCCSM_PauseModesHelp">Choose how the plugin reacts when a controller disconnects. Each game can override this setting from its context menu.</sys:String>
     <sys:String x:Key="LOCCSM_NotificationWidth">Larghezza (px)</sys:String><sys:String x:Key="LOCCSM_NotificationScale">Dimensione (%)</sys:String><sys:String x:Key="LOCCSM_NotificationDuration">Durata (ms)</sys:String><sys:String x:Key="LOCCSM_NotificationPosition">Posizione</sys:String>
@@ -748,7 +762,7 @@
     <sys:String x:Key="LOCCSM_ImportedDesigns">Design importati</sys:String>
     <sys:String x:Key="LOCCSM_DeleteImportedDesign">Elimina design importato</sys:String>
     <sys:String x:Key="LOCCSM_DeleteImportedDesignConfirm">Eliminare il design importato "{0}"?</sys:String>
-    <sys:String x:Key="LOCCSM_ImportedDesignDeleted">Design importato "{0}" eliminato.</sys:String>
+    <sys:String x:Key="LOCCSM_DeleteCreatorDesignConfirm">Remove the installed creator design "{0}"? This deletes the copy in Controller Manager, not the Playnite theme.</sys:String>
     <sys:String x:Key="LOCCSM_UseGradient">Usa sfumatura</sys:String>
     <sys:String x:Key="LOCCSM_GradientAngle">Angolo sfumatura</sys:String>
     <sys:String x:Key="LOCCSM_UppercaseTitle">Titolo maiuscolo</sys:String>
@@ -833,4 +847,8 @@
     <sys:String x:Key="LOCCSM_OverlaySceneGlowRadius">Raggio bagliore (%)</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeCommunityHint">Crei temi per Playnite o vuoi realizzare un design per la community? Puoi creare un tema personale per notifiche e overlay e inviarlo al catalogo ufficiale.</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeCommunityLink">Apri la guida ai temi dei creatori</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorDocsTitle">Creator theme guides</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorDocsHelp">Documentation for Playnite theme authors who want Controller Manager notifications and overlay to match their theme, including the live color bridge.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorDocsEnglish">English</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorDocsSpanish">Español</sys:String>
 </ResourceDictionary>

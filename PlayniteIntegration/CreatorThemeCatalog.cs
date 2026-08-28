@@ -37,6 +37,10 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
         }
 
+        public const string OriginFileName = ".csm-origin";
+        public const string OriginCatalog = "catalog";
+        public const string OriginSideload = "sideload";
+
         public static string DownloadedRoot
         {
             get { lock (Sync) return downloadedRoot; }
@@ -56,6 +60,85 @@ namespace ControllerSessionManager.PlayniteIntegration
                     .OrderBy(a => a.Name, StringComparer.CurrentCultureIgnoreCase)
                     .Select(a => a.Id).ToArray();
             }
+        }
+
+        public static bool IsUserInstalled(string id)
+        {
+            CreatorThemeDefinition definition;
+            lock (Sync)
+            {
+                if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(downloadedRoot) ||
+                    !Definitions.TryGetValue(id, out definition) ||
+                    string.IsNullOrWhiteSpace(definition.Directory))
+                    return false;
+            }
+            try
+            {
+                var root = Path.GetFullPath(downloadedRoot).TrimEnd(Path.DirectorySeparatorChar) +
+                    Path.DirectorySeparatorChar;
+                var directory = Path.GetFullPath(definition.Directory);
+                if (!directory.StartsWith(root, StringComparison.OrdinalIgnoreCase))
+                    return false;
+                return string.Equals(ReadOrigin(directory), OriginSideload, StringComparison.OrdinalIgnoreCase);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public static void MarkCatalogOrigin(string directory)
+        {
+            WriteOrigin(directory, OriginCatalog);
+        }
+
+        public static void MarkSideloadOrigin(string directory)
+        {
+            WriteOrigin(directory, OriginSideload);
+        }
+
+        private static string ReadOrigin(string directory)
+        {
+            try
+            {
+                var path = Path.Combine(directory, OriginFileName);
+                return File.Exists(path) ? File.ReadAllText(path, Encoding.UTF8).Trim() : string.Empty;
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
+        private static void WriteOrigin(string directory, string origin)
+        {
+            if (string.IsNullOrWhiteSpace(directory) || string.IsNullOrWhiteSpace(origin)) return;
+            Directory.CreateDirectory(directory);
+            File.WriteAllText(Path.Combine(directory, OriginFileName), origin.Trim() + Environment.NewLine,
+                new UTF8Encoding(false));
+        }
+
+        public static bool TryRemoveUserInstalled(string id)
+        {
+            if (!IsUserInstalled(id)) return false;
+            string directory;
+            lock (Sync)
+            {
+                CreatorThemeDefinition definition;
+                if (!Definitions.TryGetValue(id, out definition)) return false;
+                directory = definition.Directory;
+            }
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(directory) && Directory.Exists(directory))
+                    Directory.Delete(directory, true);
+            }
+            catch
+            {
+                return false;
+            }
+            Reload();
+            return !IsUserInstalled(id);
         }
 
         public static bool Contains(string id, string surface)

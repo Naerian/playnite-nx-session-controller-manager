@@ -1009,6 +1009,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 DisplayName = string.IsNullOrWhiteSpace(author) ? label : label + " — " + author,
                 Group = plugin == null ? groupKey : plugin.Loc(groupKey),
                 IsCreator = creator,
+                IsUserInstalled = creator && CreatorThemeCatalog.IsUserInstalled(preset),
                 IsSelectable = true
             };
         }
@@ -1200,6 +1201,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 DisplayName = string.IsNullOrWhiteSpace(author) ? label : label + " — " + author,
                 Group = plugin == null ? groupKey : plugin.Loc(groupKey),
                 IsCreator = creator,
+                IsUserInstalled = creator && CreatorThemeCatalog.IsUserInstalled(preset),
                 IsSelectable = true
             };
         }
@@ -1341,6 +1343,11 @@ namespace ControllerSessionManager.PlayniteIntegration
                         DisplayName = CreatorThemeCatalog.GetSoundPackDisplayName(pack),
                         Group = plugin == null ? "Creator designs" : plugin.Loc("LOCCSM_PresetGroupCreators"),
                         IsCreator = true,
+                        IsUserInstalled = CreatorThemeCatalog.IsUserInstalled(
+                            pack.StartsWith(NotificationSoundCatalog.CreatorPackPrefix,
+                                StringComparison.OrdinalIgnoreCase)
+                                ? pack.Substring(NotificationSoundCatalog.CreatorPackPrefix.Length)
+                                : pack),
                         IsSelectable = true
                     });
                 }
@@ -2037,8 +2044,16 @@ namespace ControllerSessionManager.PlayniteIntegration
             var profileId = button == null ? null : button.Tag as string;
             var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
             args.Handled = true;
-            if (plugin != null && plugin.DeleteImportedVisualProfile(settings, profileId))
-                RefreshVisualProfileUi();
+            suppressingStylePresetMark = true;
+            try
+            {
+                if (plugin != null && ImportedVisualProfileCatalog.Contains(profileId) &&
+                    plugin.DeleteImportedVisualProfile(settings, profileId))
+                    RefreshVisualProfileUi();
+                else if (plugin != null && plugin.DeleteUserInstalledCreatorTheme(settings, profileId))
+                    RefreshVisualProfileUi();
+            }
+            finally { suppressingStylePresetMark = false; }
         }
 
         private void OpenSetupWizardClick(object sender, RoutedEventArgs args)
@@ -2052,6 +2067,23 @@ namespace ControllerSessionManager.PlayniteIntegration
             var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
             plugin.ShowNotificationPreview(button == null ? null : button.Tag as string,
                 settings != null && settings.NotificationPreviewWithSound);
+        }
+
+        private void LooksPreviewClick(object sender, RoutedEventArgs args)
+        {
+            var tag = sender is Button ? ((Button)sender).Tag as string : null;
+            if (plugin == null) return;
+            if (string.Equals(tag, "Desktop", StringComparison.OrdinalIgnoreCase))
+            {
+                plugin.ShowNotificationPresetPreview(true);
+                return;
+            }
+            if (string.Equals(tag, "Fullscreen", StringComparison.OrdinalIgnoreCase))
+            {
+                plugin.ShowNotificationPresetPreview(false);
+                return;
+            }
+            if (OverlayAppearanceTab != null) OverlayAppearanceTab.IsSelected = true;
         }
 
         private void CopyNotificationStyleClick(object sender, RoutedEventArgs args)
@@ -2210,6 +2242,31 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
         }
 
+        private void ActivateInstalledCreatorDesign(string id)
+        {
+            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            if (settings == null || string.IsNullOrWhiteSpace(id)) return;
+            suppressingStylePresetMark = true;
+            suppressingOverlayPreviewRefresh = true;
+            try
+            {
+                if (CreatorThemeCatalog.Contains(id, "notification"))
+                {
+                    NotificationStylePresets.ApplyFullscreen(settings, id);
+                    NotificationStylePresets.ApplyDesktop(settings, id);
+                }
+                if (CreatorThemeCatalog.Contains(id, "overlay"))
+                    OverlayStylePresets.Apply(settings, id);
+                SelectCreatorSoundPackDefault(settings, id);
+            }
+            finally
+            {
+                suppressingOverlayPreviewRefresh = false;
+                suppressingStylePresetMark = false;
+            }
+            settings.RefreshCreatorThemeState();
+        }
+
         private async void InstallCreatorThemeClick(object sender, RoutedEventArgs args)
         {
             if (plugin == null || customSoundProgressWindow != null) return;
@@ -2237,6 +2294,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                         plugin.Loc("LOCCSM_CreatorThemeInstallProcessing"));
                     var installed = await installer.InstallAsync(dialog.FileName, cancellation.Token);
                     CloseCustomSoundProgressWindow();
+                    ActivateInstalledCreatorDesign(installed == null ? null : installed.Id);
                     RefreshVisualProfileUi();
                     plugin.PlayniteApi.Dialogs.ShowMessage(
                         string.Format(plugin.Loc("LOCCSM_CreatorThemeInstalled"),
@@ -2901,6 +2959,8 @@ namespace ControllerSessionManager.PlayniteIntegration
             public string Group { get; set; }
             public bool IsCreator { get; set; }
             public bool IsImported { get; set; }
+            public bool IsUserInstalled { get; set; }
+            public bool CanDelete { get { return IsImported || IsUserInstalled; } }
             public bool IsHeader { get; set; }
             public bool IsSelectable { get; set; }
         }

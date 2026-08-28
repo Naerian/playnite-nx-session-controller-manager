@@ -13,6 +13,8 @@
     <sys:String x:Key="LOCCSM_FoundationNotice">控制器清单、游戏中跟踪和断开连接覆盖层已启用。安全暂停和更多电池提供程序仍在计划中。</sys:String>
     <sys:String x:Key="LOCCSM_MenuDiagnostics">控制器诊断</sys:String>
     <sys:String x:Key="LOCCSM_MenuRefresh">刷新控制器</sys:String>
+    <sys:String x:Key="LOCCSM_MenuPreviewNotification">Preview notification</sys:String>
+    <sys:String x:Key="LOCCSM_MenuPreviewOverlay">Preview overlay</sys:String>
     <sys:String x:Key="LOCCSM_DiagnosticsTitle">控制器诊断</sys:String>
     <sys:String x:Key="LOCCSM_DiagnosticsHeader">Controller Manager 诊断快照</sys:String>
     <sys:String x:Key="LOCCSM_DiagnosticsCount">已连接：{0}</sys:String>
@@ -285,6 +287,18 @@
     <sys:String x:Key="LOCCSM_ControllerDisconnectedToast">控制器已断开</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyForcePauseOffline">无网络活动时暂时停止游戏。否则仅显示警告</sys:String>
     <sys:String x:Key="LOCCSM_TabSession">游戏中</sys:String><sys:String x:Key="LOCCSM_TabAppearance">外观</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceLooks">Looks</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceLooksHelp">Choose a look for desktop notifications, fullscreen notifications and the overlay. Installing or importing a design applies it immediately. Use the other Appearance tabs to preview, alerts, layout and colors.</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceLooksDesktop">Desktop notif.</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceLooksFullscreen">Fullscreen notif.</sys:String>
+    <sys:String x:Key="LOCCSM_LooksPreview">Preview</sys:String>
+    <sys:String x:Key="LOCCSM_CopyFullscreenStyleHelp">Replace this destination with the current fullscreen notification look.</sys:String>
+    <sys:String x:Key="LOCCSM_CopyDesktopStyleHelp">Replace this destination with the current desktop notification look.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeLockedLooksNotice">Layout, colors and typography stay as the author designed them. Preview from here, or switch to a plugin preset or Custom to edit.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeLockedDestinationNotice">Layout, colors and typography are locked. You can still use alerts, preview, and change the look from Appearance → Looks. Enable Follow the active Playnite theme colors there if you want this Playnite theme's color packs.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorThemeLockedOverlayNotice">Layout, colors and typography are locked. You can still enable or disable the overlay, preview it here, and change the look from Appearance → Looks. Enable Follow the active Playnite theme colors there if you want this Playnite theme's color packs.</sys:String>
+    <sys:String x:Key="LOCCSM_UsePlayniteThemeAppearance">Follow the active Playnite theme colors</sys:String>
+    <sys:String x:Key="LOCCSM_UsePlayniteThemeAppearanceHelp">When the active Playnite theme ships ControllerManager/theme-bridge.json, notifications and the overlay use that theme's live colors (including its color packs). Looks, fonts and images stay as selected. Themes without the file are left unchanged.</sys:String>
     <sys:String x:Key="LOCCSM_AdaptiveProtectionHelp">自动模式以单人游戏开始，只有在检测到多个控制器持续交替输入后才会切换为本地多人。仅尝试一个控制器再换用另一个不会触发切换。仅在需要时使用单独的游戏设置。</sys:String>
     <sys:String x:Key="LOCCSM_PauseModesHelp">Choose how the plugin reacts when a controller disconnects. Each game can override this setting from its context menu.</sys:String>
     <sys:String x:Key="LOCCSM_NotificationWidth">宽度 (px)</sys:String><sys:String x:Key="LOCCSM_NotificationScale">大小 (%)</sys:String><sys:String x:Key="LOCCSM_NotificationDuration">时长 (ms)</sys:String><sys:String x:Key="LOCCSM_NotificationPosition">位置</sys:String>
@@ -748,7 +762,7 @@
     <sys:String x:Key="LOCCSM_ImportedDesigns">导入的设计</sys:String>
     <sys:String x:Key="LOCCSM_DeleteImportedDesign">删除导入的设计</sys:String>
     <sys:String x:Key="LOCCSM_DeleteImportedDesignConfirm">要删除导入的设计“{0}”吗？</sys:String>
-    <sys:String x:Key="LOCCSM_ImportedDesignDeleted">已删除导入的设计“{0}”。</sys:String>
+    <sys:String x:Key="LOCCSM_DeleteCreatorDesignConfirm">Remove the installed creator design "{0}"? This deletes the copy in Controller Manager, not the Playnite theme.</sys:String>
     <sys:String x:Key="LOCCSM_UseGradient">使用渐变</sys:String>
     <sys:String x:Key="LOCCSM_GradientAngle">渐变角度</sys:String>
     <sys:String x:Key="LOCCSM_UppercaseTitle">标题大写</sys:String>
@@ -833,4 +847,8 @@
     <sys:String x:Key="LOCCSM_OverlaySceneGlowRadius">光晕半径 (%)</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeCommunityHint">如果你是 Playnite 主题设计者，或想为社区创建设计，可以制作自己的通知与叠加层主题并提交到官方目录。</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeCommunityLink">打开创作者主题指南</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorDocsTitle">Creator theme guides</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorDocsHelp">Documentation for Playnite theme authors who want Controller Manager notifications and overlay to match their theme, including the live color bridge.</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorDocsEnglish">English</sys:String>
+    <sys:String x:Key="LOCCSM_CreatorDocsSpanish">Español</sys:String>
 </ResourceDictionary>
