@@ -5,6 +5,11 @@
 
 
 
+
+## 1.0.29 — 2026-08-31
+- Hid the Gamepad Tester navigation and controller schematic when no controller is connected, including the Desktop sidebar shortcut.
+- Matched the empty-state title color to the Tester heading used in plugin settings.
+
 ## 1.0.28 — 2026-08-28
 - Added a Playnite theme color bridge so notifications and the overlay can follow live theme colors and optional typefaces, including in-theme palettes such as Aniki.
 - Enabled Follow the active Playnite theme colors by default; themes without a mapping file are left unchanged.

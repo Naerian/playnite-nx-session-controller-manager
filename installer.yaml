@@ -1,5 +1,12 @@
 AddonId: ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc
 Packages:
+  - Version: 1.0.29
+    RequiredApiVersion: 6.16.0
+    ReleaseDate: 2026-08-31
+    PackageUrl: https://github.com/Naerian/playnite-nx-session-controller-manager/releases/download/v1.0.29/ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc_1_0_29.pext
+    Changelog:
+      - 'Hid the Gamepad Tester navigation and controller schematic when no controller is connected, including the Desktop sidebar shortcut.'
+      - 'Matched the empty-state title color to the Tester heading used in plugin settings.'
   - Version: 1.0.28
     RequiredApiVersion: 6.16.0
     ReleaseDate: 2026-08-28

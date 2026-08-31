@@ -488,10 +488,8 @@ namespace ControllerSessionManager.Tester.ViewModels
                 {
                     SelectedTabIndex = 0;
                 }
-                else
-                {
-                    OnPropertyChanged("IsNoControllerOverlayVisible");
-                }
+
+                NotifyNoControllerPresentation();
             }
         }
 
@@ -523,7 +521,7 @@ namespace ControllerSessionManager.Tester.ViewModels
 
                 selectedTabIndex = next;
                 OnPropertyChanged("SelectedTabIndex");
-                OnPropertyChanged("IsNoControllerOverlayVisible");
+                NotifyNoControllerPresentation();
             }
         }
 
@@ -542,6 +540,7 @@ namespace ControllerSessionManager.Tester.ViewModels
                 OnPropertyChanged("IsFullscreenSimplifiedMode");
                 OnPropertyChanged("IsControllerSelectorVisible");
                 OnPropertyChanged("IsOptionsTabVisible");
+                NotifyNoControllerPresentation();
                 OnPropertyChanged("IsVisualSchemeSelectorVisible");
                 OnPropertyChanged("IsFullTesterMode");
                 if (isFullscreenSimplifiedMode && selectedTabIndex > 2)
@@ -595,6 +594,25 @@ namespace ControllerSessionManager.Tester.ViewModels
         public bool IsNoControllerOverlayVisible
         {
             get { return IsNoControllerVisible && !(IsOptionsTabVisible && SelectedTabIndex == TabOptions); }
+        }
+
+        public bool IsStandaloneNoControllerStateVisible
+        {
+            get { return IsNoControllerVisible && !IsOptionsTabVisible; }
+        }
+
+        public bool IsTesterWorkspaceVisible
+        {
+            get { return !IsStandaloneNoControllerStateVisible; }
+        }
+
+        private void NotifyNoControllerPresentation()
+        {
+            OnPropertyChanged("HasController");
+            OnPropertyChanged("IsNoControllerVisible");
+            OnPropertyChanged("IsNoControllerOverlayVisible");
+            OnPropertyChanged("IsStandaloneNoControllerStateVisible");
+            OnPropertyChanged("IsTesterWorkspaceVisible");
         }
 
         private int GetMaxTabIndex()
@@ -4807,9 +4825,7 @@ namespace ControllerSessionManager.Tester.ViewModels
             OnPropertyChanged("DiagnosticRadarValues");
             OnPropertyChanged("DiagnosticRadarLabels");
             OnPropertyChanged("ControllerSummary");
-            OnPropertyChanged("HasController");
-            OnPropertyChanged("IsNoControllerVisible");
-            OnPropertyChanged("IsNoControllerOverlayVisible");
+            NotifyNoControllerPresentation();
             OnPropertyChanged("DeviceIdLabel");
             OnPropertyChanged("DeviceModelLabel");
             OnPropertyChanged("DeviceCapabilitiesLabel");

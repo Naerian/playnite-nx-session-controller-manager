@@ -350,8 +350,9 @@
                                                   ContentSource="SelectedContent"
                                                   HorizontalAlignment="Stretch"
                                                   VerticalAlignment="Stretch"
-                                                  ClipToBounds="False" />
-                                <Border Background="{DynamicResource ControlBackgroundBrush}"
+                                                  ClipToBounds="False"
+                                                  Visibility="{Binding DataContext.IsNoControllerOverlayVisible, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}" />
+                                <Border Background="{DynamicResource Narian.Bg}"
                                         CornerRadius="4"
                                         Padding="28"
                                         HorizontalAlignment="Stretch"
@@ -362,11 +363,9 @@
                                                 VerticalAlignment="Center"
                                                 MaxWidth="520">
                                         <TextBlock Text="{DynamicResource LOCCSM_NoControllers}"
-                                                   FontSize="20"
-                                                   FontWeight="SemiBold"
+                                                   Style="{StaticResource SectionHeaderText}"
                                                    TextAlignment="Center"
-                                                   TextWrapping="Wrap"
-                                                   Foreground="{DynamicResource Narian.Accent}" />
+                                                   TextWrapping="Wrap" />
                                     </StackPanel>
                                 </Border>
                             </Grid>
@@ -400,7 +399,8 @@
                             HorizontalContentAlignment="Stretch"
                             VerticalContentAlignment="Stretch"
                             SelectionChanged="TesterTabsSelectionChanged"
-                            SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}">
+                            SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}"
+                            Visibility="{Binding IsTesterWorkspaceVisible, Converter={StaticResource BoolToVisibility}}">
                 <TabItem>
                     <TabItem.Header>
                         <StackPanel Orientation="Horizontal">
@@ -1940,6 +1940,24 @@
                                Foreground="{StaticResource PillIdleTextBrush}"
                                HorizontalAlignment="Center"
                                TextAlignment="Center" />
+                </Border>
+
+                <Border Grid.Row="0"
+                        Grid.RowSpan="2"
+                        Background="{DynamicResource Narian.Bg}"
+                        Padding="28"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        Panel.ZIndex="20"
+                        Visibility="{Binding IsStandaloneNoControllerStateVisible, Converter={StaticResource BoolToVisibility}}">
+                    <StackPanel HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                MaxWidth="520">
+                        <TextBlock Text="{DynamicResource LOCCSM_NoControllers}"
+                                   Style="{StaticResource SectionHeaderText}"
+                                   TextAlignment="Center"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
                 </Border>
 
             </Grid>

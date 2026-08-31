@@ -37,6 +37,7 @@ namespace ControllerSessionManager.Tester.Tests
                 TestStickMotionTrail();
                 TestDesktopStickCaptureSession();
                 TestSimulatedProvider();
+                TestNoControllerEmptyStatePresentation();
                 TestVisualSchemeCatalog();
                 TestEmbeddedSidebarIcon();
                 TestThemeHostXamlContract();
@@ -309,6 +310,29 @@ namespace ControllerSessionManager.Tester.Tests
             True(provider.ReadState().IsConnected, "Simulated state queue");
             True(provider.TryRumble(1, 1, 1), "Simulated rumble");
             Equal(1, provider.RumbleCallCount, "Simulated rumble is recorded");
+        }
+
+        private static void TestNoControllerEmptyStatePresentation()
+        {
+            var provider = new SimulatedGamepadInputProvider();
+            var polling = new GamepadPollingService(provider);
+            using (var viewModel = new GamepadTesterViewModel(polling))
+            {
+                True(!viewModel.HasController, "Tester starts without a connected controller");
+                True(viewModel.IsNoControllerOverlayVisible, "Settings tester still overlays diagnostic pages");
+                True(!viewModel.IsStandaloneNoControllerStateVisible, "Settings tester keeps navigation when options exist");
+                True(viewModel.IsTesterWorkspaceVisible, "Settings tester keeps the workspace for the options tab");
+
+                viewModel.IsOptionsTabVisible = false;
+                True(viewModel.IsStandaloneNoControllerStateVisible, "Sidebar tester shows only the empty state");
+                True(!viewModel.IsTesterWorkspaceVisible, "Sidebar tester hides navigation and the schematic");
+                True(viewModel.IsNoControllerOverlayVisible, "Sidebar empty state still reports no controller");
+
+                viewModel.IsOptionsTabVisible = true;
+                viewModel.SelectedTabIndex = GamepadTesterViewModel.TabOptions;
+                True(!viewModel.IsNoControllerOverlayVisible, "Options remain reachable without a controller");
+                True(viewModel.IsTesterWorkspaceVisible, "Options tab keeps the tester workspace visible");
+            }
         }
 
         private static void TestVisualSchemeCatalog()

@@ -1,3 +1,4 @@
+using ControllerSessionManager.PlayniteIntegration;
 using ControllerSessionManager.Tester.Services;
 using ControllerSessionManager.Tester.ViewModels;
 using ControllerSessionManager.Tester.Views;
@@ -28,6 +29,7 @@ namespace ControllerSessionManager.Tester
         private readonly Func<string, string> loc;
         private readonly Action openDesktopSettings;
         private readonly Func<bool> diagnosticLoggingEnabled;
+        private readonly Func<string> appearancePreset;
         private GamepadTesterSettings settings;
         private GamepadTesterViewModel sidebarViewModel;
         private GamepadTesterThemeIntegration themeIntegration;
@@ -54,13 +56,14 @@ namespace ControllerSessionManager.Tester
 
         public TesterIntegration(IPlayniteAPI api, ILogger sourceLogger, GamepadTesterSettings testerSettings,
             Func<string, string> localizer, Action openDesktopSettings,
-            Func<bool> diagnosticLoggingEnabled = null)
+            Func<bool> diagnosticLoggingEnabled = null, Func<string> appearancePreset = null)
         {
             playniteApi = api;
             logger = sourceLogger;
             loc = localizer;
             this.openDesktopSettings = openDesktopSettings;
             this.diagnosticLoggingEnabled = diagnosticLoggingEnabled;
+            this.appearancePreset = appearancePreset;
             settings = testerSettings ?? new GamepadTesterSettings();
             openTesterCommand = new Commands.RelayCommand(() => OpenTester(0, false));
             openButtonTestCommand = new Commands.RelayCommand(() => OpenTester(0, true));
@@ -1019,6 +1022,8 @@ namespace ControllerSessionManager.Tester
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch
             };
+            SettingsAppearance.Apply(view,
+                appearancePreset != null ? appearancePreset() : SettingsAppearance.Midnight);
 
             viewModel.Start();
             return view;

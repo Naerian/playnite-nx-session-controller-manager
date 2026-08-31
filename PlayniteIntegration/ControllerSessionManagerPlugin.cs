@@ -202,7 +202,8 @@ namespace ControllerSessionManager.PlayniteIntegration
 
             settings = new ControllerSessionManagerSettings(this);
             testerIntegration = new TesterIntegration(PlayniteApi, logger, settings.Tester, Loc,
-                OpenTesterSettings, () => settings != null && settings.EnableDebugLogging);
+                OpenTesterSettings, () => settings != null && settings.EnableDebugLogging,
+                () => settings != null ? settings.AppearancePreset : SettingsAppearance.Midnight);
             ApplySettings();
             logger.Info(string.Format("Controller Manager {0} initialized.",
                 GetType().Assembly.GetName().Version.ToString(3)));
