@@ -573,17 +573,28 @@ Use a relative path, confirm the extension is supported and ensure the resolved 
 
 Creator packs still paint Controller Manager's own overlay host (a separate process). They cannot load arbitrary XAML, shaders or storyboards from a Playnite theme.
 
-To **follow that theme's live color packs** (Aniki palettes, Helium accents, or any other author's naming), the Playnite theme ships a small mapping file:
+To **follow that theme's live color packs** (whatever resource keys your theme uses for palettes and accents), the Playnite theme ships a small mapping file:
 
 `{ThemeFolder}/ControllerManager/theme-bridge.json`
+
+Theme authors can also ship a full Controller Manager pack inside the active Playnite theme:
+
+`{ThemeFolder}/ControllerManager/manifest.json`
+`{ThemeFolder}/ControllerManager/notification.json`
+`{ThemeFolder}/ControllerManager/overlay.json`
+`{ThemeFolder}/ControllerManager/assets/`
+
+That folder uses the same JSON schema as creator designs (`.csmtheme`). Users enable it per surface on **Appearance → Looks** with the Playnite theme styling toggles. When a full embedded pack is present and the toggle is on, that design controls the surface; the selected look applies when the toggle is off or the theme has no pack. Optional `theme-bridge.json` maps live theme palettes on top.
+
+Preview fullscreen notifications from **Playnite Fullscreen**. Desktop mode cannot load the active fullscreen theme, so fullscreen previews from desktop settings may not match what users see in fullscreen mode.
 
 ```json
 {
   "Notification": {
-    "Background": "AnikiToastBackgroundGradient",
-    "Text": "AnikiToastTextBrush",
-    "SecondaryText": "AnikiToastSubTextBrush",
-    "Border": "AnikiToastBorderBrush",
+    "Background": "NotificationBackgroundBrush",
+    "Text": "TextBrush",
+    "SecondaryText": "TextBrushDarker",
+    "Border": "PopupBorderBrush",
     "Accent": "Accent",
     "Warning": "WarningBrush"
   },
@@ -597,7 +608,7 @@ To **follow that theme's live color packs** (Aniki palettes, Helium accents, or 
 }
 ```
 
-Keys on the left are Controller Manager roles. Values are **that theme's** WPF resource keys. The plugin resolves them with `Application.Current.TryFindResource` at display time, so whichever color pack the user selected inside the theme is what notifications and overlay receive. Users enable this with **Follow the active Playnite theme colors** on Appearance → Looks.
+Keys on the left are Controller Manager roles. Values are **that theme's** WPF resource keys. The plugin resolves them with `Application.Current.TryFindResource` at display time, so whichever color pack the user selected inside the theme is what notifications and overlay receive. Users enable this with the matching **Playnite theme styling** toggle on Appearance → Looks.
 
 If the file is missing, the plugin does not guess Playnite chrome brushes. The selected look stays as authored.
 

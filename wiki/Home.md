@@ -27,8 +27,9 @@ It supports Desktop and Fullscreen workflows, the built-in Tester, automatic con
 
 ## Themes
 
-- [Theme Integration](EN-Theme-Integration) · [Integración con temas](ES-Integracion-con-Temas)
-- [Creator designs](EN-Creator-Designs) · [Diseños de creadores](ES-Disenos-de-Creadores)
+- [Theme integration](EN-Theme-Integration) · [Integración con temas](ES-Integracion-con-Temas) — ContentControl + `PluginSettings` in theme XAML
+- [Embedded appearance packs](EN-Theme-Appearance-Packs) · [Apariencia embebida en temas](ES-Integracion-de-Apariencia-en-Temas) — `ControllerManager/` folder + `theme-bridge.json`
+- [Community creator designs](EN-Creator-Designs) · [Diseños de creadores](ES-Disenos-de-Creadores) — `.csmtheme` catalog for shared looks
 
 ## Links
 

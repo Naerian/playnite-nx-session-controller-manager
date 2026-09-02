@@ -1325,9 +1325,6 @@
                                         </ComboBox>
                                     </StackPanel>
                                 </Border>
-                                <CheckBox Content="{DynamicResource LOCCSM_UsePlayniteThemeAppearance}"
-                                          IsChecked="{Binding UsePlayniteThemeAppearance}" Margin="0,0,0,8"/>
-                                <TextBlock Text="{DynamicResource LOCCSM_UsePlayniteThemeAppearanceHelp}" Style="{StaticResource FieldHintText}" Margin="0,0,0,16"/>
                                 <TextBlock Text="{DynamicResource LOCCSM_AppearanceLooksDesktop}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,0,0,4"/>
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
                                     <ComboBox x:Name="DesktopNotificationPresetSelector" Width="360" HorizontalAlignment="Left"
@@ -1340,7 +1337,9 @@
                                             MinWidth="88" Margin="8,0,0,0" VerticalAlignment="Center"
                                             Click="LooksPreviewClick"/>
                                 </StackPanel>
-                                <TextBlock Text="{DynamicResource LOCCSM_AppearanceLooksFullscreen}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,12,0,4"/>
+                                <CheckBox Content="{DynamicResource LOCCSM_UsePlayniteThemeAppearanceSection}"
+                                          IsChecked="{Binding UsePlayniteThemeDesktopAppearance}" Margin="0,0,0,16"/>
+                                <TextBlock Text="{DynamicResource LOCCSM_AppearanceLooksFullscreen}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,0,0,4"/>
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
                                     <ComboBox x:Name="FullscreenNotificationPresetSelector" Width="360" HorizontalAlignment="Left"
                                               IsSynchronizedWithCurrentItem="False"
@@ -1352,7 +1351,9 @@
                                             MinWidth="88" Margin="8,0,0,0" VerticalAlignment="Center"
                                             Click="LooksPreviewClick"/>
                                 </StackPanel>
-                                <TextBlock Text="{DynamicResource LOCCSM_OverlayStylePreset}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,12,0,4"/>
+                                <CheckBox Content="{DynamicResource LOCCSM_UsePlayniteThemeAppearanceSection}"
+                                          IsChecked="{Binding UsePlayniteThemeFullscreenAppearance}" Margin="0,0,0,16"/>
+                                <TextBlock Text="{DynamicResource LOCCSM_OverlayStylePreset}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,0,0,4"/>
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
                                     <ComboBox x:Name="OverlayPresetSelector" Width="360" HorizontalAlignment="Left"
                                               IsSynchronizedWithCurrentItem="False"
@@ -1363,6 +1364,8 @@
                                             MinWidth="88" Margin="8,0,0,0" VerticalAlignment="Center"
                                             Click="LooksPreviewClick"/>
                                 </StackPanel>
+                                <CheckBox Content="{DynamicResource LOCCSM_UsePlayniteThemeAppearanceSection}"
+                                          IsChecked="{Binding UsePlayniteThemeOverlayAppearance}" Margin="0,0,0,8"/>
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>
@@ -2382,18 +2385,33 @@
                                     <Button Content="{DynamicResource LOCCSM_ReportIssue}" Tag="https://github.com/Naerian/playnite-nx-session-controller-manager/issues/new"
                                             MinWidth="140" Margin="0,0,0,8" Click="OpenExternalButton" />
                                 </WrapPanel>
-                                <StackPanel Style="{StaticResource PageSection}" Margin="0,16,0,16">
+                                <StackPanel Style="{StaticResource PageSection}" Margin="0,16,0,8">
                                     <Border Style="{StaticResource PageHeader}">
-                                        <TextBlock Text="{DynamicResource LOCCSM_CreatorDocsTitle}" Style="{StaticResource SectionHeaderText}" />
+                                        <TextBlock Text="{DynamicResource LOCCSM_CommunityCreatorDocsTitle}" Style="{StaticResource SectionHeaderText}" />
                                     </Border>
+                                    <TextBlock Text="{DynamicResource LOCCSM_CommunityCreatorDocsHelp}" Style="{StaticResource FieldHintText}" Margin="0,8,0,8" TextWrapping="Wrap" />
                                 </StackPanel>
-                                <WrapPanel>
-                                    <Button Content="{DynamicResource LOCCSM_CreatorDocsEnglish}"
+                                <WrapPanel Margin="0,0,0,8">
+                                    <Button Content="{DynamicResource LOCCSM_CommunityCreatorDocsEnglish}"
                                             Tag="https://github.com/Naerian/controller-manager-creator-themes/wiki/EN-Overview"
                                             MinWidth="100" Margin="0,0,8,8" Click="OpenExternalButton" />
-                                    <Button Content="{DynamicResource LOCCSM_CreatorDocsSpanish}"
+                                    <Button Content="{DynamicResource LOCCSM_CommunityCreatorDocsSpanish}"
                                             Tag="https://github.com/Naerian/controller-manager-creator-themes/wiki/ES-Descripcion-General"
-                                            MinWidth="100" Margin="0,0,0,8" Click="OpenExternalButton" />
+                                            MinWidth="100" Margin="0,0,8,8" Click="OpenExternalButton" />
+                                </WrapPanel>
+                                <StackPanel Style="{StaticResource PageSection}" Margin="0,16,0,8">
+                                    <Border Style="{StaticResource PageHeader}">
+                                        <TextBlock Text="{DynamicResource LOCCSM_ThemeDeveloperDocsTitle}" Style="{StaticResource SectionHeaderText}" />
+                                    </Border>
+                                    <TextBlock Text="{DynamicResource LOCCSM_ThemeDeveloperDocsHelp}" Style="{StaticResource FieldHintText}" Margin="0,8,0,8" TextWrapping="Wrap" />
+                                </StackPanel>
+                                <WrapPanel>
+                                    <Button Content="{DynamicResource LOCCSM_ThemeDeveloperDocsEnglish}"
+                                            Tag="https://github.com/Naerian/playnite-nx-session-controller-manager/wiki/EN-Theme-Appearance-Packs"
+                                            MinWidth="100" Margin="0,0,8,8" Click="OpenExternalButton" />
+                                    <Button Content="{DynamicResource LOCCSM_ThemeDeveloperDocsSpanish}"
+                                            Tag="https://github.com/Naerian/playnite-nx-session-controller-manager/wiki/ES-Integracion-de-Apariencia-en-Temas"
+                                            MinWidth="100" Margin="0,0,8,8" Click="OpenExternalButton" />
                                 </WrapPanel>
                             </StackPanel>
                             <StackPanel Grid.Column="2">

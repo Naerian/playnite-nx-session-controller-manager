@@ -333,7 +333,10 @@ namespace ControllerSessionManager.PlayniteIntegration
         private string notificationStylePreset = NotificationStylePresets.Soft;
         private string desktopNotificationStylePreset = NotificationStylePresets.Soft;
         private string overlayStylePreset = OverlayStylePresets.Soft;
-        private bool usePlayniteThemeAppearance = true;
+        private bool usePlayniteThemeDesktopAppearance = true;
+        private bool usePlayniteThemeFullscreenAppearance = true;
+        private bool usePlayniteThemeOverlayAppearance = true;
+        private bool usePlayniteThemeAppearance;
         private bool enableNotificationSounds = true;
         private bool enableDesktopNotificationSounds = true;
         private bool enableFullscreenNotificationSounds = true;
@@ -452,10 +455,49 @@ namespace ControllerSessionManager.PlayniteIntegration
                 string.Equals(stored, lookId, StringComparison.OrdinalIgnoreCase);
         }
 
-        public bool UsePlayniteThemeAppearance
+        public bool UsePlayniteThemeDesktopAppearance
         {
-            get { return usePlayniteThemeAppearance; }
-            set { SetValue(ref usePlayniteThemeAppearance, value); }
+            get { return usePlayniteThemeDesktopAppearance; }
+            set
+            {
+                SetValue(ref usePlayniteThemeDesktopAppearance, value);
+                NotifyAppearanceEditStateChanged();
+            }
+        }
+
+        public bool UsePlayniteThemeFullscreenAppearance
+        {
+            get { return usePlayniteThemeFullscreenAppearance; }
+            set
+            {
+                SetValue(ref usePlayniteThemeFullscreenAppearance, value);
+                NotifyAppearanceEditStateChanged();
+            }
+        }
+
+        public bool UsePlayniteThemeOverlayAppearance
+        {
+            get { return usePlayniteThemeOverlayAppearance; }
+            set
+            {
+                SetValue(ref usePlayniteThemeOverlayAppearance, value);
+                NotifyAppearanceEditStateChanged();
+            }
+        }
+
+        internal bool IsThemeAppearanceEnabled(ThemeAppearanceSurface surface)
+        {
+            switch (surface)
+            {
+                case ThemeAppearanceSurface.DesktopNotification:
+                    return UsePlayniteThemeDesktopAppearance;
+                case ThemeAppearanceSurface.FullscreenNotification:
+                    return UsePlayniteThemeFullscreenAppearance;
+                case ThemeAppearanceSurface.Overlay:
+                    return UsePlayniteThemeOverlayAppearance;
+                default:
+                    return false;
+            }
         }
 
         public bool IsFullscreenNotificationCreatorThemeActive
@@ -468,18 +510,42 @@ namespace ControllerSessionManager.PlayniteIntegration
             get { return NotificationStylePresets.IsCreatorPreset(DesktopNotificationStylePreset); }
         }
 
+        public bool IsDesktopEmbeddedThemeAppearanceActive
+        {
+            get { return UsesEmbeddedThemeDesign(ThemeAppearanceSurface.DesktopNotification); }
+        }
+
+        public bool IsFullscreenEmbeddedThemeAppearanceActive
+        {
+            get { return UsesEmbeddedThemeDesign(ThemeAppearanceSurface.FullscreenNotification); }
+        }
+
+        public bool IsOverlayEmbeddedThemeAppearanceActive
+        {
+            get { return UsesEmbeddedThemeDesign(ThemeAppearanceSurface.Overlay); }
+        }
+
         public bool IsCreatorNotificationThemeActive
         {
             get { return IsFullscreenNotificationCreatorThemeActive || IsDesktopNotificationCreatorThemeActive; }
         }
 
-        public bool CanEditFullscreenNotificationStyle { get { return !IsFullscreenNotificationCreatorThemeActive; } }
-        public bool CanEditDesktopNotificationStyle { get { return !IsDesktopNotificationCreatorThemeActive; } }
+        public bool CanEditFullscreenNotificationStyle
+        {
+            get { return !IsFullscreenNotificationCreatorThemeActive && !IsFullscreenEmbeddedThemeAppearanceActive; }
+        }
+        public bool CanEditDesktopNotificationStyle
+        {
+            get { return !IsDesktopNotificationCreatorThemeActive && !IsDesktopEmbeddedThemeAppearanceActive; }
+        }
         public bool IsOverlayCreatorThemeActive
         {
             get { return OverlayStylePresets.IsCreatorPreset(OverlayStylePreset); }
         }
-        public bool CanEditOverlayStyle { get { return !IsOverlayCreatorThemeActive; } }
+        public bool CanEditOverlayStyle
+        {
+            get { return !IsOverlayCreatorThemeActive && !IsOverlayEmbeddedThemeAppearanceActive; }
+        }
         public bool CanEditNotificationAudio { get { return true; } }
         public bool CanCopyNotificationStyles { get { return !IsCreatorNotificationThemeActive; } }
 
@@ -1639,6 +1705,15 @@ namespace ControllerSessionManager.PlayniteIntegration
                 SettingsSchemaVersion = 23;
             }
 
+            if (SettingsSchemaVersion < 24)
+            {
+                var legacy = usePlayniteThemeAppearance;
+                usePlayniteThemeDesktopAppearance = legacy;
+                usePlayniteThemeFullscreenAppearance = legacy;
+                usePlayniteThemeOverlayAppearance = legacy;
+                SettingsSchemaVersion = 24;
+            }
+
             topPanelControllerMode = NormalizeTopPanelControllerMode(topPanelControllerMode);
             creatorThemeUpdatePolicy = NormalizeCreatorThemeUpdatePolicy(creatorThemeUpdatePolicy);
             appearancePreset = SettingsAppearance.Normalize(appearancePreset);
@@ -1772,15 +1847,24 @@ namespace ControllerSessionManager.PlayniteIntegration
             plugin = sourcePlugin;
         }
 
-        public void RefreshCreatorThemeState()
+        internal bool UsesEmbeddedThemeDesign(ThemeAppearanceSurface surface)
         {
-            NotifyCreatorThemeStateChanged();
+            return IsThemeAppearanceEnabled(surface) && plugin != null &&
+                plugin.HasEmbeddedThemeDesign(surface);
         }
 
-        private void NotifyCreatorThemeStateChanged()
+        public void RefreshCreatorThemeState()
+        {
+            NotifyAppearanceEditStateChanged();
+        }
+
+        private void NotifyAppearanceEditStateChanged()
         {
             OnPropertyChanged("IsFullscreenNotificationCreatorThemeActive");
             OnPropertyChanged("IsDesktopNotificationCreatorThemeActive");
+            OnPropertyChanged("IsDesktopEmbeddedThemeAppearanceActive");
+            OnPropertyChanged("IsFullscreenEmbeddedThemeAppearanceActive");
+            OnPropertyChanged("IsOverlayEmbeddedThemeAppearanceActive");
             OnPropertyChanged("IsCreatorNotificationThemeActive");
             OnPropertyChanged("CanEditFullscreenNotificationStyle");
             OnPropertyChanged("CanEditDesktopNotificationStyle");
@@ -1788,6 +1872,11 @@ namespace ControllerSessionManager.PlayniteIntegration
             OnPropertyChanged("CanEditOverlayStyle");
             OnPropertyChanged("CanEditNotificationAudio");
             OnPropertyChanged("CanCopyNotificationStyles");
+        }
+
+        private void NotifyCreatorThemeStateChanged()
+        {
+            NotifyAppearanceEditStateChanged();
         }
 
         public bool HasSavedCustomNotificationStyle
@@ -2005,7 +2094,9 @@ namespace ControllerSessionManager.PlayniteIntegration
                 NotificationStylePreset = NotificationStylePreset,
                 DesktopNotificationStylePreset = DesktopNotificationStylePreset,
                 OverlayStylePreset = OverlayStylePreset,
-                UsePlayniteThemeAppearance = UsePlayniteThemeAppearance,
+                UsePlayniteThemeDesktopAppearance = UsePlayniteThemeDesktopAppearance,
+                UsePlayniteThemeFullscreenAppearance = UsePlayniteThemeFullscreenAppearance,
+                UsePlayniteThemeOverlayAppearance = UsePlayniteThemeOverlayAppearance,
                 EnableNotificationSounds = EnableNotificationSounds,
                 EnableDesktopNotificationSounds = EnableDesktopNotificationSounds,
                 EnableFullscreenNotificationSounds = EnableFullscreenNotificationSounds,
@@ -2353,7 +2444,9 @@ namespace ControllerSessionManager.PlayniteIntegration
             NotificationStylePreset = source.NotificationStylePreset;
             DesktopNotificationStylePreset = source.DesktopNotificationStylePreset;
             OverlayStylePreset = source.OverlayStylePreset;
-            UsePlayniteThemeAppearance = source.UsePlayniteThemeAppearance;
+            UsePlayniteThemeDesktopAppearance = source.UsePlayniteThemeDesktopAppearance;
+            UsePlayniteThemeFullscreenAppearance = source.UsePlayniteThemeFullscreenAppearance;
+            UsePlayniteThemeOverlayAppearance = source.UsePlayniteThemeOverlayAppearance;
             EnableNotificationSounds = source.EnableNotificationSounds;
             EnableDesktopNotificationSounds = source.EnableDesktopNotificationSounds;
             EnableFullscreenNotificationSounds = source.EnableFullscreenNotificationSounds;

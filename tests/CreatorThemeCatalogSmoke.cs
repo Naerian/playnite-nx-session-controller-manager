@@ -75,7 +75,7 @@ internal static class CreatorThemeCatalogSmoke
                 settings, "creator:community.test", null);
             var audioType = assembly.GetType(
                 "ControllerSessionManager.PlayniteIntegration.NotificationAudioService", true);
-            var audio = Activator.CreateInstance(audioType, new object[] { null, root });
+            var audio = Activator.CreateInstance(audioType, new object[] { null, root, null });
             var resolvedCreator = (string)audioType.GetMethod("ResolvePath",
                 new[] { soundKind, settingsType }).Invoke(audio, new[] { connected, settings });
             if (resolvedCreator != soundPath)

@@ -149,7 +149,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             pauseAttemptGate = new PauseAttemptGate();
             overlayClient = new OverlayClient(logger);
             notificationAudio = new NotificationAudioService(
-                logger, Path.GetDirectoryName(GetType().Assembly.Location));
+                logger, Path.GetDirectoryName(GetType().Assembly.Location), PlayniteApi);
             diagnosticEvents = new DiagnosticEventBuffer(200);
             Theme = new ControllerThemeApi();
 
@@ -2742,6 +2742,21 @@ namespace ControllerSessionManager.PlayniteIntegration
             return result.Where(a => !string.IsNullOrWhiteSpace(a)).ToList();
         }
 
+        private ControllerSessionManagerSettings ResolveAppearanceSettings(ThemeAppearanceSurface surface)
+        {
+            if (settings == null) return null;
+            if (!settings.IsThemeAppearanceEnabled(surface)) return settings;
+            ControllerSessionManagerSettings themed;
+            if (!ThemeEmbeddedAppearanceCatalog.TryCreateThemedAppearance(PlayniteApi, surface, out themed))
+                return settings;
+            return themed;
+        }
+
+        internal bool HasEmbeddedThemeDesign(ThemeAppearanceSurface surface)
+        {
+            return ThemeEmbeddedAppearanceCatalog.HasEmbeddedLayout(PlayniteApi, surface);
+        }
+
         private static string CoalesceHex(string live, string fallback)
         {
             return IsUsableHex(live) ? live : fallback;
@@ -2762,7 +2777,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             ref bool useGradient, ref string gradientColor,
             ref bool useBorderGradient, ref string borderStart, ref string borderEnd)
         {
-            if (settings == null || !settings.UsePlayniteThemeAppearance) return;
+            if (settings == null || !settings.IsThemeAppearanceEnabled(surface)) return;
             var live = ThemeAppearanceBridge.Resolve(PlayniteApi, surface);
             if (live == null || !live.HasAny) return;
             background = CoalesceHex(live.Background, background);
@@ -2776,11 +2791,17 @@ namespace ControllerSessionManager.PlayniteIntegration
                 useGradient = true;
                 gradientColor = live.Gradient;
             }
-            if (IsUsableHex(live.Border) && useBorderGradient)
-            {
-                borderStart = live.Border;
-                borderEnd = live.Border;
-            }
+            ApplyLiveBorderColors(live, ref useBorderGradient, ref borderStart, ref borderEnd);
+        }
+
+        private static void ApplyLiveBorderColors(ThemeAppearanceBridge.ThemeAppearanceColors live,
+            ref bool useBorderGradient, ref string borderStart, ref string borderEnd)
+        {
+            if (live == null || !IsUsableHex(live.Border)) return;
+            borderStart = live.Border;
+            borderEnd = IsUsableHex(live.BorderEnd) ? live.BorderEnd : live.Border;
+            if (!string.Equals(borderStart, borderEnd, StringComparison.OrdinalIgnoreCase))
+                useBorderGradient = true;
         }
 
         private void ApplyLiveTypeface(ThemeAppearanceSurface surface,
@@ -2788,7 +2809,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             ref string titleFamily, ref string titleWeight,
             ref string messageFamily, ref string messageWeight)
         {
-            if (settings == null || !settings.UsePlayniteThemeAppearance) return;
+            if (settings == null || !settings.IsThemeAppearanceEnabled(surface)) return;
             var live = ThemeAppearanceBridge.Resolve(PlayniteApi, surface);
             if (live == null || !live.HasAny) return;
             fontFamily = CoalesceFamily(live.FontFamily, null, fontFamily);
@@ -2808,154 +2829,156 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private string GetToastStylePayload()
         {
-            var background = settings.NotificationBackgroundColor;
-            var text = settings.NotificationTextColor;
-            var secondary = settings.NotificationSecondaryTextColor;
-            var connected = settings.NotificationConnectedColor;
-            var warning = settings.NotificationWarningColor;
-            var lowBattery = settings.NotificationLowBatteryColor;
-            var useGradient = settings.NotificationUseGradient;
-            var gradientColor = settings.NotificationGradientColor;
-            var useBorderGradient = settings.NotificationUseBorderGradient;
-            var borderStart = settings.NotificationBorderGradientStartColor;
-            var borderEnd = settings.NotificationBorderGradientEndColor;
+            var appearance = ResolveAppearanceSettings(ThemeAppearanceSurface.FullscreenNotification) ?? settings;
+            var background = appearance.NotificationBackgroundColor;
+            var text = appearance.NotificationTextColor;
+            var secondary = appearance.NotificationSecondaryTextColor;
+            var connected = appearance.NotificationConnectedColor;
+            var warning = appearance.NotificationWarningColor;
+            var lowBattery = appearance.NotificationLowBatteryColor;
+            var useGradient = appearance.NotificationUseGradient;
+            var gradientColor = appearance.NotificationGradientColor;
+            var useBorderGradient = appearance.NotificationUseBorderGradient;
+            var borderStart = appearance.NotificationBorderGradientStartColor;
+            var borderEnd = appearance.NotificationBorderGradientEndColor;
             ApplyLiveNotificationColors(ThemeAppearanceSurface.FullscreenNotification,
                 ref background, ref text, ref secondary, ref connected, ref warning, ref lowBattery,
                 ref useGradient, ref gradientColor, ref useBorderGradient, ref borderStart, ref borderEnd);
-            var fontFamily = settings.NotificationFontFamily;
-            var fontWeight = settings.NotificationFontWeight;
-            var titleFamily = settings.NotificationTitleFontFamily;
-            var titleWeight = settings.NotificationTitleFontWeight;
-            var messageFamily = settings.NotificationMessageFontFamily;
-            var messageWeight = settings.NotificationMessageFontWeight;
+            var fontFamily = appearance.NotificationFontFamily;
+            var fontWeight = appearance.NotificationFontWeight;
+            var titleFamily = appearance.NotificationTitleFontFamily;
+            var titleWeight = appearance.NotificationTitleFontWeight;
+            var messageFamily = appearance.NotificationMessageFontFamily;
+            var messageWeight = appearance.NotificationMessageFontWeight;
             ApplyLiveTypeface(ThemeAppearanceSurface.FullscreenNotification,
                 ref fontFamily, ref fontWeight, ref titleFamily, ref titleWeight,
                 ref messageFamily, ref messageWeight);
             return string.Join(";", new[]
             {
-                settings.NotificationWidth.ToString(), settings.NotificationScalePercent.ToString(),
-                settings.NotificationPosition ?? "TopRight", background,
+                appearance.NotificationWidth.ToString(), appearance.NotificationScalePercent.ToString(),
+                appearance.NotificationPosition ?? "TopRight", background,
                 text, secondary,
-                connected, settings.NotificationDisconnectedColor,
-                warning, settings.NotificationTitleFontSize.ToString(),
-                settings.NotificationMessageFontSize.ToString(), settings.NotificationIconSize.ToString(),
-                settings.NotificationPadding.ToString(), settings.NotificationShowBorder.ToString(),
-                settings.NotificationBorderPosition ?? "Bottom",
-                settings.NotificationBorderThickness.ToString(), settings.NotificationCornerRadius.ToString(),
-                settings.NotificationIconPosition ?? "Left",
-                settings.NotificationElementSpacing.ToString(),
+                connected, appearance.NotificationDisconnectedColor,
+                warning, appearance.NotificationTitleFontSize.ToString(),
+                appearance.NotificationMessageFontSize.ToString(), appearance.NotificationIconSize.ToString(),
+                appearance.NotificationPadding.ToString(), appearance.NotificationShowBorder.ToString(),
+                appearance.NotificationBorderPosition ?? "Bottom",
+                appearance.NotificationBorderThickness.ToString(), appearance.NotificationCornerRadius.ToString(),
+                appearance.NotificationIconPosition ?? "Left",
+                appearance.NotificationElementSpacing.ToString(),
                 lowBattery,
-                settings.NotificationShowConnectionBadge.ToString(),
-                settings.NotificationScreenMargin.ToString(),
-                settings.NotificationShowShadow.ToString(),
+                appearance.NotificationShowConnectionBadge.ToString(),
+                appearance.NotificationScreenMargin.ToString(),
+                appearance.NotificationShowShadow.ToString(),
                 fontFamily, fontWeight,
-                settings.NotificationTextAlignment, settings.NotificationAccentMode,
-                settings.NotificationAnimation, settings.NotificationShowTitle.ToString(),
-                settings.NotificationUseBackgroundImage.ToString(), EncodeStyleValue(settings.NotificationBackgroundImagePath),
-                settings.NotificationBackgroundImageStretch, settings.NotificationBackgroundImageHorizontalAlignment,
-                settings.NotificationBackgroundImageVerticalAlignment, settings.NotificationBackgroundImageOpacity.ToString(),
-                settings.NotificationBackgroundImageTintOpacity.ToString(),
-                settings.NotificationIconSpacing.ToString(),
+                appearance.NotificationTextAlignment, appearance.NotificationAccentMode,
+                appearance.NotificationAnimation, appearance.NotificationShowTitle.ToString(),
+                appearance.NotificationUseBackgroundImage.ToString(), EncodeStyleValue(appearance.NotificationBackgroundImagePath),
+                appearance.NotificationBackgroundImageStretch, appearance.NotificationBackgroundImageHorizontalAlignment,
+                appearance.NotificationBackgroundImageVerticalAlignment, appearance.NotificationBackgroundImageOpacity.ToString(),
+                appearance.NotificationBackgroundImageTintOpacity.ToString(),
+                appearance.NotificationIconSpacing.ToString(),
                 titleFamily, titleWeight,
                 messageFamily, messageWeight,
-                settings.NotificationMessageMaxLines.ToString(), settings.NotificationBadgePosition,
+                appearance.NotificationMessageMaxLines.ToString(), appearance.NotificationBadgePosition,
                 useGradient.ToString(), gradientColor,
-                settings.NotificationGradientAngle.ToString(), settings.NotificationUppercaseTitle.ToString(),
-                settings.NotificationShowIconContainer.ToString(), settings.NotificationIconContainerColor,
-                settings.NotificationIconContainerBorderColor,
-                settings.NotificationIconContainerBorderThickness.ToString(),
-                settings.NotificationIconContainerCornerRadius.ToString(),
-                settings.NotificationIconContainerPadding.ToString(),
-                settings.NotificationTextOrder, settings.NotificationUseIndependentBorders.ToString(),
-                settings.NotificationBorderLeftThickness.ToString(), settings.NotificationBorderTopThickness.ToString(),
-                settings.NotificationBorderRightThickness.ToString(), settings.NotificationBorderBottomThickness.ToString(),
-                settings.NotificationUseStateBackgroundColors.ToString(),
-                settings.NotificationConnectedBackgroundColor, settings.NotificationDisconnectedBackgroundColor,
-                settings.NotificationWarningBackgroundColor, settings.NotificationLowBatteryBackgroundColor,
+                appearance.NotificationGradientAngle.ToString(), appearance.NotificationUppercaseTitle.ToString(),
+                appearance.NotificationShowIconContainer.ToString(), appearance.NotificationIconContainerColor,
+                appearance.NotificationIconContainerBorderColor,
+                appearance.NotificationIconContainerBorderThickness.ToString(),
+                appearance.NotificationIconContainerCornerRadius.ToString(),
+                appearance.NotificationIconContainerPadding.ToString(),
+                appearance.NotificationTextOrder, appearance.NotificationUseIndependentBorders.ToString(),
+                appearance.NotificationBorderLeftThickness.ToString(), appearance.NotificationBorderTopThickness.ToString(),
+                appearance.NotificationBorderRightThickness.ToString(), appearance.NotificationBorderBottomThickness.ToString(),
+                appearance.NotificationUseStateBackgroundColors.ToString(),
+                appearance.NotificationConnectedBackgroundColor, appearance.NotificationDisconnectedBackgroundColor,
+                appearance.NotificationWarningBackgroundColor, appearance.NotificationLowBatteryBackgroundColor,
                 useBorderGradient.ToString(), borderStart,
-                borderEnd, settings.NotificationBorderGradientAngle.ToString(),
-                settings.NotificationShowBorderGlow.ToString(), settings.NotificationBorderGlowColor,
-                settings.NotificationBorderGlowBlur.ToString(), settings.NotificationBorderGlowOpacity.ToString(),
-                settings.NotificationUseStateBorderColors.ToString(), settings.NotificationConnectedBorderColor,
-                settings.NotificationDisconnectedBorderColor, settings.NotificationWarningBorderColor,
-                settings.NotificationLowBatteryBorderColor
+                borderEnd, appearance.NotificationBorderGradientAngle.ToString(),
+                appearance.NotificationShowBorderGlow.ToString(), appearance.NotificationBorderGlowColor,
+                appearance.NotificationBorderGlowBlur.ToString(), appearance.NotificationBorderGlowOpacity.ToString(),
+                appearance.NotificationUseStateBorderColors.ToString(), appearance.NotificationConnectedBorderColor,
+                appearance.NotificationDisconnectedBorderColor, appearance.NotificationWarningBorderColor,
+                appearance.NotificationLowBatteryBorderColor
             });
         }
 
         private string GetDesktopToastStylePayload()
         {
-            var background = settings.DesktopNotificationBackgroundColor;
-            var text = settings.DesktopNotificationTextColor;
-            var secondary = settings.DesktopNotificationSecondaryTextColor;
-            var connected = settings.DesktopNotificationConnectedColor;
-            var warning = settings.DesktopNotificationWarningColor;
-            var lowBattery = settings.DesktopNotificationLowBatteryColor;
-            var useGradient = settings.DesktopNotificationUseGradient;
-            var gradientColor = settings.DesktopNotificationGradientColor;
-            var useBorderGradient = settings.DesktopNotificationUseBorderGradient;
-            var borderStart = settings.DesktopNotificationBorderGradientStartColor;
-            var borderEnd = settings.DesktopNotificationBorderGradientEndColor;
+            var appearance = ResolveAppearanceSettings(ThemeAppearanceSurface.DesktopNotification) ?? settings;
+            var background = appearance.DesktopNotificationBackgroundColor;
+            var text = appearance.DesktopNotificationTextColor;
+            var secondary = appearance.DesktopNotificationSecondaryTextColor;
+            var connected = appearance.DesktopNotificationConnectedColor;
+            var warning = appearance.DesktopNotificationWarningColor;
+            var lowBattery = appearance.DesktopNotificationLowBatteryColor;
+            var useGradient = appearance.DesktopNotificationUseGradient;
+            var gradientColor = appearance.DesktopNotificationGradientColor;
+            var useBorderGradient = appearance.DesktopNotificationUseBorderGradient;
+            var borderStart = appearance.DesktopNotificationBorderGradientStartColor;
+            var borderEnd = appearance.DesktopNotificationBorderGradientEndColor;
             ApplyLiveNotificationColors(ThemeAppearanceSurface.DesktopNotification,
                 ref background, ref text, ref secondary, ref connected, ref warning, ref lowBattery,
                 ref useGradient, ref gradientColor, ref useBorderGradient, ref borderStart, ref borderEnd);
-            var fontFamily = settings.DesktopNotificationFontFamily;
-            var fontWeight = settings.DesktopNotificationFontWeight;
-            var titleFamily = settings.DesktopNotificationTitleFontFamily;
-            var titleWeight = settings.DesktopNotificationTitleFontWeight;
-            var messageFamily = settings.DesktopNotificationMessageFontFamily;
-            var messageWeight = settings.DesktopNotificationMessageFontWeight;
+            var fontFamily = appearance.DesktopNotificationFontFamily;
+            var fontWeight = appearance.DesktopNotificationFontWeight;
+            var titleFamily = appearance.DesktopNotificationTitleFontFamily;
+            var titleWeight = appearance.DesktopNotificationTitleFontWeight;
+            var messageFamily = appearance.DesktopNotificationMessageFontFamily;
+            var messageWeight = appearance.DesktopNotificationMessageFontWeight;
             ApplyLiveTypeface(ThemeAppearanceSurface.DesktopNotification,
                 ref fontFamily, ref fontWeight, ref titleFamily, ref titleWeight,
                 ref messageFamily, ref messageWeight);
             return string.Join(";", new[]
             {
-                settings.DesktopNotificationWidth.ToString(), settings.DesktopNotificationScalePercent.ToString(),
-                settings.DesktopNotificationPosition ?? "BottomRight", background,
+                appearance.DesktopNotificationWidth.ToString(), appearance.DesktopNotificationScalePercent.ToString(),
+                appearance.DesktopNotificationPosition ?? "BottomRight", background,
                 text, secondary,
-                connected, settings.DesktopNotificationDisconnectedColor,
-                warning, settings.DesktopNotificationTitleFontSize.ToString(),
-                settings.DesktopNotificationMessageFontSize.ToString(), settings.DesktopNotificationIconSize.ToString(),
-                settings.DesktopNotificationPadding.ToString(), settings.DesktopNotificationShowBorder.ToString(),
-                settings.DesktopNotificationBorderPosition ?? "Bottom",
-                settings.DesktopNotificationBorderThickness.ToString(), settings.DesktopNotificationCornerRadius.ToString(),
-                settings.DesktopNotificationIconPosition ?? "Left",
-                settings.DesktopNotificationElementSpacing.ToString(),
+                connected, appearance.DesktopNotificationDisconnectedColor,
+                warning, appearance.DesktopNotificationTitleFontSize.ToString(),
+                appearance.DesktopNotificationMessageFontSize.ToString(), appearance.DesktopNotificationIconSize.ToString(),
+                appearance.DesktopNotificationPadding.ToString(), appearance.DesktopNotificationShowBorder.ToString(),
+                appearance.DesktopNotificationBorderPosition ?? "Bottom",
+                appearance.DesktopNotificationBorderThickness.ToString(), appearance.DesktopNotificationCornerRadius.ToString(),
+                appearance.DesktopNotificationIconPosition ?? "Left",
+                appearance.DesktopNotificationElementSpacing.ToString(),
                 lowBattery,
-                settings.DesktopNotificationShowConnectionBadge.ToString(),
-                settings.DesktopNotificationScreenMargin.ToString(),
-                settings.DesktopNotificationShowShadow.ToString(),
+                appearance.DesktopNotificationShowConnectionBadge.ToString(),
+                appearance.DesktopNotificationScreenMargin.ToString(),
+                appearance.DesktopNotificationShowShadow.ToString(),
                 fontFamily, fontWeight,
-                settings.DesktopNotificationTextAlignment, settings.DesktopNotificationAccentMode,
-                settings.DesktopNotificationAnimation, settings.DesktopNotificationShowTitle.ToString(),
-                settings.DesktopNotificationUseBackgroundImage.ToString(), EncodeStyleValue(settings.DesktopNotificationBackgroundImagePath),
-                settings.DesktopNotificationBackgroundImageStretch, settings.DesktopNotificationBackgroundImageHorizontalAlignment,
-                settings.DesktopNotificationBackgroundImageVerticalAlignment, settings.DesktopNotificationBackgroundImageOpacity.ToString(),
-                settings.DesktopNotificationBackgroundImageTintOpacity.ToString(),
-                settings.DesktopNotificationIconSpacing.ToString(),
+                appearance.DesktopNotificationTextAlignment, appearance.DesktopNotificationAccentMode,
+                appearance.DesktopNotificationAnimation, appearance.DesktopNotificationShowTitle.ToString(),
+                appearance.DesktopNotificationUseBackgroundImage.ToString(), EncodeStyleValue(appearance.DesktopNotificationBackgroundImagePath),
+                appearance.DesktopNotificationBackgroundImageStretch, appearance.DesktopNotificationBackgroundImageHorizontalAlignment,
+                appearance.DesktopNotificationBackgroundImageVerticalAlignment, appearance.DesktopNotificationBackgroundImageOpacity.ToString(),
+                appearance.DesktopNotificationBackgroundImageTintOpacity.ToString(),
+                appearance.DesktopNotificationIconSpacing.ToString(),
                 titleFamily, titleWeight,
                 messageFamily, messageWeight,
-                settings.DesktopNotificationMessageMaxLines.ToString(), settings.DesktopNotificationBadgePosition,
+                appearance.DesktopNotificationMessageMaxLines.ToString(), appearance.DesktopNotificationBadgePosition,
                 useGradient.ToString(), gradientColor,
-                settings.DesktopNotificationGradientAngle.ToString(), settings.DesktopNotificationUppercaseTitle.ToString(),
-                settings.DesktopNotificationShowIconContainer.ToString(),
-                settings.DesktopNotificationIconContainerColor,
-                settings.DesktopNotificationIconContainerBorderColor,
-                settings.DesktopNotificationIconContainerBorderThickness.ToString(),
-                settings.DesktopNotificationIconContainerCornerRadius.ToString(),
-                settings.DesktopNotificationIconContainerPadding.ToString(),
-                settings.DesktopNotificationTextOrder, settings.DesktopNotificationUseIndependentBorders.ToString(),
-                settings.DesktopNotificationBorderLeftThickness.ToString(), settings.DesktopNotificationBorderTopThickness.ToString(),
-                settings.DesktopNotificationBorderRightThickness.ToString(), settings.DesktopNotificationBorderBottomThickness.ToString(),
-                settings.DesktopNotificationUseStateBackgroundColors.ToString(),
-                settings.DesktopNotificationConnectedBackgroundColor, settings.DesktopNotificationDisconnectedBackgroundColor,
-                settings.DesktopNotificationWarningBackgroundColor, settings.DesktopNotificationLowBatteryBackgroundColor,
+                appearance.DesktopNotificationGradientAngle.ToString(), appearance.DesktopNotificationUppercaseTitle.ToString(),
+                appearance.DesktopNotificationShowIconContainer.ToString(),
+                appearance.DesktopNotificationIconContainerColor,
+                appearance.DesktopNotificationIconContainerBorderColor,
+                appearance.DesktopNotificationIconContainerBorderThickness.ToString(),
+                appearance.DesktopNotificationIconContainerCornerRadius.ToString(),
+                appearance.DesktopNotificationIconContainerPadding.ToString(),
+                appearance.DesktopNotificationTextOrder, appearance.DesktopNotificationUseIndependentBorders.ToString(),
+                appearance.DesktopNotificationBorderLeftThickness.ToString(), appearance.DesktopNotificationBorderTopThickness.ToString(),
+                appearance.DesktopNotificationBorderRightThickness.ToString(), appearance.DesktopNotificationBorderBottomThickness.ToString(),
+                appearance.DesktopNotificationUseStateBackgroundColors.ToString(),
+                appearance.DesktopNotificationConnectedBackgroundColor, appearance.DesktopNotificationDisconnectedBackgroundColor,
+                appearance.DesktopNotificationWarningBackgroundColor, appearance.DesktopNotificationLowBatteryBackgroundColor,
                 useBorderGradient.ToString(), borderStart,
-                borderEnd, settings.DesktopNotificationBorderGradientAngle.ToString(),
-                settings.DesktopNotificationShowBorderGlow.ToString(), settings.DesktopNotificationBorderGlowColor,
-                settings.DesktopNotificationBorderGlowBlur.ToString(), settings.DesktopNotificationBorderGlowOpacity.ToString(),
-                settings.DesktopNotificationUseStateBorderColors.ToString(), settings.DesktopNotificationConnectedBorderColor,
-                settings.DesktopNotificationDisconnectedBorderColor, settings.DesktopNotificationWarningBorderColor,
-                settings.DesktopNotificationLowBatteryBorderColor
+                borderEnd, appearance.DesktopNotificationBorderGradientAngle.ToString(),
+                appearance.DesktopNotificationShowBorderGlow.ToString(), appearance.DesktopNotificationBorderGlowColor,
+                appearance.DesktopNotificationBorderGlowBlur.ToString(), appearance.DesktopNotificationBorderGlowOpacity.ToString(),
+                appearance.DesktopNotificationUseStateBorderColors.ToString(), appearance.DesktopNotificationConnectedBorderColor,
+                appearance.DesktopNotificationDisconnectedBorderColor, appearance.DesktopNotificationWarningBorderColor,
+                appearance.DesktopNotificationLowBatteryBorderColor
             });
         }
 
@@ -3570,26 +3593,27 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private string GetOverlayStylePayload()
         {
-            var card = settings.OverlayCardColor;
-            var accent = settings.OverlayAccentColor;
-            var text = settings.OverlayTextColor;
-            var warning = settings.OverlayWarningColor;
-            var useGradient = settings.OverlayUseGradient;
-            var gradientColor = settings.OverlayGradientColor;
-            var useBorderGradient = settings.OverlayUseBorderGradient;
-            var borderStart = settings.OverlayBorderGradientStartColor;
-            var borderEnd = settings.OverlayBorderGradientEndColor;
-            var fontFamily = settings.OverlayFontFamily;
-            var fontWeight = settings.OverlayFontWeight;
-            var titleFamily = settings.OverlayTitleFontFamily;
-            var titleWeight = settings.OverlayTitleFontWeight;
-            var controllerFamily = settings.OverlayControllerFontFamily;
-            var controllerWeight = settings.OverlayControllerFontWeight;
-            var instructionFamily = settings.OverlayInstructionFontFamily;
-            var instructionWeight = settings.OverlayInstructionFontWeight;
-            var statusFamily = settings.OverlayStatusFontFamily;
-            var statusWeight = settings.OverlayStatusFontWeight;
-            if (settings.UsePlayniteThemeAppearance)
+            var appearance = ResolveAppearanceSettings(ThemeAppearanceSurface.Overlay) ?? settings;
+            var card = appearance.OverlayCardColor;
+            var accent = appearance.OverlayAccentColor;
+            var text = appearance.OverlayTextColor;
+            var warning = appearance.OverlayWarningColor;
+            var useGradient = appearance.OverlayUseGradient;
+            var gradientColor = appearance.OverlayGradientColor;
+            var useBorderGradient = appearance.OverlayUseBorderGradient;
+            var borderStart = appearance.OverlayBorderGradientStartColor;
+            var borderEnd = appearance.OverlayBorderGradientEndColor;
+            var fontFamily = appearance.OverlayFontFamily;
+            var fontWeight = appearance.OverlayFontWeight;
+            var titleFamily = appearance.OverlayTitleFontFamily;
+            var titleWeight = appearance.OverlayTitleFontWeight;
+            var controllerFamily = appearance.OverlayControllerFontFamily;
+            var controllerWeight = appearance.OverlayControllerFontWeight;
+            var instructionFamily = appearance.OverlayInstructionFontFamily;
+            var instructionWeight = appearance.OverlayInstructionFontWeight;
+            var statusFamily = appearance.OverlayStatusFontFamily;
+            var statusWeight = appearance.OverlayStatusFontWeight;
+            if (appearance.IsThemeAppearanceEnabled(ThemeAppearanceSurface.Overlay))
             {
                 var live = ThemeAppearanceBridge.Resolve(PlayniteApi, ThemeAppearanceSurface.Overlay);
                 if (live != null && live.HasAny)
@@ -3603,11 +3627,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                         useGradient = true;
                         gradientColor = live.Gradient;
                     }
-                    if (IsUsableHex(live.Border) && useBorderGradient)
-                    {
-                        borderStart = live.Border;
-                        borderEnd = live.Border;
-                    }
+                    ApplyLiveBorderColors(live, ref useBorderGradient, ref borderStart, ref borderEnd);
                     fontFamily = CoalesceFamily(live.FontFamily, null, fontFamily);
                     fontWeight = CoalesceFamily(live.FontWeight, null, fontWeight);
                     titleFamily = CoalesceFamily(live.TitleFontFamily, live.FontFamily, titleFamily);
@@ -3622,95 +3642,95 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
             return string.Join(";", new[]
             {
-                settings.OverlayScalePercent.ToString(), settings.OverlayDimColor,
+                appearance.OverlayScalePercent.ToString(), appearance.OverlayDimColor,
                 card, accent,
                 text, warning,
-                settings.OverlayTitleFontSize.ToString(), settings.OverlayControllerFontSize.ToString(),
-                settings.OverlayInstructionFontSize.ToString(), settings.OverlayStatusFontSize.ToString(),
-                settings.OverlayControllerIconSize.ToString(), settings.OverlayStatusIconSize.ToString(),
-                settings.OverlayPadding.ToString(), settings.OverlayShowBorder.ToString(),
-                settings.OverlayBorderThickness.ToString(), settings.OverlayCornerRadius.ToString(),
-                settings.OverlayShowControllerIcon.ToString(), settings.OverlayShowStatusIcon.ToString(),
-                settings.OverlayElementSpacing.ToString(),
-                settings.OverlayShowControllerName
-                    ? (settings.OverlayControllerIconPosition ?? "Left")
+                appearance.OverlayTitleFontSize.ToString(), appearance.OverlayControllerFontSize.ToString(),
+                appearance.OverlayInstructionFontSize.ToString(), appearance.OverlayStatusFontSize.ToString(),
+                appearance.OverlayControllerIconSize.ToString(), appearance.OverlayStatusIconSize.ToString(),
+                appearance.OverlayPadding.ToString(), appearance.OverlayShowBorder.ToString(),
+                appearance.OverlayBorderThickness.ToString(), appearance.OverlayCornerRadius.ToString(),
+                appearance.OverlayShowControllerIcon.ToString(), appearance.OverlayShowStatusIcon.ToString(),
+                appearance.OverlayElementSpacing.ToString(),
+                appearance.OverlayShowControllerName
+                    ? (appearance.OverlayControllerIconPosition ?? "Left")
                     : "Center",
-                settings.OverlayShowControllerName.ToString(),
+                appearance.OverlayShowControllerName.ToString(),
                 fontFamily, fontWeight,
-                settings.OverlayShowConnectionBadge.ToString(),
-                settings.OverlayShowBatteryBadge.ToString(),
-                settings.OverlayShowTitle.ToString(), settings.OverlayShowInstruction.ToString(),
-                settings.OverlayShowPauseStatus.ToString(), settings.OverlayCardPosition,
-                settings.OverlayAnimation, settings.OverlayBorderPosition,
-                settings.OverlayCardWidth.ToString(), settings.OverlayShowShadow.ToString(),
+                appearance.OverlayShowConnectionBadge.ToString(),
+                appearance.OverlayShowBatteryBadge.ToString(),
+                appearance.OverlayShowTitle.ToString(), appearance.OverlayShowInstruction.ToString(),
+                appearance.OverlayShowPauseStatus.ToString(), appearance.OverlayCardPosition,
+                appearance.OverlayAnimation, appearance.OverlayBorderPosition,
+                appearance.OverlayCardWidth.ToString(), appearance.OverlayShowShadow.ToString(),
                 titleFamily, titleWeight,
                 controllerFamily, controllerWeight,
                 instructionFamily, instructionWeight,
                 statusFamily, statusWeight,
-                settings.OverlayConnectionBadgeTextColor, settings.OverlayConnectionBadgeIconColor,
-                settings.OverlayConnectionBadgeBackgroundColor, settings.OverlayConnectionBadgeBorderColor,
-                settings.OverlayConnectionBadgeBorderThickness.ToString(),
-                settings.OverlayConnectionBadgeCornerRadius.ToString(),
-                settings.OverlayConnectionBadgeIconSize.ToString(), settings.OverlayConnectionBadgeTextSize.ToString(),
-                settings.OverlayBatteryBadgeTextColor, settings.OverlayBatteryBadgeIconColor,
-                settings.OverlayBatteryBadgeBackgroundColor, settings.OverlayBatteryBadgeBorderColor,
-                settings.OverlayBatteryBadgeBorderThickness.ToString(),
-                settings.OverlayBatteryBadgeCornerRadius.ToString(),
-                settings.OverlayBatteryBadgeIconSize.ToString(), settings.OverlayBatteryBadgeTextSize.ToString(),
-                settings.OverlayBatteryBadgeUseStateColors.ToString(), settings.OverlayBatteryBadgeFullColor,
-                settings.OverlayBatteryBadgeMediumColor, settings.OverlayBatteryBadgeLowColor,
-                settings.OverlayBatteryBadgeEmptyColor,
-                settings.OverlayContentAlignment, settings.OverlayScreenMargin.ToString(),
+                appearance.OverlayConnectionBadgeTextColor, appearance.OverlayConnectionBadgeIconColor,
+                appearance.OverlayConnectionBadgeBackgroundColor, appearance.OverlayConnectionBadgeBorderColor,
+                appearance.OverlayConnectionBadgeBorderThickness.ToString(),
+                appearance.OverlayConnectionBadgeCornerRadius.ToString(),
+                appearance.OverlayConnectionBadgeIconSize.ToString(), appearance.OverlayConnectionBadgeTextSize.ToString(),
+                appearance.OverlayBatteryBadgeTextColor, appearance.OverlayBatteryBadgeIconColor,
+                appearance.OverlayBatteryBadgeBackgroundColor, appearance.OverlayBatteryBadgeBorderColor,
+                appearance.OverlayBatteryBadgeBorderThickness.ToString(),
+                appearance.OverlayBatteryBadgeCornerRadius.ToString(),
+                appearance.OverlayBatteryBadgeIconSize.ToString(), appearance.OverlayBatteryBadgeTextSize.ToString(),
+                appearance.OverlayBatteryBadgeUseStateColors.ToString(), appearance.OverlayBatteryBadgeFullColor,
+                appearance.OverlayBatteryBadgeMediumColor, appearance.OverlayBatteryBadgeLowColor,
+                appearance.OverlayBatteryBadgeEmptyColor,
+                appearance.OverlayContentAlignment, appearance.OverlayScreenMargin.ToString(),
                 useGradient.ToString(), gradientColor,
-                settings.OverlayGradientAngle.ToString(), settings.OverlayUppercaseTitle.ToString(),
-                settings.OverlayLayoutMode, settings.OverlayUseBackgroundImage.ToString(),
-                EncodeStyleValue(settings.OverlayBackgroundImagePath),
-                settings.OverlayBackgroundImageStretch,
-                settings.OverlayBackgroundImageHorizontalAlignment,
-                settings.OverlayBackgroundImageVerticalAlignment,
-                settings.OverlayBackgroundImageOpacity.ToString(),
-                settings.OverlayBackgroundImageTintOpacity.ToString(),
-                settings.OverlayShowControllerContainer.ToString(),
-                settings.OverlayControllerContainerColor,
-                settings.OverlayControllerContainerBorderColor,
-                settings.OverlayControllerContainerBorderThickness.ToString(),
-                settings.OverlayControllerContainerCornerRadius.ToString(),
-                settings.OverlayControllerContainerPadding.ToString(),
-                settings.OverlayBlockOrder, settings.OverlayMetadataOrientation,
-                settings.OverlayUseIndependentBorders.ToString(),
-                settings.OverlayBorderLeftThickness.ToString(), settings.OverlayBorderTopThickness.ToString(),
-                settings.OverlayBorderRightThickness.ToString(), settings.OverlayBorderBottomThickness.ToString(),
+                appearance.OverlayGradientAngle.ToString(), appearance.OverlayUppercaseTitle.ToString(),
+                appearance.OverlayLayoutMode, appearance.OverlayUseBackgroundImage.ToString(),
+                EncodeStyleValue(appearance.OverlayBackgroundImagePath),
+                appearance.OverlayBackgroundImageStretch,
+                appearance.OverlayBackgroundImageHorizontalAlignment,
+                appearance.OverlayBackgroundImageVerticalAlignment,
+                appearance.OverlayBackgroundImageOpacity.ToString(),
+                appearance.OverlayBackgroundImageTintOpacity.ToString(),
+                appearance.OverlayShowControllerContainer.ToString(),
+                appearance.OverlayControllerContainerColor,
+                appearance.OverlayControllerContainerBorderColor,
+                appearance.OverlayControllerContainerBorderThickness.ToString(),
+                appearance.OverlayControllerContainerCornerRadius.ToString(),
+                appearance.OverlayControllerContainerPadding.ToString(),
+                appearance.OverlayBlockOrder, appearance.OverlayMetadataOrientation,
+                appearance.OverlayUseIndependentBorders.ToString(),
+                appearance.OverlayBorderLeftThickness.ToString(), appearance.OverlayBorderTopThickness.ToString(),
+                appearance.OverlayBorderRightThickness.ToString(), appearance.OverlayBorderBottomThickness.ToString(),
                 useBorderGradient.ToString(), borderStart,
-                borderEnd, settings.OverlayBorderGradientAngle.ToString(),
-                settings.OverlayShowBorderGlow.ToString(), settings.OverlayBorderGlowColor,
-                settings.OverlayBorderGlowBlur.ToString(), settings.OverlayBorderGlowOpacity.ToString(),
-                settings.OverlaySceneUseGradient.ToString(), settings.OverlaySceneGradientColor,
-                settings.OverlaySceneGradientAngle.ToString(),
-                settings.OverlaySceneUseBackgroundImage.ToString(),
-                EncodeStyleValue(settings.OverlaySceneBackgroundImagePath),
-                settings.OverlaySceneBackgroundImageStretch,
-                settings.OverlaySceneBackgroundImageHorizontalAlignment,
-                settings.OverlaySceneBackgroundImageVerticalAlignment,
-                settings.OverlaySceneBackgroundImageOpacity.ToString(),
-                settings.OverlaySceneUseAmbientGlows.ToString(),
-                settings.OverlaySceneGlow1Color, settings.OverlaySceneGlow1X.ToString(),
-                settings.OverlaySceneGlow1Y.ToString(), settings.OverlaySceneGlow1Radius.ToString(),
-                settings.OverlaySceneGlow2Color, settings.OverlaySceneGlow2X.ToString(),
-                settings.OverlaySceneGlow2Y.ToString(), settings.OverlaySceneGlow2Radius.ToString(),
-                settings.OverlaySceneGlow3Color, settings.OverlaySceneGlow3X.ToString(),
-                settings.OverlaySceneGlow3Y.ToString(), settings.OverlaySceneGlow3Radius.ToString(),
-                settings.OverlaySceneShowGrid.ToString(), settings.OverlaySceneGridColor,
-                settings.OverlaySceneGridSize.ToString(), settings.OverlaySplitControllerSide,
-                settings.OverlayShowSplitDivider.ToString(), settings.OverlaySplitDividerColor,
-                settings.OverlaySplitDividerThickness.ToString(),
-                settings.OverlayShowIncidentBadge.ToString(), settings.OverlayIncidentBadgeTextColor,
-                settings.OverlayIncidentBadgeBackgroundColor, settings.OverlayIncidentBadgeBorderColor,
-                settings.OverlayIncidentBadgeBorderThickness.ToString(),
-                settings.OverlayIncidentBadgeCornerRadius.ToString(),
-                settings.OverlayIncidentBadgeTextSize.ToString(),
-                settings.OverlayStatusInMetadata.ToString(),
-                settings.OverlayInstructionColor, settings.OverlayControllerIconColor,
-                settings.OverlayShowDisconnectTimer.ToString()
+                borderEnd, appearance.OverlayBorderGradientAngle.ToString(),
+                appearance.OverlayShowBorderGlow.ToString(), appearance.OverlayBorderGlowColor,
+                appearance.OverlayBorderGlowBlur.ToString(), appearance.OverlayBorderGlowOpacity.ToString(),
+                appearance.OverlaySceneUseGradient.ToString(), appearance.OverlaySceneGradientColor,
+                appearance.OverlaySceneGradientAngle.ToString(),
+                appearance.OverlaySceneUseBackgroundImage.ToString(),
+                EncodeStyleValue(appearance.OverlaySceneBackgroundImagePath),
+                appearance.OverlaySceneBackgroundImageStretch,
+                appearance.OverlaySceneBackgroundImageHorizontalAlignment,
+                appearance.OverlaySceneBackgroundImageVerticalAlignment,
+                appearance.OverlaySceneBackgroundImageOpacity.ToString(),
+                appearance.OverlaySceneUseAmbientGlows.ToString(),
+                appearance.OverlaySceneGlow1Color, appearance.OverlaySceneGlow1X.ToString(),
+                appearance.OverlaySceneGlow1Y.ToString(), appearance.OverlaySceneGlow1Radius.ToString(),
+                appearance.OverlaySceneGlow2Color, appearance.OverlaySceneGlow2X.ToString(),
+                appearance.OverlaySceneGlow2Y.ToString(), appearance.OverlaySceneGlow2Radius.ToString(),
+                appearance.OverlaySceneGlow3Color, appearance.OverlaySceneGlow3X.ToString(),
+                appearance.OverlaySceneGlow3Y.ToString(), appearance.OverlaySceneGlow3Radius.ToString(),
+                appearance.OverlaySceneShowGrid.ToString(), appearance.OverlaySceneGridColor,
+                appearance.OverlaySceneGridSize.ToString(), appearance.OverlaySplitControllerSide,
+                appearance.OverlayShowSplitDivider.ToString(), appearance.OverlaySplitDividerColor,
+                appearance.OverlaySplitDividerThickness.ToString(),
+                appearance.OverlayShowIncidentBadge.ToString(), appearance.OverlayIncidentBadgeTextColor,
+                appearance.OverlayIncidentBadgeBackgroundColor, appearance.OverlayIncidentBadgeBorderColor,
+                appearance.OverlayIncidentBadgeBorderThickness.ToString(),
+                appearance.OverlayIncidentBadgeCornerRadius.ToString(),
+                appearance.OverlayIncidentBadgeTextSize.ToString(),
+                appearance.OverlayStatusInMetadata.ToString(),
+                appearance.OverlayInstructionColor, appearance.OverlayControllerIconColor,
+                appearance.OverlayShowDisconnectTimer.ToString()
             });
         }
 

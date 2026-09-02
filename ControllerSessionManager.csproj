@@ -94,6 +94,8 @@
     <Compile Include="PlayniteIntegration\NotificationFontCatalog.cs" />
     <Compile Include="PlayniteIntegration\NotificationStylePresets.cs" />
     <Compile Include="PlayniteIntegration\CreatorThemeCatalog.cs" />
+    <Compile Include="PlayniteIntegration\CreatorThemePackLoader.cs" />
+    <Compile Include="PlayniteIntegration\ThemeEmbeddedAppearanceCatalog.cs" />
     <Compile Include="PlayniteIntegration\ThemeAppearanceBridge.cs" />
     <Compile Include="PlayniteIntegration\CreatorThemeUpdater.cs" />
     <Compile Include="PlayniteIntegration\CreatorThemePackageInstaller.cs" />

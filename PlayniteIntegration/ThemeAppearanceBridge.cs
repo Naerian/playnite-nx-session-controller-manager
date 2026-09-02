@@ -20,7 +20,7 @@ namespace ControllerSessionManager.PlayniteIntegration
     /// <summary>
     /// Resolves live Playnite theme colors at display time. Theme authors map their own
     /// resource keys in ControllerManager/theme-bridge.json so color packs keep working
-    /// without Controller Manager knowing Aniki, Helium, or any other naming scheme.
+    /// without Controller Manager hard-coding any theme's naming scheme.
     /// </summary>
     internal static class ThemeAppearanceBridge
     {
@@ -35,12 +35,12 @@ namespace ControllerSessionManager.PlayniteIntegration
             IDictionary<string, string> keys = ToStringMap(mapping == null
                 ? null
                 : surface == ThemeAppearanceSurface.Overlay ? mapping.Overlay : mapping.Notification);
-            Bind(keys, "Background", null, colors.SetBackground);
-            Bind(keys, "Gradient", null, colors.SetGradient);
+            Bind(keys, "Background", null, colors.SetBackground, ResolveStopPreference.First);
+            Bind(keys, "Gradient", null, colors.SetGradient, ResolveStopPreference.Last);
             Bind(keys, "Text", null, colors.SetText);
             Bind(keys, "SecondaryText", null, colors.SetSecondaryText);
             Bind(keys, "Accent", null, colors.SetAccent);
-            Bind(keys, "Border", null, colors.SetBorder);
+            BindBorder(keys, colors);
             Bind(keys, "Warning", null, colors.SetWarning);
             BindStyle(keys, "TextStyle", colors.ApplyTextStyle);
             BindStyle(keys, "TitleStyle", colors.ApplyTitleStyle);
@@ -67,17 +67,55 @@ namespace ControllerSessionManager.PlayniteIntegration
                 api.ApplicationInfo.Mode == ApplicationMode.Fullscreen;
         }
 
+        internal enum ResolveStopPreference
+        {
+            Any,
+            First,
+            Last
+        }
+
         private static void Bind(IDictionary<string, string> keys, string name, string fallback,
-            Action<string, bool> apply)
+            Action<string, bool> apply, ResolveStopPreference preference = ResolveStopPreference.Any)
         {
             string resourceKey = Lookup(keys, name);
             if (string.IsNullOrWhiteSpace(resourceKey)) resourceKey = fallback;
             string hex;
             bool gradient;
             if (!string.IsNullOrWhiteSpace(resourceKey) &&
-                TryResolve(resourceKey, out hex, out gradient))
+                TryResolve(resourceKey, out hex, out gradient, preference))
             {
                 apply(hex, gradient);
+            }
+        }
+
+        private static void BindBorder(IDictionary<string, string> keys, ThemeAppearanceColors colors)
+        {
+            if (colors == null) return;
+            var resourceKey = Lookup(keys, "Border");
+            if (!string.IsNullOrWhiteSpace(resourceKey))
+            {
+                string start;
+                string end;
+                bool gradient;
+                if (TryResolveStops(resourceKey, out start, out end, out gradient))
+                {
+                    colors.SetBorder(start, gradient);
+                    colors.SetBorderEnd(end);
+                    return;
+                }
+                if (TryResolve(resourceKey, out start, out gradient, ResolveStopPreference.Any))
+                {
+                    colors.SetBorder(start, gradient);
+                    colors.SetBorderEnd(start);
+                }
+            }
+            var borderEndKey = Lookup(keys, "BorderEnd");
+            if (!string.IsNullOrWhiteSpace(borderEndKey) &&
+                TryResolve(borderEndKey, out var endHex, out var endGradient, ResolveStopPreference.Any))
+            {
+                colors.SetBorderEnd(endHex);
+                if (string.IsNullOrWhiteSpace(colors.Border))
+                    colors.SetBorder(endHex, endGradient);
             }
         }
 
@@ -197,6 +235,12 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         public static bool TryResolve(string resourceKey, out string hex, out bool isGradient)
         {
+            return TryResolve(resourceKey, out hex, out isGradient, ResolveStopPreference.Any);
+        }
+
+        internal static bool TryResolve(string resourceKey, out string hex, out bool isGradient,
+            ResolveStopPreference preference)
+        {
             hex = null;
             isGradient = false;
             if (string.IsNullOrWhiteSpace(resourceKey) || Application.Current == null) return false;
@@ -209,10 +253,35 @@ namespace ControllerSessionManager.PlayniteIntegration
             {
                 return false;
             }
-            return TryConvert(resource, out hex, out isGradient);
+            return TryConvert(resource, out hex, out isGradient, preference);
+        }
+
+        internal static bool TryResolveStops(string resourceKey, out string startHex, out string endHex,
+            out bool isGradient)
+        {
+            startHex = null;
+            endHex = null;
+            isGradient = false;
+            if (string.IsNullOrWhiteSpace(resourceKey) || Application.Current == null) return false;
+            object resource = null;
+            try
+            {
+                resource = Application.Current.TryFindResource(resourceKey.Trim());
+            }
+            catch
+            {
+                return false;
+            }
+            return TryConvertStops(resource, out startHex, out endHex, out isGradient);
         }
 
         internal static bool TryConvert(object resource, out string hex, out bool isGradient)
+        {
+            return TryConvert(resource, out hex, out isGradient, ResolveStopPreference.Any);
+        }
+
+        internal static bool TryConvert(object resource, out string hex, out bool isGradient,
+            ResolveStopPreference preference)
         {
             hex = null;
             isGradient = false;
@@ -233,17 +302,57 @@ namespace ControllerSessionManager.PlayniteIntegration
             var gradient = resource as GradientBrush;
             if (gradient != null && gradient.GradientStops != null && gradient.GradientStops.Count > 0)
             {
-                for (var i = gradient.GradientStops.Count - 1; i >= 0; i--)
+                string first;
+                string last;
+                if (!TryConvertStops(gradient, out first, out last, out isGradient)) return false;
+                switch (preference)
                 {
-                    var stop = gradient.GradientStops[i].Color;
-                    if (stop.A == 0) continue;
-                    hex = Format(stop);
-                    isGradient = true;
-                    return true;
+                    case ResolveStopPreference.First:
+                        hex = first;
+                        return hex != null;
+                    case ResolveStopPreference.Last:
+                        hex = last;
+                        return hex != null;
+                    default:
+                        hex = last ?? first;
+                        return hex != null;
                 }
-                return false;
             }
             return false;
+        }
+
+        internal static bool TryConvertStops(object resource, out string startHex, out string endHex,
+            out bool isGradient)
+        {
+            startHex = null;
+            endHex = null;
+            isGradient = false;
+            if (resource is Color)
+            {
+                var color = (Color)resource;
+                if (color.A == 0) return false;
+                startHex = endHex = Format(color);
+                return true;
+            }
+            var solid = resource as SolidColorBrush;
+            if (solid != null)
+            {
+                if (solid.Color.A == 0) return false;
+                startHex = endHex = Format(solid.Color);
+                return true;
+            }
+            var gradient = resource as GradientBrush;
+            if (gradient == null || gradient.GradientStops == null || gradient.GradientStops.Count == 0)
+                return false;
+            isGradient = true;
+            foreach (var stop in gradient.GradientStops)
+            {
+                if (stop.Color.A == 0) continue;
+                var hex = Format(stop.Color);
+                if (startHex == null) startHex = hex;
+                endHex = hex;
+            }
+            return startHex != null;
         }
 
         public static string FindThemeDirectory(IPlayniteAPI api, bool fullscreen)
@@ -345,6 +454,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             public string SecondaryText { get; private set; }
             public string Accent { get; private set; }
             public string Border { get; private set; }
+            public string BorderEnd { get; private set; }
             public string Warning { get; private set; }
             public string FontFamily { get; private set; }
             public string FontWeight { get; private set; }
@@ -364,6 +474,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                         !string.IsNullOrWhiteSpace(SecondaryText) ||
                         !string.IsNullOrWhiteSpace(Accent) ||
                         !string.IsNullOrWhiteSpace(Border) ||
+                        !string.IsNullOrWhiteSpace(BorderEnd) ||
                         !string.IsNullOrWhiteSpace(Warning) ||
                         !string.IsNullOrWhiteSpace(FontFamily) ||
                         !string.IsNullOrWhiteSpace(TitleFontFamily) ||
@@ -386,6 +497,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             public void SetSecondaryText(string hex, bool gradient) { SecondaryText = hex; }
             public void SetAccent(string hex, bool gradient) { Accent = hex; }
             public void SetBorder(string hex, bool gradient) { Border = hex; }
+            public void SetBorderEnd(string hex) { BorderEnd = hex; }
             public void SetWarning(string hex, bool gradient) { Warning = hex; }
 
             public void ApplyTextStyle(ThemeTypeface typeface)

@@ -12,15 +12,17 @@ namespace ControllerSessionManager.PlayniteIntegration
     {
         private readonly ILogger logger;
         private readonly string pluginDirectory;
+        private readonly IPlayniteAPI playniteApi;
         private readonly object gate = new object();
         private MediaPlayer player;
         private bool disposed;
         private int playbackGeneration;
 
-        public NotificationAudioService(ILogger sourceLogger, string pluginDirectory)
+        public NotificationAudioService(ILogger sourceLogger, string pluginDirectory, IPlayniteAPI api)
         {
             logger = sourceLogger;
             this.pluginDirectory = pluginDirectory ?? string.Empty;
+            playniteApi = api;
         }
 
         public void Play(NotificationSoundKind kind, ControllerSessionManagerSettings settings)
@@ -188,6 +190,14 @@ namespace ControllerSessionManager.PlayniteIntegration
             var creatorSound = CreatorThemeCatalog.GetSoundPathForPack(
                 settings == null ? string.Empty : settings.NotificationSoundPack, kind);
             if (!string.IsNullOrWhiteSpace(creatorSound)) return creatorSound;
+            if (settings != null &&
+                string.Equals(settings.NotificationSoundPack, NotificationSoundCatalog.ThemeEmbeddedPack,
+                    StringComparison.OrdinalIgnoreCase) &&
+                playniteApi != null)
+            {
+                var embedded = ThemeEmbeddedAppearanceCatalog.GetSoundPath(playniteApi, kind);
+                if (!string.IsNullOrWhiteSpace(embedded)) return embedded;
+            }
             return ResolvePath(kind, settings == null ? null : settings.NotificationSoundPack);
         }
 

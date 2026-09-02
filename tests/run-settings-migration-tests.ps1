@@ -67,11 +67,13 @@ foreach ($entry in $preserved.GetEnumerator()) {
 if ($settings.NotificationStylePreset -ne "Custom" -or $settings.OverlayStylePreset -ne "Custom") {
     throw "An existing installation must retain its custom notification and overlay appearance."
 }
-if ($settings.SettingsSchemaVersion -ne 23) {
-    throw "Settings were not migrated to schema 23."
+if ($settings.SettingsSchemaVersion -ne 24) {
+    throw "Settings were not migrated to schema 24."
 }
-if (-not $settings.UsePlayniteThemeAppearance) {
-    throw "Playnite theme appearance must default on after migration."
+if (-not $settings.UsePlayniteThemeDesktopAppearance -or
+    -not $settings.UsePlayniteThemeFullscreenAppearance -or
+    -not $settings.UsePlayniteThemeOverlayAppearance) {
+    throw "Playnite theme appearance must default on for all surfaces after migration."
 }
 $notificationStateType = $assembly.GetType("ControllerSessionManager.PlayniteIntegration.NotificationStyleState", $true)
 $legacyCustom = [Activator]::CreateInstance($type)
@@ -482,10 +484,12 @@ $connectedKind = [Enum]::Parse($soundKindType, "Connected")
 $desktopScope = [Enum]::Parse($soundScopeType, "Desktop")
 $fullscreenScope = [Enum]::Parse($soundScopeType, "Fullscreen")
 $loggerType = [Playnite.SDK.ILogger]
-$audioConstructor = $audioServiceType.GetConstructor(@($loggerType, [string]))
-$audioConstructorArguments = [object[]]::new(2)
+$playniteApiType = [Playnite.SDK.IPlayniteAPI]
+$audioConstructor = $audioServiceType.GetConstructor(@($loggerType, [string], $playniteApiType))
+$audioConstructorArguments = [object[]]::new(3)
 $audioConstructorArguments[0] = $null
 $audioConstructorArguments[1] = [string]$root
+$audioConstructorArguments[2] = $null
 $audioService = $audioConstructor.Invoke($audioConstructorArguments)
 $resolveCustom = $audioServiceType.GetMethods() | Where-Object {
     $_.Name -eq "ResolvePath" -and $_.GetParameters().Count -eq 2 -and
@@ -543,6 +547,29 @@ if (-not $creatorLockSettings.IsFullscreenNotificationCreatorThemeActive -or
     $creatorLockSettings.CanEditOverlayStyle -or
     $creatorLockSettings.CanCopyNotificationStyles) {
     throw "Creator designs were not classified as locked after catalog discovery."
+}
+
+# Schema 24 splits Playnite theme appearance into per-surface toggles.
+$legacyThemeOff = [Activator]::CreateInstance($type)
+$legacyThemeOff.SettingsSchemaVersion = 23
+$legacyField = $type.GetField("usePlayniteThemeAppearance",
+    [Reflection.BindingFlags]::NonPublic -bor [Reflection.BindingFlags]::Instance)
+$legacyField.SetValue($legacyThemeOff, $false)
+$method.Invoke($legacyThemeOff, $null) | Out-Null
+if ($legacyThemeOff.SettingsSchemaVersion -ne 24 -or
+    $legacyThemeOff.UsePlayniteThemeDesktopAppearance -or
+    $legacyThemeOff.UsePlayniteThemeFullscreenAppearance -or
+    $legacyThemeOff.UsePlayniteThemeOverlayAppearance) {
+    throw "Schema 24 must preserve a disabled legacy Playnite theme appearance toggle."
+}
+$legacyThemeOn = [Activator]::CreateInstance($type)
+$legacyThemeOn.SettingsSchemaVersion = 22
+$method.Invoke($legacyThemeOn, $null) | Out-Null
+if ($legacyThemeOn.SettingsSchemaVersion -ne 24 -or
+    -not $legacyThemeOn.UsePlayniteThemeDesktopAppearance -or
+    -not $legacyThemeOn.UsePlayniteThemeFullscreenAppearance -or
+    -not $legacyThemeOn.UsePlayniteThemeOverlayAppearance) {
+    throw "Schema 24 must enable all Playnite theme appearance toggles for legacy installs."
 }
 
 Write-Host "Settings migration and overlay preset tests passed."

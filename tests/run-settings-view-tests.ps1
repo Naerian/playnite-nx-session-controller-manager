@@ -54,12 +54,18 @@ if ($viewXaml -notmatch 'x:Name="DeletePresetButton"' -or
     (Get-Content -Raw (Join-Path $root "PlayniteIntegration\CreatorThemeCatalog.cs")) -notmatch 'TryRemoveUserInstalled') {
     throw "Only sideloaded creator packs can be deleted, the trash stays in the dropdown, and Soft is restored when the active look is removed."
 }
-if ($viewXaml -notmatch 'LOCCSM_CreatorDocsTitle' -or
-    $viewXaml -notmatch 'LOCCSM_CreatorDocsEnglish' -or
-    $viewXaml -notmatch 'LOCCSM_CreatorDocsSpanish' -or
+if ($viewXaml -notmatch 'LOCCSM_CommunityCreatorDocsTitle' -or
+    $viewXaml -notmatch 'LOCCSM_CommunityCreatorDocsEnglish' -or
+    $viewXaml -notmatch 'LOCCSM_CommunityCreatorDocsSpanish' -or
+    $viewXaml -notmatch 'LOCCSM_ThemeDeveloperDocsTitle' -or
+    $viewXaml -notmatch 'LOCCSM_ThemeDeveloperDocsEnglish' -or
+    $viewXaml -notmatch 'LOCCSM_ThemeDeveloperDocsSpanish' -or
     $viewXaml -notmatch 'controller-manager-creator-themes/wiki/EN-Overview' -or
     $viewXaml -notmatch 'controller-manager-creator-themes/wiki/ES-Descripcion-General' -or
-    $viewXaml -notmatch 'Text="{DynamicResource LOCCSM_CreatorDocsTitle}" Style="{StaticResource SectionHeaderText}"' -or
+    $viewXaml -notmatch 'playnite-nx-session-controller-manager/wiki/EN-Theme-Appearance-Packs' -or
+    $viewXaml -notmatch 'playnite-nx-session-controller-manager/wiki/ES-Integracion-de-Apariencia-en-Temas' -or
+    $viewXaml -notmatch 'Text="{DynamicResource LOCCSM_CommunityCreatorDocsTitle}" Style="{StaticResource SectionHeaderText}"' -or
+    $viewXaml -notmatch 'Text="{DynamicResource LOCCSM_ThemeDeveloperDocsTitle}" Style="{StaticResource SectionHeaderText}"' -or
     $viewXaml -match 'LOCCSM_CreatorThemeLockedLooksNotice') {
     throw "About creator guides must match project-link headers, and Looks must not repeat locked-design warnings."
 }
@@ -85,7 +91,11 @@ if ($profileUpdateRows.Count -ne 1) {
 if ($viewSource -notmatch 'ActivateInstalledCreatorDesign' -or
     $viewSource -notmatch 'LooksPreviewClick' -or
     $pluginSource -notmatch 'ThemeAppearanceBridge.Resolve' -or
-    $viewXaml -notmatch 'UsePlayniteThemeAppearance' -or
+    $pluginSource -notmatch 'TryCreateThemedAppearance' -or
+    $viewSource -notmatch 'UsesEmbeddedThemeDesign' -or
+    $viewXaml -notmatch 'UsePlayniteThemeDesktopAppearance' -or
+    $viewXaml -notmatch 'UsePlayniteThemeFullscreenAppearance' -or
+    $viewXaml -notmatch 'UsePlayniteThemeOverlayAppearance' -or
     $viewXaml -match 'Text="{DynamicResource LOCCSM_AppearanceOptions}" Style="{StaticResource TabHeaderLabel}"') {
     throw "Looks must activate installed designs, preview each look, follow live Playnite colors, and not keep a separate Options tab."
 }

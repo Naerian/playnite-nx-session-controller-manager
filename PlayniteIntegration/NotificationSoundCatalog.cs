@@ -22,6 +22,7 @@ namespace ControllerSessionManager.PlayniteIntegration
     public static class NotificationSoundCatalog
     {
         public const string CreatorPackPrefix = "creator:";
+        public const string ThemeEmbeddedPack = "theme:embedded";
         public const string ModernCrystal = "1_Modern_Crystal";
         public const string ConsoleChime = "2_Console_Chime";
         public const string CyberGamer = "3_Cyber_Gamer";
@@ -49,6 +50,11 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
 
             var trimmed = packId.Trim();
+            if (string.Equals(trimmed, ThemeEmbeddedPack, StringComparison.OrdinalIgnoreCase))
+            {
+                return ThemeEmbeddedPack;
+            }
+
             if (trimmed.StartsWith(CreatorPackPrefix, StringComparison.OrdinalIgnoreCase) &&
                 trimmed.Length > CreatorPackPrefix.Length)
             {
@@ -87,6 +93,8 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             switch (Normalize(packId))
             {
+                case ThemeEmbeddedPack:
+                    return "LOCCSM_SoundPackThemeEmbedded";
                 case ConsoleChime:
                     return "LOCCSM_SoundPackConsoleChime";
                 case CyberGamer:
@@ -108,6 +116,8 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             switch (Normalize(packId))
             {
+                case ThemeEmbeddedPack:
+                    return "Active Playnite theme";
                 case ConsoleChime:
                     return "Console Chime";
                 case CyberGamer:

@@ -1,13 +1,13 @@
 # Integración con temas
 
-Los autores también pueden aportar adaptaciones revisadas de notificaciones, overlay, fuentes y sonidos para Controller Manager. Consulta la guía completa de [Diseños de creadores](ES-Disenos-de-Creadores).
-
-Controller Manager ofrece dos capas oficiales:
+Controller Manager ofrece dos capas oficiales para el **XAML del tema de Playnite**:
 
 1. **API de datos** (`PluginSettings` + `PluginConverter`) — libertad total para componer UI.
 2. **Elementos ContentControl** — atajos listos para soltar y redimensionar.
 
 El botón automático de la barra superior de Desktop es independiente y no requiere modificar el tema.
+
+Las **notificaciones, el overlay y los sonidos** siguen otro camino de integración: incluye una [carpeta `ControllerManager/` dentro del tema](ES-Integracion-de-Apariencia-en-Temas) (con `theme-bridge.json` opcional). Eso **no** es lo mismo que publicar un [diseño de creador para la comunidad](ES-Disenos-de-Creadores) (`.csmtheme`).
 
 Addon Id: `ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc`  
 SourceName: `ControllerSessionManager`  

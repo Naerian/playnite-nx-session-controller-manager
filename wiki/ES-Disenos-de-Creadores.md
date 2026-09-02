@@ -1,6 +1,8 @@
-# Diseños de creadores
+# Diseños de creadores (`.csmtheme`)
 
 Controller Manager permite instalar packs visuales revisados para las notificaciones de mando y el overlay de desconexión. Pueden incluir distribuciones, colores, imágenes, fuentes y sonidos. Se muestran separados de los presets del plugin y los perfiles visuales importados.
+
+> **¿Desarrollas un tema de Playnite?** Si mantienes un **tema** y quieres integrar el estilo dentro de él, consulta [Packs de apariencia embebidos en temas](ES-Integracion-de-Apariencia-en-Temas). Los creadores de la comunidad publican `.csmtheme` en el catálogo; los desarrolladores de temas incluyen una carpeta `ControllerManager/` en el tema.
 
 ## Usar diseños de creadores
 
@@ -13,6 +15,8 @@ Controller Manager permite instalar packs visuales revisados para las notificaci
 Antes de instalar un paquete local, Controller Manager muestra su nombre, autor y versión, comprueba la compatibilidad del esquema y del plugin, valida rutas, tamaños, tipos de archivo, recursos y propiedades de apariencia, y solo sustituye una copia existente cuando todo el proceso termina correctamente. Si se cancela o rechaza el paquete, el diseño instalado se conserva.
 
 ## Crear o contribuir un diseño
+
+Estás creando un **look de comunidad** (`.csmtheme`) para otros usuarios de Controller Manager, no embebiendo archivos dentro de un tema de Playnite.
 
 El formato, las plantillas, la referencia de propiedades, las reglas de compatibilidad, las validaciones, el flujo de pull requests y las herramientas de prueba se mantienen en:
 

@@ -1,6 +1,8 @@
-# Creator designs
+# Creator designs (`.csmtheme`)
 
 Controller Manager can install reviewed visual packs for controller notifications and the disconnect overlay. Creator designs may include layouts, colors, images, fonts and notification sounds. They are kept separate from plugin presets and imported visual profiles.
+
+> **Not a Playnite theme developer?** If you maintain a Playnite **theme** and want to bundle styling inside it, see [Embedded appearance packs for Playnite themes](EN-Theme-Appearance-Packs) instead. Community creators publish `.csmtheme` files to the catalog; theme developers ship a `ControllerManager/` folder inside the theme.
 
 ## Using creator designs
 
@@ -13,6 +15,8 @@ Controller Manager can install reviewed visual packs for controller notification
 Before a local package is installed, Controller Manager shows its name, author and version, checks its schema and plugin compatibility, validates archive paths, sizes, file types, assets and appearance properties, and replaces an existing copy only after the complete package succeeds. Cancelling or rejecting a package preserves the installed design.
 
 ## Creating or contributing a design
+
+You are authoring a **community look** (`.csmtheme`) for other Controller Manager users—not embedding files inside a Playnite theme.
 
 The authoring format, templates, property reference, compatibility rules, validation, pull-request workflow and testing tools are maintained in the dedicated:
 

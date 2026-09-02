@@ -195,6 +195,16 @@ namespace ControllerSessionManager.PlayniteIntegration
                 RefreshCreatorThemeEditorState();
             }
 
+            if (args != null && (args.PropertyName == "UsePlayniteThemeDesktopAppearance" ||
+                args.PropertyName == "UsePlayniteThemeFullscreenAppearance" ||
+                args.PropertyName == "UsePlayniteThemeOverlayAppearance" ||
+                args.PropertyName == "IsDesktopEmbeddedThemeAppearanceActive" ||
+                args.PropertyName == "IsFullscreenEmbeddedThemeAppearanceActive" ||
+                args.PropertyName == "IsOverlayEmbeddedThemeAppearanceActive"))
+            {
+                RefreshCreatorThemeEditorState();
+            }
+
             if (args != null && args.PropertyName == "NotificationSoundPack")
             {
                 RefreshNotificationSoundPackChips();
@@ -209,6 +219,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                     StringComparison.Ordinal) || args.PropertyName == "ShowControllerNameInDesktopNotifications";
                 if (NotificationStylePropertyNames.Contains(args.PropertyName) && isDesktopStyle &&
                     !boundSettings.IsDesktopNotificationCreatorThemeActive &&
+                    !boundSettings.IsDesktopEmbeddedThemeAppearanceActive &&
                     !string.Equals(boundSettings.DesktopNotificationStylePreset, NotificationStylePresets.Custom,
                         StringComparison.OrdinalIgnoreCase))
                 {
@@ -216,6 +227,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 }
                 else if (NotificationStylePropertyNames.Contains(args.PropertyName) && !isDesktopStyle &&
                     !boundSettings.IsFullscreenNotificationCreatorThemeActive &&
+                    !boundSettings.IsFullscreenEmbeddedThemeAppearanceActive &&
                     !string.Equals(boundSettings.NotificationStylePreset, NotificationStylePresets.Custom,
                         StringComparison.OrdinalIgnoreCase))
                 {
@@ -276,11 +288,14 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
             if (settings == null) return;
-            if (settings.IsDesktopNotificationCreatorThemeActive)
+            if (settings.IsDesktopNotificationCreatorThemeActive ||
+                settings.IsDesktopEmbeddedThemeAppearanceActive)
                 CollapseChildExpanders(DesktopNotificationStyleEditor);
-            if (settings.IsFullscreenNotificationCreatorThemeActive)
+            if (settings.IsFullscreenNotificationCreatorThemeActive ||
+                settings.IsFullscreenEmbeddedThemeAppearanceActive)
                 CollapseChildExpanders(FullscreenNotificationStyleEditor);
-            if (settings.IsOverlayCreatorThemeActive)
+            if (settings.IsOverlayCreatorThemeActive ||
+                settings.IsOverlayEmbeddedThemeAppearanceActive)
                 CollapseChildExpanders(OverlayStyleEditor);
         }
 
@@ -1077,6 +1092,30 @@ namespace ControllerSessionManager.PlayniteIntegration
             if (settings == null) return;
             var previous = desktop ? settings.DesktopNotificationStylePreset : settings.NotificationStylePreset;
             var selected = NotificationStylePresets.Normalize(preset);
+            var surface = desktop
+                ? ThemeAppearanceSurface.DesktopNotification
+                : ThemeAppearanceSurface.FullscreenNotification;
+            if (settings.UsesEmbeddedThemeDesign(surface))
+            {
+                if (string.Equals(NotificationStylePresets.Normalize(previous), selected,
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    RefreshNotificationPresetSelectors();
+                    return;
+                }
+                suppressingStylePresetMark = true;
+                try
+                {
+                    if (desktop) settings.DesktopNotificationStylePreset = selected;
+                    else settings.NotificationStylePreset = selected;
+                }
+                finally { suppressingStylePresetMark = false; }
+                settings.RefreshCreatorThemeState();
+                RefreshNotificationPresetSelectors();
+                if (plugin != null)
+                    plugin.ShowNotificationPresetPreview(desktop);
+                return;
+            }
             if (ImportedVisualProfileCatalog.Contains(selected))
             {
                 suppressingStylePresetMark = true;
@@ -1229,6 +1268,17 @@ namespace ControllerSessionManager.PlayniteIntegration
             var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
             if (settings == null || string.IsNullOrWhiteSpace(preset) ||
                 string.Equals(settings.OverlayStylePreset, preset, StringComparison.OrdinalIgnoreCase)) return;
+            if (settings.UsesEmbeddedThemeDesign(ThemeAppearanceSurface.Overlay))
+            {
+                suppressingStylePresetMark = true;
+                try { settings.OverlayStylePreset = preset; }
+                finally { suppressingStylePresetMark = false; }
+                settings.RefreshCreatorThemeState();
+                RefreshOverlayPresetSelector();
+                RefreshOverlayPreviewComposition();
+                RefreshOverlayPreviewControllerLayout();
+                return;
+            }
             if (ImportedVisualProfileCatalog.Contains(preset))
             {
                 suppressingStylePresetMark = true;
@@ -1351,6 +1401,19 @@ namespace ControllerSessionManager.PlayniteIntegration
                         IsSelectable = true
                     });
                 }
+            }
+
+            if (plugin != null && ThemeEmbeddedAppearanceCatalog.HasCompleteSoundPack(plugin.PlayniteApi))
+            {
+                options.Add(CreateAppearancePresetGroupHeader("LOCCSM_PresetGroupTheme"));
+                var themePack = NotificationSoundCatalog.ThemeEmbeddedPack;
+                options.Add(new AppearancePresetOption
+                {
+                    Key = themePack,
+                    DisplayName = ThemeEmbeddedAppearanceCatalog.GetSoundPackDisplayName(plugin.PlayniteApi),
+                    Group = plugin.Loc("LOCCSM_PresetGroupTheme"),
+                    IsSelectable = true
+                });
             }
 
             SetGroupedPresetItems(NotificationSoundPackSelector, options);

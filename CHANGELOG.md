@@ -6,6 +6,14 @@
 
 
 
+
+## 1.0.30 — 2026-09-02
+- Added embedded ControllerManager appearance packs inside Playnite themes, with per-surface toggles on Appearance â†’ Looks for desktop notifications, fullscreen notifications and the disconnect overlay.
+- When a theme ships a full embedded design and the matching toggle is on, that design fully controls the surface; selected looks apply only when the toggle is off or the theme has no embedded pack.
+- Optional theme-bridge.json maps live Playnite theme resource keys to notification and overlay colors and typefaces, with improved gradient and border resolution from theme brushes.
+- Reorganized Looks so each Playnite theme styling checkbox sits under its look selector, and split About links for community creator designs versus Playnite theme developer documentation.
+- Added embedded appearance pack guides to the plugin wiki (English and Spanish).
+
 ## 1.0.29 — 2026-08-31
 - Hid the Gamepad Tester navigation and controller schematic when no controller is connected, including the Desktop sidebar shortcut.
 - Matched the empty-state title color to the Tester heading used in plugin settings.

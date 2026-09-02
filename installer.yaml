@@ -1,5 +1,15 @@
 AddonId: ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc
 Packages:
+  - Version: 1.0.30
+    RequiredApiVersion: 6.16.0
+    ReleaseDate: 2026-09-02
+    PackageUrl: https://github.com/Naerian/playnite-nx-session-controller-manager/releases/download/v1.0.30/ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc_1_0_30.pext
+    Changelog:
+      - 'Added embedded ControllerManager appearance packs inside Playnite themes, with per-surface toggles on Appearance â†’ Looks for desktop notifications, fullscreen notifications and the disconnect overlay.'
+      - 'When a theme ships a full embedded design and the matching toggle is on, that design fully controls the surface; selected looks apply only when the toggle is off or the theme has no embedded pack.'
+      - 'Optional theme-bridge.json maps live Playnite theme resource keys to notification and overlay colors and typefaces, with improved gradient and border resolution from theme brushes.'
+      - 'Reorganized Looks so each Playnite theme styling checkbox sits under its look selector, and split About links for community creator designs versus Playnite theme developer documentation.'
+      - 'Added embedded appearance pack guides to the plugin wiki (English and Spanish).'
   - Version: 1.0.29
     RequiredApiVersion: 6.16.0
     ReleaseDate: 2026-08-31

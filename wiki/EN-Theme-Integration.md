@@ -1,13 +1,13 @@
 # Theme integration
 
-Theme authors can also ship reviewed notification, overlay, font and sound adaptations for Controller Manager. See the complete [Creator designs guide](EN-Creator-Designs).
-
-Controller Manager exposes two official layers:
+Controller Manager exposes two official layers for **Playnite theme XAML**:
 
 1. **Data API** (`PluginSettings` + `PluginConverter`) — full composition freedom.
 2. **ContentControl elements** — drop-in, resizable shortcuts.
 
 The automatic Desktop top-panel button is independent and does not require theme changes.
+
+**Notifications, overlay and sounds** are a separate integration path: ship a [`ControllerManager/` folder inside your theme](EN-Theme-Appearance-Packs) (optional `theme-bridge.json`). That is **not** the same as publishing a [community creator design](EN-Creator-Designs) (`.csmtheme`).
 
 Addon Id: `ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc`  
 SourceName: `ControllerSessionManager`  
