@@ -65,23 +65,23 @@ namespace ControllerSessionManager.Overlay
 
         public void ShowToast(Guid sessionId, int processId, string kind, string title,
             string message, string iconGeometry, int durationMilliseconds, string presentationStyle,
-            string connectionIconGeometry = null)
+            string connectionIconGeometry = null, IntPtr targetWindowHandle = default(IntPtr))
         {
             SendToast("TOAST", sessionId, processId, kind, title, message, iconGeometry,
-                durationMilliseconds, presentationStyle, connectionIconGeometry);
+                durationMilliseconds, presentationStyle, connectionIconGeometry, targetWindowHandle);
         }
 
         public void ShowToastPreview(Guid sessionId, int processId, string kind, string title,
             string message, string iconGeometry, int durationMilliseconds, string presentationStyle,
-            string connectionIconGeometry = null)
+            string connectionIconGeometry = null, IntPtr targetWindowHandle = default(IntPtr))
         {
             SendToast("TOASTPREVIEW", sessionId, processId, kind, title, message, iconGeometry,
-                durationMilliseconds, presentationStyle, connectionIconGeometry);
+                durationMilliseconds, presentationStyle, connectionIconGeometry, targetWindowHandle);
         }
 
         private void SendToast(string command, Guid sessionId, int processId, string kind, string title,
             string message, string iconGeometry, int durationMilliseconds, string presentationStyle,
-            string connectionIconGeometry)
+            string connectionIconGeometry, IntPtr targetWindowHandle)
         {
             EnsureHost();
             lastSessionId = sessionId;
@@ -90,7 +90,8 @@ namespace ControllerSessionManager.Overlay
                 "CSM3", token, sessionId.ToString("N"), command, Guid.NewGuid().ToString("N"),
                 processId.ToString(), durationMilliseconds.ToString(), kind, Encode(title),
                 Encode(message), Encode(iconGeometry), Encode(presentationStyle),
-                Encode(connectionIconGeometry)
+                Encode(connectionIconGeometry),
+                unchecked((long)targetWindowHandle.ToInt64()).ToString()
             }));
         }
 

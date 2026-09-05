@@ -480,10 +480,11 @@ namespace ControllerSessionManager.PlayniteIntegration
                     ? Loc("LOCCSM_OnlineFallbackToastMessage")
                     : settings.ShowControllerNameInNotifications ? Loc("LOCCSM_NotificationPreviewMessage") : string.Empty;
             var iconFile = ControllerIconCatalog.DefaultFileName;
-            overlayClient.ShowToastPreview(notificationSessionId, 0, previewKind, title, message,
+            overlayClient.ShowToastPreview(notificationSessionId, GetToastTargetProcessId(), previewKind, title, message,
                 SvgIconGeometryLoader.GetPathData(iconFile),
                 settings.NotificationDurationMilliseconds, GetToastStylePayload(),
-                GetToastBadgeIconGeometry(previewKind, "Wireless"));
+                GetToastBadgeIconGeometry(previewKind, "Wireless"),
+                GetPreviewTargetWindowHandle());
             if (playSound)
             {
                 PlayNotificationSound(SoundKindFromToast(previewKind), preview: true);
@@ -496,7 +497,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             if (activeDisconnectIncidentId.HasValue) return;
 
             var iconFile = ControllerIconCatalog.DefaultFileName;
-            overlayClient.Show(notificationSessionId, Guid.NewGuid(), 0,
+            overlayClient.Show(notificationSessionId, Guid.NewGuid(), GetToastTargetProcessId(),
                 Loc("LOCCSM_OverlayDisconnectTitle"),
                 Loc("LOCCSM_PreviewControllerName"),
                 Loc("LOCCSM_OverlayAllowTakeover"),
@@ -1782,6 +1783,9 @@ namespace ControllerSessionManager.PlayniteIntegration
         [DllImport("user32.dll")]
         private static extern bool AllowSetForegroundWindow(int processId);
 
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
+
         public override void OnGameStarted(OnGameStartedEventArgs args)
         {
             TesterHostClient.SuspendShared();
@@ -2420,7 +2424,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                     activeOnlineNotificationOnly = online.IsNotificationOnlySafe;
                     if (activeOnlineNotificationOnly)
                     {
-                        overlayClient.ShowToast(activeSessionId, activePauseReceipt.TargetProcessId, "warning",
+                        overlayClient.ShowToast(activeSessionId,
+                            GetToastTargetProcessId(activePauseReceipt.TargetProcessId), "warning",
                             Loc("LOCCSM_OnlineFallbackToastTitle"), Loc("LOCCSM_OnlineFallbackToastMessage"),
                             SvgIconGeometryLoader.GetPathData(ControllerIconCatalog.DefaultFileName),
                             settings.NotificationDurationMilliseconds, GetToastStylePayload(),
@@ -2566,9 +2571,10 @@ namespace ControllerSessionManager.PlayniteIntegration
                     continue;
                 }
 
+                var toastProcessId = GetToastTargetProcessId();
                 if (show)
                 {
-                    overlayClient.ShowToast(notificationSessionId, 0,
+                    overlayClient.ShowToast(notificationSessionId, toastProcessId,
                         isCurrentlyConnected ? "connected" : "disconnected",
                         Loc(isCurrentlyConnected ? "LOCCSM_ControllerConnectedToast" : "LOCCSM_ControllerDisconnectedToast"),
                         GetToastControllerName(candidate.Identity.Name), candidate.Identity.IconGeometry,
@@ -2578,7 +2584,7 @@ namespace ControllerSessionManager.PlayniteIntegration
 
                 if (showDesktop)
                 {
-                    overlayClient.ShowToast(notificationSessionId, 0,
+                    overlayClient.ShowToast(notificationSessionId, toastProcessId,
                         isCurrentlyConnected ? "connected" : "disconnected",
                         Loc(isCurrentlyConnected ? "LOCCSM_ControllerConnectedToast" : "LOCCSM_ControllerDisconnectedToast"),
                         settings.ShowControllerNameInDesktopNotifications
@@ -2676,6 +2682,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                     ResolveControllerIconFileName(controller));
                 var badgeIcon = GetToastBadgeIconGeometry("lowbattery");
 
+                var toastProcessId = GetToastTargetProcessId();
                 if (showFullscreen)
                 {
                     var name = GetToastControllerName(controller.Name);
@@ -2683,7 +2690,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                         ? levelLabel
                         : name + " · " + levelLabel;
                     overlayClient.ShowToast(
-                        notificationSessionId, 0, "lowbattery", title, message, icon,
+                        notificationSessionId, toastProcessId, "lowbattery", title, message, icon,
                         settings.NotificationDurationMilliseconds, GetToastStylePayload(),
                         badgeIcon);
                 }
@@ -2695,7 +2702,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                         ? controller.Name + " · " + levelLabel
                         : levelLabel;
                     overlayClient.ShowToast(
-                        notificationSessionId, 0, "lowbattery", title, message, icon,
+                        notificationSessionId, toastProcessId, "lowbattery", title, message, icon,
                         settings.DesktopNotificationDurationMilliseconds,
                         GetDesktopToastStylePayload(),
                         badgeIcon);
@@ -3561,13 +3568,89 @@ namespace ControllerSessionManager.PlayniteIntegration
                     ? Loc("LOCCSM_OnlineFallbackToastMessage")
                     : settings.ShowControllerNameInDesktopNotifications ? Loc("LOCCSM_NotificationPreviewMessage") : string.Empty;
             var iconFile = ControllerIconCatalog.DefaultFileName;
-            overlayClient.ShowToastPreview(notificationSessionId, 0, previewKind, title, message,
+            overlayClient.ShowToastPreview(notificationSessionId, GetToastTargetProcessId(), previewKind, title, message,
                 SvgIconGeometryLoader.GetPathData(iconFile),
                 settings.DesktopNotificationDurationMilliseconds, GetDesktopToastStylePayload(),
-                GetToastBadgeIconGeometry(previewKind, "Bluetooth"));
+                GetToastBadgeIconGeometry(previewKind, "Bluetooth"),
+                GetPreviewTargetWindowHandle());
             if (playSound)
             {
                 PlayNotificationSound(SoundKindFromToast(previewKind), preview: true);
+            }
+        }
+
+        private int GetToastTargetProcessId(int preferredProcessId = 0)
+        {
+            if (preferredProcessId > 0)
+            {
+                return preferredProcessId;
+            }
+
+            if (activeGameProcessId > 0)
+            {
+                return activeGameProcessId;
+            }
+
+            return Process.GetCurrentProcess().Id;
+        }
+
+        private IntPtr GetPreviewTargetWindowHandle()
+        {
+            try
+            {
+                var app = Application.Current;
+                if (app != null)
+                {
+                    Window active = null;
+                    Window fallback = null;
+                    foreach (Window window in app.Windows)
+                    {
+                        if (window == null || !window.IsVisible)
+                        {
+                            continue;
+                        }
+
+                        if (window.IsActive)
+                        {
+                            active = window;
+                            break;
+                        }
+
+                        if (fallback == null &&
+                            (app.MainWindow == null || !ReferenceEquals(window, app.MainWindow)))
+                        {
+                            fallback = window;
+                        }
+                    }
+
+                    var target = active ?? fallback;
+                    if (target != null)
+                    {
+                        var helper = new WindowInteropHelper(target);
+                        var handle = helper.Handle;
+                        if (handle == IntPtr.Zero)
+                        {
+                            handle = helper.EnsureHandle();
+                        }
+
+                        if (handle != IntPtr.Zero)
+                        {
+                            return handle;
+                        }
+                    }
+                }
+            }
+            catch
+            {
+            }
+
+            try
+            {
+                return GetForegroundWindow();
+            }
+            catch
+            {
+                return IntPtr.Zero;
             }
         }
 

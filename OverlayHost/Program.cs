@@ -133,15 +133,22 @@ namespace ControllerSessionManager.OverlayHost
                     int.TryParse(parts[5], out processId);
                     int.TryParse(parts[6], out duration);
                     var connectionIcon = parts.Length > 12 ? Decode(parts[12]) : string.Empty;
+                    long windowHandleValue;
+                    var windowHandle = parts.Length > 13 &&
+                        long.TryParse(parts[13], out windowHandleValue)
+                        ? new IntPtr(windowHandleValue)
+                        : IntPtr.Zero;
                     if (command == "TOASTPREVIEW")
                     {
                         toastWindow.ReplaceWith(parts[4], processId, duration, parts[7], Decode(parts[8]),
-                            Decode(parts[9]), Decode(parts[10]), Decode(parts[11]), connectionIcon);
+                            Decode(parts[9]), Decode(parts[10]), Decode(parts[11]), connectionIcon,
+                            windowHandle);
                     }
                     else
                     {
                         toastWindow.Enqueue(parts[4], processId, duration, parts[7], Decode(parts[8]),
-                            Decode(parts[9]), Decode(parts[10]), Decode(parts[11]), connectionIcon);
+                            Decode(parts[9]), Decode(parts[10]), Decode(parts[11]), connectionIcon,
+                            windowHandle);
                     }
                 }
                 else if (command == "HIDEALL")

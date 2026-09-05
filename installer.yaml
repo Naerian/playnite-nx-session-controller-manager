@@ -1,5 +1,13 @@
 AddonId: ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc
 Packages:
+  - Version: 1.0.31
+    RequiredApiVersion: 6.16.0
+    ReleaseDate: 2026-09-05
+    PackageUrl: https://github.com/Naerian/playnite-nx-session-controller-manager/releases/download/v1.0.31/ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc_1_0_31.pext
+    Changelog:
+      - 'Show controller notifications and the disconnect overlay on the monitor hosting the game or Playnite window instead of always using the primary display.'
+      - 'Keep visible toasts and overlays following that window when it moves between monitors.'
+      - 'Point settings previews at the active configuration window so they appear on the same screen and follow it while open.'
   - Version: 1.0.30
     RequiredApiVersion: 6.16.0
     ReleaseDate: 2026-09-02

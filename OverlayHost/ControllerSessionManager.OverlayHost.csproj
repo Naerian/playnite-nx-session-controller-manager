@@ -43,6 +43,7 @@
     <Compile Include="FullscreenFocusHelper.cs" />
     <Compile Include="OverlayWindow.cs" />
     <Compile Include="ToastWindow.cs" />
+    <Compile Include="TargetScreenResolver.cs" />
     <Compile Include="PathAspectSizer.cs" />
     <Compile Include="ProcessSuspensionLease.cs" />
     <Compile Include="..\Overlay\DisconnectDurationFormatter.cs">

@@ -65,9 +65,12 @@ namespace ControllerSessionManager.OverlayHost
         private readonly Border controllerContainer;
         private readonly DispatcherTimer watchdog;
         private readonly DispatcherTimer disconnectTimer;
+        private readonly DispatcherTimer positionTimer;
         private DateTime lastHeartbeatUtc = DateTime.UtcNow;
         private string currentSessionId;
         private string currentIncidentId;
+        private int currentGameProcessId;
+        private System.Drawing.Rectangle lastOverlayBounds;
         private string currentAnimation = "FadeScale";
         private string currentBatteryState;
         private DateTime disconnectedSinceUtc = DateTime.UtcNow;
@@ -243,6 +246,8 @@ namespace ControllerSessionManager.OverlayHost
             disconnectTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
             disconnectTimer.Tick += delegate { UpdateDisconnectTimer(); };
             disconnectTimer.Start();
+            positionTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(250) };
+            positionTimer.Tick += OnPositionTrackElapsed;
         }
 
         public void ShowIncident(string sessionId, string incidentId, int gameProcessId, string title,
@@ -261,6 +266,7 @@ namespace ControllerSessionManager.OverlayHost
             }
             currentSessionId = sessionId;
             currentIncidentId = incidentId;
+            currentGameProcessId = gameProcessId;
             lastHeartbeatUtc = DateTime.UtcNow;
             titleText.Text = title;
             messageText.Text = message;
@@ -303,6 +309,7 @@ namespace ControllerSessionManager.OverlayHost
                 Show();
             }
             ApplyWindowStylesAndBounds(screen);
+            StartPositionTracking();
             if (animateEntry)
             {
                 BeginEntryAnimation();
@@ -1214,6 +1221,8 @@ namespace ControllerSessionManager.OverlayHost
             if (string.Equals(currentSessionId, sessionId, StringComparison.OrdinalIgnoreCase))
             {
                 suspensionLease.Resume();
+                StopPositionTracking();
+                currentGameProcessId = 0;
                 Hide();
             }
             lastHeartbeatUtc = DateTime.UtcNow;
@@ -1239,30 +1248,44 @@ namespace ControllerSessionManager.OverlayHost
             var style = GetWindowLong(handle, GwlExStyle);
             SetWindowLong(handle, GwlExStyle, style | WsExTransparent | WsExToolWindow | WsExNoActivate);
             var bounds = (screen ?? Forms.Screen.PrimaryScreen).Bounds;
+            var placement = new System.Drawing.Rectangle(bounds.Left, bounds.Top, bounds.Width, bounds.Height);
+            if (placement == lastOverlayBounds)
+            {
+                return;
+            }
+
+            lastOverlayBounds = placement;
             SetWindowPos(handle, HwndTopmost, bounds.Left, bounds.Top, bounds.Width, bounds.Height,
                 SwpNoActivate | SwpShowWindow);
         }
 
         private Forms.Screen GetTargetScreen(int processId)
         {
-            try
+            return TargetScreenResolver.Resolve(processId);
+        }
+
+        private void StartPositionTracking()
+        {
+            if (!positionTimer.IsEnabled)
             {
-                if (processId > 0)
-                {
-                    using (var process = Process.GetProcessById(processId))
-                    {
-                        if (process.MainWindowHandle != IntPtr.Zero)
-                        {
-                            return Forms.Screen.FromHandle(process.MainWindowHandle);
-                        }
-                    }
-                }
+                positionTimer.Start();
             }
-            catch
+        }
+
+        private void StopPositionTracking()
+        {
+            positionTimer.Stop();
+            lastOverlayBounds = System.Drawing.Rectangle.Empty;
+        }
+
+        private void OnPositionTrackElapsed(object sender, EventArgs args)
+        {
+            if (!IsVisible || currentGameProcessId <= 0)
             {
+                return;
             }
 
-            return Forms.Screen.PrimaryScreen;
+            ApplyWindowStylesAndBounds(GetTargetScreen(currentGameProcessId));
         }
 
         private void OnWatchdogTick(object sender, EventArgs args)
@@ -1290,6 +1313,8 @@ namespace ControllerSessionManager.OverlayHost
             if (IsVisible && elapsed > TimeSpan.FromSeconds(8))
             {
                 suspensionLease.Resume();
+                StopPositionTracking();
+                currentGameProcessId = 0;
                 Hide();
             }
             if (elapsed > TimeSpan.FromSeconds(30))

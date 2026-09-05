@@ -7,6 +7,12 @@
 
 
 
+
+## 1.0.31 — 2026-09-05
+- Show controller notifications and the disconnect overlay on the monitor hosting the game or Playnite window instead of always using the primary display.
+- Keep visible toasts and overlays following that window when it moves between monitors.
+- Point settings previews at the active configuration window so they appear on the same screen and follow it while open.
+
 ## 1.0.30 — 2026-09-02
 - Added embedded ControllerManager appearance packs inside Playnite themes, with per-surface toggles on Appearance â†’ Looks for desktop notifications, fullscreen notifications and the disconnect overlay.
 - When a theme ships a full embedded design and the matching toggle is on, that design fully controls the surface; selected looks apply only when the toggle is off or the theme has no embedded pack.

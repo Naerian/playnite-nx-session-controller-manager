@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -42,11 +41,14 @@ namespace ControllerSessionManager.OverlayHost
         private readonly Border contentHost;
         private readonly DispatcherTimer holdTimer;
         private readonly DispatcherTimer interToastTimer;
+        private readonly DispatcherTimer positionTimer;
         private const int InterToastDelayMilliseconds = 1500;
+        private const int PositionTrackIntervalMilliseconds = 250;
         private bool pauseBeforeQueuedToast;
         private double currentShadowInset;
         private ToastRequest current;
         private ToastStyle currentStyle;
+        private System.Drawing.Rectangle lastToastPlacement;
 
         public ToastWindow()
         {
@@ -150,16 +152,22 @@ namespace ControllerSessionManager.OverlayHost
             holdTimer.Tick += OnHoldElapsed;
             interToastTimer = new DispatcherTimer();
             interToastTimer.Tick += OnInterToastElapsed;
+            positionTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(PositionTrackIntervalMilliseconds)
+            };
+            positionTimer.Tick += OnPositionTrackElapsed;
         }
 
         public void Enqueue(string id, int processId, int durationMilliseconds, string kind,
             string title, string message, string iconGeometry, string presentationStyle,
-            string connectionIconGeometry = null)
+            string connectionIconGeometry = null, IntPtr targetWindowHandle = default(IntPtr))
         {
             pending.Enqueue(new ToastRequest
             {
                 Id = id,
                 ProcessId = processId,
+                TargetWindowHandle = targetWindowHandle,
                 DurationMilliseconds = Math.Max(2000, Math.Min(15000, durationMilliseconds)),
                 Kind = kind,
                 Title = title,
@@ -176,11 +184,12 @@ namespace ControllerSessionManager.OverlayHost
 
         public void ReplaceWith(string id, int processId, int durationMilliseconds, string kind,
             string title, string message, string iconGeometry, string presentationStyle,
-            string connectionIconGeometry = null)
+            string connectionIconGeometry = null, IntPtr targetWindowHandle = default(IntPtr))
         {
             pending.Clear();
             holdTimer.Stop();
             interToastTimer.Stop();
+            StopPositionTracking();
             pauseBeforeQueuedToast = false;
             current = null;
             currentStyle = null;
@@ -188,7 +197,7 @@ namespace ControllerSessionManager.OverlayHost
             cardShell.RenderTransform = Transform.Identity;
             Opacity = 0;
             Enqueue(id, processId, durationMilliseconds, kind, title, message, iconGeometry,
-                presentationStyle, connectionIconGeometry);
+                presentationStyle, connectionIconGeometry, targetWindowHandle);
         }
 
         private void ShowNext()
@@ -197,6 +206,8 @@ namespace ControllerSessionManager.OverlayHost
             {
                 pauseBeforeQueuedToast = false;
                 current = null;
+                currentStyle = null;
+                StopPositionTracking();
                 Hide();
                 return;
             }
@@ -409,10 +420,11 @@ namespace ControllerSessionManager.OverlayHost
             {
                 Show();
             }
-            ApplyBounds(GetTargetScreen(current.ProcessId), style.Position, style.ScreenMargin);
+            ApplyBounds(GetTargetScreen(current), style.Position, style.ScreenMargin);
             BeginEntryAnimation(style);
             holdTimer.Interval = TimeSpan.FromMilliseconds(current.DurationMilliseconds);
             holdTimer.Start();
+            StartPositionTracking();
         }
 
         private void BeginEntryAnimation(ToastStyle style)
@@ -617,6 +629,30 @@ namespace ControllerSessionManager.OverlayHost
             ShowNext();
         }
 
+        private void OnPositionTrackElapsed(object sender, EventArgs args)
+        {
+            if (current == null || currentStyle == null || !IsVisible)
+            {
+                return;
+            }
+
+            ApplyBounds(GetTargetScreen(current), currentStyle.Position, currentStyle.ScreenMargin);
+        }
+
+        private void StartPositionTracking()
+        {
+            if (!positionTimer.IsEnabled)
+            {
+                positionTimer.Start();
+            }
+        }
+
+        private void StopPositionTracking()
+        {
+            positionTimer.Stop();
+            lastToastPlacement = System.Drawing.Rectangle.Empty;
+        }
+
         private void BeginExitAnimation()
         {
             var style = currentStyle ?? new ToastStyle();
@@ -684,33 +720,32 @@ namespace ControllerSessionManager.OverlayHost
                 string.Equals(position, "BottomRight", StringComparison.OrdinalIgnoreCase)
                 ? bounds.Bottom - pixelHeight - margin + shadowInsetY
                 : bounds.Top + margin - shadowInsetY;
+            var placement = new System.Drawing.Rectangle(left, top, pixelWidth, pixelHeight);
+            if (placement == lastToastPlacement)
+            {
+                return;
+            }
+
+            lastToastPlacement = placement;
             SetWindowPos(new WindowInteropHelper(this).Handle, HwndTopmost, left, top,
                 pixelWidth, pixelHeight, SwpNoActivate | SwpShowWindow);
         }
 
-        private static Forms.Screen GetTargetScreen(int processId)
+        private static Forms.Screen GetTargetScreen(ToastRequest request)
         {
-            try
+            if (request == null)
             {
-                if (processId > 0)
-                {
-                    using (var process = Process.GetProcessById(processId))
-                    {
-                        if (process.MainWindowHandle != IntPtr.Zero)
-                        {
-                            return Forms.Screen.FromHandle(process.MainWindowHandle);
-                        }
-                    }
-                }
+                return Forms.Screen.PrimaryScreen;
             }
-            catch { }
-            return Forms.Screen.PrimaryScreen;
+
+            return TargetScreenResolver.Resolve(request.ProcessId, request.TargetWindowHandle);
         }
 
         private sealed class ToastRequest
         {
             public string Id { get; set; }
             public int ProcessId { get; set; }
+            public IntPtr TargetWindowHandle { get; set; }
             public int DurationMilliseconds { get; set; }
             public string Kind { get; set; }
             public string Title { get; set; }
