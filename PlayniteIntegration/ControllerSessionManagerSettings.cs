@@ -1222,7 +1222,29 @@ namespace ControllerSessionManager.PlayniteIntegration
                 var hardwareId = string.IsNullOrWhiteSpace(controller.HardwareId)
                     ? controller.ControllerId
                     : controller.HardwareId;
-                var profile = ControllerProfiles.FirstOrDefault(a => a.HardwareId == hardwareId);
+                var profile = ControllerProfiles.FirstOrDefault(a =>
+                    string.Equals(a.HardwareId, hardwareId, System.StringComparison.OrdinalIgnoreCase));
+
+                // Fullscreen has no SDL/HID enrichment, so HardwareId is often the synthetic
+                // xinput:slot:N key. Reuse the Desktop physical profile already bound to that
+                // slot instead of creating a second row that resets the chosen icon to default.
+                int xInputSlot;
+                if (profile == null &&
+                    string.Equals(controller.ProviderId, XInputProvider.ProviderId,
+                        System.StringComparison.OrdinalIgnoreCase) &&
+                    controller.ProviderInstanceId >= 0 &&
+                    controller.ProviderInstanceId < 4)
+                {
+                    xInputSlot = controller.ProviderInstanceId;
+                    profile = ControllerProfiles.FirstOrDefault(a =>
+                        a.LastKnownXInputSlot == xInputSlot && !IsSyntheticXInputProfile(a));
+                }
+                else if (profile == null && TryGetXInputSlot(hardwareId, out xInputSlot))
+                {
+                    profile = ControllerProfiles.FirstOrDefault(a =>
+                        a.LastKnownXInputSlot == xInputSlot && !IsSyntheticXInputProfile(a));
+                }
+
                 if (profile == null)
                 {
                     profile = new ControllerProfile
@@ -1237,6 +1259,24 @@ namespace ControllerSessionManager.PlayniteIntegration
                 }
                 else
                 {
+                    if (TryGetXInputSlot(hardwareId, out xInputSlot))
+                    {
+                        // Drop orphaned synthetic rows created by older Fullscreen syncs so
+                        // GetControllerProfile no longer resolves them by HardwareId.
+                        var synthetics = ControllerProfiles
+                            .Where(a => !object.ReferenceEquals(a, profile) &&
+                                IsSyntheticXInputProfile(a) &&
+                                (string.Equals(a.HardwareId, hardwareId,
+                                    System.StringComparison.OrdinalIgnoreCase) ||
+                                    a.LastKnownXInputSlot == xInputSlot))
+                            .ToList();
+                        foreach (var synthetic in synthetics)
+                        {
+                            ControllerProfiles.Remove(synthetic);
+                            changed = true;
+                        }
+                    }
+
                     var detectedName = controller.DetectedName ?? controller.Name;
                     if (!string.Equals(profile.DetectedName, detectedName,
                         System.StringComparison.Ordinal))
@@ -1280,13 +1320,22 @@ namespace ControllerSessionManager.PlayniteIntegration
             return changed;
         }
 
-        internal ControllerProfile GetControllerProfile(string hardwareId)
+        internal ControllerProfile GetControllerProfile(string hardwareId, int? xInputSlot = null)
         {
-            int xInputSlot;
-            if (TryGetXInputSlot(hardwareId, out xInputSlot))
+            int slot = -1;
+            if (xInputSlot.HasValue && xInputSlot.Value >= 0 && xInputSlot.Value < 4)
+            {
+                slot = xInputSlot.Value;
+            }
+            else
+            {
+                TryGetXInputSlot(hardwareId, out slot);
+            }
+
+            if (slot >= 0)
             {
                 var slotProfile = ControllerProfiles.FirstOrDefault(a =>
-                    a.LastKnownXInputSlot == xInputSlot && !IsSyntheticXInputProfile(a));
+                    a.LastKnownXInputSlot == slot && !IsSyntheticXInputProfile(a));
                 if (slotProfile != null)
                 {
                     return slotProfile;

@@ -8,6 +8,11 @@
 
 
 
+
+## 1.0.32 — 2026-09-06
+- Fixed Fullscreen theme integrations showing the generic controller icon instead of the icon chosen in Controllers.
+- Resolve controller profiles by the last known XInput slot so Desktop icon and name preferences apply in Fullscreen without SDL enrichment.
+
 ## 1.0.31 — 2026-09-05
 - Show controller notifications and the disconnect overlay on the monitor hosting the game or Playnite window instead of always using the primary display.
 - Keep visible toasts and overlays following that window when it moves between monitors.

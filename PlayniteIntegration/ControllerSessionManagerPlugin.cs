@@ -227,7 +227,11 @@ namespace ControllerSessionManager.PlayniteIntegration
             foreach (var controller in snapshot)
             {
                 var profile = settings == null ? null : settings.GetControllerProfile(
-                    string.IsNullOrWhiteSpace(controller.HardwareId) ? controller.ControllerId : controller.HardwareId);
+                    string.IsNullOrWhiteSpace(controller.HardwareId) ? controller.ControllerId : controller.HardwareId,
+                    string.Equals(controller.ProviderId, XInputProvider.ProviderId, StringComparison.OrdinalIgnoreCase) &&
+                        controller.ProviderInstanceId >= 0 && controller.ProviderInstanceId < 4
+                        ? (int?)controller.ProviderInstanceId
+                        : null);
                 if (profile == null)
                 {
                     controller.IconId = ControllerIconCatalog.Suggest(controller);
@@ -2217,7 +2221,11 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
 
             var profile = settings == null ? null : settings.GetControllerProfile(
-                string.IsNullOrWhiteSpace(controller.HardwareId) ? controller.ControllerId : controller.HardwareId);
+                string.IsNullOrWhiteSpace(controller.HardwareId) ? controller.ControllerId : controller.HardwareId,
+                string.Equals(controller.ProviderId, XInputProvider.ProviderId, StringComparison.OrdinalIgnoreCase) &&
+                    controller.ProviderInstanceId >= 0 && controller.ProviderInstanceId < 4
+                    ? (int?)controller.ProviderInstanceId
+                    : null);
             return ControllerIconCatalog.ResolveFileName(controller,
                 profile == null ? controller.IconId : profile.IconId);
         }

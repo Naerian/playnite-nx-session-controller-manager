@@ -2676,7 +2676,12 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             var currentSettings = DataContext as ControllerSessionManagerSettings;
             var profile = currentSettings == null ? null : currentSettings.GetControllerProfile(
-                string.IsNullOrWhiteSpace(controller.HardwareId) ? controller.ControllerId : controller.HardwareId);
+                string.IsNullOrWhiteSpace(controller.HardwareId) ? controller.ControllerId : controller.HardwareId,
+                string.Equals(controller.ProviderId, XInputProvider.ProviderId,
+                    System.StringComparison.OrdinalIgnoreCase) &&
+                    controller.ProviderInstanceId >= 0 && controller.ProviderInstanceId < 4
+                    ? (int?)controller.ProviderInstanceId
+                    : null);
             var connection = LocalizeValue(controller.ConnectionType);
             var battery = LocalizeValue(controller.BatteryLevel);
             var provider = controller.ProviderId;

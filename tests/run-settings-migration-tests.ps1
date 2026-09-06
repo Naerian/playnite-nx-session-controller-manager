@@ -572,4 +572,72 @@ if ($legacyThemeOn.SettingsSchemaVersion -ne 24 -or
     throw "Schema 24 must enable all Playnite theme appearance toggles for legacy installs."
 }
 
+# Fullscreen rows often keep a Playnite hardware id (not xinput:slot:N). Profile lookup must
+# still resolve the Desktop physical profile via LastKnownXInputSlot / ProviderInstanceId.
+$profileType = $assembly.GetType("ControllerSessionManager.PlayniteIntegration.ControllerProfile", $true)
+$fullscreenIconSettings = [Activator]::CreateInstance($type)
+$physicalProfile = [Activator]::CreateInstance($profileType)
+$physicalProfile.HardwareId = "vid_054c:pid_0ce6:id-demo"
+$physicalProfile.DetectedName = "DualSense Wireless Controller"
+$physicalProfile.CustomName = "My DualSense"
+$physicalProfile.IconId = "dualsense"
+$physicalProfile.LastKnownXInputSlot = 0
+$fullscreenIconSettings.ControllerProfiles.Add($physicalProfile)
+$getProfileMethod = $type.GetMethod("GetControllerProfile",
+    [Reflection.BindingFlags]::Instance -bor [Reflection.BindingFlags]::NonPublic)
+$resolvedBySlot = $getProfileMethod.Invoke($fullscreenIconSettings, @("playnite-instance-abc", 0))
+if ($null -eq $resolvedBySlot -or
+    $resolvedBySlot.HardwareId -ne "vid_054c:pid_0ce6:id-demo" -or
+    $resolvedBySlot.IconId -ne "dualsense") {
+    throw "GetControllerProfile must resolve the chosen Desktop icon by XInput slot in Fullscreen."
+}
+$resolvedBySynthetic = $getProfileMethod.Invoke($fullscreenIconSettings, @("xinput:slot:0", $null))
+if ($null -eq $resolvedBySynthetic -or $resolvedBySynthetic.IconId -ne "dualsense") {
+    throw "GetControllerProfile must resolve the chosen Desktop icon from a synthetic xinput:slot id."
+}
+$miss = $getProfileMethod.Invoke($fullscreenIconSettings, @("playnite-instance-abc", $null))
+if ($null -ne $miss) {
+    throw "GetControllerProfile must not invent a match when neither hardware id nor slot is known."
+}
+
+# Sync must not replace a Desktop physical profile with a synthetic default-icon row when the
+# only settled observation still maps to that XInput slot through LastKnownXInputSlot.
+$snapshotType = $assembly.GetType("ControllerSessionManager.Controllers.ControllerDeviceSnapshot", $true)
+$xInputProviderType = $assembly.GetType("ControllerSessionManager.Controllers.XInputProvider", $true)
+$xInputProviderId = $xInputProviderType.GetField("ProviderId").GetValue($null)
+$orphanSynthetic = [Activator]::CreateInstance($profileType)
+$orphanSynthetic.HardwareId = "xinput:slot:0"
+$orphanSynthetic.DetectedName = "XInput Controller (Player 1)"
+$orphanSynthetic.CustomName = "XInput Controller (Player 1)"
+$orphanSynthetic.IconId = "default"
+$orphanSynthetic.LastKnownXInputSlot = 0
+$fullscreenIconSettings.ControllerProfiles.Add($orphanSynthetic)
+$settledObservation = [Activator]::CreateInstance($snapshotType)
+$settledObservation.ControllerId = "xinput:slot:0"
+$settledObservation.HardwareId = "xinput:slot:0"
+$settledObservation.ProviderId = $xInputProviderId
+$settledObservation.ProviderInstanceId = 0
+$settledObservation.Name = "DualSense Wireless Controller"
+$settledObservation.DetectedName = "DualSense Wireless Controller"
+$settledObservation.VendorId = [uint16]0x054C
+$settledObservation.ProductId = [uint16]0x0CE6
+$settledObservation.IsConnected = $true
+$settledObservation.IsEnabled = $true
+# Force a settled-but-synthetic hardware id path by temporarily using a non-volatile id that
+# still needs slot reuse against the Desktop profile.
+$settledObservation.HardwareId = "vid_054c:pid_0ce6:id-other-transport"
+$syncMethod = $type.GetMethod("SyncControllerProfiles",
+    [Reflection.BindingFlags]::Instance -bor [Reflection.BindingFlags]::NonPublic)
+$observationListType = [System.Collections.Generic.List`1].MakeGenericType(@($snapshotType))
+$observationList = [Activator]::CreateInstance($observationListType)
+$observationList.Add($settledObservation) | Out-Null
+$syncArgs = New-Object 'object[]' 1
+$syncArgs[0] = $observationList
+$syncMethod.Invoke($fullscreenIconSettings, $syncArgs) | Out-Null
+$afterSync = $getProfileMethod.Invoke($fullscreenIconSettings,
+    @("vid_054c:pid_0ce6:id-other-transport", 0))
+if ($null -eq $afterSync -or $afterSync.IconId -ne "dualsense") {
+    throw "SyncControllerProfiles must preserve the chosen Desktop icon across XInput slot reuse."
+}
+
 Write-Host "Settings migration and overlay preset tests passed."
