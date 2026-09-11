@@ -9,6 +9,11 @@
 
 
 
+
+## 1.0.33 — 2026-09-11
+- Shortened the online network-activity toast message.
+- Added a notice under the Guideâ†’Fullscreen option explaining Playniteâ€™s native Fullscreen setting and that this plugin waits briefly after Guide in case the button is used for something else.
+
 ## 1.0.32 — 2026-09-06
 - Fixed Fullscreen theme integrations showing the generic controller icon instead of the icon chosen in Controllers.
 - Resolve controller profiles by the last known XInput slot so Desktop icon and name preferences apply in Fullscreen without SDL enrichment.

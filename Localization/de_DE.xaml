@@ -197,6 +197,7 @@
     <sys:String x:Key="LOCCSM_TopPanelModePrimary">Symbol des prim-ren Controllers anzeigen</sys:String>
     <sys:String x:Key="LOCCSM_LaunchFullscreenOnGuide">Press Guide to open Fullscreen</sys:String>
     <sys:String x:Key="LOCCSM_LaunchFullscreenOnGuideHelp">Desktop only, and only when no game is running. Hold Guide / PS / Home for about 0.5 seconds and release to open Fullscreen (same as the menu / F11). A short tap is ignored. A long hold (as when powering off the controller) is also ignored. Does nothing if Fullscreen is already open. If Windows is set to open Xbox Game Bar with the controller Guide button, turn that off or both can trigger at once.</sys:String>
+    <sys:String x:Key="LOCCSM_LaunchFullscreenOnGuideNativeNotice">Playnite also lets you open Fullscreen from its native settings. This option waits briefly after releasing Guide in case the button is used for something else.</sys:String>
     <sys:String x:Key="LOCCSM_ValueBluetooth">Bluetooth</sys:String>
     <sys:String x:Key="LOCCSM_VersionAuthorFormat">Version {0} | Narian</sys:String>
     <sys:String x:Key="LOCCSM_ProjectLinksTitle">Projektlinks</sys:String>
@@ -283,7 +284,7 @@
     <sys:String x:Key="LOCCSM_OverlayForcePaused">Spiel vor-bergehend angehalten</sys:String>
     <sys:String x:Key="LOCCSM_OverlayForcePauseFailed">Das Spiel konnte nicht vor-bergehend angehalten werden</sys:String>
     <sys:String x:Key="LOCCSM_OnlineFallbackToastTitle">Controller getrennt</sys:String>
-    <sys:String x:Key="LOCCSM_OnlineFallbackToastMessage">Netzwerkaktivit-t erkannt. Das Spiel l-uft weiter, damit eine Online-Partie nicht unterbrochen wird</sys:String>
+    <sys:String x:Key="LOCCSM_OnlineFallbackToastMessage">Spiel läuft wegen Netzwerkaktivität</sys:String>
     <sys:String x:Key="LOCCSM_ControllerConnectedToast">Controller verbunden</sys:String>
     <sys:String x:Key="LOCCSM_ControllerDisconnectedToast">Controller getrennt</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyForcePauseOffline">Spiel ohne Netzwerkaktivit-t vor-bergehend anhalten. Andernfalls nur die Warnung anzeigen</sys:String>

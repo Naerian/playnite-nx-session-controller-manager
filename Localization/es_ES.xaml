@@ -197,6 +197,7 @@
     <sys:String x:Key="LOCCSM_TopPanelModePrimary">Mostrar el icono del mando principal</sys:String>
     <sys:String x:Key="LOCCSM_LaunchFullscreenOnGuide">Pulsar 'Guía' para abrir pantalla completa</sys:String>
     <sys:String x:Key="LOCCSM_LaunchFullscreenOnGuideHelp">Solo en Escritorio y sin partida en curso. Mantén Guide / PS / Home unos 0,5 segundos y suelta para abrir Fullscreen (igual que el menú / F11). Un toque corto no cuenta. Mantenerlo mucho rato (como al apagar el mando) tampoco lanza Fullscreen. No hace nada si Fullscreen ya está abierto. Si Windows tiene activado abrir Xbox Game Bar con el botón Guide del mando, desactívalo o pueden dispararse las dos cosas a la vez.</sys:String>
+    <sys:String x:Key="LOCCSM_LaunchFullscreenOnGuideNativeNotice">Playnite también permite abrir pantalla completa desde sus opciones nativas. Esta opción espera un poco al soltar Guía por si el botón se usa para otra cosa.</sys:String>
     <sys:String x:Key="LOCCSM_ValueBluetooth">Bluetooth</sys:String>
     <sys:String x:Key="LOCCSM_VersionAuthorFormat">Versión {0} | Narian</sys:String>
     <sys:String x:Key="LOCCSM_ProjectLinksTitle">Enlaces del proyecto</sys:String>
@@ -283,7 +284,7 @@
     <sys:String x:Key="LOCCSM_OverlayForcePaused">Juego detenido temporalmente</sys:String>
     <sys:String x:Key="LOCCSM_OverlayForcePauseFailed">No se pudo detener temporalmente el juego</sys:String>
     <sys:String x:Key="LOCCSM_OnlineFallbackToastTitle">Mando desconectado</sys:String>
-    <sys:String x:Key="LOCCSM_OnlineFallbackToastMessage">Se ha detectado actividad de red. El juego seguirá funcionando para no interrumpir una partida online</sys:String>
+    <sys:String x:Key="LOCCSM_OnlineFallbackToastMessage">Juego en curso por actividad de red</sys:String>
     <sys:String x:Key="LOCCSM_ControllerConnectedToast">Mando conectado</sys:String>
     <sys:String x:Key="LOCCSM_ControllerDisconnectedToast">Mando desconectado</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyForcePauseOffline">Detener temporalmente el juego si no hay actividad de red. Mostrar solo el aviso si la hay</sys:String>

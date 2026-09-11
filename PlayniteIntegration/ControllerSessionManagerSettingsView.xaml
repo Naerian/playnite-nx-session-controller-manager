@@ -2328,6 +2328,10 @@
                         <StackPanel Style="{StaticResource FieldGroup}">
                             <CheckBox Content="{DynamicResource LOCCSM_LaunchFullscreenOnGuide}"
                                       IsChecked="{Binding LaunchFullscreenOnGuideButton}" />
+                            <TextBlock Text="{DynamicResource LOCCSM_LaunchFullscreenOnGuideNativeNotice}"
+                                       Style="{StaticResource WarningHintText}"
+                                       Margin="0,8,0,0"
+                                       TextWrapping="Wrap" />
                         </StackPanel>
                     </StackPanel>
                 </ScrollViewer>

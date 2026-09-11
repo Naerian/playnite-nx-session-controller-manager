@@ -197,6 +197,7 @@
     <sys:String x:Key="LOCCSM_TopPanelModePrimary">Mostrar o -cone do controle principal</sys:String>
     <sys:String x:Key="LOCCSM_LaunchFullscreenOnGuide">Press Guide to open Fullscreen</sys:String>
     <sys:String x:Key="LOCCSM_LaunchFullscreenOnGuideHelp">Desktop only, and only when no game is running. Hold Guide / PS / Home for about 0.5 seconds and release to open Fullscreen (same as the menu / F11). A short tap is ignored. A long hold (as when powering off the controller) is also ignored. Does nothing if Fullscreen is already open. If Windows is set to open Xbox Game Bar with the controller Guide button, turn that off or both can trigger at once.</sys:String>
+    <sys:String x:Key="LOCCSM_LaunchFullscreenOnGuideNativeNotice">Playnite also lets you open Fullscreen from its native settings. This option waits briefly after releasing Guide in case the button is used for something else.</sys:String>
     <sys:String x:Key="LOCCSM_ValueBluetooth">Bluetooth</sys:String>
     <sys:String x:Key="LOCCSM_VersionAuthorFormat">Vers-o {0} | Narian</sys:String>
     <sys:String x:Key="LOCCSM_ProjectLinksTitle">Links do projeto</sys:String>
@@ -283,7 +284,7 @@
     <sys:String x:Key="LOCCSM_OverlayForcePaused">Jogo parado temporariamente</sys:String>
     <sys:String x:Key="LOCCSM_OverlayForcePauseFailed">N-o foi poss-vel parar o jogo temporariamente</sys:String>
     <sys:String x:Key="LOCCSM_OnlineFallbackToastTitle">Controle desconectado</sys:String>
-    <sys:String x:Key="LOCCSM_OnlineFallbackToastMessage">Atividade de rede detectada. O jogo continuar- para n-o interromper uma partida online</sys:String>
+    <sys:String x:Key="LOCCSM_OnlineFallbackToastMessage">Jogo em andamento por atividade de rede</sys:String>
     <sys:String x:Key="LOCCSM_ControllerConnectedToast">Controle conectado</sys:String>
     <sys:String x:Key="LOCCSM_ControllerDisconnectedToast">Controle desconectado</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyForcePauseOffline">Parar temporariamente o jogo sem atividade de rede. Caso contr-rio, mostrar apenas o aviso</sys:String>
