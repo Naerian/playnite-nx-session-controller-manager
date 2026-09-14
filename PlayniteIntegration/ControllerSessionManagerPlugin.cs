@@ -2391,7 +2391,10 @@ namespace ControllerSessionManager.PlayniteIntegration
                 pauseAttemptGate.Reset();
                 if (settings != null && settings.ShowDisconnectOverlay)
                 {
-                    PlayNotificationSound(NotificationSoundKind.Warning);
+                    if (notificationAudio != null)
+                    {
+                        notificationAudio.PlayOverlayDisconnect(settings);
+                    }
                 }
             }
         }

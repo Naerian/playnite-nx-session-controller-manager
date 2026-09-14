@@ -1,5 +1,12 @@
 AddonId: ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc
 Packages:
+  - Version: 1.0.34
+    RequiredApiVersion: 6.16.0
+    ReleaseDate: 2026-09-14
+    PackageUrl: https://github.com/Naerian/playnite-nx-session-controller-manager/releases/download/v1.0.34/ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc_1_0_34.pext
+    Changelog:
+      - 'Disabled per-event sound options, sound pack, volume and custom sounds when both Desktop and Fullscreen notification sounds are turned off.'
+      - 'Disconnect overlay sound continues to use the warning cue and follows the â€œwarnings and disconnect overlayâ€ toggle.'
   - Version: 1.0.33
     RequiredApiVersion: 6.16.0
     ReleaseDate: 2026-09-11

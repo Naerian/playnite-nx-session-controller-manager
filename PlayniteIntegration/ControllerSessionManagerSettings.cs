@@ -558,13 +558,42 @@ namespace ControllerSessionManager.PlayniteIntegration
         public bool EnableDesktopNotificationSounds
         {
             get { return enableDesktopNotificationSounds; }
-            set { SetValue(ref enableDesktopNotificationSounds, value); }
+            set
+            {
+                SetValue(ref enableDesktopNotificationSounds, value);
+                OnPropertyChanged("AreNotificationEventSoundOptionsEnabled");
+                OnPropertyChanged("AreNotificationSoundDetailOptionsEnabled");
+            }
         }
 
         public bool EnableFullscreenNotificationSounds
         {
             get { return enableFullscreenNotificationSounds; }
-            set { SetValue(ref enableFullscreenNotificationSounds, value); }
+            set
+            {
+                SetValue(ref enableFullscreenNotificationSounds, value);
+                OnPropertyChanged("AreNotificationEventSoundOptionsEnabled");
+                OnPropertyChanged("AreNotificationSoundDetailOptionsEnabled");
+            }
+        }
+
+        /// <summary>
+        /// Per-event notification sound toggles only make sense when Desktop or Fullscreen
+        /// notification sounds are enabled.
+        /// </summary>
+        [DontSerialize]
+        public bool AreNotificationEventSoundOptionsEnabled
+        {
+            get { return EnableDesktopNotificationSounds || EnableFullscreenNotificationSounds; }
+        }
+
+        /// <summary>
+        /// Pack, volume and custom sounds remain editable when a notification sound destination is on.
+        /// </summary>
+        [DontSerialize]
+        public bool AreNotificationSoundDetailOptionsEnabled
+        {
+            get { return AreNotificationEventSoundOptionsEnabled; }
         }
 
         public bool NotificationPreviewWithSound
@@ -1761,6 +1790,11 @@ namespace ControllerSessionManager.PlayniteIntegration
                 usePlayniteThemeFullscreenAppearance = legacy;
                 usePlayniteThemeOverlayAppearance = legacy;
                 SettingsSchemaVersion = 24;
+            }
+
+            if (SettingsSchemaVersion < 25)
+            {
+                SettingsSchemaVersion = 25;
             }
 
             topPanelControllerMode = NormalizeTopPanelControllerMode(topPanelControllerMode);

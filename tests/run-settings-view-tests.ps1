@@ -24,7 +24,10 @@ if ($viewXaml -notmatch '<Expander x:Name="CustomSoundsSection"' -or
     $viewXaml.IndexOf('x:Name="NotificationSoundPreviewPanel"') -gt
         $viewXaml.IndexOf('IsChecked="{Binding EnableDesktopNotificationSounds}"') -or
     $viewXaml.IndexOf('IsChecked="{Binding EnableDesktopNotificationSounds}"') -gt
-        $viewXaml.IndexOf('x:Name="NotificationSoundPackSelector"')) {
+        $viewXaml.IndexOf('x:Name="NotificationSoundPackSelector"') -or
+    $viewXaml -notmatch 'IsEnabled="{Binding AreNotificationEventSoundOptionsEnabled}"' -or
+    $viewXaml.IndexOf('IsChecked="{Binding EnableFullscreenNotificationSounds}"') -gt
+        $viewXaml.IndexOf('IsEnabled="{Binding AreNotificationEventSoundOptionsEnabled}"')) {
     throw "Custom sounds must be collapsible and sound switches must sit between previews and the pack."
 }
 if ($viewXaml -notmatch 'SelectedValue="{Binding CreatorThemeUpdatePolicy}"' -or

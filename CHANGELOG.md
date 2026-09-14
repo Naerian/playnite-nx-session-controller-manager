@@ -10,6 +10,11 @@
 
 
 
+
+## 1.0.34 — 2026-09-14
+- Disabled per-event sound options, sound pack, volume and custom sounds when both Desktop and Fullscreen notification sounds are turned off.
+- Disconnect overlay sound continues to use the warning cue and follows the â€œwarnings and disconnect overlayâ€ toggle.
+
 ## 1.0.33 — 2026-09-11
 - Shortened the online network-activity toast message.
 - Added a notice under the Guideâ†’Fullscreen option explaining Playniteâ€™s native Fullscreen setting and that this plugin waits briefly after Guide in case the button is used for something else.

@@ -67,8 +67,8 @@ foreach ($entry in $preserved.GetEnumerator()) {
 if ($settings.NotificationStylePreset -ne "Custom" -or $settings.OverlayStylePreset -ne "Custom") {
     throw "An existing installation must retain its custom notification and overlay appearance."
 }
-if ($settings.SettingsSchemaVersion -ne 24) {
-    throw "Settings were not migrated to schema 24."
+if ($settings.SettingsSchemaVersion -ne 25) {
+    throw "Settings were not migrated to schema 25."
 }
 if (-not $settings.UsePlayniteThemeDesktopAppearance -or
     -not $settings.UsePlayniteThemeFullscreenAppearance -or
@@ -556,7 +556,7 @@ $legacyField = $type.GetField("usePlayniteThemeAppearance",
     [Reflection.BindingFlags]::NonPublic -bor [Reflection.BindingFlags]::Instance)
 $legacyField.SetValue($legacyThemeOff, $false)
 $method.Invoke($legacyThemeOff, $null) | Out-Null
-if ($legacyThemeOff.SettingsSchemaVersion -ne 24 -or
+if ($legacyThemeOff.SettingsSchemaVersion -ne 25 -or
     $legacyThemeOff.UsePlayniteThemeDesktopAppearance -or
     $legacyThemeOff.UsePlayniteThemeFullscreenAppearance -or
     $legacyThemeOff.UsePlayniteThemeOverlayAppearance) {
@@ -565,7 +565,7 @@ if ($legacyThemeOff.SettingsSchemaVersion -ne 24 -or
 $legacyThemeOn = [Activator]::CreateInstance($type)
 $legacyThemeOn.SettingsSchemaVersion = 22
 $method.Invoke($legacyThemeOn, $null) | Out-Null
-if ($legacyThemeOn.SettingsSchemaVersion -ne 24 -or
+if ($legacyThemeOn.SettingsSchemaVersion -ne 25 -or
     -not $legacyThemeOn.UsePlayniteThemeDesktopAppearance -or
     -not $legacyThemeOn.UsePlayniteThemeFullscreenAppearance -or
     -not $legacyThemeOn.UsePlayniteThemeOverlayAppearance) {

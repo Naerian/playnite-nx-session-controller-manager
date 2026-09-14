@@ -46,6 +46,21 @@ namespace ControllerSessionManager.PlayniteIntegration
                 ignoreKindToggle: true, ignoreScopeToggle: true);
         }
 
+        /// <summary>
+        /// Disconnect overlay cue. Uses the warning sound when PlaySoundOnWarning is enabled.
+        /// Independent from Desktop/Fullscreen notification destination toggles.
+        /// </summary>
+        public void PlayOverlayDisconnect(ControllerSessionManagerSettings settings)
+        {
+            if (settings == null || !settings.PlaySoundOnWarning)
+            {
+                return;
+            }
+
+            Play(NotificationSoundKind.Warning, settings, NotificationSoundScope.Fullscreen,
+                ignoreKindToggle: true, ignoreScopeToggle: true);
+        }
+
         private void Play(NotificationSoundKind kind, ControllerSessionManagerSettings settings,
             NotificationSoundScope scope, bool ignoreKindToggle, bool ignoreScopeToggle)
         {

@@ -171,7 +171,7 @@
     <sys:String x:Key="LOCCSM_PlaySoundOnConnected">Jouer un son - la connexion d'une manette</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnDisconnected">Jouer un son - la d-connexion d'une manette</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnLowBattery">Jouer un son en batterie faible</sys:String>
-    <sys:String x:Key="LOCCSM_PlaySoundOnWarning">Jouer un son pour les alertes et l'overlay de d-connexion</sys:String>
+    <sys:String x:Key="LOCCSM_PlaySoundOnWarning">Jouer un son pour les alertes et l'overlay de déconnexion</sys:String>
     <sys:String x:Key="LOCCSM_WindowsDeviceSoundTitle">Sons de p-riph-rique Windows</sys:String>
     <sys:String x:Key="LOCCSM_WindowsDeviceSoundHelp">Windows already plays Device Connect/Disconnect sounds. If you enable Controller Manager connect/disconnect sounds without turning those Windows sounds off, both will play - the plugin cue is delayed by about 320 ms so they overlap less. Leave the plugin sounds off for a single cue, or disable the Windows device sounds in Sound settings if you only want these packs.</sys:String>
     <sys:String x:Key="LOCCSM_PreviewNotificationSounds">Pr-visualiser les sons</sys:String>

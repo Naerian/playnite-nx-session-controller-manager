@@ -171,7 +171,7 @@
     <sys:String x:Key="LOCCSM_PlaySoundOnConnected">Play a sound when a controller connects</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnDisconnected">Play a sound when a controller disconnects</sys:String>
     <sys:String x:Key="LOCCSM_PlaySoundOnLowBattery">Play a sound on low battery</sys:String>
-    <sys:String x:Key="LOCCSM_PlaySoundOnWarning">Play a sound for warnings and the disconnect overlay</sys:String>
+    <sys:String x:Key="LOCCSM_PlaySoundOnWarning">警告と切断オーバーレイでサウンドを再生</sys:String>
     <sys:String x:Key="LOCCSM_WindowsDeviceSoundTitle">Windows device sounds</sys:String>
     <sys:String x:Key="LOCCSM_WindowsDeviceSoundHelp">Windows already plays Device Connect/Disconnect sounds. If you enable Controller Manager connect/disconnect sounds without turning those Windows sounds off, both will play - the plugin cue is delayed by about 320 ms so they overlap less. Leave the plugin sounds off for a single cue, or disable the Windows device sounds in Sound settings if you only want these packs.</sys:String>
     <sys:String x:Key="LOCCSM_PreviewNotificationSounds">Preview sounds</sys:String>
