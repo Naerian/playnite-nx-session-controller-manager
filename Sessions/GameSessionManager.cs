@@ -12,7 +12,8 @@ namespace ControllerSessionManager.Sessions
         DisconnectCancelled,
         DisconnectConfirmed,
         DisconnectResolved,
-        ControllerTakeover
+        ControllerTakeover,
+        KeyboardMouseContinue
     }
 
     public sealed class SessionEventArgs : EventArgs
@@ -265,6 +266,39 @@ namespace ControllerSessionManager.Sessions
                 active.ConfirmedUtc = nowUtc;
                 Raise(SessionEventType.DisconnectConfirmed, active);
             }
+        }
+
+        /// <summary>
+        /// Dismisses missing single-player session controllers when the player continues on
+        /// keyboard/mouse. Local multiplayer protection never uses this path.
+        /// </summary>
+        public bool TryContinueWithKeyboardMouse(bool protectAllActiveControllers,
+            string inputEvidence = null)
+        {
+            if (!IsRunning || protectAllActiveControllers)
+            {
+                return false;
+            }
+
+            var missing = activeControllers.Values.Where(a => a.MissingSinceUtc.HasValue).ToList();
+            if (missing.Count == 0)
+            {
+                return false;
+            }
+
+            var evidence = string.IsNullOrWhiteSpace(inputEvidence)
+                ? "KeyboardMouse"
+                : inputEvidence;
+            foreach (var controller in missing)
+            {
+                controller.InputEvidence = evidence;
+                Raise(SessionEventType.KeyboardMouseContinue, controller);
+                Retire(controller);
+                activeControllers.Remove(controller.ControllerKey);
+            }
+
+            pendingTakeoverCandidates.Clear();
+            return true;
         }
 
         private bool IsEligibleForActivation(ControllerDeviceSnapshot controller,

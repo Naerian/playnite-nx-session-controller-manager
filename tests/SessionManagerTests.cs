@@ -77,6 +77,9 @@ internal static class SessionManagerTests
             RealInputReplacesSessionStartFallback();
             NewlyConnectedControllerResolvesIncidentWithoutInput();
             AlreadyConnectedControllerStillRequiresInputForTakeover();
+            KeyboardMouseContinueDismissesSinglePlayerIncident();
+            KeyboardMouseContinueIgnoredInLocalMultiplayer();
+            KeyboardMouseContinueRequiresRisingEdge();
             XInputDongleReconnectRestoresSdkDisconnect();
             DongleReconnectResolvesVolatileXInputSlot();
             MergeKeepsHardwareIdWhenXInputSlotIsVolatile();
@@ -1008,6 +1011,70 @@ internal static class SessionManagerTests
             "A controller that was already connected must not take over without intentional input.");
         Equal(1, manager.SuspectedDisconnectCount,
             "The incident must remain until the pre-existing spare is actually used.");
+    }
+
+    private static void KeyboardMouseContinueDismissesSinglePlayerIncident()
+    {
+        var start = new DateTime(2026, 9, 16, 10, 0, 0, DateTimeKind.Utc);
+        var manager = new GameSessionManager();
+        SessionEventType? observed = null;
+        manager.EventOccurred += (sender, args) => observed = args.Type;
+        manager.Start(GameId, start);
+        manager.SeedInitialController(new[] { ConnectedDevice("A") }, start);
+        manager.Update(new ControllerDeviceSnapshot[0], start.AddSeconds(1), true, false);
+        Equal(true, manager.TryContinueWithKeyboardMouse(false, "KeyW"),
+            "Keyboard/mouse continue must dismiss a single-player missing controller.");
+        Equal(0, manager.ActiveControllers.Count,
+            "Dismissing via keyboard/mouse must clear the protected controller.");
+        Equal(SessionEventType.KeyboardMouseContinue, observed,
+            "Keyboard/mouse continue must raise a dedicated session event.");
+    }
+
+    private static void KeyboardMouseContinueIgnoredInLocalMultiplayer()
+    {
+        var start = new DateTime(2026, 9, 16, 10, 5, 0, DateTimeKind.Utc);
+        var manager = new GameSessionManager();
+        manager.Start(GameId, start);
+        manager.Update(new[] { Device("A", start.AddSeconds(1)), Device("B", start.AddSeconds(1)) },
+            start.AddSeconds(1), true, true);
+        manager.Update(new[] { Device("B", start.AddSeconds(2)) }, start.AddSeconds(2), true, true);
+        Equal(false, manager.TryContinueWithKeyboardMouse(true, "KeyW"),
+            "Local multiplayer protection must ignore keyboard/mouse continue.");
+        Equal(1, manager.SuspectedDisconnectCount,
+            "The co-op incident must remain until the missing player slot recovers.");
+    }
+
+    private static void KeyboardMouseContinueRequiresRisingEdge()
+    {
+        var detector = new KeyboardMouseContinueDetector();
+        var previous = new bool[KeyboardMouseContinueDetector.WatchedKeyCount];
+        var held = new bool[KeyboardMouseContinueDetector.WatchedKeyCount];
+        held[IndexOfWatchedKey(0x57)] = true; // W
+        string evidence;
+        Equal(false, detector.TryDetect(previous, held, out evidence),
+            "The first sample while an incident is open must only arm the baseline.");
+        Equal(false, detector.TryDetect(previous, held, out evidence),
+            "A key already held at arming time must not dismiss the overlay.");
+        var released = new bool[KeyboardMouseContinueDetector.WatchedKeyCount];
+        Equal(false, detector.TryDetect(previous, released, out evidence),
+            "Releasing a held key must not dismiss the overlay.");
+        var pressed = new bool[KeyboardMouseContinueDetector.WatchedKeyCount];
+        pressed[IndexOfWatchedKey(0x57)] = true;
+        Equal(true, detector.TryDetect(previous, pressed, out evidence),
+            "A fresh key press after arming must dismiss the overlay.");
+        Equal("KeyW", evidence, "Evidence must identify the intentional key.");
+    }
+
+    private static int IndexOfWatchedKey(ushort virtualKey)
+    {
+        for (var i = 0; i < KeyboardMouseContinueDetector.WatchedKeyCount; i++)
+        {
+            if (KeyboardMouseContinueDetector.GetWatchedVirtualKey(i) == virtualKey)
+            {
+                return i;
+            }
+        }
+        throw new InvalidOperationException("Watched virtual key was not registered.");
     }
 
     private static void AutomaticTakeoverCanResolveDuringGrace()

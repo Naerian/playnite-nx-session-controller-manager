@@ -250,6 +250,7 @@
     <sys:String x:Key="LOCCSM_OverlayDisconnectMessage">Connexion perdue : {0}</sys:String>
     <sys:String x:Key="LOCCSM_OverlayWaitSameController">Reconnectez-la pour continuer.</sys:String>
     <sys:String x:Key="LOCCSM_OverlayAllowTakeover">Reconnectez-la, ou appuyez sur un bouton ou bougez un stick d-une autre manette.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayAllowTakeoverOrKeyboardMouse">Reconnectez-la, utilisez une autre manette, ou appuyez sur une touche / cliquez pour continuer au clavier et a la souris.</sys:String>
     <sys:String x:Key="LOCCSM_ColorTopPanelByBattery">Colorer l-ic-ne et le texte de batterie selon son niveau</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicySessionSection">Protection en partie</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseSection">Pause automatique</sys:String>

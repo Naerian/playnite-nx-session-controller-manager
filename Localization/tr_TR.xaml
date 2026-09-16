@@ -250,6 +250,7 @@
     <sys:String x:Key="LOCCSM_OverlayDisconnectMessage">Baglanti kaybedildi: {0}</sys:String>
     <sys:String x:Key="LOCCSM_OverlayWaitSameController">Devam etmek i-in yeniden baglayin.</sys:String>
     <sys:String x:Key="LOCCSM_OverlayAllowTakeover">Yeniden baglayin veya baska bir kontrolc-de d-gmeye basin ya da -ubugu hareket ettirin.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayAllowTakeoverOrKeyboardMouse">Yeniden baglayin, baska bir kontrolcu kullanin veya klavye ve fareyle devam etmek icin bir tusa basin / tiklayin.</sys:String>
     <sys:String x:Key="LOCCSM_ColorTopPanelByBattery">Simgeyi ve pil metnini pil d-zeyine g-re renklendir</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicySessionSection">Oyun i-i koruma</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseSection">Otomatik duraklatma</sys:String>

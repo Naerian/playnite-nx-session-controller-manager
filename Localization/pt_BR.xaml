@@ -250,6 +250,7 @@
     <sys:String x:Key="LOCCSM_OverlayDisconnectMessage">Conex-o perdida: {0}</sys:String>
     <sys:String x:Key="LOCCSM_OverlayWaitSameController">Reconecte-o para continuar.</sys:String>
     <sys:String x:Key="LOCCSM_OverlayAllowTakeover">Reconecte-o ou pressione um bot-o ou mova um anal-gico em outro controle.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayAllowTakeoverOrKeyboardMouse">Reconecte-o, use outro controle ou pressione uma tecla / clique para continuar com teclado e mouse.</sys:String>
     <sys:String x:Key="LOCCSM_ColorTopPanelByBattery">Colorir o -cone e o texto conforme o n-vel da bateria</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicySessionSection">Prote--o em partida</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseSection">Pausa autom-tica</sys:String>

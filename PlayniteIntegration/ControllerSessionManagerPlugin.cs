@@ -42,6 +42,8 @@ namespace ControllerSessionManager.PlayniteIntegration
         private readonly GamePauseService gamePauseService;
         private readonly OnlineSessionDetector onlineSessionDetector;
         private readonly AdaptiveSessionScopeDetector adaptiveSessionScopeDetector;
+        private readonly KeyboardMouseContinueDetector keyboardMouseContinueDetector =
+            new KeyboardMouseContinueDetector();
         private readonly PauseAttemptGate pauseAttemptGate;
         private readonly OverlayClient overlayClient;
         private readonly NotificationAudioService notificationAudio;
@@ -504,7 +506,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             overlayClient.Show(notificationSessionId, Guid.NewGuid(), GetToastTargetProcessId(),
                 Loc("LOCCSM_OverlayDisconnectTitle"),
                 Loc("LOCCSM_PreviewControllerName"),
-                Loc("LOCCSM_OverlayAllowTakeover"),
+                Loc("LOCCSM_OverlayAllowTakeoverOrKeyboardMouse"),
                 Loc("LOCCSM_OverlayPauseDisabled"), "ok",
                 SvgIconGeometryLoader.GetPathData("player-pause.svg"),
                 SvgIconGeometryLoader.GetPathData(iconFile), false, 0,
@@ -1806,6 +1808,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             activeGameOnlineMetadata = GetOnlineMetadata(args == null ? null : args.Game);
             adaptiveSessionScopeDetector.Reset(DateTime.UtcNow);
             adaptiveLocalScopeLogged = false;
+            keyboardMouseContinueDetector.Reset();
             activeSessionPolicy = activeGameId.HasValue ? settings.GetSessionPolicy(activeGameId.Value) : null;
             if (activeGameId.HasValue && activeSessionPolicy.Enabled)
             {
@@ -1856,6 +1859,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             activeGameOnlineMetadata.Clear();
             sessionTimer.Stop();
             sessionManager.Stop();
+            keyboardMouseContinueDetector.Reset();
             TesterHostClient.ResumeShared();
             PublishControllerSnapshotChanged();
         }
@@ -1932,13 +1936,15 @@ namespace ControllerSessionManager.PlayniteIntegration
             var confirmedBefore = sessionManager.ConfirmedDisconnectCount;
             var now = DateTime.UtcNow;
             var snapshot = GetControllerSnapshot();
+            var protectAll = GetEffectiveProtectAllControllers(snapshot, now);
             sessionManager.Update(snapshot, now,
                 activeSessionPolicy != null && activeSessionPolicy.AllowControllerTakeover,
-                GetEffectiveProtectAllControllers(snapshot, now));
+                protectAll);
             sessionManager.Tick(now,
                 TimeSpan.FromMilliseconds(activeSessionPolicy == null
                     ? settings.DisconnectGracePeriodMilliseconds
                     : activeSessionPolicy.GracePeriodMilliseconds));
+            TryContinueWithKeyboardMouse(protectAll, now);
             UpdateInputPollingInterval();
             if (sessionManager.IsRunning && activeSessionId != Guid.Empty)
             {
@@ -1947,6 +1953,34 @@ namespace ControllerSessionManager.PlayniteIntegration
             if (activeBefore != sessionManager.ActiveControllers.Count ||
                 suspectedBefore != sessionManager.SuspectedDisconnectCount ||
                 confirmedBefore != sessionManager.ConfirmedDisconnectCount)
+            {
+                PublishControllerSnapshotChanged();
+            }
+        }
+
+        private void TryContinueWithKeyboardMouse(bool protectAllActiveControllers, DateTime nowUtc)
+        {
+            if (!sessionManager.IsRunning || protectAllActiveControllers ||
+                !sessionManager.ActiveControllers.Any(a => a.MissingSinceUtc.HasValue))
+            {
+                keyboardMouseContinueDetector.Reset();
+                return;
+            }
+
+            if (gamePauseService.ResolveForegroundTarget(activeGameProcessId, nowUtc).Status !=
+                PauseAttemptStatus.Sent)
+            {
+                keyboardMouseContinueDetector.SyncBaseline();
+                return;
+            }
+
+            string evidence;
+            if (!keyboardMouseContinueDetector.TryDetect(out evidence))
+            {
+                return;
+            }
+
+            if (sessionManager.TryContinueWithKeyboardMouse(protectAllActiveControllers, evidence))
             {
                 PublishControllerSnapshotChanged();
             }
@@ -2306,6 +2340,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             xInputTimer.Stop();
             sessionTimer.Stop();
             sessionManager.Stop();
+            keyboardMouseContinueDetector.Reset();
             EndDisconnectIncident();
             activeGameId = null;
             activeGameProcessId = 0;
@@ -2335,10 +2370,19 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
 
             var names = string.Join(Environment.NewLine, missing.Select(a => a.Name));
-            var instruction = Loc("LOCCSM_OverlayAllowTakeover");
+            var protectAll = GetEffectiveProtectAllControllers(GetControllerSnapshot(), DateTime.UtcNow);
+            string instruction;
             if (missing.Count > 1)
             {
                 instruction = Loc("LOCCSM_OverlayReconnectControllers");
+            }
+            else if (protectAll)
+            {
+                instruction = Loc("LOCCSM_OverlayAllowTakeover");
+            }
+            else
+            {
+                instruction = Loc("LOCCSM_OverlayAllowTakeoverOrKeyboardMouse");
             }
             ushort vendorId;
             ushort productId;

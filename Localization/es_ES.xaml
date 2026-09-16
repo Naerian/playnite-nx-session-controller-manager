@@ -250,6 +250,7 @@
     <sys:String x:Key="LOCCSM_OverlayDisconnectMessage">Se ha perdido la conexión con: {0}</sys:String>
     <sys:String x:Key="LOCCSM_OverlayWaitSameController">Vuelve a conectarlo para continuar.</sys:String>
     <sys:String x:Key="LOCCSM_OverlayAllowTakeover">Reconéctalo, o pulsa un botón o mueve un stick en otro mando.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayAllowTakeoverOrKeyboardMouse">Reconéctalo, usa otro mando, o pulsa una tecla / haz clic para seguir con teclado y ratón.</sys:String>
     <sys:String x:Key="LOCCSM_ColorTopPanelByBattery">Colorear el icono y el texto según el nivel de batería</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicySessionSection">Protección en partida</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseSection">Pausa automática</sys:String>

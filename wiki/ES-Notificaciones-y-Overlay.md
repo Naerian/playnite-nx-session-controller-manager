@@ -16,7 +16,7 @@ Los cambios XInput estables usan un antirrebote de 300 ms para descartar oscilac
 
 ## Overlay de desconexión
 
-El overlay aparece cuando un mando participante supera el margen de gracia desconectado. Muestra el dispositivo ausente, la instrucción para continuar y el resultado de la pausa. La opción **Mostrar tiempo de desconexión** añade una duración localizada que se actualiza una vez por segundo. Reconectar o completar un relevo válido lo cierra; en multijugador local la incidencia permanece hasta recuperar la plaza correspondiente.
+El overlay aparece cuando un mando participante supera el margen de gracia desconectado. Muestra el dispositivo ausente, la instrucción para continuar y el resultado de la pausa. La opción **Mostrar tiempo de desconexión** añade una duración localizada que se actualiza una vez por segundo. Reconectar, completar un relevo válido de mando o — en un jugador — pulsar una tecla / hacer clic con el ratón lo cierra. En multijugador local la incidencia permanece hasta recuperar la plaza correspondiente.
 
 La tarjeta y el backdrop de pantalla completa tienen colores, tamaños, iconos, padding, borde y redondeo independientes. También puedes elegir ancho y posición de la tarjeta, animación de entrada, sombra y qué lado del borde usa el acento. Título, nombre del mando, instrucción y estado/insignias disponen de familia y peso tipográfico propios, y el título, la instrucción y el estado de pausa se pueden ocultar por separado.
 

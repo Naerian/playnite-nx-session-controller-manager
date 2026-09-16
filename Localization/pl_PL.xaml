@@ -250,6 +250,7 @@
     <sys:String x:Key="LOCCSM_OverlayDisconnectMessage">Utracono polaczenie: {0}</sys:String>
     <sys:String x:Key="LOCCSM_OverlayWaitSameController">Podlacz go ponownie, aby kontynuowac.</sys:String>
     <sys:String x:Key="LOCCSM_OverlayAllowTakeover">Podlacz go ponownie albo nacisnij przycisk lub porusz drazkiem innego kontrolera.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayAllowTakeoverOrKeyboardMouse">Podlacz go ponownie, uzyj innego kontrolera albo nacisnij klawisz / kliknij, aby kontynuowac klawiatura i mysza.</sys:String>
     <sys:String x:Key="LOCCSM_ColorTopPanelByBattery">Koloruj ikone i tekst zgodnie z poziomem baterii</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicySessionSection">Ochrona w grze</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseSection">Automatyczna pauza</sys:String>

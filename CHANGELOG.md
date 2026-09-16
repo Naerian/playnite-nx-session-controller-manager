@@ -11,6 +11,11 @@
 
 
 
+## 1.0.35 — 2026-09-16
+- In single-player sessions, intentional keyboard presses or mouse clicks dismiss the disconnect overlay so you can continue with keyboard and mouse (same resolution path as reconnect/takeover).
+- Mouse movement alone and Escape do not dismiss the overlay; local multiplayer incidents stay until the missing player slot recovers.
+- Overlay instructions mention keyboard/mouse continue for single-player disconnects.
+
 ## 1.0.34 — 2026-09-14
 - Disabled per-event sound options, sound pack, volume and custom sounds when both Desktop and Fullscreen notification sounds are turned off.
 - Disconnect overlay sound continues to use the warning cue and follows the â€œwarnings and disconnect overlayâ€ toggle.

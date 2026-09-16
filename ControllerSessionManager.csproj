@@ -72,6 +72,7 @@
     <Compile Include="Sessions\GameSessionManager.cs" />
     <Compile Include="Sessions\SessionControllerIdentity.cs" />
     <Compile Include="Sessions\GamePauseService.cs" />
+    <Compile Include="Sessions\KeyboardMouseContinueDetector.cs" />
     <Compile Include="Sessions\OnlineSessionDetector.cs" />
     <Compile Include="Sessions\AdaptiveSessionScopeDetector.cs" />
     <Compile Include="Sessions\InputPollingPolicy.cs" />

@@ -202,7 +202,7 @@ Las propiedades visuales y resource keys quedan en `THEME-INTEGRATION.md`. Añad
 
 Tras `DisconnectConfirmed`, el plugin inicia bajo demanda `ControllerSessionManager.OverlayHost.exe` y le envía el estado localizado mediante un named pipe restringido al usuario actual y protegido con un token aleatorio por instancia. El host muestra una ventana WPF topmost, no activable y click-through en el monitor de la ventana principal del proceso del juego, con fallback al monitor primario.
 
-La misma incidencia se actualiza si faltan varios mandos. `DisconnectResolved`, `ControllerTakeover`, `OnGameStopped`, desactivar el seguimiento o cerrar Playnite ocultan el overlay. Un heartbeat evita ventanas huérfanas: el host la oculta tras 8 segundos sin comunicación y termina tras 30 segundos o al desaparecer el proceso padre.
+La misma incidencia se actualiza si faltan varios mandos. `DisconnectResolved`, `ControllerTakeover`, `KeyboardMouseContinue` (un jugador), `OnGameStopped`, desactivar el seguimiento o cerrar Playnite ocultan el overlay. Un heartbeat evita ventanas huérfanas: el host la oculta tras 8 segundos sin comunicación y termina tras 30 segundos o al desaparecer el proceso padre.
 
 ### Alcance de protección de la sesión
 

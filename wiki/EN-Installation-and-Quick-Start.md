@@ -31,7 +31,7 @@ If the older **Gamepad Tester** extension is still installed, uninstall it. Both
 2. Press buttons or move a stick on the intended controller.
 3. Disconnect that controller during gameplay.
 4. Confirm that the overlay appears after the configured grace period.
-5. Reconnect it or use another available controller when takeover is allowed.
+5. Reconnect it, use another available controller when takeover is allowed, or press a key / click to continue with keyboard and mouse in single-player.
 
 Start with **Overlay only**. Enable a pause key only after confirming which key safely opens the game's pause menu. Force-pause is an advanced opt-in mode and should be tested per game.
 

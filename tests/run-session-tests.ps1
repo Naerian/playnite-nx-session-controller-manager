@@ -40,6 +40,7 @@ $testExecutable = Join-Path $output "SessionManagerTests.exe"
     (Join-Path $root "Sessions\GameSessionManager.cs") `
     (Join-Path $root "Sessions\SessionControllerIdentity.cs") `
     (Join-Path $root "Sessions\GamePauseService.cs") `
+    (Join-Path $root "Sessions\KeyboardMouseContinueDetector.cs") `
     (Join-Path $root "Sessions\OnlineSessionDetector.cs") `
     (Join-Path $root "Sessions\AdaptiveSessionScopeDetector.cs") `
     (Join-Path $root "Sessions\InputPollingPolicy.cs") `
