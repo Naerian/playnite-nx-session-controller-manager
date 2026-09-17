@@ -323,6 +323,8 @@
     <sys:String x:Key="LOCCSM_NotificationShowBorder">Semantischen Farbrand anzeigen</sys:String><sys:String x:Key="LOCCSM_NotificationBorderPosition">Randposition</sys:String><sys:String x:Key="LOCCSM_NotificationBorderThickness">Randst-rke (px)</sys:String>
 <sys:String x:Key="LOCCSM_BorderLeft">Links</sys:String><sys:String x:Key="LOCCSM_BorderTop">Oben</sys:String><sys:String x:Key="LOCCSM_BorderRight">Rechts</sys:String><sys:String x:Key="LOCCSM_BorderBottom">Unten</sys:String><sys:String x:Key="LOCCSM_BorderSideLeft">Linker Rand</sys:String><sys:String x:Key="LOCCSM_BorderSideTop">Oberer Rand</sys:String><sys:String x:Key="LOCCSM_BorderSideRight">Rechter Rand</sys:String><sys:String x:Key="LOCCSM_BorderSideBottom">Unterer Rand</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPreview">Live-Vorschau</sys:String><sys:String x:Key="LOCCSM_PreviewControllerName">Beispiel-Controller</sys:String><sys:String x:Key="LOCCSM_OverlayPreviewHelp">Farben und Skalierung werden beim Bearbeiten aktualisiert. Das echte Overlay passt sich dem Bildschirm an.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayPreviewThemeSource">Zeigt das Design des Themas {0}.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayPreviewThemeSourceTitle">Playnite theme design</sys:String>
     <sys:String x:Key="LOCCSM_SelectColor">Farbe w-hlen</sys:String>
     <sys:String x:Key="LOCCSM_ColorPreview">Vorschau</sys:String>
     <sys:String x:Key="LOCCSM_ColorOpacity">Deckkraft</sys:String>

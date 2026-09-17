@@ -3732,6 +3732,16 @@ namespace ControllerSessionManager.PlayniteIntegration
         private string GetOverlayStylePayload()
         {
             var appearance = ResolveAppearanceSettings(ThemeAppearanceSurface.Overlay) ?? settings;
+            if (settings != null && settings.IsThemeAppearanceEnabled(ThemeAppearanceSurface.Overlay) &&
+                appearance != null && !ReferenceEquals(appearance, settings))
+            {
+                ThemeAppearanceBridge.ApplyLiveOverlayColors(PlayniteApi, appearance);
+                ThemeAppearanceBridge.NormalizeOverlayColors(appearance);
+            }
+            else if (appearance != null)
+            {
+                ThemeAppearanceBridge.NormalizeOverlayColors(appearance);
+            }
             var card = appearance.OverlayCardColor;
             var accent = appearance.OverlayAccentColor;
             var text = appearance.OverlayTextColor;
@@ -3751,33 +3761,6 @@ namespace ControllerSessionManager.PlayniteIntegration
             var instructionWeight = appearance.OverlayInstructionFontWeight;
             var statusFamily = appearance.OverlayStatusFontFamily;
             var statusWeight = appearance.OverlayStatusFontWeight;
-            if (appearance.IsThemeAppearanceEnabled(ThemeAppearanceSurface.Overlay))
-            {
-                var live = ThemeAppearanceBridge.Resolve(PlayniteApi, ThemeAppearanceSurface.Overlay);
-                if (live != null && live.HasAny)
-                {
-                    card = CoalesceHex(live.Background, card);
-                    accent = CoalesceHex(live.Accent, accent);
-                    text = CoalesceHex(live.Text, text);
-                    warning = CoalesceHex(live.Warning, warning);
-                    if (IsUsableHex(live.Gradient))
-                    {
-                        useGradient = true;
-                        gradientColor = live.Gradient;
-                    }
-                    ApplyLiveBorderColors(live, ref useBorderGradient, ref borderStart, ref borderEnd);
-                    fontFamily = CoalesceFamily(live.FontFamily, null, fontFamily);
-                    fontWeight = CoalesceFamily(live.FontWeight, null, fontWeight);
-                    titleFamily = CoalesceFamily(live.TitleFontFamily, live.FontFamily, titleFamily);
-                    titleWeight = CoalesceFamily(live.TitleFontWeight, live.FontWeight, titleWeight);
-                    controllerFamily = CoalesceFamily(live.MessageFontFamily, live.FontFamily, controllerFamily);
-                    controllerWeight = CoalesceFamily(live.MessageFontWeight, live.FontWeight, controllerWeight);
-                    instructionFamily = CoalesceFamily(live.MessageFontFamily, live.FontFamily, instructionFamily);
-                    instructionWeight = CoalesceFamily(live.MessageFontWeight, live.FontWeight, instructionWeight);
-                    statusFamily = CoalesceFamily(live.MessageFontFamily, live.FontFamily, statusFamily);
-                    statusWeight = CoalesceFamily(live.MessageFontWeight, live.FontWeight, statusWeight);
-                }
-            }
             return string.Join(";", new[]
             {
                 appearance.OverlayScalePercent.ToString(), appearance.OverlayDimColor,

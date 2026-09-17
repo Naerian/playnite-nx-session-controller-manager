@@ -282,10 +282,10 @@
     <sys:String x:Key="LOCCSM_LowBatteryThresholdEmpty">Solo vacía</sys:String>
     <sys:String x:Key="LOCCSM_LowBatteryNotificationHelp">Una notificación por episodio de batería baja en cualquier mando que reporte batería. Se reactiva cuando el nivel se recupera o el mando se vuelve a conectar.</sys:String>
     <sys:String x:Key="LOCCSM_ControllerLowBatteryToast">Batería baja</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayForcePaused">Juego detenido temporalmente</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayForcePauseFailed">No se pudo detener temporalmente el juego</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayForcePaused">Juego en pausa</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayForcePauseFailed">No se pudo pausar el juego</sys:String>
     <sys:String x:Key="LOCCSM_OnlineFallbackToastTitle">Mando desconectado</sys:String>
-    <sys:String x:Key="LOCCSM_OnlineFallbackToastMessage">Juego en curso por actividad de red</sys:String>
+    <sys:String x:Key="LOCCSM_OnlineFallbackToastMessage">Juego activo por actividad de red</sys:String>
     <sys:String x:Key="LOCCSM_ControllerConnectedToast">Mando conectado</sys:String>
     <sys:String x:Key="LOCCSM_ControllerDisconnectedToast">Mando desconectado</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyForcePauseOffline">Detener temporalmente el juego si no hay actividad de red. Mostrar solo el aviso si la hay</sys:String>
@@ -350,6 +350,8 @@
     <sys:String x:Key="LOCCSM_OverlayPreview">Previsualización en tiempo real</sys:String>
     <sys:String x:Key="LOCCSM_PreviewControllerName">Mando de ejemplo</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPreviewHelp">Los colores y la escala cambian mientras los editas. El overlay real de la partida se adapta a la pantalla actual.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayPreviewThemeSource">Mostrando el diseño del tema {0}.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayPreviewThemeSourceTitle">Diseño del tema de Playnite</sys:String>
     <sys:String x:Key="LOCCSM_SelectColor">Elegir color</sys:String>
     <sys:String x:Key="LOCCSM_ColorPreview">Vista previa</sys:String>
     <sys:String x:Key="LOCCSM_ColorOpacity">Opacidad</sys:String>

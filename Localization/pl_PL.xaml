@@ -323,6 +323,8 @@
     <sys:String x:Key="LOCCSM_NotificationShowBorder">Pokaz obramowanie w kolorze stanu</sys:String><sys:String x:Key="LOCCSM_NotificationBorderPosition">Pozycja obramowania</sys:String><sys:String x:Key="LOCCSM_NotificationBorderThickness">Grubosc obramowania (px)</sys:String>
 <sys:String x:Key="LOCCSM_BorderLeft">Lewa</sys:String><sys:String x:Key="LOCCSM_BorderTop">G-ra</sys:String><sys:String x:Key="LOCCSM_BorderRight">Prawa</sys:String><sys:String x:Key="LOCCSM_BorderBottom">D-l</sys:String><sys:String x:Key="LOCCSM_BorderSideLeft">Lewa krawedz</sys:String><sys:String x:Key="LOCCSM_BorderSideTop">G-rna krawedz</sys:String><sys:String x:Key="LOCCSM_BorderSideRight">Prawa krawedz</sys:String><sys:String x:Key="LOCCSM_BorderSideBottom">Dolna krawedz</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPreview">Podglad na zywo</sys:String><sys:String x:Key="LOCCSM_PreviewControllerName">Przykladowy kontroler</sys:String><sys:String x:Key="LOCCSM_OverlayPreviewHelp">Kolory i skala aktualizuja sie podczas edycji. Rzeczywista nakladka dopasowuje sie do ekranu.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayPreviewThemeSource">Pokazuje projekt motywu {0}.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayPreviewThemeSourceTitle">Playnite theme design</sys:String>
     <sys:String x:Key="LOCCSM_SelectColor">Wybierz kolor</sys:String>
     <sys:String x:Key="LOCCSM_ColorPreview">Podglad</sys:String>
     <sys:String x:Key="LOCCSM_ColorOpacity">Krycie</sys:String>

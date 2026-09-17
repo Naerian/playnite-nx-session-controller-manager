@@ -11,6 +11,13 @@
 
 
 
+
+## 1.0.36 — 2026-09-17
+- When Playnite theme overlay styling is enabled, the live overlay preview shows the active Fullscreen theme pack and a clear theme-design callout.
+- Improved overlay preview parity with the real overlay (shadow, independent borders, layout spacing, scale and sample text).
+- Fixed empty theme-pack color values wiping instruction and controller-icon colors in preview (for example Aniki ReMake).
+- Shortened Spanish overlay pause status messages for clearer in-game wording.
+
 ## 1.0.35 — 2026-09-16
 - In single-player sessions, intentional keyboard presses or mouse clicks dismiss the disconnect overlay so you can continue with keyboard and mouse (same resolution path as reconnect/takeover).
 - Mouse movement alone and Escape do not dismiss the overlay; local multiplayer incidents stay until the missing player slot recovers.

@@ -109,6 +109,21 @@ namespace ControllerSessionManager.PlayniteIntegration
             return definition.Name + " — " + definition.Author;
         }
 
+        public static string GetDisplayName(IPlayniteAPI api, ThemeAppearanceSurface surface)
+        {
+            CreatorThemeDefinition definition;
+            if (TryGetDefinition(api, surface, out definition) &&
+                !string.IsNullOrWhiteSpace(definition.Name))
+            {
+                return definition.Name.Trim();
+            }
+
+            var themeRoot = GetThemeRoot(api, surface);
+            return string.IsNullOrWhiteSpace(themeRoot)
+                ? string.Empty
+                : Path.GetFileName(themeRoot.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+        }
+
         private static string ResolveSoundPath(CreatorThemeDefinition definition, NotificationSoundKind kind)
         {
             if (definition == null) return string.Empty;

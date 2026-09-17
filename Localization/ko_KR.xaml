@@ -323,6 +323,8 @@
     <sys:String x:Key="LOCCSM_NotificationShowBorder">?? ?? ??? ??</sys:String><sys:String x:Key="LOCCSM_NotificationBorderPosition">??? ??</sys:String><sys:String x:Key="LOCCSM_NotificationBorderThickness">??? ?? (px)</sys:String>
 <sys:String x:Key="LOCCSM_BorderLeft">??</sys:String><sys:String x:Key="LOCCSM_BorderTop">?</sys:String><sys:String x:Key="LOCCSM_BorderRight">???</sys:String><sys:String x:Key="LOCCSM_BorderBottom">??</sys:String><sys:String x:Key="LOCCSM_BorderSideLeft">?? ???</sys:String><sys:String x:Key="LOCCSM_BorderSideTop">?? ???</sys:String><sys:String x:Key="LOCCSM_BorderSideRight">??? ???</sys:String><sys:String x:Key="LOCCSM_BorderSideBottom">??? ???</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPreview">??? ????</sys:String><sys:String x:Key="LOCCSM_PreviewControllerName">?? ????</sys:String><sys:String x:Key="LOCCSM_OverlayPreviewHelp">???? ?? ??? ??? ???????. ?? ????? ??? ?? ?????.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayPreviewThemeSource">Showing the design from the {0} theme.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayPreviewThemeSourceTitle">Playnite theme design</sys:String>
     <sys:String x:Key="LOCCSM_SelectColor">?? ??</sys:String>
     <sys:String x:Key="LOCCSM_ColorPreview">????</sys:String>
     <sys:String x:Key="LOCCSM_ColorOpacity">????</sys:String>

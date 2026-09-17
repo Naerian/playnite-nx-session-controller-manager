@@ -18,10 +18,14 @@ if (-not (Test-Path -LiteralPath $plugin)) {
 
 $playniteSdk = "C:\Playnite\Playnite.SDK.dll"
 $fwCandidates = @(
-    (Join-Path $root "packages\Microsoft.NETFramework.ReferenceAssemblies.net462.1.0.3\build\.NETFramework\v4.6.2"),
-    (Join-Path ${env:ProgramFiles(x86)} "Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.2"),
-    (Join-Path $env:WINDIR "Microsoft.NET\Framework\v4.0.30319\WPF")
+    (Join-Path $root "packages\Microsoft.NETFramework.ReferenceAssemblies.net462.1.0.3\build\.NETFramework\v4.6.2")
 )
+if (-not [string]::IsNullOrWhiteSpace(${env:ProgramFiles(x86)})) {
+    $fwCandidates += (Join-Path ${env:ProgramFiles(x86)} "Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.2")
+}
+if (-not [string]::IsNullOrWhiteSpace($env:WINDIR)) {
+    $fwCandidates += (Join-Path $env:WINDIR "Microsoft.NET\Framework\v4.0.30319\WPF")
+}
 $fw = $fwCandidates | Where-Object { Test-Path -LiteralPath (Join-Path $_ "PresentationFramework.dll") } | Select-Object -First 1
 if (-not $fw) {
     throw "WPF reference assemblies were not found. Build the solution first or install the .NET Framework 4.6.2 targeting pack."

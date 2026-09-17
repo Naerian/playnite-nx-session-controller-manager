@@ -84,6 +84,12 @@ namespace ControllerSessionManager.PlayniteIntegration
                 {
                     var type = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
                     var text = Convert.ToString(pair.Value, CultureInfo.InvariantCulture);
+                    if (type == typeof(string) && pair.Key.EndsWith("Color", StringComparison.OrdinalIgnoreCase) &&
+                        string.IsNullOrWhiteSpace(text))
+                    {
+                        // Empty color in a pack means "inherit default / theme-bridge", not wipe the value.
+                        continue;
+                    }
                     if (type == typeof(string) && pair.Key.EndsWith("FontFamily", StringComparison.OrdinalIgnoreCase) &&
                         text != null && text.StartsWith("$font:", StringComparison.OrdinalIgnoreCase))
                     {

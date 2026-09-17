@@ -288,24 +288,37 @@ namespace ControllerSessionManager.PlayniteIntegration
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            var enabled = values != null && values.Length > 0 && values[0] is bool && (bool)values[0];
-            if (!enabled)
+            var showGlow = values != null && values.Length > 0 && values[0] is bool && (bool)values[0];
+            if (showGlow)
+            {
+                var color = Colors.Transparent;
+                try { color = (Color)ColorConverter.ConvertFromString(values.Length > 1 ? values[1] as string : null); }
+                catch { }
+                var blur = ToDouble(values, 2, 16);
+                var opacity = ToDouble(values, 3, 30) / 100.0;
+                return new DropShadowEffect
+                {
+                    BlurRadius = Math.Max(0, blur),
+                    ShadowDepth = 0,
+                    Direction = 0,
+                    Opacity = Math.Max(0, Math.Min(1, opacity)),
+                    Color = color
+                };
+            }
+
+            var showShadow = values != null && values.Length > 4 && values[4] is bool && (bool)values[4];
+            if (!showShadow)
             {
                 return null;
             }
 
-            var color = Colors.Transparent;
-            try { color = (Color)ColorConverter.ConvertFromString(values.Length > 1 ? values[1] as string : null); }
-            catch { }
-            var blur = ToDouble(values, 2, 16);
-            var opacity = ToDouble(values, 3, 30) / 100.0;
             return new DropShadowEffect
             {
-                BlurRadius = Math.Max(0, blur),
-                ShadowDepth = 0,
-                Direction = 0,
-                Opacity = Math.Max(0, Math.Min(1, opacity)),
-                Color = color
+                BlurRadius = 24,
+                ShadowDepth = 3,
+                Direction = 270,
+                Opacity = 0.55,
+                Color = Colors.Black
             };
         }
 
@@ -510,6 +523,16 @@ namespace ControllerSessionManager.PlayniteIntegration
                 return new Thickness(0);
             }
 
+            var useIndependent = values != null && values.Length > 3 && values[3] is bool && (bool)values[3];
+            if (useIndependent)
+            {
+                return new Thickness(
+                    ToSide(values, 4, number),
+                    ToSide(values, 5, number),
+                    ToSide(values, 6, number),
+                    ToSide(values, 7, number));
+            }
+
             var position = values != null && values.Length > 2 && values[2] != null
                 ? values[2].ToString() : "Full";
             if (position == "Left") return new Thickness(number, 0, 0, 0);
@@ -522,6 +545,12 @@ namespace ControllerSessionManager.PlayniteIntegration
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             throw new NotSupportedException();
+        }
+
+        private static int ToSide(object[] values, int index, int fallback)
+        {
+            return values != null && values.Length > index && values[index] is int
+                ? (int)values[index] : fallback;
         }
     }
 

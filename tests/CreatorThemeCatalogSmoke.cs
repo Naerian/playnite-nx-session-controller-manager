@@ -103,13 +103,19 @@ internal static class CreatorThemeCatalogSmoke
             var overlayPresets = assembly.GetType(
                 "ControllerSessionManager.PlayniteIntegration.OverlayStylePresets", true);
             File.WriteAllText(Path.Combine(community, "overlay.json"),
-                "{\"OverlayUseIndependentBorders\":true,\"OverlayBlockOrder\":\"Title,Instruction,Controller,Metadata,Status\"}");
+                "{\"OverlayUseIndependentBorders\":true,\"OverlayBlockOrder\":\"Title,Instruction,Controller,Metadata,Status\",\"OverlayInstructionColor\":\"\",\"OverlayControllerIconColor\":\"\"}");
             catalog.GetMethod("Reload").Invoke(null, null);
             overlayPresets.GetMethod("Apply").Invoke(null, new[] { settings, "community.test" });
             if (!(bool)settingsType.GetProperty("OverlayUseIndependentBorders").GetValue(settings, null) ||
                 (string)settingsType.GetProperty("OverlayBlockOrder").GetValue(settings, null) !=
                     "Title,Instruction,Controller,Metadata,Status")
                 throw new Exception("The community overlay pack was not applied dynamically.");
+            var instructionColor = (string)settingsType.GetProperty("OverlayInstructionColor")
+                .GetValue(settings, null);
+            var iconColor = (string)settingsType.GetProperty("OverlayControllerIconColor")
+                .GetValue(settings, null);
+            if (string.IsNullOrWhiteSpace(instructionColor) || string.IsNullOrWhiteSpace(iconColor))
+                throw new Exception("Empty pack colors must not wipe overlay defaults.");
 
             var userData = Path.Combine(root, "obj", "CreatorPackData");
             if (Directory.Exists(userData)) Directory.Delete(userData, true);

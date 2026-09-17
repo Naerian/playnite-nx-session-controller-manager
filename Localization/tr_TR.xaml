@@ -323,6 +323,8 @@
     <sys:String x:Key="LOCCSM_NotificationShowBorder">Durum renginde kenarlik g-ster</sys:String><sys:String x:Key="LOCCSM_NotificationBorderPosition">Kenarlik konumu</sys:String><sys:String x:Key="LOCCSM_NotificationBorderThickness">Kenarlik kalinligi (px)</sys:String>
 <sys:String x:Key="LOCCSM_BorderLeft">Sol</sys:String><sys:String x:Key="LOCCSM_BorderTop">-st</sys:String><sys:String x:Key="LOCCSM_BorderRight">Sag</sys:String><sys:String x:Key="LOCCSM_BorderBottom">Alt</sys:String><sys:String x:Key="LOCCSM_BorderSideLeft">Sol kenarlik</sys:String><sys:String x:Key="LOCCSM_BorderSideTop">-st kenarlik</sys:String><sys:String x:Key="LOCCSM_BorderSideRight">Sag kenarlik</sys:String><sys:String x:Key="LOCCSM_BorderSideBottom">Alt kenarlik</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPreview">Canli -nizleme</sys:String><sys:String x:Key="LOCCSM_PreviewControllerName">-rnek kontrolc-</sys:String><sys:String x:Key="LOCCSM_OverlayPreviewHelp">D-zenlerken renkler ve -l-ek g-ncellenir. Ger-ek katman ekrana uyum saglar.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayPreviewThemeSource">{0} temasinin tasarimini gosteriyor.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayPreviewThemeSourceTitle">Playnite theme design</sys:String>
     <sys:String x:Key="LOCCSM_SelectColor">Renk se-</sys:String>
     <sys:String x:Key="LOCCSM_ColorPreview">-nizleme</sys:String>
     <sys:String x:Key="LOCCSM_ColorOpacity">Opaklik</sys:String>

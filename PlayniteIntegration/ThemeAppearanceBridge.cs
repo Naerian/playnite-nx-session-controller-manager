@@ -29,8 +29,9 @@ namespace ControllerSessionManager.PlayniteIntegration
         public static ThemeAppearanceColors Resolve(IPlayniteAPI api, ThemeAppearanceSurface surface)
         {
             var colors = new ThemeAppearanceColors();
-            var fullscreenTheme = surface != ThemeAppearanceSurface.DesktopNotification &&
-                (surface == ThemeAppearanceSurface.FullscreenNotification || IsFullscreen(api));
+            // Overlay packs and bridges live with the Fullscreen Playnite theme, even when
+            // settings are edited from Desktop mode.
+            var fullscreenTheme = surface != ThemeAppearanceSurface.DesktopNotification;
             var mapping = ReadMapping(FindThemeDirectory(api, fullscreenTheme));
             IDictionary<string, string> keys = ToStringMap(mapping == null
                 ? null
@@ -48,6 +49,109 @@ namespace ControllerSessionManager.PlayniteIntegration
             return colors;
         }
 
+        /// <summary>
+        /// Applies live theme-bridge colors onto an overlay appearance snapshot used for
+        /// gameplay payloads and the settings live preview.
+        /// </summary>
+        public static void ApplyLiveOverlayColors(IPlayniteAPI api,
+            ControllerSessionManagerSettings appearance)
+        {
+            if (appearance == null) return;
+            var live = Resolve(api, ThemeAppearanceSurface.Overlay);
+            if (live != null && live.HasAny)
+            {
+            appearance.OverlayCardColor = CoalesceHex(live.Background, appearance.OverlayCardColor);
+            appearance.OverlayAccentColor = CoalesceHex(live.Accent, appearance.OverlayAccentColor);
+            appearance.OverlayTextColor = CoalesceHex(live.Text, appearance.OverlayTextColor);
+            appearance.OverlayWarningColor = CoalesceHex(live.Warning, appearance.OverlayWarningColor);
+            appearance.OverlayInstructionColor = CoalesceHex(live.SecondaryText, appearance.OverlayInstructionColor);
+            if (IsUsableHex(live.Gradient))
+            {
+                appearance.OverlayUseGradient = true;
+                appearance.OverlayGradientColor = live.Gradient;
+            }
+            if (IsUsableHex(live.Border))
+            {
+                appearance.OverlayBorderGradientStartColor = live.Border;
+                appearance.OverlayBorderGradientEndColor = IsUsableHex(live.BorderEnd)
+                    ? live.BorderEnd : live.Border;
+                if (!string.Equals(appearance.OverlayBorderGradientStartColor,
+                    appearance.OverlayBorderGradientEndColor, StringComparison.OrdinalIgnoreCase))
+                {
+                    appearance.OverlayUseBorderGradient = true;
+                }
+            }
+            if (!string.IsNullOrWhiteSpace(live.FontFamily))
+            {
+                appearance.OverlayFontFamily = live.FontFamily;
+                if (!string.IsNullOrWhiteSpace(live.FontWeight))
+                    appearance.OverlayFontWeight = live.FontWeight;
+            }
+            if (!string.IsNullOrWhiteSpace(live.TitleFontFamily))
+            {
+                appearance.OverlayTitleFontFamily = live.TitleFontFamily;
+                if (!string.IsNullOrWhiteSpace(live.TitleFontWeight))
+                    appearance.OverlayTitleFontWeight = live.TitleFontWeight;
+            }
+            var messageFamily = !string.IsNullOrWhiteSpace(live.MessageFontFamily)
+                ? live.MessageFontFamily : live.FontFamily;
+            var messageWeight = !string.IsNullOrWhiteSpace(live.MessageFontWeight)
+                ? live.MessageFontWeight : live.FontWeight;
+            if (!string.IsNullOrWhiteSpace(messageFamily))
+            {
+                appearance.OverlayControllerFontFamily = messageFamily;
+                appearance.OverlayInstructionFontFamily = messageFamily;
+                appearance.OverlayStatusFontFamily = messageFamily;
+                if (!string.IsNullOrWhiteSpace(messageWeight))
+                {
+                    appearance.OverlayControllerFontWeight = messageWeight;
+                    appearance.OverlayInstructionFontWeight = messageWeight;
+                    appearance.OverlayStatusFontWeight = messageWeight;
+                }
+            }
+            }
+
+            NormalizeOverlayColors(appearance);
+        }
+
+        /// <summary>
+        /// Packs may leave role colors blank so theme-bridge / runtime fallbacks apply.
+        /// Preview bindings have no ParseColor fallback, so empty values become transparent.
+        /// Mirror OverlayHost: instruction → accent, icon → text.
+        /// </summary>
+        public static void NormalizeOverlayColors(ControllerSessionManagerSettings appearance)
+        {
+            if (appearance == null) return;
+            if (!IsUsableHex(appearance.OverlayTextColor))
+                appearance.OverlayTextColor = "#FFFFFFFF";
+            if (!IsUsableHex(appearance.OverlayAccentColor))
+                appearance.OverlayAccentColor = "#FF2391FF";
+            if (!IsUsableHex(appearance.OverlayWarningColor))
+                appearance.OverlayWarningColor = "#FFF5B542";
+            if (!IsUsableHex(appearance.OverlayInstructionColor))
+                appearance.OverlayInstructionColor = appearance.OverlayAccentColor;
+            if (!IsUsableHex(appearance.OverlayControllerIconColor))
+                appearance.OverlayControllerIconColor = appearance.OverlayTextColor;
+            if (!IsUsableHex(appearance.OverlayCardColor))
+                appearance.OverlayCardColor = "#EB121418";
+            if (!IsUsableHex(appearance.OverlayDimColor))
+                appearance.OverlayDimColor = "#96000000";
+        }
+
+        private static string CoalesceHex(string live, string fallback)
+        {
+            return IsUsableHex(live) ? live : fallback;
+        }
+
+        private static bool IsUsableHex(string hex)
+        {
+            if (string.IsNullOrWhiteSpace(hex) || hex[0] != '#' || hex.Length < 7) return false;
+            if (hex.Length >= 9 &&
+                string.Equals(hex.Substring(1, 2), "00", StringComparison.OrdinalIgnoreCase))
+                return false;
+            return true;
+        }
+
         private static Dictionary<string, string> ToStringMap(Dictionary<string, object> source)
         {
             if (source == null) return null;
@@ -59,12 +163,6 @@ namespace ControllerSessionManager.PlayniteIntegration
                     : Convert.ToString(pair.Value, CultureInfo.InvariantCulture);
             }
             return map;
-        }
-
-        private static bool IsFullscreen(IPlayniteAPI api)
-        {
-            return api != null && api.ApplicationInfo != null &&
-                api.ApplicationInfo.Mode == ApplicationMode.Fullscreen;
         }
 
         internal enum ResolveStopPreference

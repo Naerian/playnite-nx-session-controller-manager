@@ -352,6 +352,8 @@
     <sys:String x:Key="LOCCSM_OverlayPreview">Live preview</sys:String>
     <sys:String x:Key="LOCCSM_PreviewControllerName">Example controller</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPreviewHelp">Colors and scale update while you edit them. The actual gameplay overlay adapts to the current screen.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayPreviewThemeSource">Showing the design from the {0} theme.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayPreviewThemeSourceTitle">Playnite theme design</sys:String>
     <sys:String x:Key="LOCCSM_SelectColor">Choose color</sys:String>
     <sys:String x:Key="LOCCSM_ColorPreview">Preview</sys:String>
     <sys:String x:Key="LOCCSM_ColorOpacity">Opacity</sys:String>
