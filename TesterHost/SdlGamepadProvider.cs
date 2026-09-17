@@ -128,7 +128,9 @@ namespace ControllerSessionManager.Tester.Services
                     {
                         JoystickIndex = index,
                         InstanceId = Sdl2Native.SDL_JoystickGetDeviceInstanceID(index),
+                        PlayerIndex = GetDevicePlayerIndex(index),
                         Name = name,
+                        Path = GetDevicePath(index),
                         VendorId = vendorId,
                         ProductId = productId,
                         Layout = ControllerIdentificationService.DetectLayout(name, vendorId, productId),
@@ -237,6 +239,31 @@ namespace ControllerSessionManager.Tester.Services
             var namePointer = Sdl2Native.SDL_GameControllerNameForIndex(joystickIndex);
             var controllerName = Marshal.PtrToStringAnsi(namePointer);
             return controllerName ?? "Game controller";
+        }
+
+        private static string GetDevicePath(int joystickIndex)
+        {
+            try
+            {
+                return Marshal.PtrToStringAnsi(Sdl2Native.SDL_JoystickPathForIndex(joystickIndex))
+                    ?? string.Empty;
+            }
+            catch (EntryPointNotFoundException)
+            {
+                return string.Empty;
+            }
+        }
+
+        private static int GetDevicePlayerIndex(int joystickIndex)
+        {
+            try
+            {
+                return Sdl2Native.SDL_JoystickGetDevicePlayerIndex(joystickIndex);
+            }
+            catch (EntryPointNotFoundException)
+            {
+                return -1;
+            }
         }
 
         private bool IsPressed(SdlControllerButton button)

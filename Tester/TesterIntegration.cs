@@ -1,3 +1,4 @@
+using ControllerSessionManager.Controllers;
 using ControllerSessionManager.PlayniteIntegration;
 using ControllerSessionManager.Tester.Services;
 using ControllerSessionManager.Tester.ViewModels;
@@ -30,6 +31,7 @@ namespace ControllerSessionManager.Tester
         private readonly Action openDesktopSettings;
         private readonly Func<bool> diagnosticLoggingEnabled;
         private readonly Func<string> appearancePreset;
+        private readonly Func<IReadOnlyList<ControllerDeviceSnapshot>> displayControllers;
         private GamepadTesterSettings settings;
         private GamepadTesterViewModel sidebarViewModel;
         private GamepadTesterThemeIntegration themeIntegration;
@@ -56,7 +58,8 @@ namespace ControllerSessionManager.Tester
 
         public TesterIntegration(IPlayniteAPI api, ILogger sourceLogger, GamepadTesterSettings testerSettings,
             Func<string, string> localizer, Action openDesktopSettings,
-            Func<bool> diagnosticLoggingEnabled = null, Func<string> appearancePreset = null)
+            Func<bool> diagnosticLoggingEnabled = null, Func<string> appearancePreset = null,
+            Func<IReadOnlyList<ControllerDeviceSnapshot>> displayControllers = null)
         {
             playniteApi = api;
             logger = sourceLogger;
@@ -64,6 +67,7 @@ namespace ControllerSessionManager.Tester
             this.openDesktopSettings = openDesktopSettings;
             this.diagnosticLoggingEnabled = diagnosticLoggingEnabled;
             this.appearancePreset = appearancePreset;
+            this.displayControllers = displayControllers;
             settings = testerSettings ?? new GamepadTesterSettings();
             openTesterCommand = new Commands.RelayCommand(() => OpenTester(0, false));
             openButtonTestCommand = new Commands.RelayCommand(() => OpenTester(0, true));
@@ -1014,7 +1018,8 @@ namespace ControllerSessionManager.Tester
         private GamepadTesterView CreateTesterView(out GamepadTesterViewModel viewModel, bool showOptionsTab = true)
         {
             var pollingService = new GamepadPollingService(new HostedGamepadInputProvider(logger));
-            viewModel = new GamepadTesterViewModel(pollingService, settings, Loc, OpenGuidedTestWindow);
+            viewModel = new GamepadTesterViewModel(pollingService, settings, Loc, OpenGuidedTestWindow,
+                ApplyMandosAliases);
             viewModel.IsOptionsTabVisible = showOptionsTab;
             var view = new GamepadTesterView
             {
@@ -1027,6 +1032,24 @@ namespace ControllerSessionManager.Tester
 
             viewModel.Start();
             return view;
+        }
+
+        private IReadOnlyList<GamepadControllerInfo> ApplyMandosAliases(
+            IReadOnlyList<GamepadControllerInfo> controllers)
+        {
+            if (displayControllers == null)
+            {
+                return controllers;
+            }
+
+            try
+            {
+                return TesterControllerAliases.Apply(controllers, displayControllers());
+            }
+            catch
+            {
+                return controllers;
+            }
         }
 
         private void OpenGuidedTestWindow(GamepadTesterViewModel viewModel)

@@ -96,6 +96,12 @@ internal static class SessionManagerTests
             SameModelHidIsNotListedBesideXInput();
             DongleXInputSupersedesStalePlayniteBluetooth();
             IndependentBluetoothPadIsKeptBesideXInput();
+            SecondSameModelXInputPadIsListedBesidePlaynitePad();
+            SecondSameModelBluetoothHidIsListed();
+            DistinctHidInstancesOfSameVidPidAreNotDeduplicated();
+            DisplayHoldKeepsTwoSameModelDongles();
+            SecondBluetoothPadSurvivesDonglePromotion();
+            DisplayHoldKeepsSecondBluetoothWhenDongleClaimsOneLeftover();
             BluetoothPlayniteDoesNotBindDongleXInput();
             DonglePlayniteDoesNotInheritBluetoothFromHidLeftover();
             XboxBluetoothMayBindXInputCapability();
@@ -104,7 +110,7 @@ internal static class SessionManagerTests
             BluetoothDisconnectHonoredWhileXInputStillPresent();
             GenericIconIsKeptWhenChosen();
             OverlayIpcAcceptsGamepadSilhouettes();
-            Console.WriteLine("Session manager tests passed: 81 scenarios.");
+            Console.WriteLine("Session manager tests passed: 87 scenarios.");
             return 0;
         }
         catch (Exception error)
@@ -1540,6 +1546,169 @@ internal static class SessionManagerTests
             .Where(a => a.IsConnected).ToList();
         Equal(2, connected.Count,
             "A second 8BitDo on Bluetooth with newer input must stay listed beside a dongle pad.");
+    }
+
+    private static void SecondSameModelXInputPadIsListedBesidePlaynitePad()
+    {
+        var playnite = Snapshot("playnite:path:HID#IG-A", "Playnite", 1, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#vid_2dc8&pid_310b&ig_00#3&aaaaaaa&0&0000", true);
+        playnite.VendorId = 0x2DC8;
+        playnite.ProductId = 0x310B;
+        playnite.ConnectionType = "Wireless";
+        var slot0 = Snapshot("xinput:slot:0", "XInput", 0, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#vid_2dc8&pid_310b&ig_00#3&aaaaaaa&0&0000", true);
+        slot0.VendorId = 0x2DC8;
+        slot0.ProductId = 0x310B;
+        slot0.HardwareId = "hardware:2DC8:310B:1";
+        slot0.ConnectionType = "Wireless";
+        var slot1 = Snapshot("xinput:slot:1", "XInput", 1, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#vid_2dc8&pid_310b&ig_00#3&bbbbbbb&0&0000", true);
+        slot1.VendorId = 0x2DC8;
+        slot1.ProductId = 0x310B;
+        slot1.HardwareId = "hardware:2DC8:310B:2";
+        slot1.ConnectionType = "Wireless";
+        var connected = ControllerSnapshotMerger.Merge(new[] { playnite, slot0, slot1 }, true)
+            .Where(a => a.IsConnected).ToList();
+        Equal(2, connected.Count,
+            "Two Ultimate 2 dongles must both appear in Mandos even when Playnite only listed one.");
+        Equal(true, connected.Any(a => a.ProviderInstanceId == 1 ||
+            (a.Path ?? string.Empty).IndexOf("bbbbbbb", StringComparison.OrdinalIgnoreCase) >= 0),
+            "The second XInput slot must remain an independent controller card.");
+    }
+
+    private static void SecondSameModelBluetoothHidIsListed()
+    {
+        var playnite = Snapshot("playnite:path:BTH-A", "Playnite", 2, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#{00001812-0000-1000-8000-00805f9b34fb}_dev_vid&122dc8_pid&6012#8&aaaa&0&0000",
+            true);
+        playnite.VendorId = 0x2DC8;
+        playnite.ProductId = 0x6012;
+        playnite.ConnectionType = "Bluetooth";
+        var hid = Snapshot("hardware:2DC8:6012:2", "HID", 0, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#{00001812-0000-1000-8000-00805f9b34fb}_dev_vid&122dc8_pid&6012#8&bbbb&0&0000",
+            true);
+        hid.VendorId = 0x2DC8;
+        hid.ProductId = 0x6012;
+        hid.ConnectionType = "Bluetooth";
+        var connected = ControllerSnapshotMerger.Merge(new[] { playnite, hid }, true)
+            .Where(a => a.IsConnected).ToList();
+        Equal(2, connected.Count,
+            "A second Ultimate 2 on Bluetooth must not be treated as a leftover of the first.");
+    }
+
+    private static void DistinctHidInstancesOfSameVidPidAreNotDeduplicated()
+    {
+        const string dongleA =
+            @"\\?\hid#vid_2dc8&pid_310b&ig_00#3&aaaaaaa&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}";
+        const string dongleB =
+            @"\\?\hid#vid_2dc8&pid_310b&ig_00#3&bbbbbbb&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}";
+        const string dongleAGeneric =
+            @"\\?\hid#vid_2dc8&pid_310b#3&aaaaaaa&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}";
+        ControllerMetadata first;
+        ControllerMetadata second;
+        ControllerMetadata samePad;
+        Equal(true, HidDiagnosticsService.TryBuildMetadataFromPath(dongleA, null, out first),
+            "The first Ultimate 2 dongle wrapper must parse.");
+        Equal(true, HidDiagnosticsService.TryBuildMetadataFromPath(dongleB, null, out second),
+            "The second Ultimate 2 dongle wrapper must parse.");
+        Equal(true, HidDiagnosticsService.TryBuildMetadataFromPath(dongleAGeneric, null, out samePad),
+            "A non-IG collection of the same dongle must parse.");
+        Equal(false, string.Equals(
+            HidDiagnosticsService.GetEnumerationIdentityKey(first),
+            HidDiagnosticsService.GetEnumerationIdentityKey(second),
+            StringComparison.OrdinalIgnoreCase),
+            "Two dongles with the same VID/PID must keep distinct HID identities.");
+        Equal(true, string.Equals(
+            HidDiagnosticsService.GetEnumerationIdentityKey(first),
+            HidDiagnosticsService.GetEnumerationIdentityKey(samePad),
+            StringComparison.OrdinalIgnoreCase),
+            "IG_ and a sibling collection of the same instance must still group as one pad.");
+        Equal(false, string.Equals(
+            ControllerBridgeIdentity.GetPhysicalInstanceKey(dongleA),
+            ControllerBridgeIdentity.GetPhysicalInstanceKey(dongleB),
+            StringComparison.OrdinalIgnoreCase),
+            "Physical instance keys must follow the Windows instance suffix, not VID/PID alone.");
+        Equal(true, ControllerBridgeIdentity.AreDistinctDeviceInstances(dongleA,
+            @"\\?\hid#vid_2dc8&pid_310a&ig_00#3&ccccccc&0&0000"),
+            "Nearby 8BitDo product IDs must not collapse just because one PID string prefixes the other.");
+        Equal(false, ControllerBridgeIdentity.AreDistinctDeviceInstances(dongleA, dongleAGeneric),
+            "A shorter HID path of the same instance is still the same physical pad.");
+    }
+
+    private static void DisplayHoldKeepsTwoSameModelDongles()
+    {
+        var hold = new ControllerDisplayHold();
+        var start = new DateTime(2026, 9, 18, 0, 0, 0, DateTimeKind.Utc);
+        var first = Snapshot("hardware:2DC8:310B:1", "XInput", 0, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#vid_2dc8&pid_310b&ig_00#3&aaaaaaa&0&0000", true);
+        first.VendorId = 0x2DC8;
+        first.ProductId = 0x310B;
+        first.ConnectionType = "Wireless";
+        var second = Snapshot("hardware:2DC8:310B:2", "XInput", 1, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#vid_2dc8&pid_310b&ig_00#3&bbbbbbb&0&0000", true);
+        second.VendorId = 0x2DC8;
+        second.ProductId = 0x310B;
+        second.ConnectionType = "Wireless";
+        var both = hold.Apply(new[] { first, second }, start);
+        Equal(2, both.Count,
+            "Mandos must show two Ultimate 2 dongles as two cards, not one transport alias.");
+    }
+
+    private static void SecondBluetoothPadSurvivesDonglePromotion()
+    {
+        var first = Snapshot("playnite:path:BTH-A", "Playnite", 2, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#{00001812-0000-1000-8000-00805f9b34fb}_dev_vid&122dc8_pid&6012#8&aaaa&0&0000",
+            true);
+        first.VendorId = 0x2DC8;
+        first.ProductId = 0x6012;
+        first.ConnectionType = "Bluetooth";
+        var second = Snapshot("playnite:path:BTH-B", "Playnite", 3, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#{00001812-0000-1000-8000-00805f9b34fb}_dev_vid&122dc8_pid&6012#8&bbbb&0&0000",
+            true);
+        second.VendorId = 0x2DC8;
+        second.ProductId = 0x6012;
+        second.ConnectionType = "Bluetooth";
+        var xinput = Snapshot("xinput:slot:0", "XInput", 0, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#vid_2dc8&pid_310b&ig_00#3&aaaaaaa&0&0000", true);
+        xinput.VendorId = 0x2DC8;
+        xinput.ProductId = 0x310B;
+        xinput.ConnectionType = "Wireless";
+        var connected = ControllerSnapshotMerger.Merge(new[] { first, second, xinput }, true)
+            .Where(a => a.IsConnected).ToList();
+        Equal(2, connected.Count,
+            "A live dongle may replace one leftover Bluetooth row, not a second physical Ultimate 2.");
+        Equal(true, connected.Any(a => string.Equals(a.ConnectionType, "Bluetooth",
+            StringComparison.OrdinalIgnoreCase)),
+            "The independent Bluetooth pad must stay connected beside the dongle.");
+        Equal(true, connected.Any(a => string.Equals(a.ConnectionType, "Wireless",
+            StringComparison.OrdinalIgnoreCase)),
+            "The dongle XInput slot must remain the live gameplay path for that pad.");
+    }
+
+    private static void DisplayHoldKeepsSecondBluetoothWhenDongleClaimsOneLeftover()
+    {
+        var hold = new ControllerDisplayHold();
+        var start = new DateTime(2026, 9, 18, 0, 20, 0, DateTimeKind.Utc);
+        var dongle = Snapshot("hardware:2DC8:310B:1", "XInput", 0, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#vid_2dc8&pid_310b&ig_00#3&aaaaaaa&0&0000", true);
+        dongle.VendorId = 0x2DC8;
+        dongle.ProductId = 0x310B;
+        dongle.ConnectionType = "Wireless";
+        var leftover = Snapshot("hardware:2DC8:6012:1", "HID", 0, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#{00001812-0000-1000-8000-00805f9b34fb}_dev_vid&122dc8_pid&6012#8&aaaa&0&0000",
+            true);
+        leftover.VendorId = 0x2DC8;
+        leftover.ProductId = 0x6012;
+        leftover.ConnectionType = "Bluetooth";
+        var second = Snapshot("hardware:2DC8:6012:2", "HID", 0, "8BitDo Ultimate 2 Wireless",
+            @"\\?\hid#{00001812-0000-1000-8000-00805f9b34fb}_dev_vid&122dc8_pid&6012#8&bbbb&0&0000",
+            true);
+        second.VendorId = 0x2DC8;
+        second.ProductId = 0x6012;
+        second.ConnectionType = "Bluetooth";
+        var overlap = hold.Apply(new[] { dongle, leftover, second }, start);
+        Equal(2, overlap.Count,
+            "A dongle may collapse its own Bluetooth leftover without hiding a second Ultimate 2.");
     }
 
     private static void BluetoothPlayniteDoesNotBindDongleXInput()

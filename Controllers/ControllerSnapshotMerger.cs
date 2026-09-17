@@ -69,14 +69,18 @@ namespace ControllerSessionManager.Controllers
         {
             var xinput = (supplemental ?? new ControllerDeviceSnapshot[0])
                 .Where(ControllerTransportPolicy.IsXInputObservation).ToList();
+            var claimed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (var row in result.ToList())
             {
                 var live = xinput.FirstOrDefault(a =>
+                    !claimed.Contains(a.ControllerId ?? string.Empty) &&
                     ControllerTransportPolicy.BluetoothIsSupersededByXInput(row, a));
                 if (live == null)
                 {
                     continue;
                 }
+
+                claimed.Add(live.ControllerId ?? string.Empty);
 
                 row.IsConnected = false;
                 if (used.Contains(live.ControllerId ?? string.Empty) ||
@@ -103,7 +107,8 @@ namespace ControllerSessionManager.Controllers
             }
 
             var candidates = (supplemental ?? Enumerable.Empty<ControllerDeviceSnapshot>())
-                .Where(a => ControllerTransportPolicy.CanShareCapability(authoritative, a))
+                .Where(a => ControllerTransportPolicy.CanShareCapability(authoritative, a) &&
+                    !ControllerTransportPolicy.HaveDistinctPhysicalIdentities(authoritative, a))
                 .ToList();
             var slot = ControllerBridgeIdentity.GetXInputSlot(authoritative.Path);
             if (slot.HasValue)

@@ -1,5 +1,14 @@
 AddonId: ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc
 Packages:
+  - Version: 1.0.37
+    RequiredApiVersion: 6.16.0
+    ReleaseDate: 2026-09-18
+    PackageUrl: https://github.com/Naerian/playnite-nx-session-controller-manager/releases/download/v1.0.37/ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc_1_0_37.pext
+    Changelog:
+      - 'Fixed Mandos showing only one card when two identical controllers were connected, including a pair of 8BitDo Ultimate 2 pads.'
+      - 'Distinct HID instances of the same VID/PID now stay independent, so any two pads of the same model are listed separately.'
+      - 'A 2.4 GHz dongle no longer hides a second physical pad of the same model when claiming a leftover Bluetooth node.'
+      - 'The Tester dropdown and device header now use the custom name assigned in Mandos.'
   - Version: 1.0.36
     RequiredApiVersion: 6.16.0
     ReleaseDate: 2026-09-17

@@ -41,6 +41,12 @@ namespace ControllerSessionManager.Tester.Services
         public static extern int SDL_JoystickGetDeviceInstanceID(int joystickIndex);
 
         [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_JoystickGetDevicePlayerIndex(int joystickIndex);
+
+        [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr SDL_JoystickPathForIndex(int joystickIndex);
+
+        [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr SDL_GameControllerOpen(int joystickIndex);
 
         [DllImport("SDL2.dll", CallingConvention = CallingConvention.Cdecl)]

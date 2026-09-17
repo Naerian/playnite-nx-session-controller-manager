@@ -345,6 +345,29 @@ namespace ControllerSessionManager.Controllers
             }
         }
 
+        internal static string GetEnumerationIdentityKey(ControllerMetadata metadata)
+        {
+            if (metadata == null)
+            {
+                return string.Empty;
+            }
+
+            if (!string.IsNullOrWhiteSpace(metadata.HardwareId) &&
+                metadata.HardwareId.IndexOf(":id-", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return metadata.HardwareId;
+            }
+
+            var instance = ControllerBridgeIdentity.GetPhysicalInstanceKey(metadata.DevicePath);
+            if (!string.IsNullOrWhiteSpace(instance))
+            {
+                return string.Format("{0:X4}:{1:X4}:{2}", metadata.VendorId, metadata.ProductId,
+                    instance);
+            }
+
+            return string.Format("{0:X4}:{1:X4}", metadata.VendorId, metadata.ProductId);
+        }
+
         internal static bool TryBuildMetadataFromPath(string path, IDictionary<string, int> duplicateCounts,
             out ControllerMetadata metadata)
         {
@@ -522,10 +545,7 @@ namespace ControllerSessionManager.Controllers
                             }
                         }
 
-                        var key = metadata.HardwareId != null &&
-                            metadata.HardwareId.IndexOf(":id-", StringComparison.OrdinalIgnoreCase) >= 0
-                            ? metadata.HardwareId
-                            : string.Format("{0:X4}:{1:X4}", metadata.VendorId, metadata.ProductId);
+                        var key = GetEnumerationIdentityKey(metadata);
                         var score = ScoreHidPath(path);
                         int previousScore;
                         if (!bestByHardware.ContainsKey(key) ||

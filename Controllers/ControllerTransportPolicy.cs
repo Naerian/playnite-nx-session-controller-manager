@@ -8,7 +8,7 @@ namespace ControllerSessionManager.Controllers
     /// Chooses the live Windows transport. XInput (`HID...&IG_` / XUSB) is the Xbox-mode
     /// gameplay path for dongle and cable. Bluetooth HID/DInput nodes often stay enumerated
     /// after an 8BitDo 2.4 GHz switch; they are leftovers unless that row has newer input
-    /// than the XInput slot (a second physical pad).
+    /// than the XInput slot, or Windows already identified a second physical pad.
     /// </summary>
     public static class ControllerTransportPolicy
     {
@@ -134,6 +134,11 @@ namespace ControllerSessionManager.Controllers
                 return false;
             }
 
+            if (HaveDistinctPhysicalIdentities(left, right))
+            {
+                return false;
+            }
+
             if (IsHidLeftover(left) || IsHidLeftover(right))
             {
                 return left.VendorId != 0 && left.VendorId == right.VendorId &&
@@ -143,6 +148,108 @@ namespace ControllerSessionManager.Controllers
 
             return BluetoothIsSupersededByXInput(left, right) ||
                 BluetoothIsSupersededByXInput(right, left);
+        }
+
+        /// <summary>
+        /// Two pads of the same model stay independent when they share a transport and
+        /// Windows already gave them distinct instance, serial or XInput-slot identities.
+        /// Mixed 2.4 GHz / Bluetooth nodes of one 8BitDo still look different on paper,
+        /// so that leftover case is not decided here.
+        /// </summary>
+        internal static bool HaveDistinctPhysicalIdentities(ControllerDeviceSnapshot left,
+            ControllerDeviceSnapshot right)
+        {
+            if (left == null || right == null || !ShareTransportFamily(left, right))
+            {
+                return false;
+            }
+
+            if (string.Equals(left.ProviderId, "XInput", StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(right.ProviderId, "XInput", StringComparison.OrdinalIgnoreCase) &&
+                left.ProviderInstanceId >= 0 && right.ProviderInstanceId >= 0 &&
+                left.ProviderInstanceId != right.ProviderInstanceId)
+            {
+                return true;
+            }
+
+            if (ControllerBridgeIdentity.AreDistinctDeviceInstances(left.Path, right.Path))
+            {
+                return true;
+            }
+
+            return HasDistinctStableHardwareId(left.HardwareId, right.HardwareId);
+        }
+
+        private static bool ShareTransportFamily(ControllerDeviceSnapshot left,
+            ControllerDeviceSnapshot right)
+        {
+            var leftBluetooth = IsBluetoothObservation(left);
+            var rightBluetooth = IsBluetoothObservation(right);
+            if (leftBluetooth && rightBluetooth)
+            {
+                return true;
+            }
+
+            var leftDongleOrCable = IsNonBluetoothXInput(left) || IsXInputObservation(left);
+            var rightDongleOrCable = IsNonBluetoothXInput(right) || IsXInputObservation(right);
+            return leftDongleOrCable && rightDongleOrCable && !leftBluetooth && !rightBluetooth;
+        }
+
+        private static bool HasDistinctStableHardwareId(string left, string right)
+        {
+            if (string.IsNullOrWhiteSpace(left) || string.IsNullOrWhiteSpace(right) ||
+                string.Equals(left, right, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            var leftSerial = left.IndexOf(":id-", StringComparison.OrdinalIgnoreCase) >= 0;
+            var rightSerial = right.IndexOf(":id-", StringComparison.OrdinalIgnoreCase) >= 0;
+            if (leftSerial && rightSerial)
+            {
+                return true;
+            }
+
+            ushort leftVendor;
+            ushort leftProduct;
+            ushort rightVendor;
+            ushort rightProduct;
+            int leftOrdinal;
+            int rightOrdinal;
+            return TryReadHardwareOrdinal(left, out leftVendor, out leftProduct, out leftOrdinal) &&
+                TryReadHardwareOrdinal(right, out rightVendor, out rightProduct, out rightOrdinal) &&
+                leftVendor == rightVendor && leftProduct == rightProduct &&
+                leftOrdinal > 0 && rightOrdinal > 0 && leftOrdinal != rightOrdinal;
+        }
+
+        private static bool TryReadHardwareOrdinal(string hardwareId, out ushort vendorId,
+            out ushort productId, out int ordinal)
+        {
+            vendorId = 0;
+            productId = 0;
+            ordinal = 0;
+            if (string.IsNullOrWhiteSpace(hardwareId))
+            {
+                return false;
+            }
+
+            var parts = hardwareId.Split(':');
+            int value;
+            if (parts.Length < 4 ||
+                !string.Equals(parts[0], "hardware", StringComparison.OrdinalIgnoreCase) ||
+                !ushort.TryParse(parts[1], System.Globalization.NumberStyles.HexNumber,
+                    System.Globalization.CultureInfo.InvariantCulture, out vendorId) ||
+                !ushort.TryParse(parts[2], System.Globalization.NumberStyles.HexNumber,
+                    System.Globalization.CultureInfo.InvariantCulture, out productId) ||
+                !int.TryParse(parts[3], System.Globalization.NumberStyles.Integer,
+                    System.Globalization.CultureInfo.InvariantCulture, out value) ||
+                vendorId == 0 || productId == 0 || value <= 0)
+            {
+                return false;
+            }
+
+            ordinal = value;
+            return true;
         }
 
         public static ControllerDeviceSnapshot SelectCanonical(

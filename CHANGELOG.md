@@ -12,6 +12,13 @@
 
 
 
+
+## 1.0.37 — 2026-09-18
+- Fixed Mandos showing only one card when two identical controllers were connected, including a pair of 8BitDo Ultimate 2 pads.
+- Distinct HID instances of the same VID/PID now stay independent, so any two pads of the same model are listed separately.
+- A 2.4 GHz dongle no longer hides a second physical pad of the same model when claiming a leftover Bluetooth node.
+- The Tester dropdown and device header now use the custom name assigned in Mandos.
+
 ## 1.0.36 — 2026-09-17
 - When Playnite theme overlay styling is enabled, the live overlay preview shows the active Fullscreen theme pack and a clear theme-design callout.
 - Improved overlay preview parity with the real overlay (shadow, independent borders, layout spacing, scale and sample text).

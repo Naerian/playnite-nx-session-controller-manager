@@ -10,7 +10,8 @@ namespace ControllerSessionManager.Controllers
     /// connection type updates in place, like Windows.
     /// Overlay and session tracking still use the live snapshot.
     /// Mandos shows every distinct connected pad (1..N); transport aliases of the same
-    /// physical controller stay collapsed to one card.
+    /// physical controller stay collapsed to one card. Two pads of the same model keep
+    /// separate cards.
     /// </summary>
     public sealed class ControllerDisplayHold
     {
@@ -118,16 +119,29 @@ namespace ControllerSessionManager.Controllers
                 return result;
             }
 
-            var remaining = settled.Where(a => a != null).ToList();
+            var remaining = settled.Where(a => a != null)
+                .OrderByDescending(ControllerTransportPolicy.IsXInputObservation)
+                .ToList();
             while (remaining.Count > 0)
             {
                 var current = remaining[0];
                 remaining.RemoveAt(0);
-                var aliases = remaining.Where(a =>
-                    ControllerTransportPolicy.ShouldCollapse(current, a)).ToList();
-                foreach (var alias in aliases)
+                var aliases = new List<ControllerDeviceSnapshot>();
+                foreach (var candidate in remaining.ToList())
                 {
-                    remaining.Remove(alias);
+                    if (!ControllerTransportPolicy.ShouldCollapse(current, candidate))
+                    {
+                        continue;
+                    }
+
+                    if (aliases.Any(a =>
+                        ControllerTransportPolicy.HaveDistinctPhysicalIdentities(a, candidate)))
+                    {
+                        continue;
+                    }
+
+                    aliases.Add(candidate);
+                    remaining.Remove(candidate);
                 }
 
                 if (aliases.Count == 0)

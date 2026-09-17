@@ -25,6 +25,7 @@ namespace ControllerSessionManager.Tester.ViewModels
         private readonly GamepadTesterSettings settings;
         private readonly Func<string, string> localizer;
         private readonly Action<GamepadTesterViewModel> openGuidedTest;
+        private readonly Func<IReadOnlyList<GamepadControllerInfo>, IReadOnlyList<GamepadControllerInfo>> decorateControllers;
         private readonly RelayCommand rumbleCommand;
         private readonly RelayCommand lightRumbleCommand;
         private readonly RelayCommand mediumRumbleCommand;
@@ -151,12 +152,13 @@ namespace ControllerSessionManager.Tester.ViewModels
         private bool isOptionsTabVisible = true;
         private readonly bool sidebarItemAtOpen;
 
-        public GamepadTesterViewModel(GamepadPollingService pollingService, GamepadTesterSettings settings = null, Func<string, string> localizer = null, Action<GamepadTesterViewModel> openGuidedTest = null)
+        public GamepadTesterViewModel(GamepadPollingService pollingService, GamepadTesterSettings settings = null, Func<string, string> localizer = null, Action<GamepadTesterViewModel> openGuidedTest = null, Func<IReadOnlyList<GamepadControllerInfo>, IReadOnlyList<GamepadControllerInfo>> decorateControllers = null)
         {
             this.pollingService = pollingService;
             this.settings = settings ?? new GamepadTesterSettings();
             this.localizer = localizer;
             this.openGuidedTest = openGuidedTest;
+            this.decorateControllers = decorateControllers;
             sidebarItemAtOpen = this.settings.ShowSidebarItem;
             state = new GamepadState();
             latestInputState = state;
@@ -2707,6 +2709,11 @@ namespace ControllerSessionManager.Tester.ViewModels
                 controllers = new GamepadControllerInfo[0];
             }
 
+            if (decorateControllers != null)
+            {
+                controllers = decorateControllers(controllers) ?? controllers;
+            }
+
             if (ControllerListUnchanged(controllers))
             {
                 TryApplyPendingControllerSelection();
@@ -2794,6 +2801,19 @@ namespace ControllerSessionManager.Tester.ViewModels
                 return null;
             }
 
+            if (!string.IsNullOrWhiteSpace(pendingSelectName))
+            {
+                foreach (var controller in Controllers)
+                {
+                    if (string.Equals(controller.CustomName, pendingSelectName, StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(controller.DisplayName, pendingSelectName, StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(controller.Name, pendingSelectName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return controller;
+                    }
+                }
+            }
+
             if (pendingSelectVendorId != 0 || pendingSelectProductId != 0)
             {
                 foreach (var controller in Controllers)
@@ -2817,18 +2837,6 @@ namespace ControllerSessionManager.Tester.ViewModels
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(pendingSelectName))
-            {
-                foreach (var controller in Controllers)
-                {
-                    if (string.Equals(controller.Name, pendingSelectName, StringComparison.OrdinalIgnoreCase) ||
-                        string.Equals(controller.DisplayName, pendingSelectName, StringComparison.OrdinalIgnoreCase))
-                    {
-                        return controller;
-                    }
-                }
-            }
-
             return null;
         }
 
@@ -2846,6 +2854,14 @@ namespace ControllerSessionManager.Tester.ViewModels
                 {
                     if (Controllers[j].InstanceId == incoming[i].InstanceId)
                     {
+                        if (!string.Equals(Controllers[j].CustomName, incoming[i].CustomName,
+                                StringComparison.Ordinal) ||
+                            !string.Equals(Controllers[j].Name, incoming[i].Name,
+                                StringComparison.Ordinal))
+                        {
+                            return false;
+                        }
+
                         found = true;
                         break;
                     }

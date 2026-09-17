@@ -81,6 +81,92 @@ namespace ControllerSessionManager.Controllers
             return string.Equals(first, second, StringComparison.OrdinalIgnoreCase);
         }
 
+        /// <summary>
+        /// Groups HID collections of one physical device (IG_/MI_/COL of the same instance)
+        /// without collapsing a second pad that shares VID/PID.
+        /// </summary>
+        public static string GetPhysicalInstanceKey(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return string.Empty;
+            }
+
+            var normalized = TrimPathCollectionSuffix(Normalize(path));
+            var parts = normalized.Split(new[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
+            string hardware = null;
+            string instance = null;
+            for (var index = 0; index < parts.Length; index++)
+            {
+                var part = parts[index];
+                if (part.IndexOf("VID_", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    part.IndexOf("VID&", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    part.IndexOf("PID_", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    part.IndexOf("PID&", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    hardware = StripInterfaceQualifiers(part);
+                    continue;
+                }
+
+                if (index == parts.Length - 1 && part.IndexOf('&') >= 0 &&
+                    !string.Equals(part, hardware, StringComparison.OrdinalIgnoreCase))
+                {
+                    instance = part;
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(instance))
+            {
+                return hardware ?? string.Empty;
+            }
+
+            return string.IsNullOrWhiteSpace(hardware) ? instance : hardware + "\\" + instance;
+        }
+
+        public static bool AreDistinctDeviceInstances(string leftPath, string rightPath)
+        {
+            var left = GetPhysicalInstanceKey(leftPath);
+            var right = GetPhysicalInstanceKey(rightPath);
+            if (string.IsNullOrWhiteSpace(left) || string.IsNullOrWhiteSpace(right) ||
+                string.Equals(left, right, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            return !IsMoreSpecificInstance(left, right) && !IsMoreSpecificInstance(right, left);
+        }
+
+        private static bool IsMoreSpecificInstance(string candidate, string prefix)
+        {
+            return candidate.StartsWith(prefix + "\\", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static string StripInterfaceQualifiers(string hardware)
+        {
+            var result = hardware ?? string.Empty;
+            result = StripQualifier(result, "&IG_");
+            result = StripQualifier(result, "&MI_");
+            result = StripQualifier(result, "&COL");
+            return result;
+        }
+
+        private static string StripQualifier(string value, string marker)
+        {
+            var index = value.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
+            if (index < 0)
+            {
+                return value;
+            }
+
+            var end = index + marker.Length;
+            while (end < value.Length && IsHexDigit(value[end]))
+            {
+                end++;
+            }
+
+            return value.Remove(index, end - index);
+        }
+
         public static bool TryGetVidPid(string path, out ushort vendorId, out ushort productId)
         {
             vendorId = 0;

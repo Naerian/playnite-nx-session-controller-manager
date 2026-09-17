@@ -118,6 +118,8 @@ namespace ControllerSessionManager.Tester.Services
                 fields.Add(controller.ProductId.ToString(CultureInfo.InvariantCulture));
                 fields.Add(((int)controller.Layout).ToString(CultureInfo.InvariantCulture));
                 fields.Add(((int)controller.EightBitDoModel).ToString(CultureInfo.InvariantCulture));
+                fields.Add(controller.Path);
+                fields.Add(controller.PlayerIndex.ToString(CultureInfo.InvariantCulture));
             }
 
             return EncodeCommand(token, SnapshotCommand, fields.ToArray());
@@ -192,7 +194,7 @@ namespace ControllerSessionManager.Tester.Services
             var controllerCount = ParseInt(fields[index++]);
             for (var i = 0; i < controllerCount; i++)
             {
-                if (index + 6 >= fields.Length)
+                if (index + 8 >= fields.Length)
                 {
                     return false;
                 }
@@ -205,7 +207,9 @@ namespace ControllerSessionManager.Tester.Services
                     VendorId = ParseUShort(fields[index++]),
                     ProductId = ParseUShort(fields[index++]),
                     Layout = (GamepadLayout)ParseInt(fields[index++]),
-                    EightBitDoModel = (EightBitDoModel)ParseInt(fields[index++])
+                    EightBitDoModel = (EightBitDoModel)ParseInt(fields[index++]),
+                    Path = fields[index++],
+                    PlayerIndex = ParseInt(fields[index++])
                 });
             }
 

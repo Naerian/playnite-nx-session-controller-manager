@@ -4,7 +4,10 @@ namespace ControllerSessionManager.Tester.Models
     {
         public int JoystickIndex { get; set; }
         public int InstanceId { get; set; }
+        public int PlayerIndex { get; set; } = -1;
         public string Name { get; set; }
+        public string CustomName { get; set; }
+        public string Path { get; set; }
         public ushort VendorId { get; set; }
         public ushort ProductId { get; set; }
         public GamepadLayout Layout { get; set; }
@@ -14,6 +17,11 @@ namespace ControllerSessionManager.Tester.Models
         {
             get
             {
+                if (!string.IsNullOrWhiteSpace(CustomName))
+                {
+                    return CustomName.Trim();
+                }
+
                 return GamepadDeviceNames.GetDisplayName(Name, VendorId, ProductId, Layout, EightBitDoModel);
             }
         }

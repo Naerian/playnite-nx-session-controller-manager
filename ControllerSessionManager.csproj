@@ -205,6 +205,9 @@
     <Compile Include="Tester\Services\GamepadCompatibilityService.cs">
       <Link>T\GamepadCompatibilityService.cs</Link>
     </Compile>
+    <Compile Include="Tester\Services\TesterControllerAliases.cs">
+      <Link>T\TesterControllerAliases.cs</Link>
+    </Compile>
     <Compile Include="Tester\Services\GamepadPollingService.cs">
       <Link>T\GamepadPollingService.cs</Link>
     </Compile>

@@ -30,6 +30,7 @@ namespace ControllerSessionManager.Tester.Tests
                 GamepadTesterThemeRuntime.SetInputProviderFactoryForTests(
                     () => new SimulatedGamepadInputProvider());
                 TestProtocolRoundtrip();
+                TestControllerAliases();
                 TestControllerIdentification();
                 TestDiagnosticConfidence();
                 TestRestDriftTracking();
@@ -90,7 +91,9 @@ namespace ControllerSessionManager.Tester.Tests
                     Name = "Pad|One",
                     VendorId = 0x045E,
                     ProductId = 0x0B13,
-                    Layout = GamepadLayout.Xbox
+                    Layout = GamepadLayout.Xbox,
+                    Path = @"\\?\hid#vid_045e&pid_0b13",
+                    PlayerIndex = 2
                 }
             };
 
@@ -103,6 +106,74 @@ namespace ControllerSessionManager.Tester.Tests
             Equal(true, decoded.State.Buttons.South, "Face button bits are preserved");
             Equal(1, decoded.State.ExtraButtons.Count, "Extra buttons are preserved");
             Equal(7, decoded.Controllers[0].InstanceId, "Controller list is preserved");
+            Equal(@"\\?\hid#vid_045e&pid_0b13", decoded.Controllers[0].Path, "Device path is preserved");
+            Equal(2, decoded.Controllers[0].PlayerIndex, "XInput player index is preserved");
+        }
+
+        private static void TestControllerAliases()
+        {
+            var first = new GamepadControllerInfo
+            {
+                InstanceId = 1,
+                JoystickIndex = 0,
+                VendorId = 0x2DC8,
+                ProductId = 0x310B,
+                Path = @"\\?\hid#vid_2dc8&pid_310b&ig_00#3&aaaaaaa&0&0000",
+                Layout = GamepadLayout.EightBitDo,
+                EightBitDoModel = EightBitDoModel.Ultimate2Wireless,
+                Name = "8BitDo Ultimate 2 Wireless"
+            };
+            var second = new GamepadControllerInfo
+            {
+                InstanceId = 2,
+                JoystickIndex = 1,
+                VendorId = 0x2DC8,
+                ProductId = 0x310B,
+                Path = @"\\?\hid#vid_2dc8&pid_310b&ig_00#3&bbbbbbb&0&0000",
+                Layout = GamepadLayout.EightBitDo,
+                EightBitDoModel = EightBitDoModel.Ultimate2Wireless,
+                Name = "8BitDo Ultimate 2 Wireless"
+            };
+            var padA = new ControllerSessionManager.Controllers.ControllerDeviceSnapshot
+            {
+                Name = "Angel",
+                DetectedName = "8BitDo Ultimate 2 Wireless",
+                VendorId = 0x2DC8,
+                ProductId = 0x310B,
+                Path = first.Path,
+                IsConnected = true
+            };
+            var padB = new ControllerSessionManager.Controllers.ControllerDeviceSnapshot
+            {
+                Name = "Casa",
+                DetectedName = "8BitDo Ultimate 2 Wireless",
+                VendorId = 0x2DC8,
+                ProductId = 0x310B,
+                Path = second.Path,
+                IsConnected = true
+            };
+            var named = TesterControllerAliases.Apply(new[] { first, second }, new[] { padA, padB });
+            Equal("Angel", named[0].DisplayName, "The first Ultimate 2 keeps the Mandos alias in the Tester dropdown.");
+            Equal("Casa", named[1].DisplayName, "The second Ultimate 2 keeps a distinct Mandos alias.");
+
+            var dualsense = new GamepadControllerInfo
+            {
+                InstanceId = 4,
+                VendorId = 0x054C,
+                ProductId = 0x0CE6,
+                Layout = GamepadLayout.PlayStation,
+                Name = "Wireless Controller"
+            };
+            var pad = new ControllerSessionManager.Controllers.ControllerDeviceSnapshot
+            {
+                Name = "Sala",
+                DetectedName = "DualSense",
+                VendorId = 0x054C,
+                ProductId = 0x0CE6,
+                IsConnected = true
+            };
+            Equal("Sala", TesterControllerAliases.Apply(new[] { dualsense }, new[] { pad }).Single().DisplayName,
+                "A unique VID/PID pad still receives its Mandos alias without a HID path.");
         }
 
         private static void TestControllerIdentification()
