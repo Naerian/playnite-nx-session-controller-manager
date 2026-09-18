@@ -7,7 +7,7 @@ Packages:
     Changelog:
       - 'Clarified docs: automatic pause is process suspend (None / OfflineOnly / Always), not a pause key.'
       - 'Removed unused Advanced Design shells and the dead SendInput pause path.'
-      - 'Grouped Desktop, Fullscreen and notification Sounds under Appearance â†’ On-screen notification with top tabs.'
+      - 'Grouped Desktop, Fullscreen and notification Sounds under Appearance -> On-screen notification with top tabs.'
       - 'When a Playnite theme pack is available for a surface, enabling its theme-styling toggle locks the Looks dropdown on that theme name.'
   - Version: 1.0.38
     RequiredApiVersion: 6.16.0
