@@ -1,10 +1,10 @@
 # Changelog
 
-## Unreleased
+
+## 1.0.39 — 2026-09-18
 - Clarified docs: automatic pause is process suspend (None / OfflineOnly / Always), not a pause key.
-- Removed unused Advanced Design shells and dead SendInput pause path from GamePauseService.
-- Appearance Looks: clearer help text for how Looks relate to destination tabs.
-- Grouped Desktop, Fullscreen and notification Sounds under Appearance → On-screen notification.
+- Removed unused Advanced Design shells and the dead SendInput pause path.
+- Grouped Desktop, Fullscreen and notification Sounds under Appearance â†’ On-screen notification with top tabs.
 - When a Playnite theme pack is available for a surface, enabling its theme-styling toggle locks the Looks dropdown on that theme name.
 
 ## 1.0.38 — 2026-09-18
