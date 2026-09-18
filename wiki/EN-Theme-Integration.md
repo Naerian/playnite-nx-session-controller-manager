@@ -56,19 +56,20 @@ Common recipes:
 
 | Property | Purpose |
 |----------|---------|
-| `ThemeApiVersion` | Contract version (currently `1`) |
+| `ThemeApiVersion` | Contract version (currently `2`) |
 | `ConnectedCount`, `HasConnectedControllers` | Count / presence |
-| `PrimaryControllerName`, `StatusText`, `PrimaryControllerTooltip` | Text |
+| `PrimaryControllerName`, `StatusText`, `PrimaryControllerTooltip` | Text. With several pads connected, tooltip is `"{0} controllers connected"`. |
 | `PrimaryControllerIconGeometry` | Chosen profile silhouette for the primary pad |
-| `TopPanelIconGeometry` | Same logic as Desktop top panel (Default vs Primary) |
+| `TopPanelIconGeometry` | Desktop top panel icon. With **more than one** pad: always the generic pack icon. With one pad: Default vs Primary mode. |
 | `DefaultIconGeometry` | Fixed pack icon (e.g. tester) |
 | `PrimaryControllerBatteryLabel` | Localized label (`Low`, `Full`, …) |
 | `PrimaryControllerBatteryLevel` | Raw key: `Empty` / `Low` / `Medium` / `Full` |
 | `PrimaryControllerBatteryBrush` | Level color whenever battery is known |
-| `PrimaryControllerIconBrush` | Icon color **after** applying “color by battery”; may be `null`. Do not use `TargetNullValue={DynamicResource ...}` with `PluginSettings` (crashes the theme). For a setting-aware icon, use `ControllerIcon`. |
+| `PrimaryControllerIconColor` | Hex `#AARRGGBB` Mandos tint for the primary pad when set; otherwise empty |
+| `PrimaryControllerIconBrush` | Resolved icon color: **profile tint → battery (if enabled) → `null` (theme foreground)**. With several pads, Top Panel forces `null` (theme color). Do not use `TargetNullValue={DynamicResource ...}` with `PluginSettings` (crashes the theme). Prefer `ControllerIcon` / `TopPanelIcon`. |
 | `HasPrimaryControllerBattery` | Known battery level |
-| `UsePrimaryControllerBatteryColor` | Known battery **and** user enabled coloring |
-| `ColorIconByBattery` | Mirror of the settings checkbox |
+| `UsePrimaryControllerBatteryColor` | True when `PrimaryControllerIconBrush` is forced (profile or battery) |
+| `ColorIconByBattery` | True when icon/text color mode is **By battery level** |
 | `TopPanelControllerMode` | `Hidden` / `Default` / `Primary` |
 | `IsTopPanelButtonVisible` | Desktop top-panel button is visible |
 
@@ -104,8 +105,8 @@ One `x:Name` per element per view (WPF names must be unique). Size with `Width`/
 | `ControllerStatus` | Compact status text |
 | `ControllerCount` | Connected count |
 | `PrimaryController` | Primary name |
-| `ControllerIcon` | Profile icon; color follows battery setting / placeholder `Foreground` |
-| `TopPanelIcon` | Same as Desktop top panel |
+| `ControllerIcon` | Profile icon; color follows Mandos tint → battery setting → placeholder `Foreground` |
+| `TopPanelIcon` | Same as Desktop top panel (generic + theme color when several pads) |
 | `ControllerBatteryText` | Level label (collapsed without battery); battery color |
 | `ControllerBatteryDot` | Level-colored dot (collapsed without battery) |
 | `TesterLauncher`, `TesterStatusBadge`, … | Tester blocks |

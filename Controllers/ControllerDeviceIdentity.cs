@@ -127,12 +127,20 @@ namespace ControllerSessionManager.Controllers
                 rawName = "Unknown controller";
             }
 
+            var mapped = GetDisplayName(rawName, vendorId, productId);
+            // Known VID/PID mappings win over Playnite/SDL spelling variants of the same model
+            // ("8BitDo Ultimate 2" vs "8BitDo Ultimate 2 Wireless").
+            if (vendorId != 0 && productId != 0 && !IsGenericDisplayName(mapped) &&
+                !string.Equals(mapped, rawName, StringComparison.OrdinalIgnoreCase))
+            {
+                return mapped;
+            }
+
             if (!IsGenericDisplayName(rawName))
             {
                 return rawName;
             }
 
-            var mapped = GetDisplayName(rawName, vendorId, productId);
             return IsGenericDisplayName(mapped) ? rawName : mapped;
         }
 

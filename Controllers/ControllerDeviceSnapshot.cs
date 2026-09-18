@@ -24,6 +24,8 @@ namespace ControllerSessionManager.Controllers
 
         public string IconId { get; set; }
 
+        public string IconColor { get; set; }
+
         public string Path { get; set; }
 
         public bool IsConnected { get; set; }

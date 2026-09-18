@@ -6,6 +6,7 @@
     <sys:String x:Key="LOCCSM_ReconciliationInterval">??????(?)</sys:String>
     <sys:String x:Key="LOCCSM_ValidationInterval">?????2~60???????????</sys:String>
     <sys:String x:Key="LOCCSM_ConnectedControllers">???????????</sys:String>
+    <sys:String x:Key="LOCCSM_ControllersConnectedCount">{0} 台のコントローラーが接続中</sys:String>
     <sys:String x:Key="LOCCSM_Refresh">??</sys:String>
     <sys:String x:Key="LOCCSM_NoControllers">?????????????????</sys:String>
     <sys:String x:Key="LOCCSM_NoInputYet">??????????????</sys:String>
@@ -102,6 +103,9 @@
     <sys:String x:Key="LOCCSM_CustomName">?????</sys:String>
     <sys:String x:Key="LOCCSM_CustomNameHelp">Playnite????????????????????????????????</sys:String>
     <sys:String x:Key="LOCCSM_Icon">????</sys:String>
+    <sys:String x:Key="LOCCSM_IconColor">色</sys:String>
+    <sys:String x:Key="LOCCSM_IconColorHelp">このコントローラーのシルエットに適用する任意の色です。空のままにすると、外観の既定値が使われます。</sys:String>
+    <sys:String x:Key="LOCCSM_ResetIconColor">既定を使用</sys:String>
     <sys:String x:Key="LOCCSM_IconGeneric">??</sys:String>
     <sys:String x:Key="LOCCSM_NoIcon">??</sys:String>
     <sys:String x:Key="LOCCSM_ValueUnavailable">????</sys:String>
@@ -252,6 +256,11 @@
     <sys:String x:Key="LOCCSM_OverlayAllowTakeover">???????????????????????????????????????</sys:String>
     <sys:String x:Key="LOCCSM_OverlayAllowTakeoverOrKeyboardMouse">Reconnect it, use another controller, or press a key / click to continue with keyboard and mouse.</sys:String>
     <sys:String x:Key="LOCCSM_ColorTopPanelByBattery">????????????????????????</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelIconColorMode">アイコン / テキストの色</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelIconColorModeDefault">既定</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelIconColorModeBattery">バッテリー残量に応じて</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelIconColorModeController">コントローラーの色</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelIconColorModeMultiHelp">複数のコントローラーが接続されている場合、トップパネルは既定の色で汎用アイコンを表示します。</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicySessionSection">???????</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseSection">??????</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseUseGlobal">??????????????</sys:String>
@@ -705,6 +714,12 @@
     <sys:String x:Key="LOCCSM_AnimationScale">Scale</sys:String>
     <sys:String x:Key="LOCCSM_NotificationShowTitle">Show notification title</sys:String>
     <sys:String x:Key="LOCCSM_NotificationAccentMode">Semantic accent</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayControllerIconColor">コントローラーアイコンの色</sys:String>
+    <sys:String x:Key="LOCCSM_UseControllerIconColor">コントローラーアイコンの色でシルエットを着色</sys:String>
+    <sys:String x:Key="LOCCSM_UseControllerIconColorHelp">有効にすると、通知アイコンはイベントのアクセントではなく、コントローラーのアイコン色を使用します。</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerIconColorSection">コントローラーアイコンの色</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerIconModeDefault">既定</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerIconModeController">コントローラーの色</sys:String>
     <sys:String x:Key="LOCCSM_AccentModeIconAndBorder">Icon and border</sys:String>
     <sys:String x:Key="LOCCSM_AccentModeIconOnly">Icon only</sys:String>
     <sys:String x:Key="LOCCSM_AccentModeTintedBackground">Tinted background</sys:String>

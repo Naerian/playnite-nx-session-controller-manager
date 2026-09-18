@@ -6,6 +6,7 @@
     <sys:String x:Key="LOCCSM_ReconciliationInterval">Pr-fintervall f-r Verbindungen (Sekunden)</sys:String>
     <sys:String x:Key="LOCCSM_ValidationInterval">Das Pr-fintervall muss zwischen 2 und 60 Sekunden liegen.</sys:String>
     <sys:String x:Key="LOCCSM_ConnectedControllers">Verbundene Controller</sys:String>
+    <sys:String x:Key="LOCCSM_ControllersConnectedCount">{0} Controller verbunden</sys:String>
     <sys:String x:Key="LOCCSM_Refresh">Aktualisieren</sys:String>
     <sys:String x:Key="LOCCSM_NoControllers">Kein Controller verbunden</sys:String>
     <sys:String x:Key="LOCCSM_NoInputYet">Noch keine Eingabe erkannt</sys:String>
@@ -102,6 +103,9 @@
     <sys:String x:Key="LOCCSM_CustomName">Benutzerdefinierter Name</sys:String>
     <sys:String x:Key="LOCCSM_CustomNameHelp">Wird in Playnite, Benachrichtigungen und der Controller-Liste f-r dieses Pad angezeigt.</sys:String>
     <sys:String x:Key="LOCCSM_Icon">Symbol</sys:String>
+    <sys:String x:Key="LOCCSM_IconColor">Farbe</sys:String>
+    <sys:String x:Key="LOCCSM_IconColorHelp">Optionale Einfärbung für diese Controller-Silhouette. Leer lassen, um die Vorgaben des Erscheinungsbilds zu übernehmen.</sys:String>
+    <sys:String x:Key="LOCCSM_ResetIconColor">Standard verwenden</sys:String>
     <sys:String x:Key="LOCCSM_IconGeneric">Generisch</sys:String>
     <sys:String x:Key="LOCCSM_NoIcon">Keines</sys:String>
     <sys:String x:Key="LOCCSM_ValueUnavailable">Nicht verf-gbar</sys:String>
@@ -252,6 +256,11 @@
     <sys:String x:Key="LOCCSM_OverlayAllowTakeover">Verbinde ihn erneut oder dr-cke eine Taste bzw. bewege einen Stick an einem anderen Controller.</sys:String>
     <sys:String x:Key="LOCCSM_OverlayAllowTakeoverOrKeyboardMouse">Verbinde ihn erneut, nutze einen anderen Controller oder druecke eine Taste / klicke, um mit Tastatur und Maus weiterzuspielen.</sys:String>
     <sys:String x:Key="LOCCSM_ColorTopPanelByBattery">Symbol und Batterietext nach Batteriestand einf-rben</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelIconColorMode">Symbol- / Textfarbe</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelIconColorModeDefault">Standard</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelIconColorModeBattery">Nach Batteriestand</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelIconColorModeController">Controllerfarbe</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelIconColorModeMultiHelp">Bei mehreren verbundenen Controllern zeigt die Oberleiste das generische Symbol in der Standardfarbe.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicySessionSection">Schutz im Spiel</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseSection">Automatische Pause</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseUseGlobal">Globale Pauseneinstellungen verwenden</sys:String>
@@ -706,6 +715,12 @@
     <sys:String x:Key="LOCCSM_AnimationScale">Scale</sys:String>
     <sys:String x:Key="LOCCSM_NotificationShowTitle">Show notification title</sys:String>
     <sys:String x:Key="LOCCSM_NotificationAccentMode">Semantic accent</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayControllerIconColor">Controller-Symbolfarbe</sys:String>
+    <sys:String x:Key="LOCCSM_UseControllerIconColor">Silhouette mit Controller-Symbolfarbe einfärben</sys:String>
+    <sys:String x:Key="LOCCSM_UseControllerIconColorHelp">Wenn aktiviert, verwenden Benachrichtigungssymbole die Symbolfarbe des Controllers statt des Ereignisakzents.</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerIconColorSection">Controller-Symbolfarbe</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerIconModeDefault">Standard</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerIconModeController">Controller-Farbe</sys:String>
     <sys:String x:Key="LOCCSM_AccentModeIconAndBorder">Icon and border</sys:String>
     <sys:String x:Key="LOCCSM_AccentModeIconOnly">Icon only</sys:String>
     <sys:String x:Key="LOCCSM_AccentModeTintedBackground">Tinted background</sys:String>

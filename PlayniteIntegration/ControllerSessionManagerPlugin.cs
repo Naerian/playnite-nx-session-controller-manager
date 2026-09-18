@@ -238,6 +238,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 if (profile == null)
                 {
                     controller.IconId = ControllerIconCatalog.Suggest(controller);
+                    controller.IconColor = null;
                     continue;
                 }
 
@@ -248,6 +249,7 @@ namespace ControllerSessionManager.PlayniteIntegration
 
                 controller.IconId = ControllerIconCatalog.ResolveId(controller,
                     profile.IconId);
+                controller.IconColor = ControllerIconColor.Normalize(profile.IconColor);
             }
 
             return snapshot;
@@ -344,17 +346,27 @@ namespace ControllerSessionManager.PlayniteIntegration
                 var productId = current.ProductId;
                 var providerId = current.ProviderId;
                 var instanceId = current.ProviderInstanceId;
+                var path = current.Path;
+                var xInputSlot = string.Equals(providerId, XInputProvider.ProviderId,
+                    StringComparison.OrdinalIgnoreCase) && instanceId >= 0 && instanceId < 4
+                    ? instanceId
+                    : -1;
                 Task.Run(delegate
                 {
                     try
                     {
-                        if (testerIntegration != null && testerIntegration.TryStandardRumble(vendorId, productId))
+                        // Prefer the provider instance already bound to this Mandos card. TesterHost
+                        // VID/PID matching is ambiguous when two identical pads are connected.
+                        if (xInputProvider.TryVibrate(providerId, instanceId))
                         {
-                            xInputProvider.StopVibrate(providerId, instanceId);
                             return;
                         }
 
-                        xInputProvider.TryVibrate(providerId, instanceId);
+                        if (testerIntegration != null &&
+                            testerIntegration.TryStandardRumble(vendorId, productId, path, xInputSlot))
+                        {
+                            return;
+                        }
                     }
                     catch (Exception rumbleEx)
                     {
@@ -489,7 +501,8 @@ namespace ControllerSessionManager.PlayniteIntegration
             var iconFile = ControllerIconCatalog.DefaultFileName;
             overlayClient.ShowToastPreview(notificationSessionId, GetToastTargetProcessId(), previewKind, title, message,
                 SvgIconGeometryLoader.GetPathData(iconFile),
-                settings.NotificationDurationMilliseconds, GetToastStylePayload(),
+                settings.NotificationDurationMilliseconds,
+                GetToastStylePayload(),
                 GetToastBadgeIconGeometry(previewKind, "Wireless"),
                 GetPreviewTargetWindowHandle());
             if (playSound)
@@ -512,7 +525,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 SvgIconGeometryLoader.GetPathData("player-pause.svg"),
                 SvgIconGeometryLoader.GetPathData(iconFile), false, 0,
                 string.Empty, "warning",
-                SvgIconGeometryLoader.GetPathData("alert-triangle.svg"), GetOverlayStylePayload(),
+                SvgIconGeometryLoader.GetPathData("alert-triangle.svg"),
+                GetOverlayStylePayload(),
                 Loc("LOCCSM_ValueBluetooth"), Loc("LOCCSM_ValueFull"),
                 ControllerConnectionIcons.GetPathData("Bluetooth"),
                 SvgIconGeometryLoader.GetPathData("battery.svg"), "Full",
@@ -2215,6 +2229,49 @@ namespace ControllerSessionManager.PlayniteIntegration
             var topPanelIcon = ResolveTopPanelIconGeometry(primary);
             var batteryAvailable = primary != null && primary.BatteryLevel != "Unknown" &&
                 primary.BatteryLevel != "Unavailable";
+            var profileIconColor = ResolveControllerIconColor(primary);
+            var profileIconBrush = ControllerIconColor.ToBrush(profileIconColor);
+            var iconColorMode = settings == null
+                ? ControllerSessionManagerSettings.TopPanelIconColorModeBattery
+                : settings.TopPanelIconColorMode;
+            Brush iconBrush = null;
+            var useForcedIconColor = false;
+            string tooltip;
+            if (connected.Count > 1)
+            {
+                // Several pads: always generic icon + theme default color.
+                topPanelIcon = SvgIconGeometryLoader.GetPathData("gamepad-tester.svg");
+                tooltip = string.Format(Loc("LOCCSM_ControllersConnectedCount"), connected.Count);
+            }
+            else
+            {
+                if (string.Equals(iconColorMode,
+                    ControllerSessionManagerSettings.TopPanelIconColorModeController,
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    if (profileIconBrush != null)
+                    {
+                        iconBrush = profileIconBrush;
+                        useForcedIconColor = true;
+                    }
+                }
+                else if (string.Equals(iconColorMode,
+                    ControllerSessionManagerSettings.TopPanelIconColorModeBattery,
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    if (batteryAvailable)
+                    {
+                        iconBrush = GetBatteryBrush(primary.BatteryLevel);
+                        useForcedIconColor = true;
+                    }
+                }
+
+                tooltip = batteryAvailable && !string.IsNullOrWhiteSpace(primary == null ? null :
+                        Loc("LOCCSM_Value" + primary.BatteryLevel))
+                    ? string.Format("{0}: {1}", primaryName, Loc("LOCCSM_Value" + primary.BatteryLevel))
+                    : primaryName;
+            }
+
             Theme.UpdatePrimaryPresentation(
                 primaryIcon,
                 topPanelIcon,
@@ -2222,8 +2279,27 @@ namespace ControllerSessionManager.PlayniteIntegration
                 batteryAvailable ? primary.BatteryLevel : string.Empty,
                 GetBatteryBrush(primary == null ? null : primary.BatteryLevel),
                 batteryAvailable,
-                settings != null && settings.ColorTopPanelIndicatorByBattery);
+                iconBrush,
+                profileIconColor ?? string.Empty,
+                useForcedIconColor,
+                tooltip);
             RefreshTopPanelItem();
+        }
+
+        private string ResolveControllerIconColor(ControllerDeviceSnapshot controller)
+        {
+            if (controller == null || settings == null)
+            {
+                return null;
+            }
+
+            var profile = settings.GetControllerProfile(
+                string.IsNullOrWhiteSpace(controller.HardwareId) ? controller.ControllerId : controller.HardwareId,
+                string.Equals(controller.ProviderId, XInputProvider.ProviderId, StringComparison.OrdinalIgnoreCase) &&
+                    controller.ProviderInstanceId >= 0 && controller.ProviderInstanceId < 4
+                    ? (int?)controller.ProviderInstanceId
+                    : null);
+            return profile == null ? null : ControllerIconColor.Normalize(profile.IconColor);
         }
 
         private string ResolveTopPanelIconGeometry(ControllerDeviceSnapshot primary)
@@ -2634,7 +2710,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                         isCurrentlyConnected ? "connected" : "disconnected",
                         Loc(isCurrentlyConnected ? "LOCCSM_ControllerConnectedToast" : "LOCCSM_ControllerDisconnectedToast"),
                         GetToastControllerName(candidate.Identity.Name), candidate.Identity.IconGeometry,
-                        settings.NotificationDurationMilliseconds, GetToastStylePayload(),
+                        settings.NotificationDurationMilliseconds,
+                        GetToastStylePayload(),
                         candidate.Identity.ConnectionIconGeometry);
                 }
 
@@ -2646,7 +2723,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                         settings.ShowControllerNameInDesktopNotifications
                             ? GetToastControllerName(candidate.Identity.Name) : string.Empty,
                         candidate.Identity.IconGeometry,
-                        settings.DesktopNotificationDurationMilliseconds, GetDesktopToastStylePayload(),
+                        settings.DesktopNotificationDurationMilliseconds,
+                        GetDesktopToastStylePayload(),
                         candidate.Identity.ConnectionIconGeometry);
                 }
 
@@ -2747,7 +2825,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                         : name + " · " + levelLabel;
                     overlayClient.ShowToast(
                         notificationSessionId, toastProcessId, "lowbattery", title, message, icon,
-                        settings.NotificationDurationMilliseconds, GetToastStylePayload(),
+                        settings.NotificationDurationMilliseconds,
+                        GetToastStylePayload(),
                         badgeIcon);
                 }
 
@@ -2963,7 +3042,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 appearance.NotificationBorderGlowBlur.ToString(), appearance.NotificationBorderGlowOpacity.ToString(),
                 appearance.NotificationUseStateBorderColors.ToString(), appearance.NotificationConnectedBorderColor,
                 appearance.NotificationDisconnectedBorderColor, appearance.NotificationWarningBorderColor,
-                appearance.NotificationLowBatteryBorderColor
+                appearance.NotificationLowBatteryBorderColor,
+                string.Empty
             });
         }
 
@@ -3041,7 +3121,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 appearance.DesktopNotificationBorderGlowBlur.ToString(), appearance.DesktopNotificationBorderGlowOpacity.ToString(),
                 appearance.DesktopNotificationUseStateBorderColors.ToString(), appearance.DesktopNotificationConnectedBorderColor,
                 appearance.DesktopNotificationDisconnectedBorderColor, appearance.DesktopNotificationWarningBorderColor,
-                appearance.DesktopNotificationLowBatteryBorderColor
+                appearance.DesktopNotificationLowBatteryBorderColor,
+                string.Empty
             });
         }
 
@@ -3626,7 +3707,8 @@ namespace ControllerSessionManager.PlayniteIntegration
             var iconFile = ControllerIconCatalog.DefaultFileName;
             overlayClient.ShowToastPreview(notificationSessionId, GetToastTargetProcessId(), previewKind, title, message,
                 SvgIconGeometryLoader.GetPathData(iconFile),
-                settings.DesktopNotificationDurationMilliseconds, GetDesktopToastStylePayload(),
+                settings.DesktopNotificationDurationMilliseconds,
+                GetDesktopToastStylePayload(),
                 GetToastBadgeIconGeometry(previewKind, "Bluetooth"),
                 GetPreviewTargetWindowHandle());
             if (playSound)
@@ -3762,6 +3844,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             var instructionWeight = appearance.OverlayInstructionFontWeight;
             var statusFamily = appearance.OverlayStatusFontFamily;
             var statusWeight = appearance.OverlayStatusFontWeight;
+            var controllerIconColor = appearance.OverlayControllerIconColor;
             return string.Join(";", new[]
             {
                 appearance.OverlayScalePercent.ToString(), appearance.OverlayDimColor,
@@ -3851,7 +3934,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 appearance.OverlayIncidentBadgeCornerRadius.ToString(),
                 appearance.OverlayIncidentBadgeTextSize.ToString(),
                 appearance.OverlayStatusInMetadata.ToString(),
-                appearance.OverlayInstructionColor, appearance.OverlayControllerIconColor,
+                appearance.OverlayInstructionColor, controllerIconColor,
                 appearance.OverlayShowDisconnectTimer.ToString()
             });
         }

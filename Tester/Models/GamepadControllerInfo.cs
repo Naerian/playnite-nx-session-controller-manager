@@ -12,6 +12,9 @@ namespace ControllerSessionManager.Tester.Models
         public ushort ProductId { get; set; }
         public GamepadLayout Layout { get; set; }
         public EightBitDoModel EightBitDoModel { get; set; }
+        public string IconId { get; set; }
+        public string IconColor { get; set; }
+        public string IconGeometry { get; set; }
 
         public string DisplayName
         {
@@ -42,6 +45,11 @@ namespace ControllerSessionManager.Tester.Models
 
                 return string.Format("{0} - VID: {1:X4}  PID: {2:X4}", Name ?? Layout.ToString(), VendorId, ProductId);
             }
+        }
+
+        public bool HasIconColor
+        {
+            get { return !string.IsNullOrWhiteSpace(IconColor); }
         }
     }
 }

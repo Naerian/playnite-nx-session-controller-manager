@@ -132,7 +132,8 @@ namespace ControllerSessionManager.Controllers
                         slot.InputNeutralSinceUtc = null;
                     }
 
-                    var deviceMetadata = MatchHidMetadata(metadata, usedMetadata, connectedSlotCount);
+                    var deviceMetadata = MatchHidMetadata(metadata, usedMetadata, connectedSlotCount,
+                        slot.DevicePath);
                     if (deviceMetadata != null)
                     {
                         usedMetadata.Add(deviceMetadata);
@@ -290,12 +291,23 @@ namespace ControllerSessionManager.Controllers
         }
 
         private static ControllerMetadata MatchHidMetadata(IReadOnlyList<ControllerMetadata> metadata,
-            HashSet<ControllerMetadata> usedMetadata, int connectedSlotCount)
+            HashSet<ControllerMetadata> usedMetadata, int connectedSlotCount, string preferredPath = null)
         {
             var unused = metadata.Where(a => a != null && !usedMetadata.Contains(a)).ToList();
             var xinputWrappers = unused.Where(a =>
                 !string.IsNullOrWhiteSpace(a.DevicePath) &&
                 a.DevicePath.IndexOf("&ig_", StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+            if (!string.IsNullOrWhiteSpace(preferredPath))
+            {
+                var remembered = xinputWrappers.FirstOrDefault(a =>
+                    ControllerBridgeIdentity.PathsReferToSameDevice(preferredPath, a.DevicePath) ||
+                    !ControllerBridgeIdentity.AreDistinctDeviceInstances(preferredPath, a.DevicePath));
+                if (remembered != null)
+                {
+                    return remembered;
+                }
+            }
+
             if (xinputWrappers.Count == 1 && (connectedSlotCount == 1 || unused.Count == 1))
             {
                 return xinputWrappers[0];

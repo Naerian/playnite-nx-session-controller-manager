@@ -943,7 +943,8 @@ namespace ControllerSessionManager.Tester
             return CreateTesterView(out viewModel, true);
         }
 
-        public bool TryStandardRumble(ushort vendorId, ushort productId)
+        public bool TryStandardRumble(ushort vendorId, ushort productId, string path = null,
+            int playerIndex = -1)
         {
             if (settings != null && !settings.EnableRumbleTests)
             {
@@ -957,7 +958,8 @@ namespace ControllerSessionManager.Tester
                 for (var attempt = 0; attempt < 25; attempt++)
                 {
                     provider.ReadState();
-                    match = FindHostController(provider.GetControllers(), vendorId, productId);
+                    match = FindHostController(provider.GetControllers(), vendorId, productId, path,
+                        playerIndex);
                     if (match != null)
                     {
                         break;
@@ -993,22 +995,60 @@ namespace ControllerSessionManager.Tester
             }
         }
 
-        private static GamepadControllerInfo FindHostController(
-            IReadOnlyList<GamepadControllerInfo> controllers, ushort vendorId, ushort productId)
+        internal static GamepadControllerInfo FindHostController(
+            IReadOnlyList<GamepadControllerInfo> controllers, ushort vendorId, ushort productId,
+            string path = null, int playerIndex = -1)
         {
             if (controllers == null || controllers.Count == 0)
             {
                 return null;
             }
 
+            if (!string.IsNullOrWhiteSpace(path))
+            {
+                var pathMatches = controllers.Where(a =>
+                    !string.IsNullOrWhiteSpace(a.Path) &&
+                    (ControllerBridgeIdentity.PathsReferToSameDevice(path, a.Path) ||
+                     !ControllerBridgeIdentity.AreDistinctDeviceInstances(path, a.Path))).ToList();
+                if (pathMatches.Count == 1)
+                {
+                    return pathMatches[0];
+                }
+            }
+
+            if (playerIndex >= 0 && playerIndex <= 3)
+            {
+                var slotMatches = controllers.Where(a => a.PlayerIndex == playerIndex).ToList();
+                if (slotMatches.Count == 1)
+                {
+                    return slotMatches[0];
+                }
+
+                if (vendorId != 0 || productId != 0)
+                {
+                    slotMatches = slotMatches.Where(a =>
+                        (vendorId == 0 || a.VendorId == vendorId) &&
+                        (productId == 0 || a.ProductId == productId)).ToList();
+                    if (slotMatches.Count == 1)
+                    {
+                        return slotMatches[0];
+                    }
+                }
+            }
+
             if (vendorId != 0 || productId != 0)
             {
-                foreach (var controller in controllers)
+                var hardwareMatches = controllers.Where(a =>
+                    a.VendorId == vendorId && a.ProductId == productId).ToList();
+                if (hardwareMatches.Count == 1)
                 {
-                    if (controller.VendorId == vendorId && controller.ProductId == productId)
-                    {
-                        return controller;
-                    }
+                    return hardwareMatches[0];
+                }
+
+                // Two identical pads share VID/PID; never guess the first match.
+                if (hardwareMatches.Count > 1)
+                {
+                    return null;
                 }
             }
 

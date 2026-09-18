@@ -392,7 +392,9 @@ namespace ControllerSessionManager.OverlayHost
                 : null;
             icon.Fill = string.Equals(style.AccentMode, "SolidBackground", StringComparison.OrdinalIgnoreCase)
                 ? primaryTextBrush
-                : accentBrush;
+                : !string.IsNullOrWhiteSpace(style.ControllerIconColor)
+                    ? Brush(style.ControllerIconColor, accent)
+                    : accentBrush;
             icon.Stroke = Brushes.Transparent;
             icon.StrokeThickness = 0;
 
@@ -834,6 +836,7 @@ namespace ControllerSessionManager.OverlayHost
             public string BorderGlowColor = "#8050AAFF";
             public int BorderGlowBlur = 12;
             public int BorderGlowOpacity = 30;
+            public string ControllerIconColor = string.Empty;
 
             public static ToastStyle Parse(string value)
             {
@@ -924,6 +927,7 @@ namespace ControllerSessionManager.OverlayHost
                 if (parts.Length > 74) style.DisconnectedBorderColor = parts[74];
                 if (parts.Length > 75) style.WarningBorderColor = parts[75];
                 if (parts.Length > 76) style.LowBatteryBorderColor = parts[76];
+                if (parts.Length > 77 && !string.IsNullOrWhiteSpace(parts[77])) style.ControllerIconColor = parts[77];
                 return style;
             }
 

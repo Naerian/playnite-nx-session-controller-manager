@@ -8,7 +8,7 @@ namespace ControllerSessionManager.PlayniteIntegration
     /// </summary>
     public sealed class VisualProfileSnapshot
     {
-        public const int CurrentVersion = 15;
+        public const int CurrentVersion = 17;
         public const string FileExtension = ".pcvisual";
 
         public int Version { get; set; }
@@ -102,6 +102,8 @@ namespace ControllerSessionManager.PlayniteIntegration
         public string NotificationBadgePosition { get; set; }
         public string NotificationTextAlignment { get; set; }
         public string NotificationAccentMode { get; set; }
+        public string NotificationControllerIconMode { get; set; }
+        public bool NotificationUseControllerIconColor { get; set; }
         public string NotificationAnimation { get; set; }
         public bool NotificationShowTitle { get; set; }
         public bool NotificationUppercaseTitle { get; set; }
@@ -182,6 +184,8 @@ namespace ControllerSessionManager.PlayniteIntegration
         public string DesktopNotificationBadgePosition { get; set; }
         public string DesktopNotificationTextAlignment { get; set; }
         public string DesktopNotificationAccentMode { get; set; }
+        public string DesktopNotificationControllerIconMode { get; set; }
+        public bool DesktopNotificationUseControllerIconColor { get; set; }
         public string DesktopNotificationAnimation { get; set; }
         public bool DesktopNotificationShowTitle { get; set; }
         public bool DesktopNotificationUppercaseTitle { get; set; }
@@ -240,6 +244,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         public string OverlayAccentColor { get; set; }
         public string OverlayInstructionColor { get; set; }
         public string OverlayControllerIconColor { get; set; }
+        public string OverlayControllerIconMode { get; set; }
         public string OverlayTextColor { get; set; }
         public string OverlayWarningColor { get; set; }
         public int OverlayTitleFontSize { get; set; }
@@ -434,6 +439,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 NotificationBadgePosition = settings.NotificationBadgePosition,
                 NotificationTextAlignment = settings.NotificationTextAlignment,
                 NotificationAccentMode = settings.NotificationAccentMode,
+                NotificationControllerIconMode = settings.NotificationControllerIconMode,
                 NotificationAnimation = settings.NotificationAnimation,
                 NotificationShowTitle = settings.NotificationShowTitle,
                 NotificationUppercaseTitle = settings.NotificationUppercaseTitle,
@@ -513,6 +519,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 DesktopNotificationBadgePosition = settings.DesktopNotificationBadgePosition,
                 DesktopNotificationTextAlignment = settings.DesktopNotificationTextAlignment,
                 DesktopNotificationAccentMode = settings.DesktopNotificationAccentMode,
+                DesktopNotificationControllerIconMode = settings.DesktopNotificationControllerIconMode,
                 DesktopNotificationAnimation = settings.DesktopNotificationAnimation,
                 DesktopNotificationShowTitle = settings.DesktopNotificationShowTitle,
                 DesktopNotificationUppercaseTitle = settings.DesktopNotificationUppercaseTitle,
@@ -570,6 +577,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 OverlayAccentColor = settings.OverlayAccentColor,
                 OverlayInstructionColor = settings.OverlayInstructionColor,
                 OverlayControllerIconColor = settings.OverlayControllerIconColor,
+                OverlayControllerIconMode = settings.OverlayControllerIconMode,
                 OverlayTextColor = settings.OverlayTextColor,
                 OverlayWarningColor = settings.OverlayWarningColor,
                 OverlayTitleFontSize = settings.OverlayTitleFontSize,
@@ -799,6 +807,14 @@ namespace ControllerSessionManager.PlayniteIntegration
             settings.NotificationBadgePosition = Version < 7 ? "TopRight" : NotificationBadgePosition;
             settings.NotificationTextAlignment = NotificationTextAlignment;
             settings.NotificationAccentMode = NotificationAccentMode;
+            if (Version >= 17)
+            {
+                settings.NotificationControllerIconMode = NotificationControllerIconMode;
+            }
+            else if (Version >= 16 && NotificationUseControllerIconColor)
+            {
+                settings.NotificationControllerIconMode = "Controller";
+            }
             settings.NotificationAnimation = NotificationAnimation;
             settings.NotificationShowTitle = Version < 2 || NotificationShowTitle;
             settings.NotificationUppercaseTitle = Version >= 8 && NotificationUppercaseTitle;
@@ -896,6 +912,14 @@ namespace ControllerSessionManager.PlayniteIntegration
             settings.DesktopNotificationBadgePosition = Version < 7 ? "TopRight" : DesktopNotificationBadgePosition;
             settings.DesktopNotificationTextAlignment = DesktopNotificationTextAlignment;
             settings.DesktopNotificationAccentMode = DesktopNotificationAccentMode;
+            if (Version >= 17)
+            {
+                settings.DesktopNotificationControllerIconMode = DesktopNotificationControllerIconMode;
+            }
+            else if (Version >= 16 && DesktopNotificationUseControllerIconColor)
+            {
+                settings.DesktopNotificationControllerIconMode = "Controller";
+            }
             settings.DesktopNotificationAnimation = DesktopNotificationAnimation;
             settings.DesktopNotificationShowTitle = Version < 2 || DesktopNotificationShowTitle;
             settings.DesktopNotificationUppercaseTitle = Version >= 8 && DesktopNotificationUppercaseTitle;
@@ -964,6 +988,10 @@ namespace ControllerSessionManager.PlayniteIntegration
             settings.OverlayAccentColor = OverlayAccentColor;
             settings.OverlayInstructionColor = Version >= 14 ? OverlayInstructionColor : OverlayAccentColor;
             settings.OverlayControllerIconColor = Version >= 14 ? OverlayControllerIconColor : OverlayTextColor;
+            if (Version >= 17)
+            {
+                settings.OverlayControllerIconMode = OverlayControllerIconMode;
+            }
             settings.OverlayTextColor = OverlayTextColor;
             settings.OverlayWarningColor = OverlayWarningColor;
             settings.OverlayTitleFontSize = OverlayTitleFontSize;

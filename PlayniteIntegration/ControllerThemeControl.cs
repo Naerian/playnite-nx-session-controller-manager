@@ -158,9 +158,16 @@ namespace ControllerSessionManager.PlayniteIntegration
                     return batteryBrush;
                 }
 
-                if (useColor && iconBrush != null)
+                // Theme API v2: PrimaryControllerIconBrush is already resolved
+                // (profile → battery → null). Prefer it whenever present.
+                if (iconBrush != null)
                 {
                     return iconBrush;
+                }
+
+                if (useColor && batteryBrush != null)
+                {
+                    return batteryBrush;
                 }
 
                 return themeForeground ?? Brushes.White;

@@ -2,7 +2,9 @@
 
 ## Lista de dispositivos
 
-La página **Mandos** muestra el nombre detectado, el alias opcional, el icono, el tipo de conexión, la batería y el proveedor como badges del tema. Los alias e iconos se guardan por identidad de hardware siempre que es posible. Desktop también puede recordar qué mando corresponde a cada jugador XInput para reutilizar su nombre de forma segura en Fullscreen.
+La página **Mandos** muestra el nombre detectado, el alias opcional, el icono, el color opcional del icono, el tipo de conexión, la batería y el proveedor como badges del tema. Los alias, iconos y colores se guardan por identidad de hardware siempre que es posible. Desktop también puede recordar qué mando corresponde a cada jugador XInput para reutilizar su nombre de forma segura en Fullscreen.
+
+Deja el color del icono vacío para heredar los predeterminados de Apariencia (color de texto del tema en Mandos / Top Panel; color de silueta del overlay).
 
 Usa la acción de vibración para relacionar una fila con el mando físico. Su disponibilidad depende del dispositivo, el driver y el protocolo activo.
 

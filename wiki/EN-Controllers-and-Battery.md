@@ -2,7 +2,9 @@
 
 ## Device list
 
-The Controllers page shows the detected name, optional alias, assigned icon, connection type, battery state and provider as themed badges. Custom names and icons are stored by hardware identity where possible. Desktop can also remember the friendly controller associated with each XInput player slot so Fullscreen can reuse it safely.
+The Controllers page shows the detected name, optional alias, assigned icon, optional icon color, connection type, battery state and provider as themed badges. Custom names, icons and icon colors are stored by hardware identity where possible. Desktop can also remember the friendly controller associated with each XInput player slot so Fullscreen can reuse it safely.
+
+Leave the icon color empty to inherit appearance defaults (theme text color on Controllers / Top Panel; the overlay silhouette color from Appearance).
 
 Use the vibration action to match a row to the controller in your hands. Vibration availability depends on the controller, driver and active protocol.
 

@@ -508,6 +508,12 @@ internal static class SessionManagerTests
         Equal("8BitDo Ultimate 2 Wireless",
             ControllerDeviceIdentity.ResolvePlayniteDisplayName("Game Controller", 0x2DC8, 0x6012),
             "Playnite's generic HID placeholder should take the mapped model name.");
+        Equal("8BitDo Ultimate 2 Wireless",
+            ControllerDeviceIdentity.ResolvePlayniteDisplayName("8BitDo Ultimate 2", 0x2DC8, 0x310B),
+            "Playnite/SDL spelling without Wireless must canonicalize to the same Ultimate 2 name.");
+        Equal("DualSense",
+            ControllerDeviceIdentity.ResolvePlayniteDisplayName("Wireless Controller", 0x054C, 0x0CE6),
+            "A known Sony VID/PID must use the mapped DualSense name.");
         Equal(true, ControllerDeviceIdentity.ShouldAcceptPlayniteInventory(
             "Game Controller", @"\\?\hid#vid_2dc8&pid_6012", 0x2DC8, 0x6012),
             "A known VID/PID behind a generic Playnite name is still a real pad.");

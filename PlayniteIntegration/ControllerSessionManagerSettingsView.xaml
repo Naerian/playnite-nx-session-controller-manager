@@ -1050,7 +1050,7 @@
                                                                      VerticalAlignment="Top"
                                                                      HorizontalAlignment="Center">
                                                                 <Path Data="{Binding IconGeometry, Converter={StaticResource IconGeometryConverter}}"
-                                                                      Fill="{DynamicResource TextBrush}"
+                                                                      Fill="{Binding IconFillBrush}"
                                                                       Stretch="Uniform" />
                                                             </Viewbox>
                                                             <WrapPanel Grid.Column="1" VerticalAlignment="Center">
@@ -1098,35 +1098,58 @@
                                                                 <TextBlock Text="{DynamicResource LOCCSM_CustomNameHelp}" Style="{StaticResource FieldHintText}" />
                                                             </StackPanel>
                                                             <StackPanel Grid.Column="2">
-                                                                <TextBlock Text="{DynamicResource LOCCSM_Icon}" Style="{StaticResource FieldLabel}" />
-                                                                <ComboBox ItemsSource="{Binding DataContext.IconOptions, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                                          SelectedValuePath="Id"
-                                                                          SelectedValue="{Binding Profile.IconId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                                          SelectionChanged="ControllerIconSelectionChanged">
-                                                                    <ComboBox.ItemTemplate>
-                                                                        <DataTemplate>
-                                                                            <StackPanel Orientation="Horizontal" MinHeight="28">
-                                                                                <Viewbox Width="28" Height="28" Margin="0,0,8,0">
-                                                                                    <Path Data="{Binding GeometryData, Converter={StaticResource IconGeometryConverter}}"
-                                                                                          Fill="{Binding Foreground, ElementName=IconOptionName}"
-                                                                                          Stretch="Uniform" />
-                                                                                </Viewbox>
-                                                                                <TextBlock x:Name="IconOptionName" VerticalAlignment="Center">
-                                                                                    <TextBlock.Style>
-                                                                                        <Style TargetType="TextBlock">
-                                                                                            <Setter Property="Text" Value="{Binding Name}" />
-                                                                                            <Style.Triggers>
-                                                                                                <DataTrigger Binding="{Binding Id}" Value="default">
-                                                                                                    <Setter Property="Text" Value="{DynamicResource LOCCSM_IconGeneric}" />
-                                                                                                </DataTrigger>
-                                                                                            </Style.Triggers>
-                                                                                        </Style>
-                                                                                    </TextBlock.Style>
-                                                                                </TextBlock>
-                                                                            </StackPanel>
-                                                                        </DataTemplate>
-                                                                    </ComboBox.ItemTemplate>
-                                                                </ComboBox>
+                                                                <Grid>
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="*" />
+                                                                        <ColumnDefinition Width="12" />
+                                                                        <ColumnDefinition Width="Auto" />
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <StackPanel>
+                                                                        <TextBlock Text="{DynamicResource LOCCSM_Icon}" Style="{StaticResource FieldLabel}" />
+                                                                        <ComboBox ItemsSource="{Binding DataContext.IconOptions, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                                  SelectedValuePath="Id"
+                                                                                  SelectedValue="{Binding Profile.IconId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                                  SelectionChanged="ControllerIconSelectionChanged"
+                                                                                  MinHeight="34"
+                                                                                  HorizontalAlignment="Stretch">
+                                                                            <ComboBox.ItemTemplate>
+                                                                                <DataTemplate>
+                                                                                    <StackPanel Orientation="Horizontal" MinHeight="28">
+                                                                                        <Viewbox Width="28" Height="28" Margin="0,0,8,0">
+                                                                                            <Path Data="{Binding GeometryData, Converter={StaticResource IconGeometryConverter}}"
+                                                                                                  Fill="{Binding Foreground, ElementName=IconOptionName}"
+                                                                                                  Stretch="Uniform" />
+                                                                                        </Viewbox>
+                                                                                        <TextBlock x:Name="IconOptionName" VerticalAlignment="Center">
+                                                                                            <TextBlock.Style>
+                                                                                                <Style TargetType="TextBlock">
+                                                                                                    <Setter Property="Text" Value="{Binding Name}" />
+                                                                                                    <Style.Triggers>
+                                                                                                        <DataTrigger Binding="{Binding Id}" Value="default">
+                                                                                                            <Setter Property="Text" Value="{DynamicResource LOCCSM_IconGeneric}" />
+                                                                                                        </DataTrigger>
+                                                                                                    </Style.Triggers>
+                                                                                                </Style>
+                                                                                            </TextBlock.Style>
+                                                                                        </TextBlock>
+                                                                                    </StackPanel>
+                                                                                </DataTemplate>
+                                                                            </ComboBox.ItemTemplate>
+                                                                        </ComboBox>
+                                                                    </StackPanel>
+                                                                    <StackPanel Grid.Column="2" HorizontalAlignment="Left">
+                                                                        <TextBlock Text="{DynamicResource LOCCSM_IconColor}" Style="{StaticResource FieldLabel}" />
+                                                                        <Button Style="{StaticResource ColorPickerButton}"
+                                                                                Height="34" Width="34" Padding="0" Margin="0"
+                                                                                HorizontalAlignment="Left"
+                                                                                VerticalAlignment="Top"
+                                                                                Click="SelectControllerIconColorClick"
+                                                                                ToolTip="{DynamicResource LOCCSM_IconColor}">
+                                                                            <Border Width="18" Height="18"
+                                                                                    Background="{Binding IconSwatchBrush}" />
+                                                                        </Button>
+                                                                    </StackPanel>
+                                                                </Grid>
                                                             </StackPanel>
                                                         </Grid>
                                                         <Grid Margin="0,16,0,0" IsEnabled="{Binding InteractionsEnabled}">
@@ -2099,6 +2122,9 @@
                                                 <StackPanel Style="{StaticResource OverlayColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_PrimaryTextColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="OverlayTextColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding OverlayTextColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding OverlayTextColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
                                                 <StackPanel Style="{StaticResource OverlayColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_WarningColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="OverlayWarningColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding OverlayWarningColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding OverlayWarningColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
                                             </WrapPanel>
+                                            <WrapPanel>
+                                                <StackPanel Style="{StaticResource OverlayColorPanel}"><TextBlock Text="{DynamicResource LOCCSM_OverlayControllerIconColor}"/><DockPanel><Button DockPanel.Dock="Right" Style="{StaticResource ColorPickerButton}" Tag="OverlayControllerIconColor" Click="SelectColorClick"><Border Width="18" Height="18" Background="{Binding OverlayControllerIconColor, Converter={StaticResource HexColorBrushConverter}}"/></Button><TextBox Text="{Binding OverlayControllerIconColor, UpdateSourceTrigger=PropertyChanged}"/></DockPanel></StackPanel>
+                                            </WrapPanel>
                                             </StackPanel>
                                         </Expander>
                                   </StackPanel>
@@ -2338,8 +2364,24 @@
                                          GroupName="TopPanelControllerMode"
                                          Margin="0,0,0,8"
                                          IsChecked="{Binding TopPanelControllerMode, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Primary}" />
-                            <CheckBox Content="{DynamicResource LOCCSM_ColorTopPanelByBattery}" IsChecked="{Binding ColorTopPanelIndicatorByBattery}"
-                                      Margin="0,8,0,0" IsEnabled="{Binding IsTopPanelButtonVisible}" />
+                            <TextBlock Text="{DynamicResource LOCCSM_TopPanelIconColorMode}"
+                                       Style="{StaticResource FieldLabel}"
+                                       Margin="0,8,0,4"
+                                       IsEnabled="{Binding IsTopPanelButtonVisible}" />
+                            <ComboBox SelectedValue="{Binding TopPanelIconColorMode}"
+                                      SelectedValuePath="Tag"
+                                      IsEnabled="{Binding IsTopPanelButtonVisible}"
+                                      MaxWidth="360"
+                                      HorizontalAlignment="Left">
+                                <ComboBoxItem Tag="Default" Content="{DynamicResource LOCCSM_TopPanelIconColorModeDefault}" />
+                                <ComboBoxItem Tag="Battery" Content="{DynamicResource LOCCSM_TopPanelIconColorModeBattery}" />
+                                <ComboBoxItem Tag="Controller" Content="{DynamicResource LOCCSM_TopPanelIconColorModeController}" />
+                            </ComboBox>
+                            <TextBlock Text="{DynamicResource LOCCSM_TopPanelIconColorModeMultiHelp}"
+                                       Style="{StaticResource FieldHintText}"
+                                       Margin="0,8,0,0"
+                                       TextWrapping="Wrap"
+                                       IsEnabled="{Binding IsTopPanelButtonVisible}" />
                         </StackPanel>
 
                         <StackPanel Style="{StaticResource PageSection}" Margin="0,24,0,0">

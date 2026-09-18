@@ -18,8 +18,9 @@ namespace ControllerSessionManager.PlayniteIntegration
         private bool draggingHue;
 
         public Color SelectedColor { get; private set; }
+        public bool ResetToDefault { get; private set; }
 
-        public ColorPickerDialog(Color initial, Func<string, string> locLookup)
+        public ColorPickerDialog(Color initial, Func<string, string> locLookup, bool allowReset = false)
         {
             loc = locLookup ?? new Func<string, string>(delegate(string key) { return key; });
             InitializeComponent();
@@ -29,8 +30,11 @@ namespace ControllerSessionManager.PlayniteIntegration
             HexLabel.Text = Loc("LOCCSM_ColorHex");
             ApplyButton.Content = Loc("LOCCSM_ColorPickerApply");
             CancelButton.Content = Loc("LOCCSM_ColorPickerCancel");
+            ResetButton.Content = Loc("LOCCSM_ResetIconColor");
+            ResetButton.Visibility = allowReset ? Visibility.Visible : Visibility.Collapsed;
             Title = TitleText.Text;
             SelectedColor = initial;
+            ResetToDefault = false;
             ColorPickerMath.RgbToHsv(initial.R, initial.G, initial.B, out hue, out saturation, out value);
             alpha = initial.A;
             Loaded += OnLoaded;
@@ -71,6 +75,13 @@ namespace ControllerSessionManager.PlayniteIntegration
         private void ApplyClick(object sender, RoutedEventArgs args)
         {
             CommitCurrentColor();
+            ResetToDefault = false;
+            DialogResult = true;
+        }
+
+        private void ResetClick(object sender, RoutedEventArgs args)
+        {
+            ResetToDefault = true;
             DialogResult = true;
         }
 

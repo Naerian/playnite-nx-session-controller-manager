@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ControllerSessionManager.Controllers;
+using ControllerSessionManager.PlayniteIntegration;
 using ControllerSessionManager.Tester.Models;
 
 namespace ControllerSessionManager.Tester.Services
 {
     /// <summary>
-    /// Copies Mandos aliases onto Tester rows so the dropdown shows the same names.
+    /// Copies Mandos aliases, icons and colors onto Tester rows so the dropdown matches.
     /// </summary>
     public static class TesterControllerAliases
     {
@@ -26,16 +27,16 @@ namespace ControllerSessionManager.Tester.Services
             foreach (var controller in result)
             {
                 var match = FindMatch(controller, remaining);
-                if (match == null)
+                if (match != null)
                 {
-                    continue;
+                    remaining.Remove(match);
+                    if (!string.IsNullOrWhiteSpace(match.Name))
+                    {
+                        controller.CustomName = match.Name.Trim();
+                    }
                 }
 
-                remaining.Remove(match);
-                if (!string.IsNullOrWhiteSpace(match.Name))
-                {
-                    controller.CustomName = match.Name.Trim();
-                }
+                ApplyVisualIdentity(controller, match);
             }
 
             return result;
@@ -98,6 +99,20 @@ namespace ControllerSessionManager.Tester.Services
             return null;
         }
 
+        private static void ApplyVisualIdentity(GamepadControllerInfo controller,
+            ControllerDeviceSnapshot match)
+        {
+            var iconId = match != null && !string.IsNullOrWhiteSpace(match.IconId)
+                ? match.IconId
+                : ControllerIconCatalog.Suggest(controller.VendorId, controller.ProductId, controller.Name);
+            controller.IconId = iconId;
+            controller.IconColor = match == null
+                ? null
+                : ControllerIconColor.Normalize(match.IconColor);
+            controller.IconGeometry = SvgIconGeometryLoader.GetPathData(
+                ControllerIconCatalog.GetFileName(iconId));
+        }
+
         private static bool IsPathMatch(GamepadControllerInfo controller, ControllerDeviceSnapshot pad)
         {
             if (controller == null || pad == null ||
@@ -131,7 +146,10 @@ namespace ControllerSessionManager.Tester.Services
                 ProductId = source.ProductId,
                 Path = source.Path,
                 Layout = source.Layout,
-                EightBitDoModel = source.EightBitDoModel
+                EightBitDoModel = source.EightBitDoModel,
+                IconId = source.IconId,
+                IconColor = source.IconColor,
+                IconGeometry = source.IconGeometry
             };
         }
     }

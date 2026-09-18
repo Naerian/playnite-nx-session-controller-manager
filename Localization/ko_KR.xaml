@@ -6,6 +6,7 @@
     <sys:String x:Key="LOCCSM_ReconciliationInterval">?? ?? ??(?)</sys:String>
     <sys:String x:Key="LOCCSM_ValidationInterval">?? ??? 2??? 60? ???? ???.</sys:String>
     <sys:String x:Key="LOCCSM_ConnectedControllers">??? ????</sys:String>
+    <sys:String x:Key="LOCCSM_ControllersConnectedCount">컨트롤러 {0}개 연결됨</sys:String>
     <sys:String x:Key="LOCCSM_Refresh">?? ??</sys:String>
     <sys:String x:Key="LOCCSM_NoControllers">??? ???? ??</sys:String>
     <sys:String x:Key="LOCCSM_NoInputYet">?? ??? ???? ??</sys:String>
@@ -102,6 +103,9 @@
     <sys:String x:Key="LOCCSM_CustomName">??? ?? ??</sys:String>
     <sys:String x:Key="LOCCSM_CustomNameHelp">Playnite, ?? ? ???? ??? ? ??? ???? ?????.</sys:String>
     <sys:String x:Key="LOCCSM_Icon">???</sys:String>
+    <sys:String x:Key="LOCCSM_IconColor">색</sys:String>
+    <sys:String x:Key="LOCCSM_IconColorHelp">이 컨트롤러 실루엣에 적용할 선택적 색조입니다. 비워 두면 모양 기본값을 상속합니다.</sys:String>
+    <sys:String x:Key="LOCCSM_ResetIconColor">기본값 사용</sys:String>
     <sys:String x:Key="LOCCSM_IconGeneric">??</sys:String>
     <sys:String x:Key="LOCCSM_NoIcon">??</sys:String>
     <sys:String x:Key="LOCCSM_ValueUnavailable">??? ? ??</sys:String>
@@ -252,6 +256,11 @@
     <sys:String x:Key="LOCCSM_OverlayAllowTakeover">?? ????? ?? ????? ??? ???? ??? ?????.</sys:String>
     <sys:String x:Key="LOCCSM_OverlayAllowTakeoverOrKeyboardMouse">Reconnect it, use another controller, or press a key / click to continue with keyboard and mouse.</sys:String>
     <sys:String x:Key="LOCCSM_ColorTopPanelByBattery">??? ??? ?? ???? ??? ?? ??</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelIconColorMode">아이콘 / 텍스트 색</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelIconColorModeDefault">기본값</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelIconColorModeBattery">배터리 수준에 따라</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelIconColorModeController">컨트롤러 색</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelIconColorModeMultiHelp">컨트롤러가 여러 개 연결되어 있으면 상단 패널에 기본 색상의 일반 아이콘이 표시됩니다.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicySessionSection">??? ? ??</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseSection">?? ?? ??</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseUseGlobal">?? ?? ?? ?? ??</sys:String>
@@ -705,6 +714,12 @@
     <sys:String x:Key="LOCCSM_AnimationScale">Scale</sys:String>
     <sys:String x:Key="LOCCSM_NotificationShowTitle">Show notification title</sys:String>
     <sys:String x:Key="LOCCSM_NotificationAccentMode">Semantic accent</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayControllerIconColor">컨트롤러 아이콘 색상</sys:String>
+    <sys:String x:Key="LOCCSM_UseControllerIconColor">컨트롤러 아이콘 색상으로 실루엣 칠하기</sys:String>
+    <sys:String x:Key="LOCCSM_UseControllerIconColorHelp">사용하면 알림 아이콘이 이벤트 액센트 대신 컨트롤러 아이콘 색상을 사용합니다.</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerIconColorSection">컨트롤러 아이콘 색상</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerIconModeDefault">기본</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerIconModeController">컨트롤러 색상</sys:String>
     <sys:String x:Key="LOCCSM_AccentModeIconAndBorder">Icon and border</sys:String>
     <sys:String x:Key="LOCCSM_AccentModeIconOnly">Icon only</sys:String>
     <sys:String x:Key="LOCCSM_AccentModeTintedBackground">Tinted background</sys:String>

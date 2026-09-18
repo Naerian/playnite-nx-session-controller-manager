@@ -1,3 +1,4 @@
+using ControllerSessionManager.Tester;
 using ControllerSessionManager.Tester.Models;
 using ControllerSessionManager.Tester.Services;
 using ControllerSessionManager.Tester.ViewModels;
@@ -31,6 +32,7 @@ namespace ControllerSessionManager.Tester.Tests
                     () => new SimulatedGamepadInputProvider());
                 TestProtocolRoundtrip();
                 TestControllerAliases();
+                TestRumbleHostSelection();
                 TestControllerIdentification();
                 TestDiagnosticConfidence();
                 TestRestDriftTracking();
@@ -174,6 +176,33 @@ namespace ControllerSessionManager.Tester.Tests
             };
             Equal("Sala", TesterControllerAliases.Apply(new[] { dualsense }, new[] { pad }).Single().DisplayName,
                 "A unique VID/PID pad still receives its Mandos alias without a HID path.");
+        }
+
+        private static void TestRumbleHostSelection()
+        {
+            var first = new GamepadControllerInfo
+            {
+                InstanceId = 11,
+                VendorId = 0x2DC8,
+                ProductId = 0x310B,
+                Path = @"\\?\hid#vid_2dc8&pid_310b&ig_00#3&aaaaaaa&0&0000",
+                PlayerIndex = 0
+            };
+            var second = new GamepadControllerInfo
+            {
+                InstanceId = 12,
+                VendorId = 0x2DC8,
+                ProductId = 0x310B,
+                Path = @"\\?\hid#vid_2dc8&pid_310b&ig_00#3&bbbbbbb&0&0000",
+                PlayerIndex = 1
+            };
+            var controllers = new List<GamepadControllerInfo> { first, second };
+            Equal(true, TesterIntegration.FindHostController(controllers, 0x2DC8, 0x310B) == null,
+                "Two identical VID/PID pads must not rumble via a guessed first match.");
+            Equal(12, TesterIntegration.FindHostController(controllers, 0x2DC8, 0x310B, second.Path).InstanceId,
+                "Rumble must follow the Mandos HID path when two Ultimate 2 pads are connected.");
+            Equal(12, TesterIntegration.FindHostController(controllers, 0x2DC8, 0x310B, null, 1).InstanceId,
+                "Rumble may use the XInput player index when the HID path is unavailable.");
         }
 
         private static void TestControllerIdentification()

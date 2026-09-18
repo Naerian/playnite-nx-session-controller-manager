@@ -2873,6 +2873,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 BatteryTooltip = LabeledTooltip("LOCCSM_Battery", battery),
                 BatteryBrush = GetBatteryBrush(controller.BatteryLevel),
                 IconGeometry = GetControllerIconGeometry(controller, profile),
+                IconFillBrush = ResolveRowIconFill(profile),
+                IconSwatchBrush = ResolveRowIconSwatch(profile),
                 Controller = controller,
                 ActionIconGeometry = SvgIconGeometryLoader.GetPathData("wave-sine.svg"),
                 LastInput = controller.LastInputUtc.HasValue
@@ -2978,6 +2980,101 @@ namespace ControllerSessionManager.PlayniteIntegration
             row.IconGeometry = option.GeometryData;
         }
 
+        private void SelectControllerIconColorClick(object sender, RoutedEventArgs args)
+        {
+            var element = sender as FrameworkElement;
+            var row = element == null ? null : element.DataContext as ControllerRow;
+            if (row == null || !row.InteractionsEnabled || row.Profile == null)
+            {
+                return;
+            }
+
+            var currentColor = ResolveDisplayedIconColor(row.Profile);
+            var dialog = new ColorPickerDialog(currentColor, plugin.Loc, true);
+            var owner = Window.GetWindow(this);
+            if (owner != null)
+            {
+                dialog.Owner = owner;
+            }
+
+            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            SettingsAppearance.ApplyWindow(
+                dialog,
+                settings != null
+                    ? settings.AppearancePreset
+                    : SettingsAppearance.Midnight);
+
+            if (dialog.ShowDialog() != true)
+            {
+                return;
+            }
+
+            if (dialog.ResetToDefault)
+            {
+                row.Profile.IconColor = null;
+            }
+            else
+            {
+                var selected = dialog.SelectedColor;
+                row.Profile.IconColor = ColorPickerMath.ToHex(
+                    selected.A, selected.R, selected.G, selected.B);
+            }
+
+            RefreshRowIconColors(row);
+        }
+
+        private void RefreshRowIconColors(ControllerRow row)
+        {
+            if (row == null)
+            {
+                return;
+            }
+
+            row.IconFillBrush = ResolveRowIconFill(row.Profile);
+            row.IconSwatchBrush = ResolveRowIconSwatch(row.Profile);
+        }
+
+        private Brush ResolveRowIconFill(ControllerProfile profile)
+        {
+            var tint = ControllerIconColor.ToBrush(profile == null ? null : profile.IconColor);
+            return tint ?? ResolveDefaultIconBrush();
+        }
+
+        private Brush ResolveRowIconSwatch(ControllerProfile profile)
+        {
+            // Match the silhouette fill exactly (custom tint or theme TextBrush).
+            return ResolveRowIconFill(profile);
+        }
+
+        private Brush ResolveDefaultIconBrush()
+        {
+            var theme = TryFindResource("TextBrush") as Brush;
+            return theme ?? Brushes.White;
+        }
+
+        private Color ResolveDisplayedIconColor(ControllerProfile profile)
+        {
+            var custom = ControllerIconColor.Normalize(profile == null ? null : profile.IconColor);
+            if (!string.IsNullOrWhiteSpace(custom))
+            {
+                try
+                {
+                    return (Color)ColorConverter.ConvertFromString(custom);
+                }
+                catch
+                {
+                }
+            }
+
+            var brush = ResolveDefaultIconBrush() as SolidColorBrush;
+            if (brush != null)
+            {
+                return brush.Color;
+            }
+
+            return Colors.White;
+        }
+
         private void PreviewDesktopNotificationClick(object sender, RoutedEventArgs args)
         {
             var button = sender as Button;
@@ -3045,6 +3142,8 @@ namespace ControllerSessionManager.PlayniteIntegration
             private string lastInput;
             private string iconGeometry;
             private string actionIconGeometry;
+            private Brush iconFillBrush;
+            private Brush iconSwatchBrush;
 
             public string Name
             {
@@ -3146,6 +3245,18 @@ namespace ControllerSessionManager.PlayniteIntegration
                 set { SetField(ref iconGeometry, value, "IconGeometry"); }
             }
 
+            public Brush IconFillBrush
+            {
+                get { return iconFillBrush; }
+                set { SetField(ref iconFillBrush, value, "IconFillBrush"); }
+            }
+
+            public Brush IconSwatchBrush
+            {
+                get { return iconSwatchBrush; }
+                set { SetField(ref iconSwatchBrush, value, "IconSwatchBrush"); }
+            }
+
             public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 
             public void CopyFrom(ControllerRow source)
@@ -3173,6 +3284,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 Controller = source.Controller;
                 ActionIconGeometry = source.ActionIconGeometry;
                 IconGeometry = source.IconGeometry;
+                IconFillBrush = source.IconFillBrush;
+                IconSwatchBrush = source.IconSwatchBrush;
             }
 
             private void SetField<T>(ref T field, T value, string propertyName)

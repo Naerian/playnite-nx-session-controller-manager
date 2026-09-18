@@ -7,6 +7,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private string detectedName;
         private string customName;
         private string iconId;
+        private string iconColor;
 
         public string HardwareId { get; set; }
 
@@ -30,6 +31,15 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             get { return iconId; }
             set { SetValue(ref iconId, value); }
+        }
+
+        /// <summary>
+        /// Optional silhouette tint (#AARRGGBB). Empty inherits appearance / theme defaults.
+        /// </summary>
+        public string IconColor
+        {
+            get { return iconColor; }
+            set { SetValue(ref iconColor, value); }
         }
     }
 }

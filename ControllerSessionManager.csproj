@@ -83,6 +83,7 @@
     <Compile Include="PlayniteIntegration\SupportReportService.cs" />
     <Compile Include="PlayniteIntegration\ControllerSessionManagerSettings.cs" />
     <Compile Include="PlayniteIntegration\ControllerProfile.cs" />
+    <Compile Include="PlayniteIntegration\ControllerIconColor.cs" />
     <Compile Include="PlayniteIntegration\GameSessionOverride.cs" />
     <Compile Include="PlayniteIntegration\ControllerIconOption.cs" />
     <Compile Include="PlayniteIntegration\SvgIconGeometryLoader.cs" />
@@ -129,6 +130,9 @@
     </Compile>
     <Compile Include="Tester\Converters\BoolToBrushConverter.cs">
       <Link>T\BoolToBrushConverter.cs</Link>
+    </Compile>
+    <Compile Include="Tester\Converters\OptionalHexBrushConverter.cs">
+      <Link>T\OptionalHexBrushConverter.cs</Link>
     </Compile>
     <Compile Include="Tester\Converters\BoolToVisibilityConverter.cs">
       <Link>T\BoolToVisibilityConverter.cs</Link>

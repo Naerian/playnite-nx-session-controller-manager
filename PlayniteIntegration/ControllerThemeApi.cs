@@ -19,6 +19,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private string primaryControllerBatteryLabel;
         private string primaryControllerBatteryLevel;
         private string primaryControllerTooltip;
+        private string primaryControllerIconColor;
         private string topPanelControllerMode;
         private Brush primaryControllerBatteryBrush;
         private Brush primaryControllerIconBrush;
@@ -29,7 +30,7 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         public int ThemeApiVersion
         {
-            get { return 1; }
+            get { return 2; }
         }
 
         public int ConnectedCount
@@ -99,13 +100,22 @@ namespace ControllerSessionManager.PlayniteIntegration
         }
 
         /// <summary>
-        /// Brush for the controller icon after applying ColorTopPanelIndicatorByBattery.
+        /// Brush for the controller icon after profile color → battery → theme precedence.
         /// Null means the theme should keep its normal foreground (TargetNullValue).
         /// </summary>
         public Brush PrimaryControllerIconBrush
         {
             get { return primaryControllerIconBrush; }
             private set { SetValue(ref primaryControllerIconBrush, value); }
+        }
+
+        /// <summary>
+        /// Hex #AARRGGBB profile icon tint for the primary controller when set; empty otherwise.
+        /// </summary>
+        public string PrimaryControllerIconColor
+        {
+            get { return primaryControllerIconColor; }
+            private set { SetValue(ref primaryControllerIconColor, value); }
         }
 
         public bool HasPrimaryControllerBattery
@@ -127,7 +137,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             private set { SetValue(ref usePrimaryControllerBatteryColor, value); }
         }
 
-        /// <summary>Mirrors ColorTopPanelIndicatorByBattery from plugin settings.</summary>
+        /// <summary>True when TopPanelIconColorMode is Battery.</summary>
         public bool ColorIconByBattery
         {
             get { return colorIconByBattery; }
@@ -169,7 +179,8 @@ namespace ControllerSessionManager.PlayniteIntegration
         }
 
         internal void UpdatePrimaryPresentation(string iconGeometry, string topPanelIconGeometry,
-            string batteryLabel, string batteryLevel, Brush batteryBrush, bool hasBattery, bool useBatteryColor)
+            string batteryLabel, string batteryLevel, Brush batteryBrush, bool hasBattery,
+            Brush iconBrush, string iconColorHex, bool useForcedIconColor, string tooltip)
         {
             PrimaryControllerIconGeometry = iconGeometry;
             TopPanelIconGeometry = topPanelIconGeometry;
@@ -177,11 +188,12 @@ namespace ControllerSessionManager.PlayniteIntegration
             PrimaryControllerBatteryLevel = batteryLevel ?? string.Empty;
             PrimaryControllerBatteryBrush = batteryBrush;
             HasPrimaryControllerBattery = hasBattery;
-            UsePrimaryControllerBatteryColor = hasBattery && useBatteryColor;
-            PrimaryControllerIconBrush = UsePrimaryControllerBatteryColor ? batteryBrush : null;
-            PrimaryControllerTooltip = hasBattery && !string.IsNullOrWhiteSpace(batteryLabel)
-                ? string.Format("{0}: {1}", PrimaryControllerName, batteryLabel)
-                : PrimaryControllerName;
+            PrimaryControllerIconColor = iconColorHex ?? string.Empty;
+            PrimaryControllerIconBrush = iconBrush;
+            UsePrimaryControllerBatteryColor = useForcedIconColor;
+            PrimaryControllerTooltip = string.IsNullOrWhiteSpace(tooltip)
+                ? PrimaryControllerName
+                : tooltip;
         }
     }
 }

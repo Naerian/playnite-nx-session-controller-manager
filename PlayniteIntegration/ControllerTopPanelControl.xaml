@@ -18,7 +18,7 @@
                     <Setter Property="Fill" Value="{Binding Foreground, ElementName=Root}" />
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding UsePrimaryControllerBatteryColor}" Value="True">
-                            <Setter Property="Fill" Value="{Binding PrimaryControllerBatteryBrush}" />
+                            <Setter Property="Fill" Value="{Binding PrimaryControllerIconBrush}" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>

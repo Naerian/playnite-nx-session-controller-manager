@@ -20,6 +20,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private string creatorThemeLastUpdateUtc = string.Empty;
         private bool showPrimaryControllerInTopPanel;
         private string topPanelControllerMode = TopPanelControllerModeHidden;
+        private string topPanelIconColorMode;
         private bool colorTopPanelIndicatorByBattery = true;
         private bool launchFullscreenOnGuideButton;
         private bool setupWizardCompleted;
@@ -87,6 +88,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private string notificationBadgePosition = "TopRight";
         private string notificationTextAlignment = "Left";
         private string notificationAccentMode = "IconAndBorder";
+        private string notificationControllerIconMode = "Default";
         private string notificationAnimation = "Fade";
         private bool notificationShowTitle = true;
         private bool notificationUppercaseTitle;
@@ -162,6 +164,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private string desktopNotificationBadgePosition = "TopRight";
         private string desktopNotificationTextAlignment = "Left";
         private string desktopNotificationAccentMode = "IconAndBorder";
+        private string desktopNotificationControllerIconMode = "Default";
         private string desktopNotificationAnimation = "Fade";
         private bool desktopNotificationShowTitle = true;
         private bool desktopNotificationUppercaseTitle;
@@ -230,6 +233,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private string overlayAccentColor = "#FF2391FF";
         private string overlayInstructionColor = "#FF2391FF";
         private string overlayControllerIconColor = "#FFFFFFFF";
+        private string overlayControllerIconMode = "Default";
         private string overlayTextColor = "#FFFFFFFF";
         private string overlayWarningColor = "#FFF5B542";
         private int overlayTitleFontSize = 30;
@@ -365,6 +369,9 @@ namespace ControllerSessionManager.PlayniteIntegration
         public const string TopPanelControllerModeHidden = "Hidden";
         public const string TopPanelControllerModeDefault = "Default";
         public const string TopPanelControllerModePrimary = "Primary";
+        public const string TopPanelIconColorModeDefault = "Default";
+        public const string TopPanelIconColorModeBattery = "Battery";
+        public const string TopPanelIconColorModeController = "Controller";
         public const string CreatorThemeUpdatePolicyStartup = "Startup";
         public const string CreatorThemeUpdatePolicyDaily = "Daily";
         public const string CreatorThemeUpdatePolicyManual = "Manual";
@@ -745,10 +752,50 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
         }
 
+        public string TopPanelIconColorMode
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(topPanelIconColorMode))
+                {
+                    return colorTopPanelIndicatorByBattery
+                        ? TopPanelIconColorModeBattery
+                        : TopPanelIconColorModeDefault;
+                }
+
+                return NormalizeTopPanelIconColorMode(topPanelIconColorMode);
+            }
+            set { SetValue(ref topPanelIconColorMode, NormalizeTopPanelIconColorMode(value)); }
+        }
+
+        /// <summary>
+        /// Legacy setting kept for migration. Prefer <see cref="TopPanelIconColorMode"/>.
+        /// </summary>
         public bool ColorTopPanelIndicatorByBattery
         {
-            get { return colorTopPanelIndicatorByBattery; }
-            set { SetValue(ref colorTopPanelIndicatorByBattery, value); }
+            get
+            {
+                return string.Equals(TopPanelIconColorMode, TopPanelIconColorModeBattery,
+                    System.StringComparison.OrdinalIgnoreCase);
+            }
+            set
+            {
+                colorTopPanelIndicatorByBattery = value;
+                if (string.IsNullOrWhiteSpace(topPanelIconColorMode))
+                {
+                    return;
+                }
+
+                if (value)
+                {
+                    TopPanelIconColorMode = TopPanelIconColorModeBattery;
+                }
+                else if (string.Equals(TopPanelIconColorMode, TopPanelIconColorModeBattery,
+                    System.StringComparison.OrdinalIgnoreCase))
+                {
+                    TopPanelIconColorMode = TopPanelIconColorModeDefault;
+                }
+            }
         }
 
         /// <summary>
@@ -900,6 +947,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         public string NotificationBadgePosition { get { return NormalizeBadgePosition(notificationBadgePosition); } set { SetValue(ref notificationBadgePosition, NormalizeBadgePosition(value)); } }
         public string NotificationTextAlignment { get { return NotificationFontCatalog.NormalizeAlignment(notificationTextAlignment); } set { SetValue(ref notificationTextAlignment, NotificationFontCatalog.NormalizeAlignment(value)); } }
         public string NotificationAccentMode { get { return NotificationFontCatalog.NormalizeAccentMode(notificationAccentMode); } set { SetValue(ref notificationAccentMode, NotificationFontCatalog.NormalizeAccentMode(value)); } }
+        public string NotificationControllerIconMode { get { return NormalizeControllerIconMode(notificationControllerIconMode); } set { SetValue(ref notificationControllerIconMode, NormalizeControllerIconMode(value)); } }
         public string NotificationAnimation { get { return NotificationFontCatalog.NormalizeAnimation(notificationAnimation); } set { SetValue(ref notificationAnimation, NotificationFontCatalog.NormalizeAnimation(value)); } }
         public bool NotificationShowTitle { get { return notificationShowTitle; } set { SetValue(ref notificationShowTitle, value); } }
         public bool NotificationUppercaseTitle { get { return notificationUppercaseTitle; } set { SetValue(ref notificationUppercaseTitle, value); } }
@@ -975,6 +1023,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         public string DesktopNotificationBadgePosition { get { return NormalizeBadgePosition(desktopNotificationBadgePosition); } set { SetValue(ref desktopNotificationBadgePosition, NormalizeBadgePosition(value)); } }
         public string DesktopNotificationTextAlignment { get { return NotificationFontCatalog.NormalizeAlignment(desktopNotificationTextAlignment); } set { SetValue(ref desktopNotificationTextAlignment, NotificationFontCatalog.NormalizeAlignment(value)); } }
         public string DesktopNotificationAccentMode { get { return NotificationFontCatalog.NormalizeAccentMode(desktopNotificationAccentMode); } set { SetValue(ref desktopNotificationAccentMode, NotificationFontCatalog.NormalizeAccentMode(value)); } }
+        public string DesktopNotificationControllerIconMode { get { return NormalizeControllerIconMode(desktopNotificationControllerIconMode); } set { SetValue(ref desktopNotificationControllerIconMode, NormalizeControllerIconMode(value)); } }
         public string DesktopNotificationAnimation { get { return NotificationFontCatalog.NormalizeAnimation(desktopNotificationAnimation); } set { SetValue(ref desktopNotificationAnimation, NotificationFontCatalog.NormalizeAnimation(value)); } }
         public bool DesktopNotificationShowTitle { get { return desktopNotificationShowTitle; } set { SetValue(ref desktopNotificationShowTitle, value); } }
         public bool DesktopNotificationUppercaseTitle { get { return desktopNotificationUppercaseTitle; } set { SetValue(ref desktopNotificationUppercaseTitle, value); } }
@@ -1043,6 +1092,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         public string OverlayAccentColor { get { return overlayAccentColor; } set { SetValue(ref overlayAccentColor, value); } }
         public string OverlayInstructionColor { get { return overlayInstructionColor; } set { SetValue(ref overlayInstructionColor, value); } }
         public string OverlayControllerIconColor { get { return overlayControllerIconColor; } set { SetValue(ref overlayControllerIconColor, value); } }
+        public string OverlayControllerIconMode { get { return NormalizeControllerIconMode(overlayControllerIconMode); } set { SetValue(ref overlayControllerIconMode, NormalizeControllerIconMode(value)); } }
         public string OverlayTextColor { get { return overlayTextColor; } set { SetValue(ref overlayTextColor, value); } }
         public string OverlayWarningColor { get { return overlayWarningColor; } set { SetValue(ref overlayWarningColor, value); } }
         public int OverlayTitleFontSize { get { return overlayTitleFontSize; } set { SetValue(ref overlayTitleFontSize, value); } }
@@ -1310,6 +1360,15 @@ namespace ControllerSessionManager.PlayniteIntegration
                     if (!string.Equals(profile.DetectedName, detectedName,
                         System.StringComparison.Ordinal))
                     {
+                        // Keep the editable alias in sync until the user types a custom name.
+                        if (string.IsNullOrWhiteSpace(profile.CustomName) ||
+                            string.Equals(profile.CustomName, profile.DetectedName,
+                                System.StringComparison.Ordinal))
+                        {
+                            profile.CustomName = detectedName;
+                            changed = true;
+                        }
+
                         profile.DetectedName = detectedName;
                         changed = true;
                     }
@@ -1798,6 +1857,16 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
 
             topPanelControllerMode = NormalizeTopPanelControllerMode(topPanelControllerMode);
+            if (string.IsNullOrWhiteSpace(topPanelIconColorMode))
+            {
+                topPanelIconColorMode = colorTopPanelIndicatorByBattery
+                    ? TopPanelIconColorModeBattery
+                    : TopPanelIconColorModeDefault;
+            }
+            else
+            {
+                topPanelIconColorMode = NormalizeTopPanelIconColorMode(topPanelIconColorMode);
+            }
             creatorThemeUpdatePolicy = NormalizeCreatorThemeUpdatePolicy(creatorThemeUpdatePolicy);
             appearancePreset = SettingsAppearance.Normalize(appearancePreset);
             notificationStylePreset = NotificationStylePresets.Normalize(notificationStylePreset);
@@ -1834,6 +1903,9 @@ namespace ControllerSessionManager.PlayniteIntegration
             desktopNotificationTextAlignment = NotificationFontCatalog.NormalizeAlignment(desktopNotificationTextAlignment);
             notificationAccentMode = NotificationFontCatalog.NormalizeAccentMode(notificationAccentMode);
             desktopNotificationAccentMode = NotificationFontCatalog.NormalizeAccentMode(desktopNotificationAccentMode);
+            notificationControllerIconMode = NormalizeControllerIconMode(notificationControllerIconMode);
+            desktopNotificationControllerIconMode = NormalizeControllerIconMode(desktopNotificationControllerIconMode);
+            overlayControllerIconMode = NormalizeControllerIconMode(overlayControllerIconMode);
             notificationAnimation = NotificationFontCatalog.NormalizeAnimation(notificationAnimation);
             desktopNotificationAnimation = NotificationFontCatalog.NormalizeAnimation(desktopNotificationAnimation);
             NotificationSoundVolume = notificationSoundVolume;
@@ -1867,6 +1939,21 @@ namespace ControllerSessionManager.PlayniteIntegration
             return TopPanelControllerModeHidden;
         }
 
+        internal static string NormalizeTopPanelIconColorMode(string value)
+        {
+            if (string.Equals(value, TopPanelIconColorModeController, System.StringComparison.OrdinalIgnoreCase))
+            {
+                return TopPanelIconColorModeController;
+            }
+
+            if (string.Equals(value, TopPanelIconColorModeDefault, System.StringComparison.OrdinalIgnoreCase))
+            {
+                return TopPanelIconColorModeDefault;
+            }
+
+            return TopPanelIconColorModeBattery;
+        }
+
         private static string NormalizeCreatorThemeUpdatePolicy(string value)
         {
             if (string.Equals(value, CreatorThemeUpdatePolicyManual,
@@ -1898,6 +1985,23 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             return string.Equals(value, "TopLeft", System.StringComparison.OrdinalIgnoreCase)
                 ? "TopLeft" : "TopRight";
+        }
+
+        internal static string NormalizeControllerIconMode(string value)
+        {
+            if (string.Equals(value, "Controller", System.StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(value, "true", System.StringComparison.OrdinalIgnoreCase))
+            {
+                return "Controller";
+            }
+
+            return "Default";
+        }
+
+        internal static bool UsesControllerIconColor(string mode)
+        {
+            return string.Equals(NormalizeControllerIconMode(mode), "Controller",
+                System.StringComparison.OrdinalIgnoreCase);
         }
 
         private static string NormalizeContentAlignment(string value)
@@ -2202,7 +2306,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 CreatorThemeLastUpdateUtc = CreatorThemeLastUpdateUtc,
                 ShowPrimaryControllerInTopPanel = ShowPrimaryControllerInTopPanel,
                 TopPanelControllerMode = TopPanelControllerMode,
-                ColorTopPanelIndicatorByBattery = ColorTopPanelIndicatorByBattery,
+                TopPanelIconColorMode = TopPanelIconColorMode,
                 LaunchFullscreenOnGuideButton = LaunchFullscreenOnGuideButton,
                 SetupWizardCompleted = SetupWizardCompleted,
                 EnableSessionTracking = EnableSessionTracking,
@@ -2264,6 +2368,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 NotificationBadgePosition = NotificationBadgePosition,
                 NotificationTextAlignment = NotificationTextAlignment,
                 NotificationAccentMode = NotificationAccentMode,
+                NotificationControllerIconMode = NotificationControllerIconMode,
                 NotificationAnimation = NotificationAnimation,
                 NotificationShowTitle = NotificationShowTitle,
                 NotificationUppercaseTitle = NotificationUppercaseTitle,
@@ -2344,6 +2449,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 DesktopNotificationBadgePosition = DesktopNotificationBadgePosition,
                 DesktopNotificationTextAlignment = DesktopNotificationTextAlignment,
                 DesktopNotificationAccentMode = DesktopNotificationAccentMode,
+                DesktopNotificationControllerIconMode = DesktopNotificationControllerIconMode,
                 DesktopNotificationAnimation = DesktopNotificationAnimation,
                 DesktopNotificationShowTitle = DesktopNotificationShowTitle,
                 DesktopNotificationUppercaseTitle = DesktopNotificationUppercaseTitle,
@@ -2412,6 +2518,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 OverlayAccentColor = OverlayAccentColor,
                 OverlayInstructionColor = OverlayInstructionColor,
                 OverlayControllerIconColor = OverlayControllerIconColor,
+                OverlayControllerIconMode = OverlayControllerIconMode,
                 OverlayTextColor = OverlayTextColor,
                 OverlayWarningColor = OverlayWarningColor,
                 OverlayTitleFontSize = OverlayTitleFontSize,
@@ -2552,7 +2659,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             CreatorThemeLastUpdateUtc = source.CreatorThemeLastUpdateUtc;
             showPrimaryControllerInTopPanel = source.showPrimaryControllerInTopPanel;
             topPanelControllerMode = source.topPanelControllerMode;
-            ColorTopPanelIndicatorByBattery = source.ColorTopPanelIndicatorByBattery;
+            TopPanelIconColorMode = source.TopPanelIconColorMode;
             LaunchFullscreenOnGuideButton = source.LaunchFullscreenOnGuideButton;
             SetupWizardCompleted = source.SetupWizardCompleted;
             EnableSessionTracking = source.EnableSessionTracking;
@@ -2615,6 +2722,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             NotificationBadgePosition = source.NotificationBadgePosition;
             NotificationTextAlignment = source.NotificationTextAlignment;
             NotificationAccentMode = source.NotificationAccentMode;
+            NotificationControllerIconMode = source.NotificationControllerIconMode;
             NotificationAnimation = source.NotificationAnimation;
             NotificationShowTitle = source.NotificationShowTitle;
             NotificationUppercaseTitle = source.NotificationUppercaseTitle;
@@ -2694,6 +2802,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             DesktopNotificationBadgePosition = source.DesktopNotificationBadgePosition;
             DesktopNotificationTextAlignment = source.DesktopNotificationTextAlignment;
             DesktopNotificationAccentMode = source.DesktopNotificationAccentMode;
+            DesktopNotificationControllerIconMode = source.DesktopNotificationControllerIconMode;
             DesktopNotificationAnimation = source.DesktopNotificationAnimation;
             DesktopNotificationShowTitle = source.DesktopNotificationShowTitle;
             DesktopNotificationUppercaseTitle = source.DesktopNotificationUppercaseTitle;
@@ -2762,6 +2871,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             OverlayAccentColor = source.OverlayAccentColor;
             OverlayInstructionColor = source.OverlayInstructionColor;
             OverlayControllerIconColor = source.OverlayControllerIconColor;
+            OverlayControllerIconMode = source.OverlayControllerIconMode;
             OverlayTextColor = source.OverlayTextColor;
             OverlayWarningColor = source.OverlayWarningColor;
             OverlayTitleFontSize = source.OverlayTitleFontSize;
@@ -2890,7 +3000,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 LastKnownXInputSlot = a.LastKnownXInputSlot,
                 DetectedName = a.DetectedName,
                 CustomName = a.CustomName,
-                IconId = a.IconId
+                IconId = a.IconId,
+                IconColor = a.IconColor
             }).ToList();
         }
 

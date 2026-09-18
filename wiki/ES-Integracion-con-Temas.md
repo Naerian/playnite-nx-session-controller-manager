@@ -56,19 +56,20 @@ Otras composiciones habituales:
 
 | Propiedad | Uso |
 |-----------|-----|
-| `ThemeApiVersion` | Versión del contrato (actualmente `1`) |
+| `ThemeApiVersion` | Versión del contrato (actualmente `2`) |
 | `ConnectedCount`, `HasConnectedControllers` | Conteo / presencia |
-| `PrimaryControllerName`, `StatusText`, `PrimaryControllerTooltip` | Texto |
+| `PrimaryControllerName`, `StatusText`, `PrimaryControllerTooltip` | Texto. Con varios mandos, el tooltip es `"{0} mandos conectados"`. |
 | `PrimaryControllerIconGeometry` | Silueta del perfil elegido del primario |
-| `TopPanelIconGeometry` | Misma lógica que el top panel Desktop (Default vs Primary) |
+| `TopPanelIconGeometry` | Icono del top panel Desktop. Con **más de un** mando: siempre el icono genérico del pack. Con uno: modo Default vs Primary. |
 | `DefaultIconGeometry` | Icono fijo del pack (p. ej. tester) |
 | `PrimaryControllerBatteryLabel` | Etiqueta localizada (`Low`, `Full`, …) |
 | `PrimaryControllerBatteryLevel` | Clave cruda: `Empty` / `Low` / `Medium` / `Full` |
 | `PrimaryControllerBatteryBrush` | Color del nivel (siempre que haya batería) |
-| `PrimaryControllerIconBrush` | Color del icono **tras** aplicar «colorear por batería»; puede ser `null`. No uses `TargetNullValue={DynamicResource ...}` con `PluginSettings` (rompe el tema). Para icono con color según ajuste, usa `ControllerIcon`. |
+| `PrimaryControllerIconColor` | Hex `#AARRGGBB` del tinte Mandos del primario si existe; vacío si no |
+| `PrimaryControllerIconBrush` | Color resuelto del icono: **tinte de perfil → batería (si está activo) → `null` (foreground del tema)**. Con varios mandos, el Top Panel fuerza `null`. No uses `TargetNullValue={DynamicResource ...}` con `PluginSettings` (rompe el tema). Prefiere `ControllerIcon` / `TopPanelIcon`. |
 | `HasPrimaryControllerBattery` | Hay nivel conocido |
-| `UsePrimaryControllerBatteryColor` | Batería conocida **y** el usuario activó colorear |
-| `ColorIconByBattery` | Espejo del checkbox de ajustes |
+| `UsePrimaryControllerBatteryColor` | True cuando `PrimaryControllerIconBrush` está forzado (perfil o batería) |
+| `ColorIconByBattery` | True cuando el modo de color del icono/texto es **Según nivel de batería** |
 | `TopPanelControllerMode` | `Hidden` / `Default` / `Primary` |
 | `IsTopPanelButtonVisible` | El botón Desktop del top panel está visible |
 
@@ -104,8 +105,8 @@ Un `x:Name` por elemento y por vista (WPF no permite duplicados). Redimensiona c
 | `ControllerStatus` | Texto de estado compacto |
 | `ControllerCount` | Número de mandos |
 | `PrimaryController` | Nombre del primario |
-| `ControllerIcon` | Icono de perfil; color según ajuste de batería / `Foreground` del placeholder |
-| `TopPanelIcon` | Como el top panel Desktop |
+| `ControllerIcon` | Icono de perfil; color según tinte Mandos → batería → `Foreground` del placeholder |
+| `TopPanelIcon` | Como el top panel Desktop (genérico + color del tema con varios mandos) |
 | `ControllerBatteryText` | Etiqueta de nivel (oculto sin batería); color de batería |
 | `ControllerBatteryDot` | Punto con color de nivel (oculto sin batería) |
 | `TesterLauncher`, `TesterStatusBadge`, … | Bloques del tester |

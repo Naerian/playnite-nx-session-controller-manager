@@ -21,7 +21,7 @@ No está documentado un mecanismo para que un theme haga binding arbitrario a un
 
 ```text
 SourceName: ControllerSessionManager
-ThemeApiVersion: 1
+ThemeApiVersion: 2
 AddonId: se fijará al crear extension.yaml y no cambiará
 ```
 

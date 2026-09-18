@@ -6,6 +6,7 @@
     <sys:String x:Key="LOCCSM_ReconciliationInterval">??????(?)</sys:String>
     <sys:String x:Key="LOCCSM_ValidationInterval">??????? 2 ? 60 ????</sys:String>
     <sys:String x:Key="LOCCSM_ConnectedControllers">???????</sys:String>
+    <sys:String x:Key="LOCCSM_ControllersConnectedCount">已连接 {0} 个手柄</sys:String>
     <sys:String x:Key="LOCCSM_Refresh">??</sys:String>
     <sys:String x:Key="LOCCSM_NoControllers">??????</sys:String>
     <sys:String x:Key="LOCCSM_NoInputYet">???????</sys:String>
@@ -102,6 +103,9 @@
     <sys:String x:Key="LOCCSM_CustomName">?????</sys:String>
     <sys:String x:Key="LOCCSM_CustomNameHelp">??? Playnite????????????????</sys:String>
     <sys:String x:Key="LOCCSM_Icon">??</sys:String>
+    <sys:String x:Key="LOCCSM_IconColor">颜色</sys:String>
+    <sys:String x:Key="LOCCSM_IconColorHelp">为此手柄轮廓设置可选着色。留空则继承外观默认值。</sys:String>
+    <sys:String x:Key="LOCCSM_ResetIconColor">使用默认</sys:String>
     <sys:String x:Key="LOCCSM_IconGeneric">??</sys:String>
     <sys:String x:Key="LOCCSM_NoIcon">?</sys:String>
     <sys:String x:Key="LOCCSM_ValueUnavailable">???</sys:String>
@@ -252,6 +256,11 @@
     <sys:String x:Key="LOCCSM_OverlayAllowTakeover">????,?????????????????</sys:String>
     <sys:String x:Key="LOCCSM_OverlayAllowTakeoverOrKeyboardMouse">Reconnect it, use another controller, or press a key / click to continue with keyboard and mouse.</sys:String>
     <sys:String x:Key="LOCCSM_ColorTopPanelByBattery">??????????????</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelIconColorMode">图标 / 文字颜色</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelIconColorModeDefault">默认</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelIconColorModeBattery">按电量</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelIconColorModeController">手柄颜色</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelIconColorModeMultiHelp">连接多个手柄时，顶栏以默认颜色显示通用图标。</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicySessionSection">?????</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseSection">????</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseUseGlobal">????????</sys:String>
@@ -705,6 +714,12 @@
     <sys:String x:Key="LOCCSM_AnimationScale">Scale</sys:String>
     <sys:String x:Key="LOCCSM_NotificationShowTitle">Show notification title</sys:String>
     <sys:String x:Key="LOCCSM_NotificationAccentMode">Semantic accent</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayControllerIconColor">手柄图标颜色</sys:String>
+    <sys:String x:Key="LOCCSM_UseControllerIconColor">使用手柄图标颜色为轮廓着色</sys:String>
+    <sys:String x:Key="LOCCSM_UseControllerIconColorHelp">启用后，通知图标使用手柄的图标颜色，而不是事件强调色。</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerIconColorSection">手柄图标颜色</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerIconModeDefault">默认</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerIconModeController">手柄颜色</sys:String>
     <sys:String x:Key="LOCCSM_AccentModeIconAndBorder">Icon and border</sys:String>
     <sys:String x:Key="LOCCSM_AccentModeIconOnly">Icon only</sys:String>
     <sys:String x:Key="LOCCSM_AccentModeTintedBackground">Tinted background</sys:String>

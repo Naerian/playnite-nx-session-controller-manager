@@ -5,6 +5,7 @@
              xmlns:controls="clr-namespace:ControllerSessionManager.Tester.Views.Controls"
              xmlns:layouts="clr-namespace:ControllerSessionManager.Tester.Views.ControllerLayouts"
              xmlns:views="clr-namespace:ControllerSessionManager.Tester.Views"
+             xmlns:pi="clr-namespace:ControllerSessionManager.PlayniteIntegration"
              TextElement.FontSize="14"
              TextElement.FontWeight="Normal"
              TextElement.Foreground="{DynamicResource TextBrush}"
@@ -29,6 +30,8 @@
         <converters:BoolToBrushConverter x:Key="PillTextBrush"
                                          FalseBrush="{StaticResource PillIdleTextBrush}"
                                          TrueBrush="{StaticResource ActivePillTextBrush}" />
+        <pi:IconGeometryConverter x:Key="IconGeometryConverter" />
+        <converters:OptionalHexBrushConverter x:Key="OptionalHexBrush" />
 
         <Style x:Key="SectionHeaderText" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource Narian.Accent}" />
@@ -327,9 +330,22 @@
                                               IsDropDownOpen="{Binding DataContext.IsControllerSelectorOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
                                         <ComboBox.ItemTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="{Binding DisplayName}"
-                                                           FontWeight="Normal"
-                                                           TextTrimming="CharacterEllipsis" />
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Viewbox Width="18" Height="18" Margin="0,0,8,0"
+                                                             VerticalAlignment="Center" Stretch="Uniform">
+                                                        <Path Data="{Binding IconGeometry, Converter={StaticResource IconGeometryConverter}}"
+                                                              Fill="{Binding IconColor, Converter={StaticResource OptionalHexBrush}}"
+                                                              Stretch="Uniform" />
+                                                    </Viewbox>
+                                                    <TextBlock Text="{Binding DisplayName}"
+                                                               FontWeight="Normal"
+                                                               VerticalAlignment="Center"
+                                                               TextTrimming="CharacterEllipsis" />
+                                                    <Ellipse Width="8" Height="8" Margin="8,0,0,0"
+                                                             VerticalAlignment="Center"
+                                                             Fill="{Binding IconColor, Converter={StaticResource OptionalHexBrush}}"
+                                                             Visibility="{Binding HasIconColor, Converter={StaticResource BoolToVisibility}}" />
+                                                </StackPanel>
                                             </DataTemplate>
                                         </ComboBox.ItemTemplate>
                                     </ComboBox>
@@ -508,15 +524,13 @@
                                             <ComboBox ItemsSource="{Binding VisualSchemeOptions}"
                                                       SelectedValue="{Binding SelectedVisualSchemeKey, Mode=TwoWay}"
                                                       SelectedValuePath="Key"
-                                                      Foreground="{StaticResource PillIdleTextBrush}"
-                                                      Background="{StaticResource IdleBrush}"
                                                       Height="28"
                                                       MaxDropDownHeight="240">
                                                 <ComboBox.ItemContainerStyle>
                                                     <Style TargetType="ComboBoxItem">
-                                                        <Setter Property="Foreground" Value="{StaticResource PillIdleTextBrush}" />
+                                                        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
                                                         <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
-                                                        <Setter Property="TextElement.Foreground" Value="{StaticResource PillIdleTextBrush}" />
+                                                        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextBrush}" />
                                                         <Setter Property="Padding" Value="8,5" />
                                                     </Style>
                                                 </ComboBox.ItemContainerStyle>
@@ -530,14 +544,14 @@
                                                                                         ScaleY="{Binding ThumbnailScale}" />
                                                                     </Grid.RenderTransform>
                                                                     <Path Data="{Binding PrimaryGeometry}"
-                                                                          Fill="{StaticResource PillIdleTextBrush}" />
+                                                                          Fill="{DynamicResource TextBrush}" />
                                                                     <Path Data="{Binding SecondaryGeometry}"
                                                                           Fill="{DynamicResource Narian.Accent}"
                                                                           Opacity="0.72" />
                                                                 </Grid>
                                                             </Viewbox>
                                                             <TextBlock Text="{Binding DisplayName}"
-                                                                       Foreground="{StaticResource PillIdleTextBrush}"
+                                                                       Foreground="{DynamicResource TextBrush}"
                                                                        VerticalAlignment="Center"
                                                                        TextTrimming="CharacterEllipsis" />
                                                         </StackPanel>

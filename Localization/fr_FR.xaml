@@ -6,6 +6,7 @@
     <sys:String x:Key="LOCCSM_ReconciliationInterval">Intervalle de v-rification des connexions (secondes)</sys:String>
     <sys:String x:Key="LOCCSM_ValidationInterval">L-intervalle doit -tre compris entre 2 et 60 secondes.</sys:String>
     <sys:String x:Key="LOCCSM_ConnectedControllers">Manettes connect-es</sys:String>
+    <sys:String x:Key="LOCCSM_ControllersConnectedCount">{0} manettes connectées</sys:String>
     <sys:String x:Key="LOCCSM_Refresh">Actualiser</sys:String>
     <sys:String x:Key="LOCCSM_NoControllers">Aucune manette connect-e</sys:String>
     <sys:String x:Key="LOCCSM_NoInputYet">Aucune entr-e d-tect-e</sys:String>
@@ -102,6 +103,9 @@
     <sys:String x:Key="LOCCSM_CustomName">Nom personnalis-</sys:String>
     <sys:String x:Key="LOCCSM_CustomNameHelp">Affich- dans Playnite, les notifications et la liste Manettes pour cette manette.</sys:String>
     <sys:String x:Key="LOCCSM_Icon">Ic-ne</sys:String>
+    <sys:String x:Key="LOCCSM_IconColor">Couleur</sys:String>
+    <sys:String x:Key="LOCCSM_IconColorHelp">Teinte facultative pour la silhouette de cette manette. Laissez vide pour hériter des valeurs par défaut d'Apparence.</sys:String>
+    <sys:String x:Key="LOCCSM_ResetIconColor">Utiliser la valeur par défaut</sys:String>
     <sys:String x:Key="LOCCSM_IconGeneric">G-n-rique</sys:String>
     <sys:String x:Key="LOCCSM_NoIcon">Aucune</sys:String>
     <sys:String x:Key="LOCCSM_ValueUnavailable">Indisponible</sys:String>
@@ -252,6 +256,11 @@
     <sys:String x:Key="LOCCSM_OverlayAllowTakeover">Reconnectez-la, ou appuyez sur un bouton ou bougez un stick d-une autre manette.</sys:String>
     <sys:String x:Key="LOCCSM_OverlayAllowTakeoverOrKeyboardMouse">Reconnectez-la, utilisez une autre manette, ou appuyez sur une touche / cliquez pour continuer au clavier et a la souris.</sys:String>
     <sys:String x:Key="LOCCSM_ColorTopPanelByBattery">Colorer l-ic-ne et le texte de batterie selon son niveau</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelIconColorMode">Couleur de l'icône / du texte</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelIconColorModeDefault">Par défaut</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelIconColorModeBattery">Selon le niveau de batterie</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelIconColorModeController">Couleur de la manette</sys:String>
+    <sys:String x:Key="LOCCSM_TopPanelIconColorModeMultiHelp">Avec plusieurs manettes connectées, la barre supérieure affiche l'icône générique dans la couleur par défaut.</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicySessionSection">Protection en partie</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseSection">Pause automatique</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyPauseUseGlobal">Utiliser les r-glages globaux de pause</sys:String>
@@ -707,6 +716,12 @@
     <sys:String x:Key="LOCCSM_AnimationScale">Scale</sys:String>
     <sys:String x:Key="LOCCSM_NotificationShowTitle">Show notification title</sys:String>
     <sys:String x:Key="LOCCSM_NotificationAccentMode">Semantic accent</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayControllerIconColor">Couleur de l'icône de la manette</sys:String>
+    <sys:String x:Key="LOCCSM_UseControllerIconColor">Teinter la silhouette avec la couleur d'icône de la manette</sys:String>
+    <sys:String x:Key="LOCCSM_UseControllerIconColorHelp">Si activé, les icônes de notification utilisent la couleur d'icône de la manette au lieu de l'accent de l'événement.</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerIconColorSection">Couleur de l'icône de la manette</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerIconModeDefault">Par défaut</sys:String>
+    <sys:String x:Key="LOCCSM_ControllerIconModeController">Couleur de la manette</sys:String>
     <sys:String x:Key="LOCCSM_AccentModeIconAndBorder">Icon and border</sys:String>
     <sys:String x:Key="LOCCSM_AccentModeIconOnly">Icon only</sys:String>
     <sys:String x:Key="LOCCSM_AccentModeTintedBackground">Tinted background</sys:String>
