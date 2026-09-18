@@ -46,6 +46,8 @@ El `ContentControl` es un placeholder: Playnite lo reemplaza/puebla con el contr
 
 ## 4. Catálogo v1
 
+Fuente de verdad de lo **enviado y registrado**: [wiki EN-Theme-Integration](../wiki/EN-Theme-Integration.md). Las secciones siguientes documentan el catálogo histórico/planificado; `ControllerList` y `PlayerSlot1`–`4` **no** están implementados.
+
 Además de los bloques de estado, CSM registra bloques de tester. Los nombres canónicos son `ControllerSessionManager_TesterLauncher` (y `TesterStatusBadge`, `TesterButtonMap`, `TesterStickCheck`, `TesterTriggerCheck`, `TesterRumblePad`, `TesterLatencyMini`). Los temas existentes pueden seguir usando `GamepadTester_*`. El muestreo SDL está en `ControllerSessionManager.TesterHost.exe`. Contrato detallado: `docs/theme-integration/CONTRACT.md`.
 
 ### `ControllerStatus`
@@ -110,15 +112,21 @@ Los campos no disponibles se ocultan o muestran `—` según recursos del theme.
 
 ### `ControllerList`
 
+**NOT IMPLEMENTED.** Este nombre no está registrado en `AddCustomElementSupport`. No uses este `ContentControl` en temas publicados.
+
 ```xml
+<!-- Not shipped — placeholder only for historical notes -->
 <ContentControl x:Name="ControllerSessionManager_ControllerList" />
 ```
 
-Lista reutilizable para todos los mandos. El control interno usa una colección de snapshots y virtualización cuando la plantilla lo permita. Modos planeados v1: `Connected`, `SessionActive`, `AllKnown`.
+Fuente de verdad de elementos enviados: [wiki EN-Theme-Integration](../wiki/EN-Theme-Integration.md).
 
 ### `PlayerSlot1` … `PlayerSlot4`
 
+**NOT IMPLEMENTED.** `PlayerSlot1`–`PlayerSlot4` no están registrados ni se inyectan como controles. No los declares en temas esperando contenido del plugin.
+
 ```xml
+<!-- Not shipped -->
 <UniformGrid Columns="2">
     <ContentControl x:Name="ControllerSessionManager_PlayerSlot1" />
     <ContentControl x:Name="ControllerSessionManager_PlayerSlot2" />
@@ -127,7 +135,7 @@ Lista reutilizable para todos los mandos. El control interno usa una colección 
 </UniformGrid>
 ```
 
-El player slot es lógico y puede provenir de XInput o asignación de sesión. Si no está disponible, queda vacío/unknown; no se deduce del orden arbitrario de enumeración.
+Para composición libre de estado de mandos, usa la Data API y los ContentControls listados en la wiki.
 
 ## 5. Estilizado avanzado soportado
 

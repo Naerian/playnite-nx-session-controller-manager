@@ -235,7 +235,6 @@
     <sys:String x:Key="LOCCSM_GamePolicyUseGlobal">Genel ayarlari kullan</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyDisable">Oyun i-i korumayi kapat</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyRequireSame">Otomatik / uyarlanabilir</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyAllowTakeover">Tek oyuncu. Baska kontrolc-n-n devralmasina izin ver</sys:String>
     <sys:String x:Key="LOCCSM_MenuSettings">Ayarlar</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlay">Kontrolc- baglantisi onayli olarak kesildiginde kaplama g-ster</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlayHelp">Harici kaplama bilgilendirme ama-lidir ve olay --z-ld-g-nde veya oyun bittiginde otomatik kapanir.</sys:String>
@@ -247,8 +246,6 @@
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">Temporarily stop the game when a controller disconnects</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnectHelp">Ag etkinligini kontrol etmeden, bir kontrolc- her koptugunda oyun s-recini duraklatir. T-m oyunlarda -alisir. Eklenti, oyun bittikten sonra oyunu otomatik olarak s-rd-rmez.</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnectWarning">-evrimi-i ma-lari da duraklatir; eklenti oyunu kendi basina s-rd-rmez.</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyEnablePause">Bu oyunu otomatik duraklat</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyDisablePause">Bu oyunu otomatik duraklatma</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPauseDisabled">Otomatik duraklatma kapali</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectTitle">Kontrolc- baglantisi kesildi</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectMessage">Baglanti kaybedildi: {0}</sys:String>
@@ -801,8 +798,6 @@
     <sys:String x:Key="LOCCSM_OverlayBackgroundImage">Overlay arka plan resmi</sys:String>
     <sys:String x:Key="LOCCSM_OverlayBackgroundImageSelect">Overlay arka plan resmi se-</sys:String>
     <sys:String x:Key="LOCCSM_Design">Tasarim</sys:String>
-    <sys:String x:Key="LOCCSM_AdvancedDesign">Gelismis tasarim</sys:String>
-    <sys:String x:Key="LOCCSM_AdvancedDesignHint">Tasarimci kontrolleri. Hazir ayarlar ve basit kontroller tamamen uyumludur.</sys:String>
     <sys:String x:Key="LOCCSM_TextBlockOrder">Metin sirasi</sys:String>
     <sys:String x:Key="LOCCSM_TitleFirst">-nce baslik</sys:String>
     <sys:String x:Key="LOCCSM_MessageFirst">-nce mesaj</sys:String>

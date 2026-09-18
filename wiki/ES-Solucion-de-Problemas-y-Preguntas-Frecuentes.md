@@ -26,7 +26,7 @@ Comprueba que monitorización, seguimiento de sesión y overlay estén activos. 
 
 ## ¿Por qué no se pausó el juego?
 
-La pausa está desactivada por defecto. La tecla se omite si no puede verificarse el árbol del juego en primer plano. La pausa forzada tampoco suspende cuando encuentra evidencias online. El estado del overlay explica el resultado.
+La pausa automática empieza en solo overlay: el aviso puede aparecer sin suspender el proceso. Con **OfflineOnly**, la actividad de red (o metadatos inequívocos de juego online) evita la suspensión y conserva el overlay o un aviso. La suspensión también exige un árbol de proceso del juego verificado en primer plano; la pantalla completa exclusiva, un juego elevado con Playnite sin elevar o un lanzamiento fuera de Playnite pueden bloquearla. El estado del overlay explica el resultado.
 
 ## ¿Puede el overlay impedir que otro mando controle el juego por detrás?
 

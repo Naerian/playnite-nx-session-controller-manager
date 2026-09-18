@@ -235,7 +235,6 @@
     <sys:String x:Key="LOCCSM_GamePolicyUseGlobal">Utiliser les r-glages globaux</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyDisable">D-sactiver la protection en partie</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyRequireSame">Automatique / adaptatif</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyAllowTakeover">Solo. Autoriser une autre manette - prendre le relais</sys:String>
     <sys:String x:Key="LOCCSM_MenuSettings">Param-tres</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlay">Afficher un overlay apr-s la d-connexion confirm-e d'une manette</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlayHelp">L'overlay externe est informatif et se ferme automatiquement lorsque l'incident est r-solu ou que le jeu se termine.</sys:String>
@@ -247,8 +246,6 @@
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">Essayer de mettre le jeu en pause apr-s une d-connexion confirm-e</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnectHelp">Envoie une fois la touche configur-e, uniquement si la fen-tre au premier plan appartient au jeu ou - un processus enfant. D-sactiv- par d-faut ; aucune reprise automatique.</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnectWarning">Suspend aussi les parties en ligne ; le plugin ne reprend pas le jeu tout seul.</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyEnablePause">Mettre ce jeu en pause automatiquement</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyDisablePause">Ne pas mettre ce jeu en pause automatiquement</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPauseDisabled">Pause automatique d-sactiv-e</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectTitle">Manette d-connect-e</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectMessage">Connexion perdue : {0}</sys:String>
@@ -803,8 +800,6 @@
     <sys:String x:Key="LOCCSM_OverlayBackgroundImage">Image de fond de l-overlay</sys:String>
     <sys:String x:Key="LOCCSM_OverlayBackgroundImageSelect">S-lectionner l-image de fond de l-overlay</sys:String>
     <sys:String x:Key="LOCCSM_Design">Design</sys:String>
-    <sys:String x:Key="LOCCSM_AdvancedDesign">Design avanc-</sys:String>
-    <sys:String x:Key="LOCCSM_AdvancedDesignHint">Contr-les pour les cr-ateurs. Les pr-r-glages et contr-les simples restent enti-rement compatibles.</sys:String>
     <sys:String x:Key="LOCCSM_TextBlockOrder">Ordre du texte</sys:String>
     <sys:String x:Key="LOCCSM_TitleFirst">Titre en premier</sys:String>
     <sys:String x:Key="LOCCSM_MessageFirst">Message en premier</sys:String>

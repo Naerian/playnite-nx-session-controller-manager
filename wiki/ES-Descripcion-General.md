@@ -12,7 +12,7 @@ Controller Manager es una extensión de Playnite para visualizar mandos, probarl
 - Mostrar notificaciones configurables al navegar por Fullscreen.
 - Registrar qué mandos participan realmente después de iniciar un juego.
 - Mostrar un overlay externo si se desconecta un mando participante.
-- Enviar una tecla de pausa de forma segura o pausar forzosamente juegos offline de manera opcional.
+- Suspender opcionalmente el proceso del juego tras una desconexión (solo overlay, solo sin actividad de red, o siempre).
 - Detectar actividad multijugador local sostenida y proteger cada participante por separado.
 
 ## Prioridades de diseño

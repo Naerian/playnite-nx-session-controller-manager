@@ -1,5 +1,9 @@
 # Notificaciones y overlay
 
+## Relación entre Estilos y las pestañas de Apariencia
+
+**Apariencia → Estilos** elige la fuente visual activa: un preset del plugin, un perfil importado, un diseño de creador o — con el interruptor correspondiente — un pack integrado del tema de Playnite. Las pestañas Escritorio, Pantalla completa y Overlay afinan diseño y colores en looks editables, o previsualizan diseños de creador/tema bloqueados. Los packs de creador y de tema bloquean distribución y colores mientras están activos. Usa **Copiar diseño de escritorio** si quieres que las notificaciones Fullscreen coincidan con el look de Escritorio.
+
 Los selectores separan presets del plugin, diseños importados y diseños revisados de creadores. Estos últimos pueden incluir distribución avanzada, fuentes, imágenes, bordes por estado y sonidos; mientras están activos, sus controles quedan bloqueados y atenuados visualmente. Los autores pueden consultar la guía de [Diseños de creadores](ES-Disenos-de-Creadores).
 
 Usa **Actualizar diseños** para obtener versiones compatibles desde el catálogo oficial. También puedes instalar un archivo `.csmtheme` de confianza mediante **Instalar diseño de creador**, situado junto a las acciones de perfiles visuales. El plugin valida la compatibilidad y el contenido antes de sustituir atómicamente el diseño; no registra la instalación mediante doble clic en Windows.

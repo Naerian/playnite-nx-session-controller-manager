@@ -235,7 +235,6 @@
     <sys:String x:Key="LOCCSM_GamePolicyUseGlobal">Uzyj ustawien globalnych</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyDisable">Wylacz ochrone w grze</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyRequireSame">Automatycznie / adaptacyjnie</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyAllowTakeover">Jeden gracz. Zezw-l na przejecie przez inny kontroler</sys:String>
     <sys:String x:Key="LOCCSM_MenuSettings">Ustawienia</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlay">Pokaz nakladke po potwierdzonym rozlaczeniu kontrolera</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlayHelp">Zewnetrzna nakladka ma charakter informacyjny i zamyka sie automatycznie po rozwiazaniu incydentu lub zakonczeniu gry.</sys:String>
@@ -247,8 +246,6 @@
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">Temporarily stop the game when a controller disconnects</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnectHelp">Wstrzymuje proces gry przy kazdym rozlaczeniu kontrolera, bez sprawdzania aktywnosci sieci. Dziala we wszystkich grach. Wtyczka nie wznawia gry automatycznie po jej zakonczeniu.</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnectWarning">Wstrzymuje takze mecze online; wtyczka sama nie wznawia gry.</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyEnablePause">Automatycznie wstrzymuj te gre</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyDisablePause">Nie wstrzymuj automatycznie tej gry</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPauseDisabled">Automatyczna pauza wylaczona</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectTitle">Kontroler rozlaczony</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectMessage">Utracono polaczenie: {0}</sys:String>
@@ -801,8 +798,6 @@
     <sys:String x:Key="LOCCSM_OverlayBackgroundImage">Obraz tla nakladki</sys:String>
     <sys:String x:Key="LOCCSM_OverlayBackgroundImageSelect">Wybierz obraz tla nakladki</sys:String>
     <sys:String x:Key="LOCCSM_Design">Projekt</sys:String>
-    <sys:String x:Key="LOCCSM_AdvancedDesign">Projekt zaawansowany</sys:String>
-    <sys:String x:Key="LOCCSM_AdvancedDesignHint">Narzedzia dla tw-rc-w. Presety i proste ustawienia pozostaja w pelni zgodne.</sys:String>
     <sys:String x:Key="LOCCSM_TextBlockOrder">Kolejnosc tekstu</sys:String>
     <sys:String x:Key="LOCCSM_TitleFirst">Najpierw tytul</sys:String>
     <sys:String x:Key="LOCCSM_MessageFirst">Najpierw wiadomosc</sys:String>

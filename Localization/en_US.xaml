@@ -237,7 +237,6 @@
     <sys:String x:Key="LOCCSM_GamePolicyUseGlobal">Use global settings</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyDisable">Disable in-game protection</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyRequireSame">Automatic / adaptive</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyAllowTakeover">Single player. Allow play to continue with another controller</sys:String>
     <sys:String x:Key="LOCCSM_MenuSettings">Settings</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlay">Show an overlay after a confirmed controller disconnection</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlayHelp">The external overlay is informational and closes automatically when the incident is resolved or the game ends.</sys:String>
@@ -249,8 +248,6 @@
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">Always suspend the game, regardless of network activity</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnectHelp">Suspends the game process every time a controller disconnects, without checking for network activity. Works for all games regardless of input handling. The plugin never resumes the game automatically once the game ends.</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnectWarning">Also suspends online matches; the plugin does not resume the game by itself.</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyEnablePause">Pause automatically for this game</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyDisablePause">Do not pause automatically for this game</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPauseDisabled">Automatic pause is off</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectTitle">Controller disconnected</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectMessage">Connection lost: {0}</sys:String>
@@ -303,12 +300,12 @@
     <sys:String x:Key="LOCCSM_TabSession">In-game</sys:String>
     <sys:String x:Key="LOCCSM_TabAppearance">Appearance</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceLooks">Looks</sys:String>
-    <sys:String x:Key="LOCCSM_AppearanceLooksHelp">Choose a look for desktop notifications, fullscreen notifications and the overlay. Installing or importing a design applies it immediately. Use the other Appearance tabs to preview, alerts, layout and colors.</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceLooksHelp">Looks choose the visual source for desktop notifications, fullscreen notifications and the overlay. Creator designs and Playnite theme packs lock layout, colors and typography; switch to a plugin look or Custom to edit. Use the Desktop, Fullscreen and Overlay tabs to preview, alerts and fine-tuning. On Fullscreen, Copy desktop design syncs that destination with Desktop.</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceLooksDesktop">Desktop notification</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceLooksFullscreen">Fullscreen notification</sys:String>
     <sys:String x:Key="LOCCSM_LooksPreview">Preview</sys:String>
     <sys:String x:Key="LOCCSM_CopyFullscreenStyleHelp">Replace this destination with the current fullscreen notification look.</sys:String>
-    <sys:String x:Key="LOCCSM_CopyDesktopStyleHelp">Replace this destination with the current desktop notification look.</sys:String>
+    <sys:String x:Key="LOCCSM_CopyDesktopStyleHelp">Quick way to keep Desktop and Fullscreen notifications aligned: copy the current Desktop look here, then tweak Fullscreen only if you need a difference.</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeLockedLooksNotice">Layout, colors and typography stay as the author designed them. Preview from here, or switch to a plugin preset or Custom to edit.</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeLockedDestinationNotice">Layout, colors and typography are locked. You can still use alerts, preview, and change the look from Appearance → Looks. Enable the matching Playnite theme styling toggle there if you want this theme's integrated pack.</sys:String>
     <sys:String x:Key="LOCCSM_CreatorThemeLockedOverlayNotice">Layout, colors and typography are locked. You can still enable or disable the overlay, preview it here, and change the look from Appearance → Looks. Enable the overlay Playnite theme styling toggle there if you want this theme's integrated pack.</sys:String>
@@ -833,8 +830,6 @@
     <sys:String x:Key="LOCCSM_OverlayBackgroundImage">Overlay background image</sys:String>
     <sys:String x:Key="LOCCSM_OverlayBackgroundImageSelect">Select overlay background image</sys:String>
     <sys:String x:Key="LOCCSM_Design">Design</sys:String>
-    <sys:String x:Key="LOCCSM_AdvancedDesign">Advanced design</sys:String>
-    <sys:String x:Key="LOCCSM_AdvancedDesignHint">Creator controls. Existing presets and simple controls remain fully compatible.</sys:String>
     <sys:String x:Key="LOCCSM_TextBlockOrder">Text order</sys:String>
     <sys:String x:Key="LOCCSM_TitleFirst">Title first</sys:String>
     <sys:String x:Key="LOCCSM_MessageFirst">Message first</sys:String>

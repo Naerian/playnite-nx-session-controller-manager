@@ -224,7 +224,11 @@ La implementación distingue dos alcances. En `MostRecent`, sólo el mando con i
 
 ## 9. Pausa y seguridad
 
-Interfaz:
+Producto actual: la pausa automática es suspensión de proceso mediante OverlayHost (`NtSuspendProcess` / `NtResumeProcess`), con modos `None` (solo overlay), `OfflineOnly` (suspende si no hay actividad de red) y `Always` (suspende siempre). Antes de suspender se verifica el árbol de procesos en primer plano. Una concesión de seguridad en el host reanuda el proceso si se resuelve la incidencia, termina el juego, se cierra Playnite o se pierde la comunicación.
+
+Las teclas de pausa por `SendInput` (`SendEscape` / `CustomKey`) están retiradas del producto. No se envía Escape ni una tecla configurada para abrir el menú de pausa del juego.
+
+Interfaz histórica (estrategias):
 
 ```csharp
 public interface IGamePauseStrategy
@@ -236,15 +240,9 @@ public interface IGamePauseStrategy
 }
 ```
 
-Orden recomendado:
+Opciones invasivas que siguen fuera de alcance: inyección de input de mando (`SendControllerMenu`), hooks globales o drivers virtuales. Suspender árboles enteros, anti-cheat, launchers u online sin lease/verificación sigue siendo peligroso; el producto limita la suspensión al proceso verificado y al lease del host.
 
-1. `None` — siempre disponible.
-2. `SendKey` (`Escape` por defecto) — sólo después de verificar que la ventana foreground pertenece al proceso/árbol esperado; un par key-down/key-up; sin forzar foco si cambió de forma inesperada.
-3. `CustomKey` — override por juego.
-4. `SendControllerMenu` — experimental; inyectar un mando fiable sin crear un dispositivo virtual no está garantizado por las APIs elegidas.
-5. `SuspendProcess` — fuera de versiones iniciales. Las primitivas NT habituales no son una API Win32 pública soportada y suspender árboles, anti-cheat, launchers u online es peligroso.
-
-`PauseReceipt` registra exactamente qué se hizo. Nunca se envía una tecla de reanudación si no existe receipt válido. En shutdown se ocultan overlays y se intentan sólo compensaciones seguras; no se presume que Escape sea un toggle reversible.
+`PauseReceipt` registra exactamente qué se hizo. En shutdown se ocultan overlays y se intentan sólo compensaciones seguras (reanudación vía lease); no se presume un toggle reversible de teclado.
 
 ## 10. Concurrencia, rendimiento y limpieza
 

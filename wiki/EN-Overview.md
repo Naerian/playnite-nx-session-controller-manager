@@ -12,7 +12,7 @@ Controller Manager is a Playnite extension for controller visibility, in-plugin 
 - Shows configurable connection notifications while browsing Fullscreen.
 - Tracks which controllers actually participate after a game starts.
 - Shows an external overlay when a participating controller disconnects.
-- Supports safe pause-key delivery and optional offline force-pause.
+- Supports optional process suspend after a disconnect (overlay only, offline-only, or always).
 - Detects sustained local multiplayer activity and protects each participant independently.
 
 ## Design priorities

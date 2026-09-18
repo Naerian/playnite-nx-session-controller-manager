@@ -27,6 +27,13 @@ La opción efectiva aparece marcada.
 
 ## Política de pausa
 
-El submenú independiente **Pausa automática** permite heredar, usar solo overlay, forzar pausa offline con aviso si hay actividad online, enviar Escape o la tecla configurada. La tecla solo se envía una vez y después de verificar el árbol de procesos en primer plano.
+El submenú independiente **Pausa automática** ofrece:
 
-La pausa forzada actúa únicamente sobre un proceso offline verificado y su concesión de seguridad lo reanuda al resolver la incidencia, terminar el juego, cerrar Playnite o perder la comunicación. Los metadatos inequívocos de juego exclusivamente online usan un aviso no bloqueante. Una conexión TCP pública también evita la suspensión, pero conserva el overlay porque podría ser solo telemetría o un servicio de la plataforma. La detección online es aproximada; prueba siempre cada juego.
+- **Usar configuración global**: hereda la configuración general.
+- **None** (solo overlay): muestra el overlay de desconexión; no suspende el juego.
+- **OfflineOnly**: suspende el proceso del juego verificado en primer plano cuando no hay actividad de red; conserva el overlay (o un aviso) si detecta actividad.
+- **Always**: suspende el proceso verificado en cada desconexión protegida, con o sin actividad de red.
+
+La pausa es suspensión de proceso mediante el host externo del overlay (`NtSuspendProcess`), no una tecla de pausa. Solo se intenta después de verificar el árbol de procesos en primer plano. Una concesión de seguridad reanuda el proceso al resolver la incidencia, terminar el juego, cerrar Playnite o perder la comunicación.
+
+En **OfflineOnly**, los metadatos inequívocos de juego exclusivamente online usan un aviso no bloqueante. Una conexión TCP pública también evita la suspensión, pero conserva el overlay porque podría ser solo telemetría o un servicio de la plataforma. La detección online es aproximada; prueba siempre cada juego antes de dejar OfflineOnly o Always de forma permanente.

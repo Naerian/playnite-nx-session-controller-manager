@@ -32,11 +32,11 @@ Playnite advierte que su SDK no es completamente thread-safe. Ningún callback n
 | `OnApplicationStopped` | Parada ordenada global | Timeout acotado |
 | `Dispose` | Segunda barrera idempotente de cleanup | Puede llamarse tras parada parcial |
 
-`StartedProcessId` puede no ser válido para todos los lanzamientos, según la propia API. El `GameTargetResolver` lo tratará como pista inicial y verificará existencia, ventana y relación de procesos. Sin target fiable, `SendKey` se omite y el overlay aún puede mostrarse.
+`StartedProcessId` puede no ser válido para todos los lanzamientos, según la propia API. El `GameTargetResolver` lo tratará como pista inicial y verificará existencia, ventana y relación de procesos. Sin target fiable, la suspensión se omite y el overlay aún puede mostrarse.
 
-Desde 0.3.0, la primera estrategia `SendEscape` está implementada como opción desactivada por defecto. En cada incidencia agregada sólo se intenta una vez. Se obtiene el HWND foreground, su PID y el snapshot de padres con Toolhelp; el PID debe coincidir con `StartedProcessId` o descender de él. Antes de `SendInput` se vuelve a comprobar HWND y PID. El resultado se conserva como `PauseReceipt` para diagnóstico y presentación, pero nunca se usa para reanudar automáticamente.
+Producto actual: la pausa automática usa suspensión de proceso vía OverlayHost (`None` / `OfflineOnly` / `Always`). Se obtiene el HWND foreground, su PID y el snapshot de padres con Toolhelp; el PID debe coincidir con `StartedProcessId` o descender de él antes de suspender. Un lease de seguridad reanuda el proceso. Las teclas de pausa por `SendInput` están retiradas.
 
-En 0.3.1 la estrategia acepta una tecla simple validada. El ajuste global define la tecla y el override por `Game.Id` almacena `overlay only`, `Escape` o una copia de la tecla configurada. Los modificadores y secuencias quedan rechazados. Un `PauseAttemptGate` agregado a la incidencia garantiza que dos desconexiones cooperativas no generen dos pulsaciones.
+Histórico 0.3.0–0.3.1 (retirado): la primera estrategia `SendEscape` y después una tecla simple validada se implementaron como opción desactivada por defecto, con una sola tentativa por incidencia agregada y `PauseReceipt` sin auto-resume por tecla. Ese camino ya no forma parte del producto.
 
 En 0.3.2 el override diferencia explícitamente la herencia de protección y la de pausa. Los valores antiguos sin marcadores se interpretan como overrides completos para no cambiar silenciosamente el comportamiento ya guardado. `GetGameMenuItems` crea dos rutas anidadas y antepone `✓` a la selección común; el SDK no expone una propiedad `IsChecked` para `GameMenuItem`, por lo que el carácter visible es la solución compatible con temas.
 
@@ -191,8 +191,8 @@ Nombres estables (el prefijo lo aporta `SourceName`):
 | `ControllerCount` | Número conectado/activo | Sí |
 | `PrimaryController` | Control compuesto | No |
 | `ActiveController` | Más reciente de sesión | No |
-| `ControllerList` | Items de todos/activos según propiedad | Sí |
-| `PlayerSlot1`…`PlayerSlot4` | Slot lógico si existe | Sí |
+| `ControllerList` | **NOT IMPLEMENTED** — no registrado | — |
+| `PlayerSlot1`…`PlayerSlot4` | **NOT IMPLEMENTED** — no registrado | — |
 
 Las propiedades visuales y resource keys quedan en `THEME-INTEGRATION.md`. Añadir elementos es compatible; renombrar o cambiar semántica requiere nueva major de Theme API.
 

@@ -38,12 +38,12 @@ Controller Manager includes the former Gamepad Tester. Uninstall the standalone 
 - Track controllers that receive intentional input immediately before or during game startup instead of treating every connected device as a participant.
 - Adapt automatically between normal single-player handover and detected local multiplayer activity.
 - Show an external, controller-aware disconnect overlay when a participating controller disappears.
-- Optionally send a configurable pause key, or force-pause verified offline games, after a disconnect.
+- Optionally suspend the game process after a disconnect (overlay only, offline-only, or always), with a safety lease that resumes it.
 - Store session-protection and pause policies independently for each game.
 - Customize notification and overlay colors, bundled fonts, size, typography, icons, semantic accents, motion and layout, with on-screen notification tests and an overlay preview in settings.
 - Export a privacy-conscious support report and read-only HID diagnostics for unsupported controllers.
 - Use a bundled, automatically updated SDL controller mapping database as an offline-safe fallback for controller names and Tester button mappings.
-- Integrate status, controller information, player slots and Tester blocks into compatible Playnite themes.
+- Integrate status, controller information and Tester blocks into compatible Playnite themes.
 - Use Playnite localization dictionaries in 12 languages with English fallback.
 
 ## Tester
@@ -63,9 +63,9 @@ A controller becomes part of the session only after meaningful input. Switching 
 The game context menu contains two independent submenus:
 
 - **Session protection**: inherit global settings, automatic/adaptive, force local multiplayer, or disable protection.
-- **Automatic pause**: inherit global settings, overlay only, force-pause offline with online fallback, send Escape, or send the configured key.
+- **Automatic pause**: inherit global settings, **None** (overlay only), **OfflineOnly** (suspend when there is no network activity), or **Always** (always suspend).
 
-Pause-key delivery is conservative: Controller Manager verifies the foreground process tree and sends the key only once per incident. Force-pause is opt-in, disabled by default, and owned by an external safety lease that resumes the process if the incident resolves, the game ends or communication is lost.
+Pause uses process suspension through the external overlay host, not a keyboard pause key. Controller Manager verifies the foreground process tree before suspending. A safety lease resumes the process if the incident resolves, the game ends or communication is lost. OfflineOnly and Always are opt-in and should be tested per game.
 
 Online-session detection is best effort. Test pause behavior with each game before relying on it.
 
@@ -117,7 +117,7 @@ The main sections are:
 - **Advanced**: monitoring, HID diagnostics and the support report.
 - **About**: what the extension does and links.
 
-Keep monitoring enabled. Start with automatic/adaptive protection and **Overlay only** pause until you have confirmed which key safely opens each game's pause menu.
+Keep monitoring enabled. Start with automatic/adaptive protection and **Overlay only** pause, then try **OfflineOnly** or **Always** per game once you have confirmed suspend behavior.
 
 ## Localization
 

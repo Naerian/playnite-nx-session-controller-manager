@@ -1143,22 +1143,20 @@ internal static class SessionManagerTests
             "An unrelated foreground process must be rejected.");
         Equal(false, GamePauseService.IsProcessInTree(500, 100, parents),
             "A malformed process cycle must be rejected safely.");
-        Equal(IntPtr.Size == 8 ? 40 : 28, GamePauseService.NativeInputSize,
-            "The SendInput structure must match the native Windows ABI.");
     }
 
     private static void PauseRejectsUnrelatedForegroundWindow()
     {
-        var receipt = new GamePauseService().TrySendEscape(int.MaxValue, DateTime.UtcNow);
+        var receipt = new GamePauseService().ResolveForegroundTarget(int.MaxValue, DateTime.UtcNow);
         Equal(false, receipt.WasSent,
-            "The pause service must never send input when the foreground process is unrelated.");
+            "Suspend must not proceed when the foreground process is unrelated to the game.");
     }
 
     private static void PauseAttemptIsOneShotPerIncident()
     {
         var gate = new PauseAttemptGate();
         Equal(true, gate.TryBegin(), "The first confirmed controller may request pause.");
-        Equal(false, gate.TryBegin(), "A second co-op disconnect must not repeat the pause key.");
+        Equal(false, gate.TryBegin(), "A second co-op disconnect must not repeat the pause attempt.");
         gate.Reset();
         Equal(true, gate.TryBegin(), "A later independent incident may request pause again.");
     }

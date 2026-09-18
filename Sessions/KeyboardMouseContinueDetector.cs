@@ -6,7 +6,7 @@ namespace ControllerSessionManager.Sessions
     /// <summary>
     /// Detects intentional keyboard or mouse-button edges so a single-player disconnect
     /// incident can be dismissed when the player continues with keyboard and mouse.
-    /// Mouse movement alone is ignored. Escape is ignored to avoid colliding with pause keys.
+    /// Mouse movement alone is ignored. Escape is ignored to avoid colliding with common game pause shortcuts.
     /// </summary>
     internal sealed class KeyboardMouseContinueDetector
     {

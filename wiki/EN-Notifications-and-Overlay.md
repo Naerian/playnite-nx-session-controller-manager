@@ -1,5 +1,9 @@
 # Notifications & Overlay
 
+## How Looks and Appearance tabs relate
+
+**Appearance → Looks** chooses the active visual source: a plugin preset, an imported profile, a creator design, or — when the matching toggle is on — an embedded Playnite theme pack. The Desktop, Fullscreen and Overlay tabs refine layout and colors for editable looks, or preview locked creator/theme designs. Creator and theme packs lock layout and colors while active. Use **Copy desktop design** when you want Fullscreen notifications to match the Desktop look.
+
 ## Fullscreen notifications
 
 Connection notifications are intended for browsing the Playnite Fullscreen interface without an active game. Online safety fallbacks can also use the warning style during gameplay. Toast windows are topmost, click-through, non-activating and close automatically.

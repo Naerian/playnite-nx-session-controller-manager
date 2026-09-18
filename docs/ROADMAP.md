@@ -60,7 +60,7 @@ Incluye:
 - overrides por `Game.Id` para protección y grace period;
 - simulador/replay de trazas para tests deterministas.
 
-La base actual incluye pausa por tecla y pausa forzada offline opcional con watchdog; no usa inyección, hooks ni drivers.
+La base actual incluye overlay de desconexión y pausa automática por suspensión de proceso (None / OfflineOnly / Always) con lease; no usa inyección, hooks, drivers ni teclas de pausa por `SendInput`.
 
 Gate:
 
@@ -71,27 +71,27 @@ Gate:
 
 ## 5. v0.3 — Pausa segura y overlay Default
 
-Estado 0.3.0: implementados `SendEscape` opcional, validación del árbol de procesos foreground, receipt sin auto-resume y el OverlayHost Default. `CustomKey`, perfiles más detallados y la matriz amplia de compatibilidad quedan para iteraciones posteriores.
+Estado histórico 0.3.0: se implementaron `SendEscape` opcional, validación del árbol de procesos foreground, receipt sin auto-resume y el OverlayHost Default. **Estado actual del producto:** esa ruta `SendInput` está retirada; la pausa automática es suspensión de proceso (`None` / `OfflineOnly` / `Always`) vía OverlayHost con lease de seguridad. `CustomKey` no se envió como feature de producto.
 
-Incluye:
+Incluye (entregado en aquella etapa):
 
 - `GameTargetResolver` y confidence;
-- `GamePauseManager` con `None`, `SendEscape` y `CustomKey`;
-- verificación de foreground/target antes de `SendInput`;
-- `PauseReceipt`; auto-resume desactivado por defecto;
+- estrategias de pausa de la época (`None`, `SendEscape`, plan de `CustomKey`);
+- verificación de foreground/target antes de actuar;
+- `PauseReceipt`;
 - OverlayHost WPF, IPC v1, watchdog y Default theme integrado;
 - monitor del juego, multimonitor y DPI;
 - reconnect/hide/takeover flow;
 - overrides por juego.
 
-Excluye `SuspendProcess` y bloqueo global de input.
+Excluye (entonces y en gran medida aún): bloqueo global de input e inyección de mando.
 
 Gate:
 
-- ninguna tecla se envía si foreground/target es ambiguo;
+- ninguna acción de pausa si foreground/target es ambiguo;
 - overlay se autooculta al perder plugin o terminar sesión;
 - matrices windowed/borderless pasan; exclusive queda explícitamente documentado;
-- un crash del theme/host no afecta Playnite ni deja juego «pausado por CSM» sin receipt.
+- un crash del theme/host no afecta Playnite ni deja el juego suspendido sin lease/receipt.
 
 ## 6. v0.4 — Batería y UI para themes Playnite
 
@@ -101,9 +101,9 @@ Incluye:
 - XInput battery provider con niveles cualitativos;
 - primer perfil HID sólo si está validado en hardware y transporte;
 - low/critical warnings con histéresis/cooldown;
-- catálogo Custom UI Elements v1;
+- catálogo Custom UI Elements v1 (parcialmente enviado; ver wiki);
 - iconos por familia/estado con fallback;
-- `ControllerList` y PlayerSlot 1–4;
+- `ControllerList` y PlayerSlot 1–4: **no implementados / no registrados** (no están en el producto; no tratarlos como pendientes de envío inminente);
 - samples Desktop/Fullscreen y documentación con screenshots.
 
 Gate:
@@ -139,10 +139,10 @@ Candidatos, sólo por evidencia:
 - perfiles/import/export de mappings virtual↔physical;
 - feedback/rumble de prueba en diagnóstico con consentimiento;
 - overlay interactivo accesible;
-- más de cuatro player slots;
+- más de cuatro player slots (los slots 1–4 tampoco están enviados hoy);
 - protocolos/localizaciones adicionales.
 
-`SuspendProcess` no entra automáticamente en este bloque: requiere ADR propia, API soportada o helper con watchdog, allowlist explícita y pruebas de procesos/anti-cheat. La recomendación actual sigue siendo no implementarlo.
+La suspensión de proceso **sí está en el producto** (OverlayHost + lease, modos `None` / `OfflineOnly` / `Always`). Lo que sigue fuera de alcance sin ADR propia es ampliar esa superficie de forma invasiva (árboles enteros, hooks, drivers, anti-cheat). La recomendación sigue siendo no añadir estrategias de tecla `SendInput` ni inyección de mando.
 
 ## 9. Riesgos priorizados
 
@@ -154,7 +154,7 @@ Candidatos, sólo por evidencia:
 | Identidad cambia al reconectar/puerto | Alta | Alta | container/root/serial/tombstone; matching explícito |
 | Active tracker confunde drift con input | Media | Alta | deadzone, histéresis, fixtures y telemetría local |
 | Juego exclusivo tapa overlay | Media | Media | matriz real; promesa limitada; recomendar borderless |
-| `SendInput` llega a otra ventana | Media | Alta | verificar foreground inmediatamente; abortar ante duda |
+| Acción de pausa llega a otro proceso | Media | Alta | verificar foreground inmediatamente; abortar ante duda; lease del host |
 | Juego elevado/anti-cheat | Media | Alta | sin elevación/hooks; `None` por override y default prudente |
 | XAML externo ejecuta capacidades no deseadas | Media | Alta | templates/resources allowlisted y proceso aislado |
 | Playnite UI thread violation | Media | Alta | cola + UIDispatcher sólo en borde visual |

@@ -27,6 +27,13 @@ The effective item has a check mark.
 
 ## Pause policy
 
-The separate **Automatic pause** submenu offers global inheritance, overlay only, offline force-pause with online notification fallback, Escape or the configured key. Key delivery occurs once only after foreground process-tree verification.
+The separate **Automatic pause** submenu offers:
 
-Force-pause suspends only a verified offline foreground game process through the external host. Its safety lease resumes the process when the incident resolves, the game ends, Playnite closes or communication is lost. Strong online-only metadata uses a non-blocking warning. A public TCP connection alone also prevents suspension but retains the disconnect overlay because it may only be telemetry or a platform service. Online detection is best effort; always test a game before enabling this mode permanently.
+- **Use global settings**: inherit the general configuration.
+- **None** (overlay only): show the disconnect overlay; do not suspend the game.
+- **OfflineOnly**: suspend the verified foreground game process when there is no network activity; keep the overlay (or a warning) when activity is detected.
+- **Always**: suspend the verified foreground game process on every protected disconnect, regardless of network activity.
+
+Pause is process suspension through the external overlay host (`NtSuspendProcess`), not a keyboard pause key. Suspension is attempted only after foreground process-tree verification. A safety lease resumes the process when the incident resolves, the game ends, Playnite closes or communication is lost.
+
+Under **OfflineOnly**, strong online-only metadata uses a non-blocking warning. A public TCP connection alone also prevents suspension but retains the disconnect overlay because it may only be telemetry or a platform service. Online detection is best effort; always test a game before enabling OfflineOnly or Always permanently.

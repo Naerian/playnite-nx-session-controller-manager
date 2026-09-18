@@ -235,7 +235,6 @@
     <sys:String x:Key="LOCCSM_GamePolicyUseGlobal">Globale Einstellungen verwenden</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyDisable">Schutz im Spiel deaktivieren</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyRequireSame">Automatisch / adaptiv</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyAllowTakeover">Einzelspieler. -bernahme durch anderen Controller erlauben</sys:String>
     <sys:String x:Key="LOCCSM_MenuSettings">Einstellungen</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlay">Nach best-tigter Controller-Trennung ein Overlay anzeigen</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlayHelp">Das externe Overlay ist informativ und schlie-t automatisch, wenn der Vorfall behoben oder das Spiel beendet wird.</sys:String>
@@ -247,8 +246,6 @@
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">Temporarily stop the game when a controller disconnects</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnectHelp">H-lt den Spielprozess bei jeder Controller-Trennung an, ohne die Netzwerkaktivit-t zu pr-fen. Funktioniert mit allen Spielen. Das Plugin setzt das Spiel nach Spielende nicht automatisch fort.</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnectWarning">H-lt auch Online-Partien an; das Plugin setzt das Spiel nicht selbst fort.</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyEnablePause">Dieses Spiel automatisch pausieren</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyDisablePause">Dieses Spiel nicht automatisch pausieren</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPauseDisabled">Automatische Pause aus</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectTitle">Controller getrennt</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectMessage">Verbindung verloren: {0}</sys:String>
@@ -802,8 +799,6 @@
     <sys:String x:Key="LOCCSM_OverlayBackgroundImage">Overlay-Hintergrundbild</sys:String>
     <sys:String x:Key="LOCCSM_OverlayBackgroundImageSelect">Overlay-Hintergrundbild ausw-hlen</sys:String>
     <sys:String x:Key="LOCCSM_Design">Design</sys:String>
-    <sys:String x:Key="LOCCSM_AdvancedDesign">Erweitertes Design</sys:String>
-    <sys:String x:Key="LOCCSM_AdvancedDesignHint">Steuerelemente f-r Ersteller. Vorlagen und einfache Einstellungen bleiben vollst-ndig kompatibel.</sys:String>
     <sys:String x:Key="LOCCSM_TextBlockOrder">Textreihenfolge</sys:String>
     <sys:String x:Key="LOCCSM_TitleFirst">Titel zuerst</sys:String>
     <sys:String x:Key="LOCCSM_MessageFirst">Nachricht zuerst</sys:String>

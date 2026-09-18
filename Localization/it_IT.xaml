@@ -235,7 +235,6 @@
     <sys:String x:Key="LOCCSM_GamePolicyUseGlobal">Usa impostazioni globali</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyDisable">Disattiva la protezione in partita</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyRequireSame">Automatico / adattivo</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyAllowTakeover">Giocatore singolo. Consenti il subentro di un altro controller</sys:String>
     <sys:String x:Key="LOCCSM_MenuSettings">Impostazioni</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlay">Mostra un overlay dopo la disconnessione confermata di un controller</sys:String>
     <sys:String x:Key="LOCCSM_ShowDisconnectOverlayHelp">L'overlay esterno - informativo e si chiude automaticamente quando l'incidente viene risolto o il gioco termina.</sys:String>
@@ -247,8 +246,6 @@
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnect">Temporarily stop the game when a controller disconnects</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnectHelp">Sospende il processo di gioco a ogni disconnessione del controller, senza controllare l-attivit- di rete. Funziona con tutti i giochi. Il plugin non riprende automaticamente il gioco a fine partita.</sys:String>
     <sys:String x:Key="LOCCSM_PauseGameOnDisconnectWarning">Sospende anche le partite online; il plugin non riprende il gioco da solo.</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyEnablePause">Metti automaticamente in pausa questo gioco</sys:String>
-    <sys:String x:Key="LOCCSM_GamePolicyDisablePause">Non mettere automaticamente in pausa questo gioco</sys:String>
     <sys:String x:Key="LOCCSM_OverlayPauseDisabled">Pausa automatica disattivata</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectTitle">Controller disconnesso</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectMessage">Connessione persa: {0}</sys:String>
@@ -801,8 +798,6 @@
     <sys:String x:Key="LOCCSM_OverlayBackgroundImage">Immagine di sfondo overlay</sys:String>
     <sys:String x:Key="LOCCSM_OverlayBackgroundImageSelect">Seleziona immagine di sfondo overlay</sys:String>
     <sys:String x:Key="LOCCSM_Design">Design</sys:String>
-    <sys:String x:Key="LOCCSM_AdvancedDesign">Design avanzato</sys:String>
-    <sys:String x:Key="LOCCSM_AdvancedDesignHint">Controlli per i creatori. I preset e i controlli semplici restano pienamente compatibili.</sys:String>
     <sys:String x:Key="LOCCSM_TextBlockOrder">Ordine del testo</sys:String>
     <sys:String x:Key="LOCCSM_TitleFirst">Prima il titolo</sys:String>
     <sys:String x:Key="LOCCSM_MessageFirst">Prima il messaggio</sys:String>

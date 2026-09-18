@@ -249,10 +249,10 @@ if ($null -eq $overlayLayout -or $overlayLayout.ColumnDefinitions.Count -ne 3 -o
         "alignment=$($overlayPreviewPane.HorizontalAlignment)/$($overlayPreviewPane.VerticalAlignment), " +
         "viewport=$($overlayPreviewViewport.GetType().Name))."
 }
-if ($view.FindName("DesktopAdvancedDesignExpander").Visibility -ne [Windows.Visibility]::Collapsed -or
-    $view.FindName("FullscreenAdvancedDesignExpander").Visibility -ne [Windows.Visibility]::Collapsed -or
-    $view.FindName("OverlayAdvancedDesignExpander").Visibility -ne [Windows.Visibility]::Collapsed) {
-    throw "Advanced Design must remain hidden from the normal settings interface."
+if ($viewXaml -match 'x:Name="DesktopAdvancedDesignExpander"' -or
+    $viewXaml -match 'x:Name="FullscreenAdvancedDesignExpander"' -or
+    $viewXaml -match 'x:Name="OverlayAdvancedDesignExpander"') {
+    throw "Advanced Design expanders must be removed from the settings interface."
 }
 if ($settings.NotificationStylePreset -ne "Custom" -or
     $settings.DesktopNotificationStylePreset -ne "Custom" -or

@@ -33,6 +33,6 @@ Si el complemento antiguo **Gamepad Tester** sigue instalado, desinstálalo. Las
 4. Comprueba que el overlay aparezca tras el margen configurado.
 5. Reconéctalo, utiliza otro mando disponible cuando se permita el relevo, o pulsa una tecla / haz clic para seguir con teclado y ratón en un jugador.
 
-Empieza con **Solo overlay**. Activa una tecla de pausa únicamente tras confirmar qué tecla abre de forma segura el menú del juego. La pausa forzada es una opción avanzada que debe probarse por juego.
+Empieza con **Solo overlay**. Cuando confirmes que el overlay funciona en ese título, prueba **OfflineOnly** o **Always** por juego si quieres suspensión de proceso. Comprueba cada modo antes de confiar en él de forma permanente.
 
 Siguiente: [Mandos y batería](ES-Mandos-y-Bateria), [Tester](ES-Tester) o [Protección de sesiones](ES-Proteccion-de-Sesiones).

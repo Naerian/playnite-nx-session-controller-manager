@@ -26,7 +26,7 @@ Check that monitoring, session tracking and the disconnect overlay are enabled. 
 
 ## Why was the game not paused?
 
-Pause is disabled by default. A pause key is skipped if the game process tree cannot be verified as foreground. Force-pause also avoids suspension when online evidence is found. The overlay status explains the result.
+Automatic pause defaults to overlay only: the disconnect overlay can appear without suspending the process. With **OfflineOnly**, network activity (or strong online-only metadata) skips suspension while keeping the overlay or a warning. Suspension also requires a verified foreground game process tree, so exclusive fullscreen, an elevated game with a non-elevated Playnite, or a launch outside Playnite can block it. The overlay status explains the result.
 
 ## Can the overlay stop another controller from controlling the game behind it?
 
