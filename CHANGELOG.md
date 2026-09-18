@@ -4,6 +4,7 @@
 - Clarified docs: automatic pause is process suspend (None / OfflineOnly / Always), not a pause key.
 - Removed unused Advanced Design shells and dead SendInput pause path from GamePauseService.
 - Appearance Looks: clearer help text for how Looks relate to destination tabs.
+- Grouped Desktop, Fullscreen and notification Sounds under Appearance → On-screen notification.
 
 ## 1.0.38 — 2026-09-18
 - Added optional per-controller icon colors in Mandos, with Top Panel modes for default, battery, or controller color.

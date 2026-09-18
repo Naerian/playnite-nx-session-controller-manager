@@ -298,6 +298,10 @@
     <sys:String x:Key="LOCCSM_TabAppearance">Apparence</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceLooks">Looks</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceLooksHelp">Choose a look for desktop notifications, fullscreen notifications and the overlay. Installing or importing a design applies it immediately. Use the other Appearance tabs to preview, alerts, layout and colors.</sys:String>
+    <sys:String x:Key="LOCCSM_OnScreenNotificationsTitle">On-screen notification</sys:String>
+    <sys:String x:Key="LOCCSM_OnScreenNotificationDesktop">Desktop</sys:String>
+    <sys:String x:Key="LOCCSM_OnScreenNotificationFullscreen">Fullscreen</sys:String>
+    <sys:String x:Key="LOCCSM_OnScreenNotificationSounds">Sounds</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceLooksDesktop">Desktop notification</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceLooksFullscreen">Fullscreen notification</sys:String>
     <sys:String x:Key="LOCCSM_LooksPreview">Preview</sys:String>

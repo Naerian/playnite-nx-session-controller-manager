@@ -14,6 +14,16 @@ if ($viewSource -notmatch 'OnSliderTrackMouseDown' -or
     $viewSource -notmatch 'Mouse\.PreviewMouseDownEvent') {
     throw "Every settings slider must support clicking its track to jump to the selected value."
 }
+if ($viewXaml -notmatch 'x:Name="OnScreenNotificationsTab"' -or
+    $viewXaml -notmatch 'x:Name="OnScreenNotificationsTabs"' -or
+    $viewXaml -notmatch 'LOCCSM_OnScreenNotificationsTitle' -or
+    $viewXaml -notmatch 'x:Name="OnScreenNotificationsTabs" Style="{StaticResource TopTabs}"' -or
+    $viewXaml.IndexOf('x:Name="OnScreenNotificationsTab"') -gt
+        $viewXaml.IndexOf('x:Name="OverlayAppearanceTab"') -or
+    $viewXaml.IndexOf('LOCCSM_OnScreenNotificationSounds') -gt
+        $viewXaml.IndexOf('x:Name="OverlayAppearanceTab"')) {
+    throw "Desktop, Fullscreen and Sounds must live under Appearance → On-screen notification with top tabs, before Overlay."
+}
 if ($viewXaml -notmatch '<Expander x:Name="CustomSoundsSection"' -or
     $viewXaml -notmatch 'Text="{DynamicResource LOCCSM_CustomSoundsTitle}" Style="{StaticResource AppearanceGroupHeader}"' -or
     $viewXaml -notmatch 'Text="{DynamicResource LOCCSM_CustomSoundsHelp}" Style="{StaticResource FieldHintText}"' -or

@@ -2,19 +2,19 @@
 
 ## How Looks and Appearance tabs relate
 
-**Appearance → Looks** chooses the active visual source: a plugin preset, an imported profile, a creator design, or — when the matching toggle is on — an embedded Playnite theme pack. The Desktop, Fullscreen and Overlay tabs refine layout and colors for editable looks, or preview locked creator/theme designs. Creator and theme packs lock layout and colors while active. Use **Copy desktop design** when you want Fullscreen notifications to match the Desktop look.
+**Appearance → Looks** chooses the active visual source: a plugin preset, an imported profile, a creator design, or — when the matching toggle is on — an embedded Playnite theme pack. **Appearance → On-screen notification** groups Desktop, Fullscreen and Sounds. The Overlay tab stays separate for the disconnect incident UI. Creator and theme packs lock layout and colors while active. Use **Copy desktop design** (under Fullscreen) when you want Fullscreen notifications to match the Desktop look.
 
 ## Fullscreen notifications
 
 Connection notifications are intended for browsing the Playnite Fullscreen interface without an active game. Online safety fallbacks can also use the warning style during gameplay. Toast windows are topmost, click-through, non-activating and close automatically.
 
-Under **Appearance > Fullscreen notification** and **Appearance > Desktop notification**, configure width, scale, duration, screen corner, typography, icon size, padding, border, corner radius, shadow, colors, semantic accent and animation. Inter, Montserrat, Outfit, Poppins, Rajdhani, Chakra Petch and Orbitron ship with the extension and do not need to be installed in Windows. The color picker includes opacity as a percentage. The icon can appear left, right, above, below or be hidden. Each subsection's buttons exercise connected, disconnected, warning and low-battery states through the real notification renderer. Presets replace the old reset action: **Soft** is the neutral baseline and the others provide distinct compositions.
+Under **Appearance → On-screen notification → Fullscreen** and **… → Desktop**, configure width, scale, duration, screen corner, typography, icon size, padding, border, corner radius, shadow, colors, semantic accent and animation. Inter, Montserrat, Outfit, Poppins, Rajdhani, Chakra Petch and Orbitron ship with the extension and do not need to be installed in Windows. The color picker includes opacity as a percentage. The icon can appear left, right, above, below or be hidden. Each subsection's buttons exercise connected, disconnected, warning and low-battery states through the real notification renderer. Presets replace the old reset action: **Soft** is the neutral baseline and the others provide distinct compositions.
 
 Preset selectors separate plugin presets, imported designs and reviewed creator designs. Creator designs may include advanced layout, fonts, images, state-specific borders and sounds; their authored controls are locked and visually dimmed while active. Theme authors can use the complete [Creator designs guide](EN-Creator-Designs).
 
 Use **Update designs** to retrieve compatible releases from the official catalog. A trusted `.csmtheme` file can also be installed with **Install creator design** beside the visual-profile actions. The plugin validates compatibility and package contents before making an atomic replacement; it does not register double-click installation in Windows.
 
-Starting with Controller Manager 1.0.28, if a selected creator notification design includes all four valid event sounds, its audio pack is selected by default and appears in **Sound pack**. Audio is never locked: you can choose another pack, keep using previews and toggles, or assign custom files. A custom sound for an individual event overrides the selected pack. Incomplete creator sound sets are not listed as selectable packs.
+Starting with Controller Manager 1.0.28, if a selected creator notification design includes all four valid event sounds, its audio pack is selected by default and appears in **Appearance → On-screen notification → Sounds → Sound pack**. Audio is never locked: you can choose another pack, keep using previews and toggles, or assign custom files. A custom sound for an individual event overrides the selected pack. Incomplete creator sound sets are not listed as selectable packs.
 
 Stable XInput changes use a short 300 ms debounce to reject rapid driver flaps without waiting for the slower reconciliation pass.
 

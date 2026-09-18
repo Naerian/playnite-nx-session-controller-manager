@@ -1392,11 +1392,20 @@
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>
+                    <TabItem x:Name="OnScreenNotificationsTab">
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource TabGlyph}" Text="&#xE7F4;" />
+                                <TextBlock Text="{DynamicResource LOCCSM_OnScreenNotificationsTitle}" Style="{StaticResource TabHeaderLabel}" />
+                            </StackPanel>
+                        </TabItem.Header>
+                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <TabControl x:Name="OnScreenNotificationsTabs" Style="{StaticResource TopTabs}" Tag="{DynamicResource LOCCSM_OnScreenNotificationsTitle}" Margin="16,8,16,0">
                     <TabItem>
                         <TabItem.Header>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Style="{StaticResource TabGlyph}" Text="&#xE7F4;" />
-                                <TextBlock Text="{DynamicResource LOCCSM_AppearanceLooksDesktop}" Style="{StaticResource TabHeaderLabel}" />
+                                <TextBlock Text="{DynamicResource LOCCSM_OnScreenNotificationDesktop}" Style="{StaticResource TabHeaderLabel}" />
                             </StackPanel>
                         </TabItem.Header>
                         <ScrollViewer Style="{StaticResource FillScrollViewer}">
@@ -1554,7 +1563,7 @@
                         <TabItem.Header>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Style="{StaticResource TabGlyph}" Text="&#xEA8F;" />
-                                <TextBlock Text="{DynamicResource LOCCSM_AppearanceLooksFullscreen}" Style="{StaticResource TabHeaderLabel}" />
+                                <TextBlock Text="{DynamicResource LOCCSM_OnScreenNotificationFullscreen}" Style="{StaticResource TabHeaderLabel}" />
                             </StackPanel>
                         </TabItem.Header>
                         <ScrollViewer Style="{StaticResource FillScrollViewer}">
@@ -1712,7 +1721,7 @@
                         <TabItem.Header>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Style="{StaticResource TabGlyph}" Text="&#xE767;" />
-                                <TextBlock Text="{DynamicResource LOCCSM_NotificationSoundsTitle}" Style="{StaticResource TabHeaderLabel}" />
+                                <TextBlock Text="{DynamicResource LOCCSM_OnScreenNotificationSounds}" Style="{StaticResource TabHeaderLabel}" />
                             </StackPanel>
                         </TabItem.Header>
                         <ScrollViewer Style="{StaticResource FillScrollViewer}">
@@ -1825,6 +1834,9 @@
                                 </StackPanel>
                             </StackPanel>
                         </ScrollViewer>
+                    </TabItem>
+                        </TabControl>
+                        </Grid>
                     </TabItem>
                     <TabItem x:Name="OverlayAppearanceTab">
                         <TabItem.Header>

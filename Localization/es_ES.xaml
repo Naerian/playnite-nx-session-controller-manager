@@ -298,7 +298,11 @@
     <sys:String x:Key="LOCCSM_TabSession">En partida</sys:String>
     <sys:String x:Key="LOCCSM_TabAppearance">Apariencia</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceLooks">Estilos</sys:String>
-    <sys:String x:Key="LOCCSM_AppearanceLooksHelp">Estilos elige el origen visual de las notificaciones de escritorio, pantalla completa y el overlay. Los diseños de creadores y los packs del tema de Playnite bloquean layout, colores y tipografía; cambia a un look del plugin o a Personalizado para editar. Usa las pestañas Escritorio, Pantalla completa y Overlay para previsualizar, avisos y ajustes finos. En Pantalla completa, Copiar diseño de escritorio alinea ese destino con Escritorio.</sys:String>
+    <sys:String x:Key="LOCCSM_AppearanceLooksHelp">Estilos elige el origen visual de las notificaciones de escritorio, pantalla completa y el overlay. Los diseños de creadores y los packs del tema de Playnite bloquean layout, colores y tipografía; cambia a un look del plugin o a Personalizado para editar. Afina los destinos en Apariencia → Notificación en pantalla (Escritorio, Pantalla completa, Sonidos) y Overlay. En Pantalla completa, Copiar diseño de escritorio alinea ese destino con Escritorio.</sys:String>
+    <sys:String x:Key="LOCCSM_OnScreenNotificationsTitle">Notificación en pantalla</sys:String>
+    <sys:String x:Key="LOCCSM_OnScreenNotificationDesktop">Escritorio</sys:String>
+    <sys:String x:Key="LOCCSM_OnScreenNotificationFullscreen">Pantalla completa</sys:String>
+    <sys:String x:Key="LOCCSM_OnScreenNotificationSounds">Sonidos</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceLooksDesktop">Notificación de escritorio</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceLooksFullscreen">Notificación de pantalla completa</sys:String>
     <sys:String x:Key="LOCCSM_LooksPreview">Vista previa</sys:String>
