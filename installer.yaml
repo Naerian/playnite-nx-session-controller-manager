@@ -5,7 +5,7 @@ Packages:
     ReleaseDate: 2026-09-18
     PackageUrl: https://github.com/Naerian/playnite-nx-session-controller-manager/releases/download/v1.0.38/ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc_1_0_38.pext
     Changelog:
-      - 'Added optional per-controller icon colors in Mandos, with Top Panel modes for default, battery, or controller color.'
+      - 'Added optional per-controller icon colors, with Top Panel modes for default, battery, or controller color.'
       - 'Exposed primary controller icon color on the theme API for theme authors.'
       - 'Tester controller dropdown now shows each pad''s icon and color so identical names stay distinguishable.'
       - 'Fixed Tester crashing when opening the page (invalid DynamicResource FallbackValue on the controller ComboBox).'
