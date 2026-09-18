@@ -17,10 +17,10 @@
 ## 1.0.38 — 2026-09-18
 - Added optional per-controller icon colors in Mandos, with Top Panel modes for default, battery, or controller color.
 - Exposed primary controller icon color on the theme API for theme authors.
-- Tester controller dropdown now shows each padâ€™s icon and color so identical names stay distinguishable.
+- Tester controller dropdown now shows each pad's icon and color so identical names stay distinguishable.
 - Fixed Tester crashing when opening the page (invalid DynamicResource FallbackValue on the controller ComboBox).
 - Matched the Tester visual-scheme ComboBox style with the other dropdowns.
-- Removed the notification/overlay â€œtint with controller icon colorâ€ option; overlays keep the Appearance silhouette color, and toasts keep event accents.
+- Removed the notification/overlay "tint with controller icon color" option; overlays keep the Appearance silhouette color, and toasts keep event accents.
 
 ## 1.0.37 — 2026-09-18
 - Fixed Mandos showing only one card when two identical controllers were connected, including a pair of 8BitDo Ultimate 2 pads.
