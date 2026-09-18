@@ -5,6 +5,7 @@
 - Removed unused Advanced Design shells and dead SendInput pause path from GamePauseService.
 - Appearance Looks: clearer help text for how Looks relate to destination tabs.
 - Grouped Desktop, Fullscreen and notification Sounds under Appearance → On-screen notification.
+- When a Playnite theme pack is available for a surface, enabling its theme-styling toggle locks the Looks dropdown on that theme name.
 
 ## 1.0.38 — 2026-09-18
 - Added optional per-controller icon colors in Mandos, with Top Panel modes for default, battery, or controller color.

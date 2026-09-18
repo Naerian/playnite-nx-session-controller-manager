@@ -303,6 +303,8 @@
     <sys:String x:Key="LOCCSM_OnScreenNotificationDesktop">Escritorio</sys:String>
     <sys:String x:Key="LOCCSM_OnScreenNotificationFullscreen">Pantalla completa</sys:String>
     <sys:String x:Key="LOCCSM_OnScreenNotificationSounds">Sonidos</sys:String>
+    <sys:String x:Key="LOCCSM_PlayniteThemeLookFallback">Pack del tema de Playnite</sys:String>
+    <sys:String x:Key="LOCCSM_PlayniteThemeLookGroup">Tema de Playnite</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceLooksDesktop">Notificación de escritorio</sys:String>
     <sys:String x:Key="LOCCSM_AppearanceLooksFullscreen">Notificación de pantalla completa</sys:String>
     <sys:String x:Key="LOCCSM_LooksPreview">Vista previa</sys:String>

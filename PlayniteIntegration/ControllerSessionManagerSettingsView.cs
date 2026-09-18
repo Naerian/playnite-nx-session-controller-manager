@@ -202,7 +202,17 @@ namespace ControllerSessionManager.PlayniteIntegration
                 args.PropertyName == "IsFullscreenEmbeddedThemeAppearanceActive" ||
                 args.PropertyName == "IsOverlayEmbeddedThemeAppearanceActive"))
             {
+                if (args.PropertyName == "UsePlayniteThemeDesktopAppearance" ||
+                    args.PropertyName == "UsePlayniteThemeFullscreenAppearance" ||
+                    args.PropertyName == "UsePlayniteThemeOverlayAppearance")
+                {
+                    ThemeEmbeddedAppearanceCatalog.InvalidateCache();
+                    if (boundSettings != null)
+                        boundSettings.RefreshCreatorThemeState();
+                }
                 RefreshCreatorThemeEditorState();
+                BuildNotificationPresetSelectors();
+                BuildOverlayPresetSelector();
                 if (args.PropertyName == "UsePlayniteThemeOverlayAppearance" ||
                     args.PropertyName == "IsOverlayEmbeddedThemeAppearanceActive")
                 {
@@ -738,6 +748,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private bool refreshingNotificationSoundPackSelection;
         private bool refreshingNotificationPresetSelection;
         private bool refreshingOverlayPresetSelection;
+        private const string PlayniteThemeLookKey = "theme:playnite";
         private ScrollViewer hostScrollViewer;
         private Window hostWindow;
         private GamepadTesterViewModel testerViewModel;
@@ -1158,6 +1169,12 @@ namespace ControllerSessionManager.PlayniteIntegration
             bool desktop)
         {
             var options = new System.Collections.Generic.List<AppearancePresetOption>();
+            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            var surface = desktop
+                ? ThemeAppearanceSurface.DesktopNotification
+                : ThemeAppearanceSurface.FullscreenNotification;
+            if (settings != null && settings.UsesEmbeddedThemeDesign(surface))
+                options.Add(CreatePlayniteThemeLookOption(surface));
             options.Add(CreateAppearancePresetOption(NotificationStylePresets.Custom,
                 "LOCCSM_PresetGroupCustom", false));
             options.Add(CreateAppearancePresetGroupHeader("LOCCSM_PresetGroupPlugin"));
@@ -1177,6 +1194,36 @@ namespace ControllerSessionManager.PlayniteIntegration
                 foreach (var profileId in imported) options.Add(CreateImportedPresetOption(profileId));
             }
             return options;
+        }
+
+        private AppearancePresetOption CreatePlayniteThemeLookOption(ThemeAppearanceSurface surface)
+        {
+            var displayName = plugin == null
+                ? string.Empty
+                : ThemeEmbeddedAppearanceCatalog.GetLookSelectorDisplayName(plugin.PlayniteApi, surface);
+            if (string.IsNullOrWhiteSpace(displayName))
+            {
+                displayName = plugin == null
+                    ? "Playnite theme pack"
+                    : plugin.Loc("LOCCSM_PlayniteThemeLookFallback");
+                if (string.IsNullOrWhiteSpace(displayName) ||
+                    displayName == "LOCCSM_PlayniteThemeLookFallback")
+                    displayName = "Playnite theme pack";
+            }
+            return new AppearancePresetOption
+            {
+                Key = PlayniteThemeLookKey,
+                DisplayName = displayName,
+                Group = plugin == null
+                    ? "Playnite theme"
+                    : plugin.Loc("LOCCSM_PlayniteThemeLookGroup"),
+                IsSelectable = true
+            };
+        }
+
+        private static bool IsPlayniteThemeLookKey(string preset)
+        {
+            return string.Equals(preset, PlayniteThemeLookKey, StringComparison.OrdinalIgnoreCase);
         }
 
         private AppearancePresetOption CreateAppearancePresetOption(string preset, string groupKey,
@@ -1232,6 +1279,14 @@ namespace ControllerSessionManager.PlayniteIntegration
         private void RefreshNotificationPresetSelectors()
         {
             if (refreshingNotificationPresetSelection) return;
+            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            if (settings != null &&
+                (settings.IsDesktopEmbeddedThemeAppearanceActive ||
+                 settings.IsFullscreenEmbeddedThemeAppearanceActive))
+            {
+                BuildNotificationPresetSelectors();
+                return;
+            }
             refreshingNotificationPresetSelection = true;
             try { SetNotificationPresetSelectorValues(); }
             finally { refreshingNotificationPresetSelection = false; }
@@ -1239,12 +1294,29 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private void SetNotificationPresetSelectorValues()
         {
+            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
             if (DesktopNotificationPresetSelector != null)
-                DesktopNotificationPresetSelector.SelectedValue = boundSettings == null
-                    ? NotificationStylePresets.Soft : boundSettings.DesktopNotificationStylePreset;
+            {
+                var desktopTheme = settings != null &&
+                    settings.UsesEmbeddedThemeDesign(ThemeAppearanceSurface.DesktopNotification);
+                DesktopNotificationPresetSelector.IsEnabled = !desktopTheme;
+                DesktopNotificationPresetSelector.SelectedValue = desktopTheme
+                    ? PlayniteThemeLookKey
+                    : (settings == null
+                        ? NotificationStylePresets.Soft
+                        : settings.DesktopNotificationStylePreset);
+            }
             if (FullscreenNotificationPresetSelector != null)
-                FullscreenNotificationPresetSelector.SelectedValue = boundSettings == null
-                    ? NotificationStylePresets.Soft : boundSettings.NotificationStylePreset;
+            {
+                var fullscreenTheme = settings != null &&
+                    settings.UsesEmbeddedThemeDesign(ThemeAppearanceSurface.FullscreenNotification);
+                FullscreenNotificationPresetSelector.IsEnabled = !fullscreenTheme;
+                FullscreenNotificationPresetSelector.SelectedValue = fullscreenTheme
+                    ? PlayniteThemeLookKey
+                    : (settings == null
+                        ? NotificationStylePresets.Soft
+                        : settings.NotificationStylePreset);
+            }
         }
 
         private void NotificationPresetSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1260,6 +1332,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
             if (settings == null) return;
+            if (IsPlayniteThemeLookKey(preset)) return;
             var previous = desktop ? settings.DesktopNotificationStylePreset : settings.NotificationStylePreset;
             var selected = NotificationStylePresets.Normalize(preset);
             var surface = desktop
@@ -1267,23 +1340,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 : ThemeAppearanceSurface.FullscreenNotification;
             if (settings.UsesEmbeddedThemeDesign(surface))
             {
-                if (string.Equals(NotificationStylePresets.Normalize(previous), selected,
-                    StringComparison.OrdinalIgnoreCase))
-                {
-                    RefreshNotificationPresetSelectors();
-                    return;
-                }
-                suppressingStylePresetMark = true;
-                try
-                {
-                    if (desktop) settings.DesktopNotificationStylePreset = selected;
-                    else settings.NotificationStylePreset = selected;
-                }
-                finally { suppressingStylePresetMark = false; }
-                settings.RefreshCreatorThemeState();
                 RefreshNotificationPresetSelectors();
-                if (plugin != null)
-                    plugin.ShowNotificationPresetPreview(desktop);
                 return;
             }
             if (ImportedVisualProfileCatalog.Contains(selected))
@@ -1371,6 +1428,10 @@ namespace ControllerSessionManager.PlayniteIntegration
             try
             {
                 var options = new System.Collections.Generic.List<AppearancePresetOption>();
+                var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+                if (settings != null &&
+                    settings.UsesEmbeddedThemeDesign(ThemeAppearanceSurface.Overlay))
+                    options.Add(CreatePlayniteThemeLookOption(ThemeAppearanceSurface.Overlay));
                 options.Add(CreateOverlayPresetOption(OverlayStylePresets.Custom,
                     "LOCCSM_PresetGroupCustom", false));
                 options.Add(CreateAppearancePresetGroupHeader("LOCCSM_PresetGroupPlugin"));
@@ -1418,6 +1479,12 @@ namespace ControllerSessionManager.PlayniteIntegration
         private void RefreshOverlayPresetSelector()
         {
             if (refreshingOverlayPresetSelection) return;
+            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            if (settings != null && settings.IsOverlayEmbeddedThemeAppearanceActive)
+            {
+                BuildOverlayPresetSelector();
+                return;
+            }
             refreshingOverlayPresetSelection = true;
             try { SetOverlayPresetSelectorValue(); }
             finally { refreshingOverlayPresetSelection = false; }
@@ -1425,9 +1492,14 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private void SetOverlayPresetSelectorValue()
         {
-            if (OverlayPresetSelector != null)
-                OverlayPresetSelector.SelectedValue = boundSettings == null
-                    ? OverlayStylePresets.Soft : boundSettings.OverlayStylePreset;
+            if (OverlayPresetSelector == null) return;
+            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            var overlayTheme = settings != null &&
+                settings.UsesEmbeddedThemeDesign(ThemeAppearanceSurface.Overlay);
+            OverlayPresetSelector.IsEnabled = !overlayTheme;
+            OverlayPresetSelector.SelectedValue = overlayTheme
+                ? PlayniteThemeLookKey
+                : (settings == null ? OverlayStylePresets.Soft : settings.OverlayStylePreset);
         }
 
         private void OverlayPresetSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1436,17 +1508,13 @@ namespace ControllerSessionManager.PlayniteIntegration
             var selector = sender as ComboBox;
             var preset = selector == null ? null : selector.SelectedValue as string;
             var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
-            if (settings == null || string.IsNullOrWhiteSpace(preset) ||
-                string.Equals(settings.OverlayStylePreset, preset, StringComparison.OrdinalIgnoreCase)) return;
+            if (settings == null || string.IsNullOrWhiteSpace(preset) || IsPlayniteThemeLookKey(preset))
+                return;
+            if (string.Equals(settings.OverlayStylePreset, preset, StringComparison.OrdinalIgnoreCase))
+                return;
             if (settings.UsesEmbeddedThemeDesign(ThemeAppearanceSurface.Overlay))
             {
-                suppressingStylePresetMark = true;
-                try { settings.OverlayStylePreset = preset; }
-                finally { suppressingStylePresetMark = false; }
-                settings.RefreshCreatorThemeState();
                 RefreshOverlayPresetSelector();
-                RefreshOverlayPreviewComposition();
-                RefreshOverlayPreviewControllerLayout();
                 return;
             }
             if (ImportedVisualProfileCatalog.Contains(preset))

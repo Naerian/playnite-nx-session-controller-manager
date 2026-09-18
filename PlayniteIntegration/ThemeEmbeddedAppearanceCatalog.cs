@@ -124,6 +124,20 @@ namespace ControllerSessionManager.PlayniteIntegration
                 : Path.GetFileName(themeRoot.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
         }
 
+        public static string GetLookSelectorDisplayName(IPlayniteAPI api, ThemeAppearanceSurface surface)
+        {
+            CreatorThemeDefinition definition;
+            if (TryGetDefinition(api, surface, out definition) &&
+                !string.IsNullOrWhiteSpace(definition.Name))
+            {
+                var name = definition.Name.Trim();
+                if (!string.IsNullOrWhiteSpace(definition.Author))
+                    return name + " — " + definition.Author.Trim();
+                return name;
+            }
+            return GetDisplayName(api, surface);
+        }
+
         private static string ResolveSoundPath(CreatorThemeDefinition definition, NotificationSoundKind kind)
         {
             if (definition == null) return string.Empty;
