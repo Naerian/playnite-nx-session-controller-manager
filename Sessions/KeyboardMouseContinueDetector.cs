@@ -4,12 +4,15 @@ using System.Runtime.InteropServices;
 namespace ControllerSessionManager.Sessions
 {
     /// <summary>
-    /// Detects intentional keyboard or mouse-button edges so a single-player disconnect
-    /// incident can be dismissed when the player continues with keyboard and mouse.
-    /// Mouse movement alone is ignored. Escape is ignored to avoid colliding with common game pause shortcuts.
+    /// Detects intentional keyboard or mouse-button edges so a disconnect incident can be
+    /// dismissed when the player continues without the missing controller.
+    /// Mouse movement alone is ignored. Escape is tracked separately so it can dismiss even
+    /// in local multiplayer and when the game is not in the foreground.
     /// </summary>
     internal sealed class KeyboardMouseContinueDetector
     {
+        private const ushort VkEscape = 0x1B;
+
         private static readonly ushort[] WatchedVirtualKeys =
         {
             0x01, // VK_LBUTTON
@@ -28,11 +31,15 @@ namespace ControllerSessionManager.Sessions
         };
 
         private readonly bool[] previousDown = new bool[WatchedVirtualKeys.Length];
+        private bool previousEscapeDown;
         private bool armed;
+        private bool escapeArmed;
 
         public void Reset()
         {
             armed = false;
+            escapeArmed = false;
+            previousEscapeDown = false;
             Array.Clear(previousDown, 0, previousDown.Length);
         }
 
@@ -43,7 +50,49 @@ namespace ControllerSessionManager.Sessions
         public void SyncBaseline()
         {
             SampleInto(previousDown);
+            previousEscapeDown = IsDown(VkEscape);
             armed = true;
+            escapeArmed = true;
+        }
+
+        public bool TryDetectEscape(out string evidence)
+        {
+            var current = IsDown(VkEscape);
+            return TryDetectEscapeTransition(ref previousEscapeDown, current, ref escapeArmed,
+                out evidence);
+        }
+
+        internal bool TryDetectEscape(bool previous, bool current, out string evidence)
+        {
+            var previousState = previous;
+            var armedState = escapeArmed;
+            var detected = TryDetectEscapeTransition(ref previousState, current, ref armedState,
+                out evidence);
+            previousEscapeDown = previousState;
+            escapeArmed = armedState;
+            return detected;
+        }
+
+        private static bool TryDetectEscapeTransition(ref bool previousState, bool current,
+            ref bool armedState, out string evidence)
+        {
+            evidence = null;
+            if (!armedState)
+            {
+                previousState = current;
+                armedState = true;
+                return false;
+            }
+
+            if (current && !previousState)
+            {
+                previousState = current;
+                evidence = "Escape";
+                return true;
+            }
+
+            previousState = current;
+            return false;
         }
 
         public bool TryDetect(out string evidence)
@@ -98,8 +147,13 @@ namespace ControllerSessionManager.Sessions
         {
             for (var i = 0; i < WatchedVirtualKeys.Length; i++)
             {
-                target[i] = (GetAsyncKeyState(WatchedVirtualKeys[i]) & 0x8000) != 0;
+                target[i] = IsDown(WatchedVirtualKeys[i]);
             }
+        }
+
+        private static bool IsDown(ushort virtualKey)
+        {
+            return (GetAsyncKeyState(virtualKey) & 0x8000) != 0;
         }
 
         private static string Describe(ushort virtualKey)

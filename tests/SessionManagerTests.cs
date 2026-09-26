@@ -79,7 +79,11 @@ internal static class SessionManagerTests
             AlreadyConnectedControllerStillRequiresInputForTakeover();
             KeyboardMouseContinueDismissesSinglePlayerIncident();
             KeyboardMouseContinueIgnoredInLocalMultiplayer();
+            EscapeDismissesLocalMultiplayerIncident();
             KeyboardMouseContinueRequiresRisingEdge();
+            EscapeDismissRequiresRisingEdge();
+            SameModelPadsReconnectByOrdinalAndSlot();
+            GhostPadNotActivatedDuringLocalMultiplayerIncident();
             XInputDongleReconnectRestoresSdkDisconnect();
             DongleReconnectResolvesVolatileXInputSlot();
             MergeKeepsHardwareIdWhenXInputSlotIsVolatile();
@@ -1056,6 +1060,26 @@ internal static class SessionManagerTests
             "The co-op incident must remain until the missing player slot recovers.");
     }
 
+    private static void EscapeDismissesLocalMultiplayerIncident()
+    {
+        var start = new DateTime(2026, 9, 27, 1, 0, 0, DateTimeKind.Utc);
+        var manager = new GameSessionManager();
+        SessionEventType? observed = null;
+        manager.EventOccurred += (sender, args) => observed = args.Type;
+        manager.Start(GameId, start);
+        manager.Update(new[] { Device("A", start.AddSeconds(1)), Device("B", start.AddSeconds(1)) },
+            start.AddSeconds(1), true, true);
+        manager.Update(new[] { Device("B", start.AddSeconds(2)) }, start.AddSeconds(2), true, true);
+        Equal(true, manager.TryContinueWithKeyboardMouse(true, "Escape", true),
+            "Escape must dismiss missing local-multiplayer slots when force-dismiss is requested.");
+        Equal(1, manager.ActiveControllers.Count,
+            "Escape dismiss must retire only the missing co-op slots.");
+        Equal("B", manager.ActiveControllers.Single().ControllerKey,
+            "The still-connected co-op player must remain protected.");
+        Equal(SessionEventType.KeyboardMouseContinue, observed,
+            "Escape dismiss must raise the keyboard/mouse continue event.");
+    }
+
     private static void KeyboardMouseContinueRequiresRisingEdge()
     {
         var detector = new KeyboardMouseContinueDetector();
@@ -1075,6 +1099,85 @@ internal static class SessionManagerTests
         Equal(true, detector.TryDetect(previous, pressed, out evidence),
             "A fresh key press after arming must dismiss the overlay.");
         Equal("KeyW", evidence, "Evidence must identify the intentional key.");
+    }
+
+    private static void EscapeDismissRequiresRisingEdge()
+    {
+        var detector = new KeyboardMouseContinueDetector();
+        string evidence;
+        Equal(false, detector.TryDetectEscape(false, true, out evidence),
+            "The first Escape sample must only arm the baseline.");
+        Equal(false, detector.TryDetectEscape(true, true, out evidence),
+            "A held Escape key must not dismiss the overlay.");
+        Equal(false, detector.TryDetectEscape(true, false, out evidence),
+            "Releasing Escape must not dismiss the overlay.");
+        Equal(true, detector.TryDetectEscape(false, true, out evidence),
+            "A fresh Escape press after arming must dismiss the overlay.");
+        Equal("Escape", evidence, "Evidence must identify Escape.");
+    }
+
+    private static void SameModelPadsReconnectByOrdinalAndSlot()
+    {
+        var start = new DateTime(2026, 9, 27, 1, 10, 0, DateTimeKind.Utc);
+        var manager = new GameSessionManager();
+        var first = SameModelPad("hardware:2DC8:310B:1", 0, start.AddSeconds(1));
+        var second = SameModelPad("hardware:2DC8:310B:2", 1, start.AddSeconds(1));
+        manager.Start(GameId, start);
+        manager.Update(new[] { first, second }, start.AddSeconds(1), true, true);
+        Equal(2, manager.ActiveControllers.Count,
+            "Two identical pads must both join a local multiplayer session.");
+
+        manager.Update(new ControllerDeviceSnapshot[0], start.AddSeconds(2), true, true);
+        Equal(2, manager.SuspectedDisconnectCount,
+            "Both identical pads must raise disconnect incidents.");
+
+        var slot0 = SameModelPad("xinput:slot:0", 0, start.AddSeconds(3));
+        slot0.HardwareId = "xinput:slot:0";
+        var slot1 = SameModelPad("xinput:slot:1", 1, start.AddSeconds(3));
+        slot1.HardwareId = "xinput:slot:1";
+        manager.Update(new[] { slot0, slot1 }, start.AddSeconds(3), true, true);
+        Equal(0, manager.SuspectedDisconnectCount,
+            "Ordinal-to-slot matching must resolve both identical pads after reconnect.");
+        Equal(2, manager.ActiveControllers.Count,
+            "Both session slots must remain after the same-model reconnect.");
+        Equal(true, manager.ActiveControllers.Any(a => a.ControllerKey == "hardware:2DC8:310B:1"),
+            "The first pad must keep its stable hardware id across reconnect.");
+        Equal(true, manager.ActiveControllers.Any(a => a.ControllerKey == "hardware:2DC8:310B:2"),
+            "The second pad must keep its stable hardware id across reconnect.");
+    }
+
+    private static void GhostPadNotActivatedDuringLocalMultiplayerIncident()
+    {
+        var start = new DateTime(2026, 9, 27, 1, 20, 0, DateTimeKind.Utc);
+        var manager = new GameSessionManager();
+        var first = SameModelPad("hardware:2DC8:310B:1", 0, start.AddSeconds(1));
+        var second = SameModelPad("hardware:2DC8:310B:2", 1, start.AddSeconds(1));
+        manager.Start(GameId, start);
+        manager.Update(new[] { first, second }, start.AddSeconds(1), true, true);
+        manager.Update(new[] { second }, start.AddSeconds(2), true, true);
+        Equal(1, manager.SuspectedDisconnectCount,
+            "One missing co-op pad must open an incident.");
+
+        var ghost = SameModelPad("xinput:slot:2", 2, start.AddSeconds(3));
+        ghost.HardwareId = "xinput:slot:2";
+        ghost.Name = "XInput Controller (Player 3)";
+        manager.Update(new[] { second, ghost }, start.AddSeconds(3), true, true);
+        Equal(false, manager.ActiveControllers.Any(a => a.ControllerKey == "xinput:slot:2"),
+            "A supplemental XInput ghost must not join as a third player during an incident.");
+        Equal(1, manager.SuspectedDisconnectCount,
+            "The original missing slot must remain until reconnect, takeover or Escape dismiss.");
+        Equal(2, manager.ActiveControllers.Count,
+            "Local multiplayer must keep the established players only while an incident is open.");
+    }
+
+    private static ControllerDeviceSnapshot SameModelPad(string key, int slot, DateTime inputUtc)
+    {
+        var device = Device(key, inputUtc);
+        device.VendorId = 0x2DC8;
+        device.ProductId = 0x310B;
+        device.ProviderInstanceId = slot;
+        device.Name = "8BitDo Ultimate 2 Wireless";
+        return device;
     }
 
     private static int IndexOfWatchedKey(ushort virtualKey)

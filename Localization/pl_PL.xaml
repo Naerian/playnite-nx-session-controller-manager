@@ -251,7 +251,7 @@
     <sys:String x:Key="LOCCSM_OverlayDisconnectMessage">Utracono polaczenie: {0}</sys:String>
     <sys:String x:Key="LOCCSM_OverlayWaitSameController">Podlacz go ponownie, aby kontynuowac.</sys:String>
     <sys:String x:Key="LOCCSM_OverlayAllowTakeover">Podlacz go ponownie albo nacisnij przycisk lub porusz drazkiem innego kontrolera.</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayAllowTakeoverOrKeyboardMouse">Podlacz go ponownie, uzyj innego kontrolera albo nacisnij klawisz / kliknij, aby kontynuowac klawiatura i mysza.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayAllowTakeoverOrKeyboardMouse">Podlacz go ponownie, uzyj innego kontrolera, nacisnij klawisz / kliknij, albo nacisnij Escape, aby kontynuowac klawiatura i mysza.</sys:String>
     <sys:String x:Key="LOCCSM_ColorTopPanelByBattery">Koloruj ikone i tekst zgodnie z poziomem baterii</sys:String>
     <sys:String x:Key="LOCCSM_TopPanelIconColorMode">Kolor ikony / tekstu</sys:String>
     <sys:String x:Key="LOCCSM_TopPanelIconColorModeDefault">Domyślny</sys:String>

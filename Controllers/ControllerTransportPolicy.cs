@@ -222,7 +222,7 @@ namespace ControllerSessionManager.Controllers
                 leftOrdinal > 0 && rightOrdinal > 0 && leftOrdinal != rightOrdinal;
         }
 
-        private static bool TryReadHardwareOrdinal(string hardwareId, out ushort vendorId,
+        internal static bool TryReadHardwareOrdinal(string hardwareId, out ushort vendorId,
             out ushort productId, out int ordinal)
         {
             vendorId = 0;

@@ -83,6 +83,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         private static readonly TimeSpan ToastStartupGracePeriod = TimeSpan.FromSeconds(8);
         private List<string> activeGameOnlineMetadata = new List<string>();
         private bool adaptiveLocalScopeLogged;
+        private bool lastOverlayProtectAll;
         private SessionProtectionPolicy activeSessionPolicy;
         private TopPanelItem controllerTopPanelItem;
         private TesterIntegration testerIntegration;
@@ -1823,6 +1824,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             activeGameOnlineMetadata = GetOnlineMetadata(args == null ? null : args.Game);
             adaptiveSessionScopeDetector.Reset(DateTime.UtcNow);
             adaptiveLocalScopeLogged = false;
+            lastOverlayProtectAll = false;
             keyboardMouseContinueDetector.Reset();
             activeSessionPolicy = activeGameId.HasValue ? settings.GetSessionPolicy(activeGameId.Value) : null;
             if (activeGameId.HasValue && activeSessionPolicy.Enabled)
@@ -1960,6 +1962,16 @@ namespace ControllerSessionManager.PlayniteIntegration
                     ? settings.DisconnectGracePeriodMilliseconds
                     : activeSessionPolicy.GracePeriodMilliseconds));
             TryContinueWithKeyboardMouse(protectAll, now);
+            if (protectAll != lastOverlayProtectAll)
+            {
+                lastOverlayProtectAll = protectAll;
+                if (sessionManager.IsRunning &&
+                    sessionManager.ActiveControllers.Any(a => a.MissingSinceUtc.HasValue) &&
+                    PlayniteApi.MainView != null)
+                {
+                    PlayniteApi.MainView.UIDispatcher.BeginInvoke(new Action(RefreshDisconnectOverlay));
+                }
+            }
             UpdateInputPollingInterval();
             if (sessionManager.IsRunning && activeSessionId != Guid.Empty)
             {
@@ -1975,10 +1987,27 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private void TryContinueWithKeyboardMouse(bool protectAllActiveControllers, DateTime nowUtc)
         {
-            if (!sessionManager.IsRunning || protectAllActiveControllers ||
+            if (!sessionManager.IsRunning ||
                 !sessionManager.ActiveControllers.Any(a => a.MissingSinceUtc.HasValue))
             {
                 keyboardMouseContinueDetector.Reset();
+                return;
+            }
+
+            string escapeEvidence;
+            if (keyboardMouseContinueDetector.TryDetectEscape(out escapeEvidence))
+            {
+                if (sessionManager.TryContinueWithKeyboardMouse(protectAllActiveControllers,
+                    escapeEvidence, true))
+                {
+                    PublishControllerSnapshotChanged();
+                }
+
+                return;
+            }
+
+            if (protectAllActiveControllers)
+            {
                 return;
             }
 

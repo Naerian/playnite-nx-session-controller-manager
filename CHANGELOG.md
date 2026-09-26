@@ -1,6 +1,13 @@
 # Changelog
 
 
+
+## 1.0.40 — 2026-09-27
+- Press Escape to dismiss the disconnect overlay in single-player and local multiplayer (continue without the missing pads).
+- Overlay instructions mention Escape; single-player keyboard/mouse continue is unchanged.
+- Two identical controllers (same VID/PID) reconnect independently by ordinal/slot, so local multiplayer overlays clear correctly.
+- Supplemental XInput ghost pads no longer join as extra players while a disconnect incident is open.
+
 ## 1.0.39 — 2026-09-18
 - Clarified docs: automatic pause is process suspend (None / OfflineOnly / Always), not a pause key.
 - Removed unused Advanced Design shells and the dead SendInput pause path.

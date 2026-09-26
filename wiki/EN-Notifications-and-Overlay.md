@@ -20,7 +20,7 @@ Stable XInput changes use a short 300 ms debounce to reject rapid driver flaps w
 
 ## Disconnect overlay
 
-The overlay appears after a participating controller remains absent beyond the configured grace period. It shows the missing device, continuation instruction and pause result. The optional **Show disconnect timer** line reports the live localized duration and updates once per second. Reconnecting, completing an eligible controller handover, or — in single-player — pressing a key / clicking the mouse closes it. Local multiplayer incidents remain until the corresponding player slot is recovered.
+The overlay appears after a participating controller remains absent beyond the configured grace period. It shows the missing device, continuation instruction and pause result. The optional **Show disconnect timer** line reports the live localized duration and updates once per second. Reconnecting, completing an eligible controller handover, pressing Escape, or — in single-player — pressing a key / clicking the mouse closes it. Escape also dismisses local multiplayer missing slots so you can continue without the disconnected pads. Two identical controllers (same model) reconnect independently by ordinal/slot, matching Mandos inventory identity.
 
 The overlay card and full-screen backdrop have independent colors, sizing, icon sizes, padding, border and corner radius. Card width and position, entry animation, shadow and the accented border edge are configurable too. Title, controller name, instruction, and status/badges each have their own font family and weight; title, instruction and pause status can also be hidden independently.
 

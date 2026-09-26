@@ -250,8 +250,8 @@
     <sys:String x:Key="LOCCSM_OverlayDisconnectTitle">????????</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectMessage">?????:{0}</sys:String>
     <sys:String x:Key="LOCCSM_OverlayWaitSameController">????????</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayAllowTakeover">????,?????????????????</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayAllowTakeoverOrKeyboardMouse">Reconnect it, use another controller, or press a key / click to continue with keyboard and mouse.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayAllowTakeover">Reconnect it, press a button or move a stick on another controller, or press Escape to continue without it.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayAllowTakeoverOrKeyboardMouse">Reconnect it, use another controller, press a key / click, or press Escape to continue with keyboard and mouse.</sys:String>
     <sys:String x:Key="LOCCSM_ColorTopPanelByBattery">??????????????</sys:String>
     <sys:String x:Key="LOCCSM_TopPanelIconColorMode">图标 / 文字颜色</sys:String>
     <sys:String x:Key="LOCCSM_TopPanelIconColorModeDefault">默认</sys:String>

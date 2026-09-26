@@ -250,8 +250,8 @@
     <sys:String x:Key="LOCCSM_OverlayDisconnectTitle">Mando desconectado</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectMessage">Se ha perdido la conexión con: {0}</sys:String>
     <sys:String x:Key="LOCCSM_OverlayWaitSameController">Vuelve a conectarlo para continuar.</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayAllowTakeover">Reconéctalo, o pulsa un botón o mueve un stick en otro mando.</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayAllowTakeoverOrKeyboardMouse">Reconéctalo, usa otro mando, o pulsa una tecla / haz clic para seguir con teclado y ratón.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayAllowTakeover">Reconéctalo, pulsa un botón o mueve un stick en otro mando, o pulsa Escape para continuar sin él.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayAllowTakeoverOrKeyboardMouse">Reconéctalo, usa otro mando, pulsa una tecla / haz clic, o pulsa Escape para seguir con teclado y ratón.</sys:String>
     <sys:String x:Key="LOCCSM_ColorTopPanelByBattery">Colorear el icono y el texto según el nivel de batería</sys:String>
     <sys:String x:Key="LOCCSM_TopPanelIconColorMode">Color del icono / texto</sys:String>
     <sys:String x:Key="LOCCSM_TopPanelIconColorModeDefault">Por defecto</sys:String>
@@ -264,7 +264,7 @@
     <sys:String x:Key="LOCCSM_GamePolicySuspendProcess">Pausar el juego temporalmente al desconectarse un mando</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyOverlayOnly">Mostrar el aviso en pantalla. No intentar pausar el juego</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectTitlePlural">{0} mandos desconectados</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayReconnectControllers">Vuelve a conectarlos para continuar.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayReconnectControllers">Vuelve a conectarlos para continuar, o pulsa Escape para seguir sin los mandos que faltan.</sys:String>
     <sys:String x:Key="LOCCSM_ForcePauseOfflineGames">Suspender el proceso solo si el juego no tiene actividad de red</sys:String>
     <sys:String x:Key="LOCCSM_ForcePauseOfflineGamesHelp">Suspende el juego al desconectarse un mando, pero si detecta actividad de red, no lo detiene para evitar problemas en partidas online.</sys:String>
     <sys:String x:Key="LOCCSM_ForcePauseOfflineGamesWarning">La detección no siempre es exacta.</sys:String>

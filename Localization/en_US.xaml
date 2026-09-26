@@ -252,8 +252,8 @@
     <sys:String x:Key="LOCCSM_OverlayDisconnectTitle">Controller disconnected</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectMessage">Connection lost: {0}</sys:String>
     <sys:String x:Key="LOCCSM_OverlayWaitSameController">Reconnect it to continue.</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayAllowTakeover">Reconnect it, or press a button or move a stick on another controller.</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayAllowTakeoverOrKeyboardMouse">Reconnect it, use another controller, or press a key / click to continue with keyboard and mouse.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayAllowTakeover">Reconnect it, press a button or move a stick on another controller, or press Escape to continue without it.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayAllowTakeoverOrKeyboardMouse">Reconnect it, use another controller, press a key / click, or press Escape to continue with keyboard and mouse.</sys:String>
     <sys:String x:Key="LOCCSM_ColorTopPanelByBattery">Color the icon and battery text according to the battery level</sys:String>
     <sys:String x:Key="LOCCSM_TopPanelIconColorMode">Icon / text color</sys:String>
     <sys:String x:Key="LOCCSM_TopPanelIconColorModeDefault">Default</sys:String>
@@ -266,7 +266,7 @@
     <sys:String x:Key="LOCCSM_GamePolicySuspendProcess">Temporarily stop the game when a controller disconnects</sys:String>
     <sys:String x:Key="LOCCSM_GamePolicyOverlayOnly">Show the on-screen warning. Do not try to pause the game</sys:String>
     <sys:String x:Key="LOCCSM_OverlayDisconnectTitlePlural">{0} controllers disconnected</sys:String>
-    <sys:String x:Key="LOCCSM_OverlayReconnectControllers">Reconnect them to continue.</sys:String>
+    <sys:String x:Key="LOCCSM_OverlayReconnectControllers">Reconnect them to continue, or press Escape to continue without the missing controllers.</sys:String>
     <sys:String x:Key="LOCCSM_ForcePauseOfflineGames">Suspend the game only when no network activity is detected</sys:String>
     <sys:String x:Key="LOCCSM_ForcePauseOfflineGamesHelp">Suspends the game when a controller disconnects, but skips suspension if network activity is detected to avoid disrupting an online match.</sys:String>
     <sys:String x:Key="LOCCSM_ForcePauseOfflineGamesWarning">Detection is not always exact.</sys:String>

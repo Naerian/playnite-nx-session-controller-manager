@@ -362,7 +362,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             if (OverlayPreviewInstruction != null)
             {
                 OverlayPreviewInstruction.Text = plugin == null
-                    ? "Reconnect it, use another controller, or press a key / click to continue with keyboard and mouse."
+                    ? "Reconnect it, use another controller, press a key / click, or press Escape to continue with keyboard and mouse."
                     : plugin.Loc("LOCCSM_OverlayAllowTakeoverOrKeyboardMouse");
             }
             if (OverlayPreviewControllerName != null)

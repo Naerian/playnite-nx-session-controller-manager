@@ -162,10 +162,20 @@ namespace ControllerSessionManager.Sessions
 
             var eligible = connected.Values.Where(a => IsEligibleForActivation(a, snapshot, nowUtc))
                 .OrderByDescending(a => a.LastInputUtc).ToList();
+            var hadMissingBeforeUpdate = activeControllers.Values.Any(a => a.MissingSinceUtc.HasValue);
             if (protectAllActiveControllers)
             {
                 foreach (var controller in eligible)
                 {
+                    var key = GetControllerKey(controller);
+                    // Freeze brand-new players while a disconnect incident is open so volatile
+                    // XInput supplemental rows cannot inflate local multiplayer as a ghost pad.
+                    // Takeover still assigns unassigned replacements via ResolveTakeovers.
+                    if (hadMissingBeforeUpdate && !activeControllers.ContainsKey(key))
+                    {
+                        continue;
+                    }
+
                     ActivateOrRefresh(controller);
                 }
             }
@@ -269,13 +279,14 @@ namespace ControllerSessionManager.Sessions
         }
 
         /// <summary>
-        /// Dismisses missing single-player session controllers when the player continues on
-        /// keyboard/mouse. Local multiplayer protection never uses this path.
+        /// Dismisses missing session controllers when the player continues without them.
+        /// Intentional Escape dismiss may clear local multiplayer missing slots; automatic
+        /// keyboard/mouse continue stays single-player only.
         /// </summary>
         public bool TryContinueWithKeyboardMouse(bool protectAllActiveControllers,
-            string inputEvidence = null)
+            string inputEvidence = null, bool forceDismiss = false)
         {
-            if (!IsRunning || protectAllActiveControllers)
+            if (!IsRunning || (protectAllActiveControllers && !forceDismiss))
             {
                 return false;
             }
@@ -414,6 +425,8 @@ namespace ControllerSessionManager.Sessions
                     .Where(a => !string.Equals(a.Key, missing.ControllerKey, StringComparison.OrdinalIgnoreCase) &&
                         !usedReplacementKeys.Contains(a.Key) &&
                         IsAvailableReplacement(a.Key, missing, protectAllActiveControllers) &&
+                        (!SessionControllerIdentity.RefersTo(missing.ControllerKey, a.Value) ||
+                            SessionControllerIdentity.IsCompatibleAlias(missing.ControllerKey, a.Value)) &&
                         ((a.Value.LastInputUtc.HasValue && IsReplacementSettled(a.Value, nowUtc) &&
                             a.Value.LastInputUtc.Value > missing.MissingSinceUtc.Value) ||
                          (newlyConnectedKeys.Contains(a.Key) && a.Value.IsInputNeutral != false) ||
