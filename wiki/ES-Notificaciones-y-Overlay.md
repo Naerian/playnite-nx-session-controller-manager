@@ -2,13 +2,11 @@
 
 ## Relación entre Estilos y las pestañas de Apariencia
 
-**Apariencia → Estilos** elige la fuente visual activa: un preset del plugin, un perfil importado, un diseño de creador o — con el interruptor correspondiente — un pack integrado del tema de Playnite. **Apariencia → Notificación en pantalla** agrupa Escritorio, Pantalla completa y Sonidos. La pestaña Overlay sigue aparte para la UI de incidencia por desconexión. Los packs de creador y de tema bloquean distribución y colores mientras están activos. Usa **Copiar diseño de escritorio** (en Pantalla completa) si quieres que las notificaciones Fullscreen coincidan con el look de Escritorio.
+**Apariencia → Estilos** elige la fuente visual activa: un preset del plugin, un perfil importado o — con el interruptor correspondiente — un pack integrado del tema de Playnite. **Apariencia → Notificación en pantalla** agrupa Escritorio, Pantalla completa y Sonidos. La pestaña Overlay sigue aparte para la UI de incidencia por desconexión. Los packs del tema bloquean distribución y colores mientras están activos. Usa **Copiar diseño de escritorio** (en Pantalla completa) si quieres que las notificaciones Fullscreen coincidan con el look de Escritorio.
 
-Los selectores separan presets del plugin, diseños importados y diseños revisados de creadores. Estos últimos pueden incluir distribución avanzada, fuentes, imágenes, bordes por estado y sonidos; mientras están activos, sus controles quedan bloqueados y atenuados visualmente. Los autores pueden consultar la guía de [Diseños de creadores](ES-Disenos-de-Creadores).
+Los selectores separan presets del plugin y diseños importados. Los autores de temas incluyen el estilo dentro del tema: [Apariencia embebida en temas](ES-Integracion-de-Apariencia-en-Temas). El resto comparte un look exportando un perfil visual (`.pcvisual`).
 
-Usa **Actualizar diseños** para obtener versiones compatibles desde el catálogo oficial. También puedes instalar un archivo `.csmtheme` de confianza mediante **Instalar diseño de creador**, situado junto a las acciones de perfiles visuales. El plugin valida la compatibilidad y el contenido antes de sustituir atómicamente el diseño; no registra la instalación mediante doble clic en Windows.
-
-A partir de Controller Manager 1.0.28, si el diseño de notificaciones seleccionado incluye los cuatro sonidos de evento válidos, su pack se selecciona por defecto y aparece en **Apariencia → Notificación en pantalla → Sonidos → Pack de sonido**. El audio nunca se bloquea: puedes elegir otro pack, seguir usando las pruebas e interruptores o asignar archivos personalizados. El sonido personalizado de un evento tiene prioridad sobre el pack seleccionado. Los conjuntos incompletos de un creador no aparecen como packs elegibles.
+A partir de Controller Manager 1.0.28, si el diseño de notificaciones seleccionado incluye los cuatro sonidos de evento válidos, su pack se selecciona por defecto y aparece en **Apariencia → Notificación en pantalla → Sonidos → Pack de sonido**. El audio nunca se bloquea: puedes elegir otro pack, seguir usando las pruebas e interruptores o asignar archivos personalizados. El sonido personalizado de un evento tiene prioridad sobre el pack seleccionado.
 
 ## Notificaciones Fullscreen
 
@@ -26,7 +24,7 @@ La tarjeta y el backdrop de pantalla completa tienen colores, tamaños, iconos, 
 
 Las insignias opcionales de conexión y batería tienen controles independientes de color de texto, icono, fondo y borde, además de grosor, redondeo y tamaños de texto e icono. La batería puede colorearse según sus estados completo, medio, bajo y vacío. Los valores `#AARRGGBB` admiten alfa; `#00000000` hace transparente el backdrop. La vista previa compacta se actualiza al editar y los presets aplican combinaciones de composición claramente diferenciadas.
 
-Los diseños revisados de creadores también pueden usar una composición `Alert`, degradados de escena a pantalla completa, una imagen, brillos ambientales y una cuadrícula detrás de la tarjeta. Son efectos declarativos validados, no CSS, XAML ni código ejecutable arbitrario.
+Los packs de tema también pueden usar una composición `Alert`, degradados de escena a pantalla completa, una imagen, brillos ambientales y una cuadrícula detrás de la tarjeta. Son efectos declarativos validados, no CSS, XAML ni código ejecutable arbitrario.
 
 ## Compatibilidad y entrada
 

@@ -40,10 +40,12 @@ if ($viewXaml -notmatch '<Expander x:Name="CustomSoundsSection"' -or
         $viewXaml.IndexOf('IsEnabled="{Binding AreNotificationEventSoundOptionsEnabled}"')) {
     throw "Custom sounds must be collapsible and sound switches must sit between previews and the pack."
 }
-if ($viewXaml -notmatch 'SelectedValue="{Binding CreatorThemeUpdatePolicy}"' -or
-    $viewXaml -notmatch 'Tag="Startup"' -or $viewXaml -notmatch 'Tag="Daily"' -or
-    $viewXaml -notmatch 'Tag="Manual"') {
-    throw "Appearance options must expose startup, daily and manual creator-design updates."
+if ($viewXaml -notmatch 'Click="ExportVisualProfileClick"' -or
+    $viewXaml -notmatch 'Click="ImportVisualProfileClick"' -or
+    $viewXaml -match 'Click="InstallCreatorThemeClick"' -or
+    $viewXaml -match 'Click="UpdateCreatorThemesClick"' -or
+    $viewXaml -match 'CreatorThemeUpdatePolicy') {
+    throw "Looks must export and import visual profiles without a creator-design catalog."
 }
 if ($pluginSource -notmatch 'LOCCSM_MenuPreviewNotification' -or
     $pluginSource -notmatch 'LOCCSM_MenuPreviewOverlay' -or
@@ -57,30 +59,25 @@ if ((Get-Content -Raw (Join-Path $root "PlayniteIntegration\ThemeAppearanceBridg
 }
 if ($viewXaml -notmatch 'x:Name="DeletePresetButton"' -or
     $viewXaml -notmatch 'Path=IsVisible, FallbackValue=False' -or
-    $viewSource -notmatch 'DeleteUserInstalledCreatorTheme' -or
+    $viewSource -notmatch 'DeleteImportedVisualProfile' -or
+    $viewSource -match 'DeleteUserInstalledCreatorTheme' -or
     $pluginSource -notmatch 'RestoreDefaultPluginLooks' -or
     $pluginSource -notmatch 'FullscreenLookIs\(removedId\)' -or
     $pluginSource -notmatch 'NotificationStylePresets.Apply\(targetSettings, fallback\)' -or
     (Get-Content -Raw (Join-Path $root "PlayniteIntegration\ControllerSessionManagerSettings.cs")) -notmatch 'bool FullscreenLookIs' -or
-    $viewSource -notmatch 'DeleteImportedVisualProfileClick[\s\S]*suppressingStylePresetMark = true' -or
-    (Get-Content -Raw (Join-Path $root "PlayniteIntegration\CreatorThemeCatalog.cs")) -notmatch 'OriginSideload' -or
-    (Get-Content -Raw (Join-Path $root "PlayniteIntegration\CreatorThemeCatalog.cs")) -notmatch 'TryRemoveUserInstalled') {
-    throw "Only sideloaded creator packs can be deleted, the trash stays in the dropdown, and Soft is restored when the active look is removed."
+    $viewSource -notmatch 'DeleteImportedVisualProfileClick[\s\S]*suppressingStylePresetMark = true') {
+    throw "Imported visual profiles can be deleted from the dropdown, and Soft is restored when the active look is removed."
 }
-if ($viewXaml -notmatch 'LOCCSM_CommunityCreatorDocsTitle' -or
-    $viewXaml -notmatch 'LOCCSM_CommunityCreatorDocsEnglish' -or
-    $viewXaml -notmatch 'LOCCSM_CommunityCreatorDocsSpanish' -or
+if ($viewXaml -match 'LOCCSM_CommunityCreatorDocsTitle' -or
+    $viewXaml -match 'controller-manager-creator-themes' -or
     $viewXaml -notmatch 'LOCCSM_ThemeDeveloperDocsTitle' -or
     $viewXaml -notmatch 'LOCCSM_ThemeDeveloperDocsEnglish' -or
     $viewXaml -notmatch 'LOCCSM_ThemeDeveloperDocsSpanish' -or
-    $viewXaml -notmatch 'controller-manager-creator-themes/wiki/EN-Overview' -or
-    $viewXaml -notmatch 'controller-manager-creator-themes/wiki/ES-Descripcion-General' -or
     $viewXaml -notmatch 'playnite-nx-session-controller-manager/wiki/EN-Theme-Appearance-Packs' -or
     $viewXaml -notmatch 'playnite-nx-session-controller-manager/wiki/ES-Integracion-de-Apariencia-en-Temas' -or
-    $viewXaml -notmatch 'Text="{DynamicResource LOCCSM_CommunityCreatorDocsTitle}" Style="{StaticResource SectionHeaderText}"' -or
     $viewXaml -notmatch 'Text="{DynamicResource LOCCSM_ThemeDeveloperDocsTitle}" Style="{StaticResource SectionHeaderText}"' -or
     $viewXaml -match 'LOCCSM_CreatorThemeLockedLooksNotice') {
-    throw "About creator guides must match project-link headers, and Looks must not repeat locked-design warnings."
+    throw "About must link theme authors to the plugin wiki, and Looks must not repeat locked-design warnings."
 }
 if ($viewSource -notmatch 'plugin\.ShowNotificationPresetPreview\s*\(\s*\)') {
     throw "Changing a notification style preset must launch its automatic preview."
@@ -89,19 +86,13 @@ if ($pluginSource -notmatch 'ShowDesktopNotificationPreview\s*\(\s*"connected"\s
     $pluginSource -notmatch 'ShowNotificationPreview\s*\(\s*"connected"\s*,\s*true\s*\)') {
     throw "Looks and preset previews must play the currently selected sound pack."
 }
-if (($viewXaml | Select-String -Pattern 'Click="UpdateCreatorThemesClick"' -AllMatches).Matches.Count -ne 1 -or
-    ($viewXaml | Select-String -Pattern 'Click="InstallCreatorThemeClick"' -AllMatches).Matches.Count -ne 1 -or
+if ($viewXaml -match 'Click="UpdateCreatorThemesClick"' -or
+    $viewXaml -match 'Click="InstallCreatorThemeClick"' -or
     $viewSource -notmatch 'ShowOperationProgress\s*\(' -or
     $viewSource -notmatch 'CreatorThemeCatalog\.Reload\s*\(\s*\)') {
-    throw "Creator design updates must use the cancellable progress window and reload the selectors."
+    throw "Visual profile refresh must reload selectors, and Looks must not install a creator catalog."
 }
-$profileUpdateRows = [regex]::Matches($viewXaml,
-    'Click="ImportVisualProfileClick"\s*/>\s*<Button[^>]+Click="InstallCreatorThemeClick"\s*/>\s*<Button[^>]+Click="UpdateCreatorThemesClick"',
-    [Text.RegularExpressions.RegexOptions]::Singleline)
-if ($profileUpdateRows.Count -ne 1) {
-    throw "Appearance must expose a single catalog toolbar after Import."
-}
-if ($viewSource -notmatch 'ActivateInstalledCreatorDesign' -or
+if ($viewSource -match 'ActivateInstalledCreatorDesign' -or
     $viewSource -notmatch 'LooksPreviewClick' -or
     $pluginSource -notmatch 'ThemeAppearanceBridge.Resolve' -or
     $pluginSource -notmatch 'TryCreateThemedAppearance' -or

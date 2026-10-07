@@ -1328,24 +1328,7 @@
                                                     Style="{StaticResource {x:Type Button}}" Click="ExportVisualProfileClick"/>
                                             <Button Content="{DynamicResource LOCCSM_ImportVisualProfile}" MinWidth="180" Margin="0,0,8,8"
                                                     Style="{StaticResource {x:Type Button}}" Click="ImportVisualProfileClick"/>
-                                            <Button Content="{DynamicResource LOCCSM_InstallCreatorTheme}" MinWidth="180" Margin="0,0,8,8"
-                                                    Style="{StaticResource {x:Type Button}}" Click="InstallCreatorThemeClick"/>
-                                            <Button Content="{DynamicResource LOCCSM_UpdateCreatorThemes}" MinWidth="160" Margin="0,0,8,8"
-                                                    Style="{StaticResource {x:Type Button}}" Click="UpdateCreatorThemesClick"/>
                                         </WrapPanel>
-                                    </StackPanel>
-                                </Border>
-                                <Border Style="{StaticResource SettingsCard}" Margin="0,0,0,16">
-                                    <StackPanel>
-                                        <TextBlock Text="{DynamicResource LOCCSM_CreatorThemeUpdatePolicy}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,0,0,4" />
-                                        <TextBlock Text="{DynamicResource LOCCSM_CreatorThemeUpdatePolicyHelp}" Style="{StaticResource FieldHintText}" Margin="0,0,0,10" />
-                                        <ComboBox Width="320" HorizontalAlignment="Left"
-                                                  SelectedValue="{Binding CreatorThemeUpdatePolicy}"
-                                                  SelectedValuePath="Tag">
-                                            <ComboBoxItem Tag="Startup" Content="{DynamicResource LOCCSM_CreatorThemeUpdateStartup}" />
-                                            <ComboBoxItem Tag="Daily" Content="{DynamicResource LOCCSM_CreatorThemeUpdateDaily}" />
-                                            <ComboBoxItem Tag="Manual" Content="{DynamicResource LOCCSM_CreatorThemeUpdateManual}" />
-                                        </ComboBox>
                                     </StackPanel>
                                 </Border>
                                 <TextBlock Text="{DynamicResource LOCCSM_AppearanceLooksDesktop}" Style="{StaticResource AppearanceGroupHeader}" Margin="0,0,0,4"/>
@@ -2387,20 +2370,6 @@
                                             MinWidth="100" Margin="0,0,8,8" Click="OpenExternalButton" />
                                     <Button Content="{DynamicResource LOCCSM_ReportIssue}" Tag="https://github.com/Naerian/playnite-nx-session-controller-manager/issues/new"
                                             MinWidth="140" Margin="0,0,0,8" Click="OpenExternalButton" />
-                                </WrapPanel>
-                                <StackPanel Style="{StaticResource PageSection}" Margin="0,16,0,8">
-                                    <Border Style="{StaticResource PageHeader}">
-                                        <TextBlock Text="{DynamicResource LOCCSM_CommunityCreatorDocsTitle}" Style="{StaticResource SectionHeaderText}" />
-                                    </Border>
-                                    <TextBlock Text="{DynamicResource LOCCSM_CommunityCreatorDocsHelp}" Style="{StaticResource FieldHintText}" Margin="0,8,0,8" TextWrapping="Wrap" />
-                                </StackPanel>
-                                <WrapPanel Margin="0,0,0,8">
-                                    <Button Content="{DynamicResource LOCCSM_CommunityCreatorDocsEnglish}"
-                                            Tag="https://github.com/Naerian/controller-manager-creator-themes/wiki/EN-Overview"
-                                            MinWidth="100" Margin="0,0,8,8" Click="OpenExternalButton" />
-                                    <Button Content="{DynamicResource LOCCSM_CommunityCreatorDocsSpanish}"
-                                            Tag="https://github.com/Naerian/controller-manager-creator-themes/wiki/ES-Descripcion-General"
-                                            MinWidth="100" Margin="0,0,8,8" Click="OpenExternalButton" />
                                 </WrapPanel>
                                 <StackPanel Style="{StaticResource PageSection}" Margin="0,16,0,8">
                                     <Border Style="{StaticResource PageHeader}">

@@ -58,18 +58,7 @@ $style = @(
     "True", "#3800FFC6", "#A000FFC6", "2", "18", "16"
 ) -join ";"
 if ($Creator) {
-    [Reflection.Assembly]::LoadFrom("C:\Playnite\Playnite.SDK.dll") | Out-Null
-    $pluginAssembly = [Reflection.Assembly]::LoadFrom((Join-Path $root "bin\Release\ControllerSessionManager.dll"))
-    $catalogType = $pluginAssembly.GetType("ControllerSessionManager.PlayniteIntegration.CreatorThemeCatalog", $true)
-    $catalogType.GetMethod("Configure", [type[]]@([string])).Invoke($null, @([string]$root)) | Out-Null
-    $settingsType = $pluginAssembly.GetType("ControllerSessionManager.PlayniteIntegration.ControllerSessionManagerSettings", $true)
-    $settings = [Activator]::CreateInstance($settingsType)
-    $presetType = $pluginAssembly.GetType("ControllerSessionManager.PlayniteIntegration.OverlayStylePresets", $true)
-    $presetType.GetMethod("Apply").Invoke($null, @($settings, $Creator)) | Out-Null
-    $pluginType = $pluginAssembly.GetType("ControllerSessionManager.PlayniteIntegration.ControllerSessionManagerPlugin", $true)
-    $plugin = [Runtime.Serialization.FormatterServices]::GetUninitializedObject($pluginType)
-    $pluginType.GetField("settings", [Reflection.BindingFlags]"Instance,NonPublic").SetValue($plugin, $settings)
-    $style = $pluginType.GetMethod("GetOverlayStylePayload", [Reflection.BindingFlags]"Instance,NonPublic").Invoke($plugin, $null)
+    throw "Creator catalog packs are no longer loaded. Preview a Playnite theme ControllerManager pack or an imported .pcvisual profile instead."
 }
 $type.GetMethod("ApplyPresentationStyle", $flags).Invoke($window, @($style)) | Out-Null
 $type.GetMethod("ApplyPauseStatusStyle", $flags).Invoke($window, @("pause")) | Out-Null

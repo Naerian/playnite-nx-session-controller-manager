@@ -810,12 +810,24 @@ namespace ControllerSessionManager.Tester.Tests
             var englishPath = Path.Combine(localization, "en_US.xaml");
             True(File.Exists(englishPath), "English localization exists");
             var expected = ReadKeys(englishPath);
+            var checkedLocales = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ru_RU.xaml",
+                "ja_JP.xaml",
+                "zh_CN.xaml",
+                "ko_KR.xaml"
+            };
 
             foreach (var path in Directory.GetFiles(localization, "*.xaml"))
             {
                 var actual = ReadKeys(path);
                 var missing = expected.Except(actual).ToArray();
                 True(missing.Length == 0, Path.GetFileName(path) + " is missing: " + string.Join(", ", missing));
+                if (checkedLocales.Contains(Path.GetFileName(path)))
+                {
+                    var unreadable = ReadUnreadableKeys(path);
+                    True(unreadable.Length == 0, Path.GetFileName(path) + " has unreadable text: " + string.Join(", ", unreadable));
+                }
             }
         }
 
@@ -867,6 +879,42 @@ namespace ControllerSessionManager.Tester.Tests
             return new HashSet<string>(XDocument.Load(path).Root.Elements()
                 .Select(element => (string)element.Attribute(x + "Key"))
                 .Where(key => !string.IsNullOrWhiteSpace(key)));
+        }
+
+        private static string[] ReadUnreadableKeys(string path)
+        {
+            XNamespace x = "http://schemas.microsoft.com/winfx/2006/xaml";
+            return XDocument.Load(path).Root.Elements()
+                .Where(element => IsUnreadableLocalization(element.Value))
+                .Select(element => (string)element.Attribute(x + "Key"))
+                .Where(key => !string.IsNullOrWhiteSpace(key))
+                .ToArray();
+        }
+
+        private static bool IsUnreadableLocalization(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return false;
+            }
+
+            var sawMark = false;
+            foreach (var ch in value)
+            {
+                if (char.IsWhiteSpace(ch))
+                {
+                    continue;
+                }
+
+                if (ch != '?' && ch != '\uFFFD')
+                {
+                    return false;
+                }
+
+                sawMark = true;
+            }
+
+            return sawMark;
         }
 
         private static void Equal<T>(T expected, T actual, string name)

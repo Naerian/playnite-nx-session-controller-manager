@@ -15,7 +15,6 @@ using ControllerSessionManager.Controllers;
 using ControllerSessionManager.Overlay;
 using ControllerSessionManager.Tester;
 using ControllerSessionManager.Tester.ViewModels;
-using Microsoft.Win32;
 
 namespace ControllerSessionManager.PlayniteIntegration
 {
@@ -2351,8 +2350,6 @@ namespace ControllerSessionManager.PlayniteIntegration
                 if (plugin != null && ImportedVisualProfileCatalog.Contains(profileId) &&
                     plugin.DeleteImportedVisualProfile(settings, profileId))
                     RefreshVisualProfileUi();
-                else if (plugin != null && plugin.DeleteUserInstalledCreatorTheme(settings, profileId))
-                    RefreshVisualProfileUi();
             }
             finally { suppressingStylePresetMark = false; }
         }
@@ -2501,140 +2498,6 @@ namespace ControllerSessionManager.PlayniteIntegration
             };
             progressWindow.Closed += (sender, args) => RestoreCustomSoundProgressOwner();
             progressWindow.Show();
-        }
-
-        private async void UpdateCreatorThemesClick(object sender, RoutedEventArgs args)
-        {
-            if (plugin == null || customSoundProgressWindow != null)
-            {
-                return;
-            }
-
-            var cancellation = new CancellationTokenSource();
-            try
-            {
-                ShowOperationProgress(cancellation,
-                    plugin.Loc("LOCCSM_CreatorThemesUpdateTitle"),
-                    plugin.Loc("LOCCSM_CreatorThemesUpdateProcessing"));
-                var result = await plugin.UpdateCreatorThemesAsync(cancellation.Token);
-                CloseCustomSoundProgressWindow();
-                if (result != null && result.Succeeded)
-                {
-                    CreatorThemeCatalog.Reload();
-                    RefreshVisualProfileUi();
-                }
-                if (result != null && !result.Cancelled)
-                {
-                    plugin.ShowCreatorThemeUpdateResult(result);
-                }
-            }
-            catch (OperationCanceledException)
-            {
-                CloseCustomSoundProgressWindow();
-            }
-            catch (Exception ex)
-            {
-                CloseCustomSoundProgressWindow();
-                plugin.ShowCreatorThemeUpdateResult(CreatorThemeUpdateResult.Failed(ex.Message));
-            }
-            finally
-            {
-                cancellation.Dispose();
-            }
-        }
-
-        private void ActivateInstalledCreatorDesign(string id)
-        {
-            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
-            if (settings == null || string.IsNullOrWhiteSpace(id)) return;
-            suppressingStylePresetMark = true;
-            suppressingOverlayPreviewRefresh = true;
-            try
-            {
-                if (CreatorThemeCatalog.Contains(id, "notification"))
-                {
-                    NotificationStylePresets.ApplyFullscreen(settings, id);
-                    NotificationStylePresets.ApplyDesktop(settings, id);
-                }
-                if (CreatorThemeCatalog.Contains(id, "overlay"))
-                    OverlayStylePresets.Apply(settings, id);
-                SelectCreatorSoundPackDefault(settings, id);
-            }
-            finally
-            {
-                suppressingOverlayPreviewRefresh = false;
-                suppressingStylePresetMark = false;
-            }
-            settings.RefreshCreatorThemeState();
-        }
-
-        private async void InstallCreatorThemeClick(object sender, RoutedEventArgs args)
-        {
-            if (plugin == null || customSoundProgressWindow != null) return;
-            var dialog = new OpenFileDialog
-            {
-                Title = plugin.Loc("LOCCSM_InstallCreatorTheme"),
-                Filter = plugin.Loc("LOCCSM_CreatorThemeFileFilter")
-            };
-            if (dialog.ShowDialog() != true) return;
-
-            var installer = new CreatorThemePackageInstaller(CreatorThemeCatalog.DownloadedRoot);
-            try
-            {
-                var manifest = installer.Inspect(dialog.FileName);
-                if (plugin.PlayniteApi.Dialogs.ShowMessage(
-                        string.Format(plugin.Loc("LOCCSM_CreatorThemeInstallConfirm"),
-                            manifest.Name, manifest.Version, manifest.Author),
-                        plugin.Loc("LOCCSM_InstallCreatorTheme"), MessageBoxButton.YesNo,
-                        MessageBoxImage.Question) != MessageBoxResult.Yes) return;
-
-                var cancellation = new CancellationTokenSource();
-                try
-                {
-                    ShowOperationProgress(cancellation, plugin.Loc("LOCCSM_InstallCreatorTheme"),
-                        plugin.Loc("LOCCSM_CreatorThemeInstallProcessing"));
-                    var installed = await installer.InstallAsync(dialog.FileName, cancellation.Token);
-                    CloseCustomSoundProgressWindow();
-                    ActivateInstalledCreatorDesign(installed == null ? null : installed.Id);
-                    RefreshVisualProfileUi();
-                    plugin.PlayniteApi.Dialogs.ShowMessage(
-                        string.Format(plugin.Loc("LOCCSM_CreatorThemeInstalled"),
-                            installed.Name, installed.Version),
-                        plugin.Loc("LOCCSM_InstallCreatorTheme"));
-                }
-                finally
-                {
-                    CloseCustomSoundProgressWindow();
-                    cancellation.Dispose();
-                }
-            }
-            catch (OperationCanceledException)
-            {
-                CloseCustomSoundProgressWindow();
-            }
-            catch (CreatorThemeCompatibilityException ex)
-            {
-                CloseCustomSoundProgressWindow();
-                var manifest = ex.Manifest;
-                var message = ex.Reason == CreatorThemeCompatibilityReason.Schema
-                    ? string.Format(plugin.Loc("LOCCSM_CreatorThemeSchemaIncompatible"),
-                        manifest == null ? 0 : manifest.SchemaVersion,
-                        CreatorThemeUpdater.SupportedThemeSchema)
-                    : string.Format(plugin.Loc("LOCCSM_CreatorThemeVersionIncompatible"),
-                        ex.PluginVersion, manifest == null ? string.Empty : manifest.MinimumPluginVersion,
-                        manifest == null || string.IsNullOrWhiteSpace(manifest.MaximumPluginVersion)
-                            ? plugin.Loc("LOCCSM_CreatorThemeNoMaximumVersion")
-                            : manifest.MaximumPluginVersion);
-                plugin.PlayniteApi.Dialogs.ShowErrorMessage(message,
-                    plugin.Loc("LOCCSM_InstallCreatorTheme"));
-            }
-            catch (Exception ex)
-            {
-                CloseCustomSoundProgressWindow();
-                plugin.PlayniteApi.Dialogs.ShowErrorMessage(
-                    string.Format(plugin.Loc("LOCCSM_CreatorThemeInstallInvalid"), ex.Message),
-                    plugin.Loc("LOCCSM_InstallCreatorTheme"));
-            }
         }
 
         private void CloseCustomSoundProgressWindow()

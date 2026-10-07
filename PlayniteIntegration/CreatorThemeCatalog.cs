@@ -10,8 +10,9 @@ using System.Web.Script.Serialization;
 namespace ControllerSessionManager.PlayniteIntegration
 {
     /// <summary>
-    /// Discovers reviewed, self-contained creator appearance packs bundled beside the plugin
-    /// or downloaded into the plugin's user-data directory.
+    /// In-memory registry used while applying a pack that a test or caller registered.
+    /// Installed catalog folders are no longer scanned; Playnite themes load
+    /// ControllerManager/ through the embedded appearance catalog instead.
     /// </summary>
     public static class CreatorThemeCatalog
     {
@@ -320,20 +321,6 @@ namespace ControllerSessionManager.PlayniteIntegration
         private static void ReloadCore()
         {
             Definitions.Clear();
-            LoadRoot(bundledRoot);
-            // Reviewed remote packs override an older bundled copy with the same stable ID.
-            LoadRoot(downloadedRoot);
-        }
-
-        private static void LoadRoot(string root)
-        {
-            if (string.IsNullOrWhiteSpace(root) || !Directory.Exists(root)) return;
-            foreach (var directory in Directory.GetDirectories(root))
-            {
-                CreatorThemeDefinition definition;
-                if (!CreatorThemePackLoader.TryLoad(directory, out definition)) continue;
-                Definitions[definition.Id] = definition;
-            }
         }
 
         public sealed class CreatorThemeManifest

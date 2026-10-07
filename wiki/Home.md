@@ -29,7 +29,7 @@ It supports Desktop and Fullscreen workflows, the built-in Tester, automatic con
 
 - [Theme integration](EN-Theme-Integration) · [Integración con temas](ES-Integracion-con-Temas) — ContentControl + `PluginSettings` in theme XAML
 - [Embedded appearance packs](EN-Theme-Appearance-Packs) · [Apariencia embebida en temas](ES-Integracion-de-Apariencia-en-Temas) — `ControllerManager/` folder + `theme-bridge.json`
-- [Community creator designs](EN-Creator-Designs) · [Diseños de creadores](ES-Disenos-de-Creadores) — `.csmtheme` catalog for shared looks
+- Shared looks outside a theme use **Appearance → Looks** export and import (`.pcvisual`)
 
 ## Links
 

@@ -37,7 +37,6 @@ namespace ControllerSessionManager.PlayniteIntegration
         private readonly DispatcherTimer reconciliationTimer;
         private readonly DispatcherTimer xInputTimer;
         private readonly DispatcherTimer sessionTimer;
-        private readonly DispatcherTimer creatorThemeUpdateTimer;
         private readonly GameSessionManager sessionManager;
         private readonly GamePauseService gamePauseService;
         private readonly OnlineSessionDetector onlineSessionDetector;
@@ -50,7 +49,6 @@ namespace ControllerSessionManager.PlayniteIntegration
         private int notificationSoundCleanupGeneration;
         private readonly DiagnosticEventBuffer diagnosticEvents;
         private readonly ControllerMappingDatabaseUpdater controllerDatabaseUpdater;
-        private readonly CreatorThemeUpdater creatorThemeUpdater;
         private ResourceDictionary englishFallbackResources;
         private ControllerSessionManagerSettings settings;
         private bool disposed;
@@ -88,7 +86,6 @@ namespace ControllerSessionManager.PlayniteIntegration
         private TopPanelItem controllerTopPanelItem;
         private TesterIntegration testerIntegration;
         private bool openingStandaloneSettings;
-        private bool automaticCreatorThemeStartupCheckCompleted;
         private DispatcherTimer overlayPreviewHideTimer;
         private DateTime lastFullscreenLaunchUtc = DateTime.MinValue;
         private DateTime? guideButtonPressedUtc;
@@ -118,7 +115,6 @@ namespace ControllerSessionManager.PlayniteIntegration
             var pluginDirectory = Path.GetDirectoryName(GetType().Assembly.Location);
             var userDataDirectory = GetPluginUserDataPath();
             CreatorThemeCatalog.Configure(pluginDirectory, userDataDirectory);
-            creatorThemeUpdater = new CreatorThemeUpdater(CreatorThemeCatalog.DownloadedRoot);
             ImportedVisualProfileCatalog.Configure(userDataDirectory);
             controllerDatabaseUpdater = new ControllerMappingDatabaseUpdater(
                 Path.Combine(pluginDirectory, "gamecontrollerdb.txt"), userDataDirectory);
@@ -139,11 +135,6 @@ namespace ControllerSessionManager.PlayniteIntegration
                 Interval = TimeSpan.FromMilliseconds(100)
             };
             sessionTimer.Tick += OnSessionTimerTick;
-            creatorThemeUpdateTimer = new DispatcherTimer(DispatcherPriority.Background)
-            {
-                Interval = TimeSpan.FromHours(1)
-            };
-            creatorThemeUpdateTimer.Tick += OnCreatorThemeUpdateTimerTick;
             sessionManager = new GameSessionManager();
             sessionManager.EventOccurred += OnSessionEventOccurred;
             gamePauseService = new GamePauseService();
@@ -217,7 +208,7 @@ namespace ControllerSessionManager.PlayniteIntegration
         public string Loc(string key)
         {
             var value = PlayniteApi.Resources.GetString(key);
-            if (!string.IsNullOrWhiteSpace(value) && value != key)
+            if (IsUsableLocalization(value, key))
             {
                 return value;
             }
@@ -556,38 +547,6 @@ namespace ControllerSessionManager.PlayniteIntegration
                 overlayPreviewHideTimer.Interval = TimeSpan.FromMilliseconds(duration);
                 overlayPreviewHideTimer.Start();
             }));
-        }
-
-        public async Task<CreatorThemeUpdateResult> UpdateCreatorThemesAsync(
-            CancellationToken cancellationToken)
-        {
-            var result = await creatorThemeUpdater.CheckForUpdatesAsync(cancellationToken);
-            if (result != null && result.Succeeded && settings != null)
-            {
-                settings.CreatorThemeLastUpdateUtc = DateTime.UtcNow.ToString("o");
-                SavePluginSettings(settings);
-            }
-            return result;
-        }
-
-        public void ShowCreatorThemeUpdateResult(CreatorThemeUpdateResult result)
-        {
-            if (result == null)
-            {
-                return;
-            }
-            if (!result.Succeeded)
-            {
-                PlayniteApi.Dialogs.ShowErrorMessage(result.Error,
-                    Loc("LOCCSM_CreatorThemesUpdateTitle"));
-                return;
-            }
-
-            var message = result.CatalogCurrent
-                ? Loc("LOCCSM_CreatorThemesCurrent")
-                : string.Format(Loc("LOCCSM_CreatorThemesUpdated"), result.Installed,
-                    result.Updated, result.Incompatible);
-            PlayniteApi.Dialogs.ShowMessage(message, Loc("LOCCSM_CreatorThemesUpdateTitle"));
         }
 
         public MessageBoxResult ConfirmReplaceUnsavedNotificationStyle()
@@ -1260,74 +1219,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             diagnosticEvents.Add("lifecycle", "Playnite application started");
             RefreshControllers();
             BeginControllerDatabaseUpdate(false, false);
-            creatorThemeUpdateTimer.Start();
-            BeginAutomaticCreatorThemeUpdate();
             TryOfferFirstRunSetupWizard();
-        }
-
-        private void OnCreatorThemeUpdateTimerTick(object sender, EventArgs args)
-        {
-            BeginAutomaticCreatorThemeUpdate();
-        }
-
-        private async void BeginAutomaticCreatorThemeUpdate()
-        {
-            if (settings == null || disposed ||
-                string.Equals(settings.CreatorThemeUpdatePolicy,
-                    ControllerSessionManagerSettings.CreatorThemeUpdatePolicyManual,
-                    StringComparison.OrdinalIgnoreCase))
-            {
-                return;
-            }
-
-            if (string.Equals(settings.CreatorThemeUpdatePolicy,
-                ControllerSessionManagerSettings.CreatorThemeUpdatePolicyDaily,
-                StringComparison.OrdinalIgnoreCase))
-            {
-                DateTime lastUpdate;
-                if (DateTime.TryParse(settings.CreatorThemeLastUpdateUtc, null,
-                    System.Globalization.DateTimeStyles.RoundtripKind, out lastUpdate) &&
-                    DateTime.UtcNow - lastUpdate.ToUniversalTime() < TimeSpan.FromHours(24))
-                {
-                    return;
-                }
-            }
-            else if (!string.Equals(settings.CreatorThemeUpdatePolicy,
-                ControllerSessionManagerSettings.CreatorThemeUpdatePolicyStartup,
-                StringComparison.OrdinalIgnoreCase))
-            {
-                return;
-            }
-            else
-            {
-                if (automaticCreatorThemeStartupCheckCompleted)
-                {
-                    return;
-                }
-                automaticCreatorThemeStartupCheckCompleted = true;
-            }
-
-            try
-            {
-                var result = await UpdateCreatorThemesAsync(CancellationToken.None);
-                if (result == null || !result.Succeeded)
-                {
-                    LogDiagnostic("Automatic creator-theme update failed: " +
-                        (result == null ? "No result." : result.Error));
-                    return;
-                }
-
-                CreatorThemeCatalog.Reload();
-                settings.RefreshCreatorThemeState();
-                diagnosticEvents.Add("creator-themes", result.CatalogCurrent
-                    ? "Automatic design check completed; catalog is current"
-                    : string.Format("Automatic design update completed: {0} installed, {1} updated",
-                        result.Installed, result.Updated));
-            }
-            catch (Exception ex)
-            {
-                LogDiagnostic("Automatic creator-theme update failed: " + ex.Message);
-            }
         }
 
         public void CheckControllerDatabaseUpdates()
@@ -1474,7 +1366,6 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         public override void OnApplicationStopped(OnApplicationStoppedEventArgs args)
         {
-            creatorThemeUpdateTimer.Stop();
             StopMonitoring();
         }
 
@@ -3257,23 +3148,6 @@ namespace ControllerSessionManager.PlayniteIntegration
             return true;
         }
 
-        public bool DeleteUserInstalledCreatorTheme(ControllerSessionManagerSettings targetSettings,
-            string themeId)
-        {
-            if (string.IsNullOrWhiteSpace(themeId)) return false;
-            if (themeId.StartsWith(NotificationSoundCatalog.CreatorPackPrefix, StringComparison.OrdinalIgnoreCase))
-                themeId = themeId.Substring(NotificationSoundCatalog.CreatorPackPrefix.Length);
-            if (!CreatorThemeCatalog.IsUserInstalled(themeId)) return false;
-            var name = CreatorThemeCatalog.GetName(themeId);
-            if (PlayniteApi.Dialogs.ShowMessage(
-                    string.Format(Loc("LOCCSM_DeleteCreatorDesignConfirm"), name),
-                    Loc("LOCCSM_PresetGroupCreators"), MessageBoxButton.YesNo,
-                    MessageBoxImage.Question) != MessageBoxResult.Yes) return false;
-            if (!CreatorThemeCatalog.TryRemoveUserInstalled(themeId)) return false;
-            RestoreDefaultPluginLooks(targetSettings, themeId);
-            return true;
-        }
-
         private static void RestoreDefaultPluginLooks(ControllerSessionManagerSettings targetSettings,
             string removedId)
         {
@@ -4013,6 +3887,23 @@ namespace ControllerSessionManager.PlayniteIntegration
             try
             {
                 englishFallbackResources = LoadEnglishFallbackResources();
+                if (Application.Current != null && Application.Current.Resources != null)
+                {
+                    // Playnite drops empty translations so English shows through, but it keeps
+                    // values that were saved as question marks. Remove those so the base dictionary wins.
+                    foreach (var dictionary in Application.Current.Resources.MergedDictionaries.ToArray())
+                    {
+                        try
+                        {
+                            RemoveUnreadableLocalizationEntries(dictionary);
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.Warn(ex, "Skipped unreadable localization cleanup.");
+                        }
+                    }
+                }
+
                 if (englishFallbackResources == null || Application.Current == null || Application.Current.Resources == null)
                 {
                     return;
@@ -4030,6 +3921,62 @@ namespace ControllerSessionManager.PlayniteIntegration
             {
                 logger.Warn(ex, "Failed to load English fallback resources.");
             }
+        }
+
+        private static void RemoveUnreadableLocalizationEntries(ResourceDictionary dictionary)
+        {
+            if (dictionary == null)
+            {
+                return;
+            }
+
+            var unreadable = new List<object>();
+            foreach (var key in dictionary.Keys)
+            {
+                var value = dictionary[key] as string;
+                if (value != null && IsUnreadableLocalization(value))
+                {
+                    unreadable.Add(key);
+                }
+            }
+
+            foreach (var key in unreadable)
+            {
+                dictionary.Remove(key);
+            }
+        }
+
+        private static bool IsUsableLocalization(string value, string key)
+        {
+            return !string.IsNullOrWhiteSpace(value) &&
+                !string.Equals(value, key, StringComparison.Ordinal) &&
+                !IsUnreadableLocalization(value);
+        }
+
+        private static bool IsUnreadableLocalization(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return false;
+            }
+
+            var sawMark = false;
+            foreach (var ch in value)
+            {
+                if (char.IsWhiteSpace(ch))
+                {
+                    continue;
+                }
+
+                if (ch != '?' && ch != '\uFFFD')
+                {
+                    return false;
+                }
+
+                sawMark = true;
+            }
+
+            return sawMark;
         }
 
         private ResourceDictionary LoadEnglishFallbackResources()

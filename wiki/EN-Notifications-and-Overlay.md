@@ -2,7 +2,7 @@
 
 ## How Looks and Appearance tabs relate
 
-**Appearance → Looks** chooses the active visual source: a plugin preset, an imported profile, a creator design, or — when the matching toggle is on — an embedded Playnite theme pack. **Appearance → On-screen notification** groups Desktop, Fullscreen and Sounds. The Overlay tab stays separate for the disconnect incident UI. Creator and theme packs lock layout and colors while active. Use **Copy desktop design** (under Fullscreen) when you want Fullscreen notifications to match the Desktop look.
+**Appearance → Looks** chooses the active visual source: a plugin preset, an imported profile, or — when the matching toggle is on — an embedded Playnite theme pack. **Appearance → On-screen notification** groups Desktop, Fullscreen and Sounds. The Overlay tab stays separate for the disconnect incident UI. Theme packs lock layout and colors while active. Use **Copy desktop design** (under Fullscreen) when you want Fullscreen notifications to match the Desktop look.
 
 ## Fullscreen notifications
 
@@ -10,11 +10,9 @@ Connection notifications are intended for browsing the Playnite Fullscreen inter
 
 Under **Appearance → On-screen notification → Fullscreen** and **… → Desktop**, configure width, scale, duration, screen corner, typography, icon size, padding, border, corner radius, shadow, colors, semantic accent and animation. Inter, Montserrat, Outfit, Poppins, Rajdhani, Chakra Petch and Orbitron ship with the extension and do not need to be installed in Windows. The color picker includes opacity as a percentage. The icon can appear left, right, above, below or be hidden. Each subsection's buttons exercise connected, disconnected, warning and low-battery states through the real notification renderer. Presets replace the old reset action: **Soft** is the neutral baseline and the others provide distinct compositions.
 
-Preset selectors separate plugin presets, imported designs and reviewed creator designs. Creator designs may include advanced layout, fonts, images, state-specific borders and sounds; their authored controls are locked and visually dimmed while active. Theme authors can use the complete [Creator designs guide](EN-Creator-Designs).
+Preset selectors separate plugin presets and imported designs. Theme authors ship styling inside the theme: [Embedded appearance packs](EN-Theme-Appearance-Packs). Anyone else shares a look by exporting a visual profile (`.pcvisual`).
 
-Use **Update designs** to retrieve compatible releases from the official catalog. A trusted `.csmtheme` file can also be installed with **Install creator design** beside the visual-profile actions. The plugin validates compatibility and package contents before making an atomic replacement; it does not register double-click installation in Windows.
-
-Starting with Controller Manager 1.0.28, if a selected creator notification design includes all four valid event sounds, its audio pack is selected by default and appears in **Appearance → On-screen notification → Sounds → Sound pack**. Audio is never locked: you can choose another pack, keep using previews and toggles, or assign custom files. A custom sound for an individual event overrides the selected pack. Incomplete creator sound sets are not listed as selectable packs.
+Starting with Controller Manager 1.0.28, a notification design that includes all four valid event sounds can select its audio pack by default under **Appearance → On-screen notification → Sounds → Sound pack**. Audio is never locked: you can choose another pack, keep using previews and toggles, or assign custom files. A custom sound for an individual event overrides the selected pack.
 
 Stable XInput changes use a short 300 ms debounce to reject rapid driver flaps without waiting for the slower reconciliation pass.
 
@@ -26,7 +24,7 @@ The overlay card and full-screen backdrop have independent colors, sizing, icon 
 
 Optional connection and battery badges have independent text, icon, background and border colors, as well as border thickness, corner radius, icon size and text size. Battery text and icon can follow configurable full, medium, low and empty state colors. `#AARRGGBB` values support alpha; `#00000000` makes the backdrop transparent. The compact preview updates while settings change, and presets apply visibly distinct compositions.
 
-Reviewed creator designs can additionally use an `Alert` composition, full-screen scene gradients, an image, ambient glows and a grid behind the card. These are validated declarative effects rather than arbitrary CSS, XAML or executable code.
+Reviewed theme packs can additionally use an `Alert` composition, full-screen scene gradients, an image, ambient glows and a grid behind the card. These are validated declarative effects rather than arbitrary CSS, XAML or executable code.
 
 ## Compatibility and input
 

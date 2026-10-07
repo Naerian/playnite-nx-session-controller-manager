@@ -1,5 +1,14 @@
 AddonId: ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc
 Packages:
+  - Version: 1.0.41
+    RequiredApiVersion: 6.16.0
+    ReleaseDate: 2026-10-07
+    PackageUrl: https://github.com/Naerian/playnite-nx-session-controller-manager/releases/download/v1.0.41/ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc_1_0_41.pext
+    Changelog:
+      - 'Fixed English fallback when a translation contains unreadable question-mark text, so missing strings show English again.'
+      - 'Added Russian, Japanese, Simplified Chinese and Korean translations.'
+      - 'Removed the creator-design catalog, including .csmtheme install and automatic design updates. Previously installed catalog packs are no longer loaded; export a .pcvisual profile before updating if you want to keep that look.'
+      - 'Playnite theme authors still ship appearance inside the theme ControllerManager/ folder, and everyone else can export or import a visual profile.'
   - Version: 1.0.40
     RequiredApiVersion: 6.16.0
     ReleaseDate: 2026-09-27

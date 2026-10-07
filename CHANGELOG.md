@@ -2,6 +2,13 @@
 
 
 
+
+## 1.0.41 — 2026-10-07
+- Fixed English fallback when a translation contains unreadable question-mark text, so missing strings show English again.
+- Added Russian, Japanese, Simplified Chinese and Korean translations.
+- Removed the creator-design catalog, including .csmtheme install and automatic design updates. Previously installed catalog packs are no longer loaded; export a .pcvisual profile before updating if you want to keep that look.
+- Playnite theme authors still ship appearance inside the theme ControllerManager/ folder, and everyone else can export or import a visual profile.
+
 ## 1.0.40 — 2026-09-27
 - Press Escape to dismiss the disconnect overlay in single-player and local multiplayer (continue without the missing pads).
 - Overlay instructions mention Escape; single-player keyboard/mouse continue is unchanged.

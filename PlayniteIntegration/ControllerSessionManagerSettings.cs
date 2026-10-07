@@ -16,8 +16,6 @@ namespace ControllerSessionManager.PlayniteIntegration
         private bool enableMonitoring = true;
         private bool enableDebugLogging;
         private bool autoUpdateControllerDatabase = true;
-        private string creatorThemeUpdatePolicy = CreatorThemeUpdatePolicyStartup;
-        private string creatorThemeLastUpdateUtc = string.Empty;
         private bool showPrimaryControllerInTopPanel;
         private string topPanelControllerMode = TopPanelControllerModeHidden;
         private string topPanelIconColorMode;
@@ -372,9 +370,6 @@ namespace ControllerSessionManager.PlayniteIntegration
         public const string TopPanelIconColorModeDefault = "Default";
         public const string TopPanelIconColorModeBattery = "Battery";
         public const string TopPanelIconColorModeController = "Controller";
-        public const string CreatorThemeUpdatePolicyStartup = "Startup";
-        public const string CreatorThemeUpdatePolicyDaily = "Daily";
-        public const string CreatorThemeUpdatePolicyManual = "Manual";
 
         public ControllerSessionManagerSettings()
         {
@@ -708,18 +703,6 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             get { return autoUpdateControllerDatabase; }
             set { SetValue(ref autoUpdateControllerDatabase, value); }
-        }
-
-        public string CreatorThemeUpdatePolicy
-        {
-            get { return NormalizeCreatorThemeUpdatePolicy(creatorThemeUpdatePolicy); }
-            set { SetValue(ref creatorThemeUpdatePolicy, NormalizeCreatorThemeUpdatePolicy(value)); }
-        }
-
-        public string CreatorThemeLastUpdateUtc
-        {
-            get { return creatorThemeLastUpdateUtc ?? string.Empty; }
-            set { SetValue(ref creatorThemeLastUpdateUtc, value ?? string.Empty); }
         }
 
         public string TopPanelControllerMode
@@ -1867,7 +1850,6 @@ namespace ControllerSessionManager.PlayniteIntegration
             {
                 topPanelIconColorMode = NormalizeTopPanelIconColorMode(topPanelIconColorMode);
             }
-            creatorThemeUpdatePolicy = NormalizeCreatorThemeUpdatePolicy(creatorThemeUpdatePolicy);
             appearancePreset = SettingsAppearance.Normalize(appearancePreset);
             notificationStylePreset = NotificationStylePresets.Normalize(notificationStylePreset);
             desktopNotificationStylePreset = NotificationStylePresets.Normalize(desktopNotificationStylePreset);
@@ -1952,17 +1934,6 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
 
             return TopPanelIconColorModeBattery;
-        }
-
-        private static string NormalizeCreatorThemeUpdatePolicy(string value)
-        {
-            if (string.Equals(value, CreatorThemeUpdatePolicyManual,
-                System.StringComparison.OrdinalIgnoreCase))
-                return CreatorThemeUpdatePolicyManual;
-            if (string.Equals(value, CreatorThemeUpdatePolicyDaily,
-                System.StringComparison.OrdinalIgnoreCase))
-                return CreatorThemeUpdatePolicyDaily;
-            return CreatorThemeUpdatePolicyStartup;
         }
 
         private static int ClampPercent(int value)
@@ -2302,8 +2273,6 @@ namespace ControllerSessionManager.PlayniteIntegration
                 NotificationSoundVolume = NotificationSoundVolume,
                 EnableDebugLogging = EnableDebugLogging,
                 AutoUpdateControllerDatabase = AutoUpdateControllerDatabase,
-                CreatorThemeUpdatePolicy = CreatorThemeUpdatePolicy,
-                CreatorThemeLastUpdateUtc = CreatorThemeLastUpdateUtc,
                 ShowPrimaryControllerInTopPanel = ShowPrimaryControllerInTopPanel,
                 TopPanelControllerMode = TopPanelControllerMode,
                 TopPanelIconColorMode = TopPanelIconColorMode,
@@ -2655,8 +2624,6 @@ namespace ControllerSessionManager.PlayniteIntegration
             NotificationSoundVolume = source.NotificationSoundVolume;
             EnableDebugLogging = source.EnableDebugLogging;
             AutoUpdateControllerDatabase = source.AutoUpdateControllerDatabase;
-            CreatorThemeUpdatePolicy = source.CreatorThemeUpdatePolicy;
-            CreatorThemeLastUpdateUtc = source.CreatorThemeLastUpdateUtc;
             showPrimaryControllerInTopPanel = source.showPrimaryControllerInTopPanel;
             topPanelControllerMode = source.topPanelControllerMode;
             TopPanelIconColorMode = source.TopPanelIconColorMode;

@@ -7,7 +7,7 @@ Controller Manager exposes two official layers for **Playnite theme XAML**:
 
 The automatic Desktop top-panel button is independent and does not require theme changes.
 
-**Notifications, overlay and sounds** are a separate integration path: ship a [`ControllerManager/` folder inside your theme](EN-Theme-Appearance-Packs) (optional `theme-bridge.json`). That is **not** the same as publishing a [community creator design](EN-Creator-Designs) (`.csmtheme`).
+**Notifications, overlay and sounds** are a separate integration path: ship a [`ControllerManager/` folder inside your theme](EN-Theme-Appearance-Packs) (optional `theme-bridge.json`).
 
 Addon Id: `ControllerSessionManager_6f3e7a21-98f4-4f2b-92ad-3fc0e6e941dc`  
 SourceName: `ControllerSessionManager`  

@@ -1,40 +1,20 @@
-# Creator themes for Controller Manager
+# Appearance packs for Controller Manager
 
-> The maintained contribution workflow, templates and complete author reference now live in the dedicated [Controller Manager Creator Themes Wiki](https://github.com/Naerian/controller-manager-creator-themes/wiki). Creator packs are submitted to that repository and installed with **Update designs**; they no longer require a Controller Manager release.
+This document describes the JSON used by a `ControllerManager/` folder inside a Playnite theme. Theme authors ship that folder with the theme. Users who are not theme authors share a look by exporting and importing a visual profile (`.pcvisual`) from **Appearance → Looks**.
 
-Downloaded `.csmtheme` packages can also be installed from **Appearance → Looks → Install creator design**. After a successful install the pack becomes the active look for the surfaces it defines (desktop and fullscreen notifications, overlay, and its sound pack when complete). The plugin asks for confirmation with the design name, author and version, rejects incompatible schema/plugin ranges, validates files and properties, and preserves the previous installed copy if installation fails or is cancelled. The package is not registered as a Windows file type, so double-click installation is intentionally unnecessary.
+The separate creator-design catalog (`.csmtheme`, **Update designs**, **Install creator design**) is no longer part of the plugin. Packs previously installed from that catalog are not loaded. Export a `.pcvisual` profile before updating if that look is still selected and you want to keep it.
 
-The catalog repository protects `main` behind pull requests and its required `validate` check. Validation covers the complete documented notification and overlay property contracts (names, JSON types, ranges, colors and enumerations), manifests, safe asset paths, declared fonts and sounds, previews and license/credit evidence. Generated packages live in the separate `catalog` branch. Visual quality, accessibility in real themes, asset provenance and the truth of license declarations remain a maintainer review.
+## Where a look can come from
 
-Controller Manager can ship complete visual designs for its controller notifications and disconnect overlay. A creator theme is a reviewed, self-contained folder committed to this repository and included in the `.pext` package. It may contain JSON appearance definitions, images, fonts and notification sounds.
-
-This system is intended for Playnite theme authors and visual designers who want Controller Manager to look native to their theme.
-
-## Creator themes and imported designs are different
-
-- **Creator designs** are source-controlled packs under `CreatorThemes/`. They have an author, version, optional assets and sounds, are reviewed in a pull request and are distributed with the plugin. Their appearance controls are locked while selected so the authored design remains intact.
+- **Playnite theme packs** live in `{ThemeFolder}/ControllerManager/`. They can include an author, version, assets and sounds. Users turn them on per surface from **Appearance → Looks**. While active, the authored controls stay locked.
 - **Imported designs** are `.pcvisual` files imported by an individual user. They contain a named snapshot of both notification destinations, the overlay and sound configuration. They are stored in the plugin data directory, appear under **Imported designs**, and can be deleted from the preset selector. Importing another profile with the same embedded name overwrites the existing entry instead of creating a duplicate.
 - **Plugin presets** are maintained directly in Controller Manager's code.
 - **Custom** is the user's editable configuration.
 
-Do not submit a `.pcvisual` file as a creator theme. Use the folder format below.
-
-## Contribution workflow
-
-1. Fork the Controller Manager repository.
-2. Create a unique folder under `CreatorThemes/`; use ASCII letters, digits, `_` or `-` for the folder name.
-3. Add `manifest.json` and at least one of `notification.json` or `overlay.json`.
-4. Add only redistributable assets and their licenses/credits.
-5. Build and test the pack locally in both Playnite Desktop and Fullscreen modes.
-6. Commit the folder and open a pull request with screenshots of every supported surface.
-
-Creator packs are not copied to `ExtensionsData`, and there is no user-folder reload workflow. A new or changed creator pack becomes available through a Controller Manager release.
-
 ## Directory layout
 
 ```text
-CreatorThemes/
-└── MyTheme/
+{ThemeFolder}/ControllerManager/
     ├── manifest.json             required
     ├── notification.json         optional; notification appearance
     ├── overlay.json              optional; disconnect overlay appearance
@@ -511,7 +491,7 @@ Users can then choose another pack or assign a custom file to any event. Custom 
 
 ## Local development and testing
 
-Build the plugin using the repository's normal build command, then place or symlink the built extension into Playnite. Creator discovery occurs at plugin startup, so restart Playnite after changing a pack.
+Build the plugin using the repository's normal build command, then place the built extension into Playnite. Put the pack in the active theme's `ControllerManager/` folder and restart Playnite after changing it.
 
 Useful checks:
 
@@ -533,7 +513,7 @@ Test at minimum:
 6. Every bundled font face and weight.
 7. Every sound at low and high plugin volume.
 8. Background images with wide and tall aspect ratios.
-9. Switching between Custom, plugin, imported and creator designs.
+9. Switching between Custom, plugin presets, imported profiles and the Playnite theme styling toggles.
 10. Playnite restart with the design still selected.
 
 ## Pull request checklist
@@ -555,7 +535,7 @@ Test at minimum:
 
 ### The design does not appear
 
-Check that the pack is under the repository/plugin `CreatorThemes` folder, the manifest has non-empty `Id`, `Name` and `Author`, and at least one appearance file contains a JSON object. Rebuild and restart Playnite.
+Check that the pack is `{ThemeFolder}/ControllerManager/`, the manifest has non-empty `Id`, `Name` and `Author`, and at least one appearance file contains a JSON object. Restart Playnite with that theme active and the matching styling toggle on.
 
 ### A property has no effect
 
@@ -584,7 +564,7 @@ Theme authors can also ship a full Controller Manager pack inside the active Pla
 `{ThemeFolder}/ControllerManager/overlay.json`
 `{ThemeFolder}/ControllerManager/assets/`
 
-That folder uses the same JSON schema as creator designs (`.csmtheme`). Users enable it per surface on **Appearance → Looks** with the Playnite theme styling toggles. When a full embedded pack is present and the toggle is on, that design controls the surface; the selected look applies when the toggle is off or the theme has no pack. Optional `theme-bridge.json` maps live theme palettes on top.
+That folder is the appearance pack. Users enable it per surface on **Appearance → Looks** with the Playnite theme styling toggles. When a full embedded pack is present and the toggle is on, that design controls the surface; the selected look applies when the toggle is off or the theme has no pack. Optional `theme-bridge.json` maps live theme palettes on top.
 
 Preview fullscreen notifications from **Playnite Fullscreen**. Desktop mode cannot load the active fullscreen theme, so fullscreen previews from desktop settings may not match what users see in fullscreen mode.
 
@@ -612,13 +592,11 @@ Keys on the left are Controller Manager roles. Values are **that theme's** WPF r
 
 If the file is missing, the plugin does not guess Playnite chrome brushes. The selected look stays as authored.
 
-Layout, fonts and images still come from the selected Controller Manager look (plugin preset, creator pack or custom). The bridge only replaces color roles.
-
-Full contract: [Playnite theme color bridge](https://github.com/Naerian/controller-manager-creator-themes/wiki/Playnite-Theme-Bridge).
+Layout, fonts and images still come from the selected Controller Manager look (plugin preset, imported profile, theme pack or custom). The bridge only replaces color roles.
 
 ### The settings controls are disabled
 
-That is intentional. Select **Custom**, a plugin preset or an imported design to return to an editable appearance. Creator designs are locked so their preview and audio remain faithful to the submitted pack.
+That is intentional while a Playnite theme pack is active. Select **Custom**, a plugin preset or an imported design, or turn the theme styling toggle off, to return to an editable appearance.
 
 ## Compatibility and security
 

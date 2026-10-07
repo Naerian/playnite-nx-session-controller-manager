@@ -15,7 +15,6 @@
 - [Notifications & Overlay](EN-Notifications-and-Overlay)
 - [Theme integration](EN-Theme-Integration)
 - [Embedded appearance packs](EN-Theme-Appearance-Packs)
-- [Community creator designs](EN-Creator-Designs)
 - [Troubleshooting & FAQ](EN-Troubleshooting-and-FAQ)
 
 ## Español
@@ -35,5 +34,4 @@
 - [Notificaciones y overlay](ES-Notificaciones-y-Overlay)
 - [Integración con temas](ES-Integracion-con-Temas)
 - [Apariencia embebida en temas](ES-Integracion-de-Apariencia-en-Temas)
-- [Diseños de creadores](ES-Disenos-de-Creadores)
 - [Solución de problemas y FAQ](ES-Solucion-de-Problemas-y-Preguntas-Frecuentes)

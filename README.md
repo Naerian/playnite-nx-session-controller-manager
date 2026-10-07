@@ -129,9 +129,11 @@ To add or update a translation, copy an existing locale file, rename it to the t
 
 Community translation contributions are welcome.
 
-## Creator appearance packs
+## Appearance
 
-Theme authors can contribute self-contained notification and overlay designs that appear separately under **Creator designs**. Packs can control composition, state backgrounds, independent border sides, typography, gradients, images, containers, badges and sounds. Contributions are reviewed in the dedicated [creator-theme repository](https://github.com/Naerian/controller-manager-creator-themes) and users can install updates without waiting for a new plugin release. See the [complete creator Wiki](https://github.com/Naerian/controller-manager-creator-themes/wiki).
+Playnite theme authors ship notification, overlay and sound styling inside the theme as a `ControllerManager/` folder, with an optional `theme-bridge.json`. See the [embedded appearance packs](https://github.com/Naerian/playnite-nx-session-controller-manager/wiki/EN-Theme-Appearance-Packs) page.
+
+Anyone else can export and import a visual profile (`.pcvisual`) from **Appearance → Looks**. The separate creator-design catalog is no longer part of the plugin.
 
 ## Acknowledgements
 
