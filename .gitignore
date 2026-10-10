@@ -7,4 +7,5 @@ packages/
 *.suo
 *.pext
 .release-notes.md
+.cursor/
 

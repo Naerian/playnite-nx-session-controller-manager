@@ -3,6 +3,14 @@
 
 
 
+
+## 1.0.42 — 2026-10-10
+- Added a Default Appearance preset in Overview that follows Playnite text and accent colors and adapts theme surfaces when possible.
+- New installs default to Default; existing Midnight, Paper, OLED, Ocean and Ember choices are left unchanged.
+- Replaced the Overview Appearance chip row with a ComboBox in a summary-style card.
+- Restored settings window size, position and maximized state when reopening.
+- Fixed Playnite freezing when opening the Appearance settings tab.
+
 ## 1.0.41 — 2026-10-07
 - Fixed English fallback when a translation contains unreadable question-mark text, so missing strings show English again.
 - Added Russian, Japanese, Simplified Chinese and Korean translations.

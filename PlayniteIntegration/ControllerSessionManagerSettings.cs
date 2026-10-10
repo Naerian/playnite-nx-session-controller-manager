@@ -331,7 +331,12 @@ namespace ControllerSessionManager.PlayniteIntegration
         private bool allowControllerTakeover = true;
         private bool protectAllActiveControllers;
         private int settingsSchemaVersion;
-        private string appearancePreset = SettingsAppearance.Midnight;
+        private string appearancePreset = SettingsAppearance.Default;
+        private double settingsWindowWidth = 1100;
+        private double settingsWindowHeight = 780;
+        private double settingsWindowLeft = double.NaN;
+        private double settingsWindowTop = double.NaN;
+        private bool settingsWindowMaximized;
         private string notificationStylePreset = NotificationStylePresets.Soft;
         private string desktopNotificationStylePreset = NotificationStylePresets.Soft;
         private string overlayStylePreset = OverlayStylePresets.Soft;
@@ -403,6 +408,60 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             get { return SettingsAppearance.Normalize(appearancePreset); }
             set { SetValue(ref appearancePreset, SettingsAppearance.Normalize(value)); }
+        }
+
+        public double SettingsWindowWidth
+        {
+            get { return settingsWindowWidth; }
+            set { SetValue(ref settingsWindowWidth, value); }
+        }
+
+        public double SettingsWindowHeight
+        {
+            get { return settingsWindowHeight; }
+            set { SetValue(ref settingsWindowHeight, value); }
+        }
+
+        public double SettingsWindowLeft
+        {
+            get { return settingsWindowLeft; }
+            set { SetValue(ref settingsWindowLeft, value); }
+        }
+
+        public double SettingsWindowTop
+        {
+            get { return settingsWindowTop; }
+            set { SetValue(ref settingsWindowTop, value); }
+        }
+
+        public bool SettingsWindowMaximized
+        {
+            get { return settingsWindowMaximized; }
+            set { SetValue(ref settingsWindowMaximized, value); }
+        }
+
+        /// <summary>
+        /// Updates window placement on the live settings and the edit clone so Cancel
+        /// does not discard size/maximized state after an immediate persist.
+        /// </summary>
+        internal void SetSettingsWindowPlacement(double width, double height, double left, double top,
+            bool maximized)
+        {
+            SettingsWindowWidth = width;
+            SettingsWindowHeight = height;
+            SettingsWindowLeft = left;
+            SettingsWindowTop = top;
+            SettingsWindowMaximized = maximized;
+            if (editingClone == null)
+            {
+                return;
+            }
+
+            editingClone.SettingsWindowWidth = width;
+            editingClone.SettingsWindowHeight = height;
+            editingClone.SettingsWindowLeft = left;
+            editingClone.SettingsWindowTop = top;
+            editingClone.SettingsWindowMaximized = maximized;
         }
 
         public string NotificationStylePreset
@@ -2249,6 +2308,11 @@ namespace ControllerSessionManager.PlayniteIntegration
                 EnableMonitoring = EnableMonitoring,
                 SettingsSchemaVersion = SettingsSchemaVersion,
                 AppearancePreset = AppearancePreset,
+                SettingsWindowWidth = SettingsWindowWidth,
+                SettingsWindowHeight = SettingsWindowHeight,
+                SettingsWindowLeft = SettingsWindowLeft,
+                SettingsWindowTop = SettingsWindowTop,
+                SettingsWindowMaximized = SettingsWindowMaximized,
                 NotificationStylePreset = NotificationStylePreset,
                 DesktopNotificationStylePreset = DesktopNotificationStylePreset,
                 OverlayStylePreset = OverlayStylePreset,
@@ -2600,6 +2664,11 @@ namespace ControllerSessionManager.PlayniteIntegration
             EnableMonitoring = source.EnableMonitoring;
             SettingsSchemaVersion = source.SettingsSchemaVersion;
             AppearancePreset = source.AppearancePreset;
+            SettingsWindowWidth = source.SettingsWindowWidth;
+            SettingsWindowHeight = source.SettingsWindowHeight;
+            SettingsWindowLeft = source.SettingsWindowLeft;
+            SettingsWindowTop = source.SettingsWindowTop;
+            SettingsWindowMaximized = source.SettingsWindowMaximized;
             NotificationStylePreset = source.NotificationStylePreset;
             DesktopNotificationStylePreset = source.DesktopNotificationStylePreset;
             OverlayStylePreset = source.OverlayStylePreset;

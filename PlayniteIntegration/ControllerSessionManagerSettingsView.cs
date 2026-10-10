@@ -27,6 +27,13 @@ namespace ControllerSessionManager.PlayniteIntegration
         private Window customSoundProgressOwner;
         private bool customSoundProgressOwnerHitTestVisible;
         private bool suppressingOverlayPreviewRefresh;
+        private bool appearanceEditorsBuilt;
+        private bool appearanceEditorsBuildQueued;
+        private bool overlayPreviewBuilt;
+        private bool settingsWindowPlacementHooked;
+        private bool restoringSettingsWindowPlacement;
+        private bool suppressAppearancePresetChange;
+        private bool stretchingSelectedContent;
 
         public ControllerSessionManagerSettingsView(ControllerSessionManagerPlugin sourcePlugin)
             : this(sourcePlugin, false)
@@ -154,15 +161,15 @@ namespace ControllerSessionManager.PlayniteIntegration
                 boundSettings.PropertyChanged += OnBoundSettingsPropertyChanged;
             }
 
-            ApplyAppearancePreset();
-            CreatorThemeCatalog.Reload();
-            BuildAppearancePresetChips();
-            BuildNotificationStylePresetChips();
-            BuildNotificationPresetSelectors();
-            BuildOverlayStylePresetChips();
-            BuildOverlayPresetSelector();
-            BuildNotificationSoundPackChips();
-            RefreshOverlayPreview();
+            EnsureOverviewChromeBuilt();
+            if (appearanceEditorsBuilt)
+            {
+                RebuildAppearanceEditors();
+            }
+            if (overlayPreviewBuilt)
+            {
+                QueueOverlayPreviewRefresh();
+            }
             RefreshCreatorThemeEditorState();
         }
 
@@ -176,21 +183,30 @@ namespace ControllerSessionManager.PlayniteIntegration
 
             if (args != null && args.PropertyName == "NotificationStylePreset")
             {
-                RefreshNotificationStylePresetChips();
-                RefreshNotificationPresetSelectors();
+                if (appearanceEditorsBuilt)
+                {
+                    RefreshNotificationStylePresetChips();
+                    RefreshNotificationPresetSelectors();
+                }
                 RefreshCreatorThemeEditorState();
             }
 
             if (args != null && args.PropertyName == "OverlayStylePreset")
             {
-                RefreshOverlayStylePresetChips();
-                RefreshOverlayPresetSelector();
+                if (appearanceEditorsBuilt)
+                {
+                    RefreshOverlayStylePresetChips();
+                    RefreshOverlayPresetSelector();
+                }
                 RefreshCreatorThemeEditorState();
             }
 
             if (args != null && args.PropertyName == "DesktopNotificationStylePreset")
             {
-                RefreshNotificationPresetSelectors();
+                if (appearanceEditorsBuilt)
+                {
+                    RefreshNotificationPresetSelectors();
+                }
                 RefreshCreatorThemeEditorState();
             }
 
@@ -210,10 +226,14 @@ namespace ControllerSessionManager.PlayniteIntegration
                         boundSettings.RefreshCreatorThemeState();
                 }
                 RefreshCreatorThemeEditorState();
-                BuildNotificationPresetSelectors();
-                BuildOverlayPresetSelector();
-                if (args.PropertyName == "UsePlayniteThemeOverlayAppearance" ||
-                    args.PropertyName == "IsOverlayEmbeddedThemeAppearanceActive")
+                if (appearanceEditorsBuilt)
+                {
+                    BuildNotificationPresetSelectors();
+                    BuildOverlayPresetSelector();
+                }
+                if (overlayPreviewBuilt &&
+                    (args.PropertyName == "UsePlayniteThemeOverlayAppearance" ||
+                    args.PropertyName == "IsOverlayEmbeddedThemeAppearanceActive"))
                 {
                     QueueOverlayPreviewRefresh();
                 }
@@ -263,7 +283,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 }
             }
 
-            if (suppressingOverlayPreviewRefresh)
+            if (suppressingOverlayPreviewRefresh || !overlayPreviewBuilt)
             {
                 return;
             }
@@ -906,27 +926,76 @@ namespace ControllerSessionManager.PlayniteIntegration
             }
 
             plugin.ControllerSnapshotChanged += OnControllerSnapshotChanged;
-            ApplyAppearancePreset();
-            BuildAppearancePresetChips();
-            BuildNotificationStylePresetChips();
-            BuildNotificationPresetSelectors();
-            BuildOverlayStylePresetChips();
-            BuildOverlayPresetSelector();
-            BuildNotificationSoundPackChips();
-            ApplyPreferredWindowSize();
+            EnsureOverviewChromeBuilt();
             AttachToHost();
+            HookSettingsWindowPlacement();
+            ApplyPreferredWindowSize();
             ApplyLegacyTesterWarning();
             ApplyPendingTesterOpen();
             if (TesterTab != null && TesterTab.IsSelected)
             {
                 AttachTesterView();
             }
-            Dispatcher.BeginInvoke(new Action(AttachToHost), DispatcherPriority.Loaded);
+            if (OverlayAppearanceTab != null && OverlayAppearanceTab.IsSelected)
+            {
+                EnsureOverlayPreviewBuilt();
+            }
+            // Build Appearance editors after the Overview paints so the first open stays
+            // responsive, but before the user typically reaches that tab.
+            QueueAppearanceEditorsBuild();
             Dispatcher.BeginInvoke(new Action(AttachToHost), DispatcherPriority.ApplicationIdle);
-            Dispatcher.BeginInvoke(new Action(FillSelectedContentHosts), DispatcherPriority.Loaded);
+            Dispatcher.BeginInvoke(new Action(ApplyPreferredWindowSize), DispatcherPriority.ApplicationIdle);
             Dispatcher.BeginInvoke(new Action(FillSelectedContentHosts), DispatcherPriority.ApplicationIdle);
-            QueueOverlayPreviewRefresh();
             RefreshOverview();
+        }
+
+        private void EnsureOverviewChromeBuilt()
+        {
+            ApplyAppearancePreset();
+            BindAppearancePresetSelector();
+        }
+
+        private void QueueAppearanceEditorsBuild()
+        {
+            if (appearanceEditorsBuilt || appearanceEditorsBuildQueued)
+            {
+                return;
+            }
+
+            appearanceEditorsBuildQueued = true;
+            Dispatcher.BeginInvoke(new Action(EnsureAppearanceEditorsBuilt),
+                DispatcherPriority.Background);
+        }
+
+        private void EnsureAppearanceEditorsBuilt()
+        {
+            if (appearanceEditorsBuilt)
+            {
+                return;
+            }
+
+            RebuildAppearanceEditors();
+            appearanceEditorsBuilt = true;
+            appearanceEditorsBuildQueued = false;
+        }
+
+        private void RebuildAppearanceEditors()
+        {
+            BuildNotificationStylePresetChips();
+            BuildNotificationPresetSelectors();
+            BuildOverlayStylePresetChips();
+            BuildOverlayPresetSelector();
+            BuildNotificationSoundPackChips();
+        }
+
+        private void EnsureOverlayPreviewBuilt()
+        {
+            if (!overlayPreviewBuilt)
+            {
+                overlayPreviewBuilt = true;
+            }
+
+            QueueOverlayPreviewRefresh();
         }
 
         private void QueueOverlayPreviewRefresh()
@@ -1015,29 +1084,46 @@ namespace ControllerSessionManager.PlayniteIntegration
         private void ApplyAppearancePreset()
         {
             var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
-            var preset = settings != null ? settings.AppearancePreset : SettingsAppearance.Midnight;
+            var preset = settings != null ? settings.AppearancePreset : SettingsAppearance.Default;
             SettingsAppearance.Apply(this, preset);
             if (themeStandaloneWindow)
             {
                 SettingsAppearance.ApplyWindow(Window.GetWindow(this), preset);
             }
 
-            RefreshAppearancePresetChips();
+            SyncAppearancePresetSelector(preset);
             RefreshNotificationStylePresetChips();
             RefreshOverlayStylePresetChips();
             RefreshNotificationSoundPackChips();
         }
 
-        private void BuildAppearancePresetChips()
+        private void BindAppearancePresetSelector()
         {
-            if (AppearancePresetChips == null)
+            if (AppearancePresetSelector == null)
             {
                 return;
             }
 
-            AppearancePresetChips.Children.Clear();
+            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            suppressAppearancePresetChange = true;
+            try
+            {
+                AppearancePresetSelector.ItemsSource = BuildChromeAppearancePresetOptions();
+                SyncAppearancePresetSelector(settings != null
+                    ? settings.AppearancePreset
+                    : SettingsAppearance.Default);
+            }
+            finally
+            {
+                suppressAppearancePresetChange = false;
+            }
+        }
+
+        private System.Collections.Generic.List<AppearancePresetOption> BuildChromeAppearancePresetOptions()
+        {
             var options = new[]
             {
+                Tuple.Create(SettingsAppearance.Default, "LOCCSM_PresetDefault", "Default"),
                 Tuple.Create(SettingsAppearance.Midnight, "LOCCSM_PresetMidnight", "Midnight"),
                 Tuple.Create(SettingsAppearance.Paper, "LOCCSM_PresetPaper", "Paper"),
                 Tuple.Create(SettingsAppearance.Oled, "LOCCSM_PresetOled", "OLED"),
@@ -1045,6 +1131,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 Tuple.Create(SettingsAppearance.Ember, "LOCCSM_PresetEmber", "Ember")
             };
 
+            var list = new System.Collections.Generic.List<AppearancePresetOption>();
             foreach (var option in options)
             {
                 var label = plugin == null ? option.Item3 : plugin.Loc(option.Item2);
@@ -1053,12 +1140,59 @@ namespace ControllerSessionManager.PlayniteIntegration
                     label = option.Item3;
                 }
 
-                var button = CreatePresetChipButton(label, option.Item1);
-                button.Click += AppearancePresetChip_OnClick;
-                AppearancePresetChips.Children.Add(button);
+                list.Add(new AppearancePresetOption
+                {
+                    Key = option.Item1,
+                    DisplayName = label,
+                    IsSelectable = true
+                });
             }
 
-            RefreshAppearancePresetChips();
+            return list;
+        }
+
+        private void SyncAppearancePresetSelector(string preset)
+        {
+            if (AppearancePresetSelector == null)
+            {
+                return;
+            }
+
+            var normalized = SettingsAppearance.Normalize(preset);
+            if (Equals(AppearancePresetSelector.SelectedValue, normalized))
+            {
+                return;
+            }
+
+            suppressAppearancePresetChange = true;
+            try
+            {
+                AppearancePresetSelector.SelectedValue = normalized;
+            }
+            finally
+            {
+                suppressAppearancePresetChange = false;
+            }
+        }
+
+        private void AppearancePresetSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (suppressAppearancePresetChange)
+            {
+                return;
+            }
+
+            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            var preset = AppearancePresetSelector == null
+                ? null
+                : AppearancePresetSelector.SelectedValue as string;
+            if (settings == null || string.IsNullOrWhiteSpace(preset))
+            {
+                return;
+            }
+
+            settings.AppearancePreset = preset;
+            ApplyAppearancePreset();
         }
 
         private static ControlTemplate CreateAppearanceChipTemplate()
@@ -1107,31 +1241,8 @@ namespace ControllerSessionManager.PlayniteIntegration
         private SettingsAppearance.Palette GetCurrentAppearancePalette()
         {
             var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
-            var selected = settings != null ? settings.AppearancePreset : SettingsAppearance.Midnight;
+            var selected = settings != null ? settings.AppearancePreset : SettingsAppearance.Default;
             return SettingsAppearance.GetPalette(selected);
-        }
-
-        private void AppearancePresetChip_OnClick(object sender, RoutedEventArgs e)
-        {
-            var button = sender as Button;
-            var preset = button == null ? null : button.Tag as string;
-            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
-            if (settings == null || string.IsNullOrWhiteSpace(preset))
-            {
-                return;
-            }
-
-            settings.AppearancePreset = preset;
-            ApplyAppearancePreset();
-        }
-
-        private void RefreshAppearancePresetChips()
-        {
-            RefreshChipSelection(
-                AppearancePresetChips,
-                boundSettings == null
-                    ? SettingsAppearance.Midnight
-                    : SettingsAppearance.Normalize(boundSettings.AppearancePreset));
         }
 
         private void BuildNotificationStylePresetChips()
@@ -1753,11 +1864,6 @@ namespace ControllerSessionManager.PlayniteIntegration
                 return string.Empty;
             }
 
-            if (panel == AppearancePresetChips)
-            {
-                return SettingsAppearance.Normalize(settings.AppearancePreset);
-            }
-
             if (panel == NotificationPluginPresetChips ||
                 panel == NotificationCreatorPresetChips ||
                 panel == NotificationCustomPresetChips)
@@ -2018,15 +2124,49 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private void OnHostSizeChanged(object sender, SizeChangedEventArgs args)
         {
+            if (stretchingSelectedContent)
+            {
+                return;
+            }
+
             ApplyViewportSize();
-            FillSelectedContentHosts();
         }
 
         private void RootTabsSelectionChanged(object sender, SelectionChangedEventArgs args)
         {
+            // Nested TabControls raise bubbling SelectionChanged; ignore those here.
+            if (args != null && !ReferenceEquals(args.Source, sender))
+            {
+                return;
+            }
+
             if (TesterTab != null && TesterTab.IsSelected)
             {
                 AttachTesterView();
+            }
+
+            if (AppearanceTab != null && AppearanceTab.IsSelected)
+            {
+                QueueAppearanceEditorsBuild();
+                if (OverlayAppearanceTab != null && OverlayAppearanceTab.IsSelected)
+                {
+                    EnsureOverlayPreviewBuilt();
+                }
+            }
+
+            Dispatcher.BeginInvoke(new Action(FillSelectedContentHosts), DispatcherPriority.Loaded);
+        }
+
+        private void AppearanceTabsSelectionChanged(object sender, SelectionChangedEventArgs args)
+        {
+            if (args != null && !ReferenceEquals(args.Source, sender))
+            {
+                return;
+            }
+
+            if (OverlayAppearanceTab != null && OverlayAppearanceTab.IsSelected)
+            {
+                EnsureOverlayPreviewBuilt();
             }
 
             Dispatcher.BeginInvoke(new Action(FillSelectedContentHosts), DispatcherPriority.Loaded);
@@ -2034,7 +2174,20 @@ namespace ControllerSessionManager.PlayniteIntegration
 
         private void FillSelectedContentHosts()
         {
-            StretchSelectedContent(this);
+            if (stretchingSelectedContent)
+            {
+                return;
+            }
+
+            stretchingSelectedContent = true;
+            try
+            {
+                StretchSelectedContent(this);
+            }
+            finally
+            {
+                stretchingSelectedContent = false;
+            }
         }
 
         private static void StretchSelectedContent(DependencyObject root)
@@ -2051,8 +2204,14 @@ namespace ControllerSessionManager.PlayniteIntegration
                 var presenter = child as ContentPresenter;
                 if (presenter != null && presenter.Name == "PART_SelectedContentHost")
                 {
-                    presenter.HorizontalAlignment = HorizontalAlignment.Stretch;
-                    presenter.VerticalAlignment = VerticalAlignment.Stretch;
+                    if (presenter.HorizontalAlignment != HorizontalAlignment.Stretch)
+                    {
+                        presenter.HorizontalAlignment = HorizontalAlignment.Stretch;
+                    }
+                    if (presenter.VerticalAlignment != VerticalAlignment.Stretch)
+                    {
+                        presenter.VerticalAlignment = VerticalAlignment.Stretch;
+                    }
                     var content = presenter.Content as FrameworkElement;
                     if (content == null && VisualTreeHelper.GetChildrenCount(presenter) > 0)
                     {
@@ -2061,10 +2220,22 @@ namespace ControllerSessionManager.PlayniteIntegration
 
                     if (content != null)
                     {
-                        content.HorizontalAlignment = HorizontalAlignment.Stretch;
-                        content.VerticalAlignment = VerticalAlignment.Stretch;
-                        content.ClearValue(WidthProperty);
-                        content.ClearValue(HeightProperty);
+                        if (content.HorizontalAlignment != HorizontalAlignment.Stretch)
+                        {
+                            content.HorizontalAlignment = HorizontalAlignment.Stretch;
+                        }
+                        if (content.VerticalAlignment != VerticalAlignment.Stretch)
+                        {
+                            content.VerticalAlignment = VerticalAlignment.Stretch;
+                        }
+                        if (!double.IsNaN(content.Width))
+                        {
+                            content.ClearValue(WidthProperty);
+                        }
+                        if (!double.IsNaN(content.Height))
+                        {
+                            content.ClearValue(HeightProperty);
+                        }
                     }
                 }
 
@@ -2076,8 +2247,14 @@ namespace ControllerSessionManager.PlayniteIntegration
         {
             HorizontalAlignment = HorizontalAlignment.Stretch;
             VerticalAlignment = VerticalAlignment.Stretch;
-            ClearValue(WidthProperty);
-            ClearValue(HeightProperty);
+            if (!double.IsNaN(Width))
+            {
+                ClearValue(WidthProperty);
+            }
+            if (!double.IsNaN(Height))
+            {
+                ClearValue(HeightProperty);
+            }
 
             FillSelectedContentHosts();
         }
@@ -2111,6 +2288,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 return;
             }
 
+            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
             window.SizeToContent = SizeToContent.Manual;
             if (window.MinWidth < 1000)
             {
@@ -2120,18 +2298,146 @@ namespace ControllerSessionManager.PlayniteIntegration
             {
                 window.MinHeight = 700;
             }
-            if (window.ActualWidth < 1100 && window.Width < 1100)
+
+            var work = SystemParameters.WorkArea;
+            var width = settings == null || settings.SettingsWindowWidth < window.MinWidth
+                ? 1100
+                : settings.SettingsWindowWidth;
+            var height = settings == null || settings.SettingsWindowHeight < window.MinHeight
+                ? 780
+                : settings.SettingsWindowHeight;
+            width = Math.Min(Math.Max(width, window.MinWidth), Math.Max(window.MinWidth, work.Width));
+            height = Math.Min(Math.Max(height, window.MinHeight), Math.Max(window.MinHeight, work.Height));
+
+            restoringSettingsWindowPlacement = true;
+            try
             {
-                window.Width = 1100;
+                window.Width = width;
+                window.Height = height;
+
+                if (settings != null &&
+                    !double.IsNaN(settings.SettingsWindowLeft) &&
+                    !double.IsNaN(settings.SettingsWindowTop))
+                {
+                    var left = settings.SettingsWindowLeft;
+                    var top = settings.SettingsWindowTop;
+                    if (left + 80 < work.Right && left + width > work.Left + 80 &&
+                        top + 40 < work.Bottom && top + height > work.Top + 40)
+                    {
+                        window.WindowStartupLocation = WindowStartupLocation.Manual;
+                        window.Left = left;
+                        window.Top = top;
+                    }
+                }
+
+                if (settings != null && settings.SettingsWindowMaximized)
+                {
+                    window.WindowState = WindowState.Maximized;
+                }
             }
-            if (window.ActualHeight < 780 && window.Height < 780)
+            finally
             {
-                window.Height = 780;
+                restoringSettingsWindowPlacement = false;
+            }
+        }
+
+        private void HookSettingsWindowPlacement()
+        {
+            var window = hostWindow ?? Window.GetWindow(this);
+            if (window == null || settingsWindowPlacementHooked)
+            {
+                return;
+            }
+
+            window.Closed += OnSettingsWindowClosed;
+            settingsWindowPlacementHooked = true;
+        }
+
+        private void UnhookSettingsWindowPlacement()
+        {
+            var window = hostWindow ?? Window.GetWindow(this);
+            if (window == null || !settingsWindowPlacementHooked)
+            {
+                settingsWindowPlacementHooked = false;
+                return;
+            }
+
+            window.Closed -= OnSettingsWindowClosed;
+            settingsWindowPlacementHooked = false;
+        }
+
+        private void OnSettingsWindowClosed(object sender, EventArgs args)
+        {
+            PersistSettingsWindowPlacement(sender as Window);
+            UnhookSettingsWindowPlacement();
+        }
+
+        private void PersistSettingsWindowPlacement(Window window)
+        {
+            if (window == null || plugin == null || restoringSettingsWindowPlacement)
+            {
+                return;
+            }
+
+            if (window.WindowState == WindowState.Minimized)
+            {
+                return;
+            }
+
+            var settings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
+            if (settings == null)
+            {
+                return;
+            }
+
+            Rect bounds;
+            var maximized = window.WindowState == WindowState.Maximized;
+            if (maximized)
+            {
+                bounds = window.RestoreBounds;
+                if (bounds.Width < 1 || bounds.Height < 1)
+                {
+                    bounds = new Rect(window.Left, window.Top, window.Width, window.Height);
+                }
+            }
+            else
+            {
+                bounds = new Rect(window.Left, window.Top, window.ActualWidth > 1 ? window.ActualWidth : window.Width,
+                    window.ActualHeight > 1 ? window.ActualHeight : window.Height);
+            }
+
+            if (bounds.Width < 1 || bounds.Height < 1)
+            {
+                return;
+            }
+
+            if (Math.Abs(settings.SettingsWindowWidth - bounds.Width) < 0.5 &&
+                Math.Abs(settings.SettingsWindowHeight - bounds.Height) < 0.5 &&
+                ((double.IsNaN(settings.SettingsWindowLeft) && double.IsNaN(bounds.Left)) ||
+                    Math.Abs(settings.SettingsWindowLeft - bounds.Left) < 0.5) &&
+                ((double.IsNaN(settings.SettingsWindowTop) && double.IsNaN(bounds.Top)) ||
+                    Math.Abs(settings.SettingsWindowTop - bounds.Top) < 0.5) &&
+                settings.SettingsWindowMaximized == maximized)
+            {
+                return;
+            }
+
+            settings.SetSettingsWindowPlacement(bounds.Width, bounds.Height, bounds.Left, bounds.Top, maximized);
+            try
+            {
+                plugin.SavePluginSettings(settings);
+            }
+            catch
+            {
+                // Placement persistence is best-effort; ignore IO failures while closing.
             }
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs args)
         {
+            PersistSettingsWindowPlacement(hostWindow ?? Window.GetWindow(this));
+            UnhookSettingsWindowPlacement();
+
             if (boundSettings != null)
             {
                 boundSettings.PropertyChanged -= OnBoundSettingsPropertyChanged;
@@ -2475,7 +2781,7 @@ namespace ControllerSessionManager.PlayniteIntegration
             var appearanceSettings = boundSettings ?? DataContext as ControllerSessionManagerSettings;
             SettingsAppearance.ApplyWindow(progressWindow,
                 appearanceSettings == null
-                    ? SettingsAppearance.Midnight
+                    ? SettingsAppearance.Default
                     : appearanceSettings.AppearancePreset);
 
             customSoundProgressOwner = Window.GetWindow(this);
@@ -2639,7 +2945,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 dialog,
                 appearanceSettings != null
                     ? appearanceSettings.AppearancePreset
-                    : SettingsAppearance.Midnight);
+                    : SettingsAppearance.Default);
 
             if (dialog.ShowDialog() != true)
             {
@@ -2933,7 +3239,7 @@ namespace ControllerSessionManager.PlayniteIntegration
                 dialog,
                 settings != null
                     ? settings.AppearancePreset
-                    : SettingsAppearance.Midnight);
+                    : SettingsAppearance.Default);
 
             if (dialog.ShowDialog() != true)
             {

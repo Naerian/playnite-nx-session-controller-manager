@@ -905,11 +905,18 @@
                             </Border>
                             <TextBlock Text="{DynamicResource LOCCSM_OverviewHelp}" Style="{StaticResource SectionSubtitleText}" />
                         </StackPanel>
-                        <Border Style="{StaticResource SettingsCard}">
+                        <Border Style="{StaticResource SummaryCard}" Margin="0,0,0,16">
                             <StackPanel>
-                                <TextBlock Text="{DynamicResource LOCCSM_AppearancePreset}" Style="{StaticResource FieldLabel}" />
-                                <TextBlock Text="{DynamicResource LOCCSM_AppearancePresetHelp}" Style="{StaticResource FieldHintText}" Margin="0,0,0,8"/>
-                                <WrapPanel x:Name="AppearancePresetChips" Orientation="Horizontal"/>
+                                <Border Style="{StaticResource SummaryTitleSeparator}">
+                                    <TextBlock Text="{DynamicResource LOCCSM_AppearancePreset}" Style="{StaticResource SummaryCardTitle}" />
+                                </Border>
+                                <TextBlock Text="{DynamicResource LOCCSM_AppearancePresetHelp}" Style="{StaticResource HintText}" Margin="0,8,0,8" />
+                                <ComboBox x:Name="AppearancePresetSelector"
+                                          Width="280"
+                                          HorizontalAlignment="Left"
+                                          DisplayMemberPath="DisplayName"
+                                          SelectedValuePath="Key"
+                                          SelectionChanged="AppearancePresetSelector_OnSelectionChanged" />
                             </StackPanel>
                         </Border>
                         <Grid>
@@ -1290,7 +1297,7 @@
             </TabItem>
 
 
-            <TabItem>
+            <TabItem x:Name="AppearanceTab">
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Style="{StaticResource TabGlyph}" Text="&#xE790;" />
@@ -1298,7 +1305,9 @@
                     </StackPanel>
                 </TabItem.Header>
                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <TabControl Style="{StaticResource SettingsNavigationTabControl}" Tag="{DynamicResource LOCCSM_TabAppearance}">
+                <TabControl x:Name="AppearanceTabs" Style="{StaticResource SettingsNavigationTabControl}"
+                            Tag="{DynamicResource LOCCSM_TabAppearance}"
+                            SelectionChanged="AppearanceTabsSelectionChanged">
                     <TabItem>
                         <TabItem.Header>
                             <StackPanel Orientation="Horizontal">

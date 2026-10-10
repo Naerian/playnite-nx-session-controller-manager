@@ -118,7 +118,8 @@
     <sys:String x:Key="LOCCSM_HidDiagnosticsExported">Диагностика HID экспортирована в:\n{0}</sys:String>
     <sys:String x:Key="LOCCSM_OverviewHelp">Подключённые контроллеры и состояние защиты при отключении.</sys:String>
     <sys:String x:Key="LOCCSM_AppearancePreset">Пресет оформления</sys:String>
-    <sys:String x:Key="LOCCSM_AppearancePresetHelp">Только цвета. Шрифт, отступы и размеры элементов остаются фиксированными.</sys:String>
+    <sys:String x:Key="LOCCSM_AppearancePresetHelp">Пресеты меняют только цвета. Макет, масштаб текста и отступы остаются неизменными. «По умолчанию» берёт текст/акцент Playnite и подстраивает поверхности темы, когда это возможно.</sys:String>
+    <sys:String x:Key="LOCCSM_PresetDefault">По умолчанию</sys:String>
     <sys:String x:Key="LOCCSM_PresetMidnight">Midnight</sys:String>
     <sys:String x:Key="LOCCSM_PresetPaper">Paper</sys:String>
     <sys:String x:Key="LOCCSM_PresetOled">OLED</sys:String>

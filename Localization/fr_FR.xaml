@@ -116,7 +116,8 @@
     <sys:String x:Key="LOCCSM_HidDiagnosticsExported">Diagnostic HID export- vers :\n{0}</sys:String>
     <sys:String x:Key="LOCCSM_OverviewHelp">Vue rapide des manettes connect-es, du fournisseur d'entr-e actif, de la manette principale et de la derni-re actualisation.</sys:String>
     <sys:String x:Key="LOCCSM_AppearancePreset">Apparence</sys:String>
-    <sys:String x:Key="LOCCSM_AppearancePresetHelp">Couleurs uniquement. Typographie, espacement et tailles des contr-les restent fixes.</sys:String>
+    <sys:String x:Key="LOCCSM_AppearancePresetHelp">Les préréglages changent uniquement les couleurs. La mise en page, l’échelle du texte et les espacements restent fixes. Par défaut utilise texte/accent Playnite et adapte les surfaces du thème si possible.</sys:String>
+    <sys:String x:Key="LOCCSM_PresetDefault">Par défaut</sys:String>
     <sys:String x:Key="LOCCSM_PresetMidnight">Midnight</sys:String>
     <sys:String x:Key="LOCCSM_PresetPaper">Paper</sys:String>
     <sys:String x:Key="LOCCSM_PresetOled">OLED</sys:String>

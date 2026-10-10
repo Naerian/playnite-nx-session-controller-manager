@@ -116,7 +116,8 @@
     <sys:String x:Key="LOCCSM_HidDiagnosticsExported">HID-Diagnose exportiert nach:\n{0}</sys:String>
     <sys:String x:Key="LOCCSM_OverviewHelp">Eine Schnell-bersicht -ber verbundene Controller, den aktiven Eingabeanbieter, den prim-ren Controller und die letzte Aktualisierung.</sys:String>
     <sys:String x:Key="LOCCSM_AppearancePreset">Erscheinungsbild</sys:String>
-    <sys:String x:Key="LOCCSM_AppearancePresetHelp">Nur Farben. Schrift, Abst-nde und Steuerungsgr--en bleiben gleich.</sys:String>
+    <sys:String x:Key="LOCCSM_AppearancePresetHelp">Voreinstellungen ändern nur Farben. Layout, Schriftgröße und Abstände bleiben fest. Standard nutzt Playnite-Text/Akzent und passt Flächen vom Theme an, wenn möglich.</sys:String>
+    <sys:String x:Key="LOCCSM_PresetDefault">Standard</sys:String>
     <sys:String x:Key="LOCCSM_PresetMidnight">Midnight</sys:String>
     <sys:String x:Key="LOCCSM_PresetPaper">Paper</sys:String>
     <sys:String x:Key="LOCCSM_PresetOled">OLED</sys:String>

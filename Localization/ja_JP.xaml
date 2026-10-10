@@ -118,7 +118,8 @@
     <sys:String x:Key="LOCCSM_HidDiagnosticsExported">HID 診断の書き出し先:\n{0}</sys:String>
     <sys:String x:Key="LOCCSM_OverviewHelp">接続中のコントローラーと、切断時の保護の状態です。</sys:String>
     <sys:String x:Key="LOCCSM_AppearancePreset">外観プリセット</sys:String>
-    <sys:String x:Key="LOCCSM_AppearancePresetHelp">色だけを変えます。書体、間隔、コントロールのサイズは固定です。</sys:String>
+    <sys:String x:Key="LOCCSM_AppearancePresetHelp">プリセットは色のみを変更します。レイアウト、文字サイズ、間隔は固定です。デフォルトは Playnite の文字色/アクセントを使い、可能ならテーマの面も合わせます。</sys:String>
+    <sys:String x:Key="LOCCSM_PresetDefault">デフォルト</sys:String>
     <sys:String x:Key="LOCCSM_PresetMidnight">Midnight</sys:String>
     <sys:String x:Key="LOCCSM_PresetPaper">Paper</sys:String>
     <sys:String x:Key="LOCCSM_PresetOled">OLED</sys:String>

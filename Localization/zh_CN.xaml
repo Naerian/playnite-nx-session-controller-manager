@@ -118,7 +118,8 @@
     <sys:String x:Key="LOCCSM_HidDiagnosticsExported">HID 诊断已导出到：\n{0}</sys:String>
     <sys:String x:Key="LOCCSM_OverviewHelp">已连接的手柄和断开保护状态。</sys:String>
     <sys:String x:Key="LOCCSM_AppearancePreset">外观预设</sys:String>
-    <sys:String x:Key="LOCCSM_AppearancePresetHelp">仅更改颜色。字体、间距和控件大小保持固定。</sys:String>
+    <sys:String x:Key="LOCCSM_AppearancePresetHelp">预设只改变颜色。布局、字号和间距保持固定。默认使用 Playnite 文字色/强调色，并在可能时适配主题表面。</sys:String>
+    <sys:String x:Key="LOCCSM_PresetDefault">默认</sys:String>
     <sys:String x:Key="LOCCSM_PresetMidnight">Midnight</sys:String>
     <sys:String x:Key="LOCCSM_PresetPaper">Paper</sys:String>
     <sys:String x:Key="LOCCSM_PresetOled">OLED</sys:String>

@@ -116,7 +116,8 @@
     <sys:String x:Key="LOCCSM_HidDiagnosticsExported">Diagnostyka HID wyeksportowana do:\n{0}</sys:String>
     <sys:String x:Key="LOCCSM_OverviewHelp">Szybki podglad podlaczonych kontroler-w, aktywnego dostawcy wejscia, gl-wnego kontrolera i ostatniego odswiezenia.</sys:String>
     <sys:String x:Key="LOCCSM_AppearancePreset">Appearance preset</sys:String>
-    <sys:String x:Key="LOCCSM_AppearancePresetHelp">Colors only. Type, spacing and control sizes stay fixed.</sys:String>
+    <sys:String x:Key="LOCCSM_AppearancePresetHelp">Presety zmieniają tylko kolory. Układ, skala tekstu i odstępy pozostają stałe. Domyślny używa tekstu/akcentu Playnite i dostosowuje powierzchnie motywu, gdy to możliwe.</sys:String>
+    <sys:String x:Key="LOCCSM_PresetDefault">Domyślny</sys:String>
     <sys:String x:Key="LOCCSM_PresetMidnight">Midnight</sys:String>
     <sys:String x:Key="LOCCSM_PresetPaper">Paper</sys:String>
     <sys:String x:Key="LOCCSM_PresetOled">OLED</sys:String>
