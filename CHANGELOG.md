@@ -6,7 +6,7 @@
 
 
 ## 1.0.43 — 2026-10-15
-- Fullscreen notifications and the disconnect overlay now scale with the monitorâ€™s logical height (1080 DIP baseline), so they grow on large displays such as 4K at 100% Windows scaling without double-counting high DPI.
+- Fullscreen notifications and the disconnect overlay now scale with the monitor's logical height (1080 DIP baseline), so they grow on large displays such as 4K at 100% Windows scaling without double-counting high DPI.
 - Desktop notifications keep fixed DIP sizes; only Fullscreen toasts apply the resolution factor on top of the Appearance size percentage.
 - Added DisplayResolutionScale coverage so 1080p, 4K, and DPI combinations stay within the documented clamp range.
 
