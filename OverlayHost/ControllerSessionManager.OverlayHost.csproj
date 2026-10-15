@@ -45,6 +45,7 @@
     <Compile Include="ToastWindow.cs" />
     <Compile Include="TargetScreenResolver.cs" />
     <Compile Include="PathAspectSizer.cs" />
+    <Compile Include="DisplayResolutionScale.cs" />
     <Compile Include="ProcessSuspensionLease.cs" />
     <Compile Include="..\Overlay\DisconnectDurationFormatter.cs">
       <Link>DisconnectDurationFormatter.cs</Link>

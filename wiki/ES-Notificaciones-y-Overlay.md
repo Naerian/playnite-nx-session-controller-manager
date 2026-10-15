@@ -12,6 +12,8 @@ A partir de Controller Manager 1.0.28, si el diseño de notificaciones seleccion
 
 Las notificaciones de conexión están pensadas para navegar por la interfaz Fullscreen de Playnite sin un juego activo. El fallback de seguridad online también puede usar el estilo de aviso durante una partida. Las ventanas se muestran por encima, no reciben clics ni activación y desaparecen automáticamente.
 
+Las notificaciones Fullscreen (y el overlay de desconexión) escalan automáticamente según la altura lógica del monitor (baseline 1080 DIP): en 4K con Windows al 100% crecen ~2×; con DPI alto de Windows no se duplican. El porcentaje de tamaño de Apariencia sigue multiplicando encima. Las notificaciones de Escritorio no usan este escalado.
+
 En **Apariencia → Notificación en pantalla → Pantalla completa** y **… → Escritorio** puedes configurar ancho, escala, duración, esquina, tipografía, icono, padding, borde, redondeo, sombra, colores, acento semántico y animación. La extensión incluye Inter, Montserrat, Outfit, Poppins, Rajdhani, Chakra Petch y Orbitron sin instalarlas en Windows. El selector de color incluye la opacidad en porcentaje. El icono puede colocarse a izquierda, derecha, arriba, abajo u ocultarse. Los botones de cada subsección prueban conectado, desconectado, aviso y batería baja mediante la notificación real. Los presets sustituyen al antiguo botón de restablecimiento: **Suave** es el punto de partida neutro y los demás ofrecen composiciones distintas.
 
 Los cambios XInput estables usan un antirrebote de 300 ms para descartar oscilaciones rápidas del driver sin esperar a la reconciliación lenta.

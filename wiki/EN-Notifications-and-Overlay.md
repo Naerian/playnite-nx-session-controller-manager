@@ -8,6 +8,8 @@
 
 Connection notifications are intended for browsing the Playnite Fullscreen interface without an active game. Online safety fallbacks can also use the warning style during gameplay. Toast windows are topmost, click-through, non-activating and close automatically.
 
+Fullscreen notifications (and the disconnect overlay) scale automatically with the monitor’s logical height (1080 DIP baseline): about 2× on 4K at 100% Windows scaling, without double-counting high DPI. The Appearance size percentage still multiplies on top. Desktop notifications do not use this scaling.
+
 Under **Appearance → On-screen notification → Fullscreen** and **… → Desktop**, configure width, scale, duration, screen corner, typography, icon size, padding, border, corner radius, shadow, colors, semantic accent and animation. Inter, Montserrat, Outfit, Poppins, Rajdhani, Chakra Petch and Orbitron ship with the extension and do not need to be installed in Windows. The color picker includes opacity as a percentage. The icon can appear left, right, above, below or be hidden. Each subsection's buttons exercise connected, disconnected, warning and low-battery states through the real notification renderer. Presets replace the old reset action: **Soft** is the neutral baseline and the others provide distinct compositions.
 
 Preset selectors separate plugin presets and imported designs. Theme authors ship styling inside the theme: [Embedded appearance packs](EN-Theme-Appearance-Packs). Anyone else shares a look by exporting a visual profile (`.pcvisual`).

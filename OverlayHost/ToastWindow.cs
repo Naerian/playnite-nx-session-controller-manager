@@ -46,6 +46,7 @@ namespace ControllerSessionManager.OverlayHost
         private const int PositionTrackIntervalMilliseconds = 250;
         private bool pauseBeforeQueuedToast;
         private double currentShadowInset;
+        private int currentAppliedScreenMargin = 28;
         private ToastRequest current;
         private ToastStyle currentStyle;
         private System.Drawing.Rectangle lastToastPlacement;
@@ -241,6 +242,17 @@ namespace ControllerSessionManager.OverlayHost
                 ? (current.Title ?? string.Empty).ToUpperInvariant()
                 : current.Title;
             var scale = style.ScalePercent / 100.0;
+            var resolutionScale = 1.0;
+            if (style.ScaleWithDisplay)
+            {
+                var targetScreen = GetTargetScreen(current);
+                resolutionScale = DisplayResolutionScale.FromScreen(
+                    targetScreen, DisplayResolutionScale.GetDpiScaleY(this));
+                scale *= resolutionScale;
+            }
+            currentAppliedScreenMargin = style.ScaleWithDisplay
+                ? (int)Math.Max(8, Math.Min(160, Math.Round(style.ScreenMargin * resolutionScale)))
+                : style.ScreenMargin;
             var iconSize = Math.Max(16, style.IconSize * scale);
             var titleSize = Math.Max(10, style.TitleFontSize * scale);
             var messageSize = Math.Max(9, style.MessageFontSize * scale);
@@ -422,7 +434,7 @@ namespace ControllerSessionManager.OverlayHost
             {
                 Show();
             }
-            ApplyBounds(GetTargetScreen(current), style.Position, style.ScreenMargin);
+            ApplyBounds(GetTargetScreen(current), style.Position, currentAppliedScreenMargin);
             BeginEntryAnimation(style);
             holdTimer.Interval = TimeSpan.FromMilliseconds(current.DurationMilliseconds);
             holdTimer.Start();
@@ -638,7 +650,7 @@ namespace ControllerSessionManager.OverlayHost
                 return;
             }
 
-            ApplyBounds(GetTargetScreen(current), currentStyle.Position, currentStyle.ScreenMargin);
+            ApplyBounds(GetTargetScreen(current), currentStyle.Position, currentAppliedScreenMargin);
         }
 
         private void StartPositionTracking()
@@ -837,6 +849,7 @@ namespace ControllerSessionManager.OverlayHost
             public int BorderGlowBlur = 12;
             public int BorderGlowOpacity = 30;
             public string ControllerIconColor = string.Empty;
+            public bool ScaleWithDisplay;
 
             public static ToastStyle Parse(string value)
             {
@@ -928,6 +941,11 @@ namespace ControllerSessionManager.OverlayHost
                 if (parts.Length > 75) style.WarningBorderColor = parts[75];
                 if (parts.Length > 76) style.LowBatteryBorderColor = parts[76];
                 if (parts.Length > 77 && !string.IsNullOrWhiteSpace(parts[77])) style.ControllerIconColor = parts[77];
+                if (parts.Length > 78)
+                {
+                    style.ScaleWithDisplay = string.Equals(parts[78], "Fullscreen",
+                        StringComparison.OrdinalIgnoreCase);
+                }
                 return style;
             }
 

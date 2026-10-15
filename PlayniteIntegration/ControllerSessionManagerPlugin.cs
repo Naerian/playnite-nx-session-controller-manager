@@ -2963,7 +2963,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 appearance.NotificationUseStateBorderColors.ToString(), appearance.NotificationConnectedBorderColor,
                 appearance.NotificationDisconnectedBorderColor, appearance.NotificationWarningBorderColor,
                 appearance.NotificationLowBatteryBorderColor,
-                string.Empty
+                string.Empty,
+                "Fullscreen"
             });
         }
 
@@ -3042,7 +3043,8 @@ namespace ControllerSessionManager.PlayniteIntegration
                 appearance.DesktopNotificationUseStateBorderColors.ToString(), appearance.DesktopNotificationConnectedBorderColor,
                 appearance.DesktopNotificationDisconnectedBorderColor, appearance.DesktopNotificationWarningBorderColor,
                 appearance.DesktopNotificationLowBatteryBorderColor,
-                string.Empty
+                string.Empty,
+                "Desktop"
             });
         }
 

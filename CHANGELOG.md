@@ -4,6 +4,12 @@
 
 
 
+
+## 1.0.43 — 2026-10-15
+- Fullscreen notifications and the disconnect overlay now scale with the monitorâ€™s logical height (1080 DIP baseline), so they grow on large displays such as 4K at 100% Windows scaling without double-counting high DPI.
+- Desktop notifications keep fixed DIP sizes; only Fullscreen toasts apply the resolution factor on top of the Appearance size percentage.
+- Added DisplayResolutionScale coverage so 1080p, 4K, and DPI combinations stay within the documented clamp range.
+
 ## 1.0.42 — 2026-10-10
 - Added a Default Appearance preset in Overview that follows Playnite text and accent colors and adapts theme surfaces when possible.
 - New installs default to Default; existing Midnight, Paper, OLED, Ocean and Ember choices are left unchanged.

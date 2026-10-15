@@ -351,7 +351,10 @@ namespace ControllerSessionManager.OverlayHost
             int scalePercent;
             if (parts.Length == 0 || !int.TryParse(parts[0], out scalePercent)) scalePercent = 100;
             scalePercent = Math.Max(80, Math.Min(140, scalePercent));
-            var scale = scalePercent / 100.0;
+            var targetScreen = GetTargetScreen(currentGameProcessId);
+            var resolutionScale = DisplayResolutionScale.FromScreen(
+                targetScreen, DisplayResolutionScale.GetDpiScaleY(this));
+            var scale = (scalePercent / 100.0) * resolutionScale;
             var dim = ParseColor(parts.Length > 1 ? parts[1] : null, Color.FromArgb(150, 0, 0, 0));
             var card = ParseColor(parts.Length > 2 ? parts[2] : null, Color.FromArgb(235, 18, 20, 24));
             presentationAccent = ParseColor(parts.Length > 3 ? parts[3] : null, Color.FromRgb(35, 145, 255));
@@ -648,7 +651,7 @@ namespace ControllerSessionManager.OverlayHost
                 incidentStateBadge.HorizontalAlignment = HorizontalAlignment.Center;
                 incidentStateBadge.Margin = new Thickness(0, gap, 0, 0);
             }
-            ApplyCardPosition(cardPosition, screenMargin);
+            ApplyCardPosition(cardPosition, screenMargin * resolutionScale);
             incidentCard.Effect = showBorder && showBorderGlow ? new DropShadowEffect
             {
                 BlurRadius = borderGlowBlur,
